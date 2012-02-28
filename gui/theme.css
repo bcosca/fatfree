@@ -1,0 +1,94 @@
+html {
+	height:100%;
+	overflow-x:hidden;
+	overflow-y:scroll;
+}
+body {
+	font-size:9pt; font-family:Calibri,sans-serif;
+	line-height:1.2em;
+	min-height:100%;
+	overflow:hidden;
+}
+pre {
+	font-family:Consolas,fixed;
+	font-size:0.9em;
+}
+#sidebar {
+	background:#000;
+	padding:2% 2% 9999px 2%;
+	margin-bottom:-9999px;
+	width:21%;
+	float:left;
+}
+	#menu {
+		font-size:1.5em;
+		font-weight:bold;
+		line-height:1.5em;
+		color:#fff;
+		text-align:right;
+		margin-left:50%;
+		width:50%;
+	}
+	#menu a {
+		text-decoration:none;
+		color:#666;
+		display:block;
+	}
+	#menu a:hover { color:#ccc; }
+#main {
+	background:#fff;
+	padding:2% 2% 9999px 2%;
+	margin-bottom:-9999px;
+	width:71%;
+	float:left;
+}
+#main h3 {
+	color:#999;
+	font-size:2.2em;
+	font-weight:bold;
+	margin-bottom:2%;
+	line-height:1em;
+}
+	#results {
+		overflow:none;
+	}
+	#results p {
+		font-family:Consolas,fixed;
+		font-size:0.9em;
+		line-height:1em;
+		margin:0;
+		clear:both;
+		overflow:auto;
+	}
+	#results p:last-child { margin-bottom:2%; }
+	#results span {
+		word-wrap:break-word;
+		border:1px solid transparent;
+		margin:2px 0;
+		max-width:71%;
+		display:block;
+		float:left;
+	}
+	.key {
+		color:#fff;
+		text-align:center;
+		border-radius:2px;
+		-moz-border-radius:5px;
+		-webkit-border-radius:5px;
+		margin-right:10px!important;
+		width:25px;
+		display:block;
+		float:left;
+		clear:both;
+	}
+	.pass { background:#090; }
+	.fail { background:#f00; }
+	.message {
+		display:block;
+		float:left;
+	}
+	#profile {
+		font-family:Consolas,fixed;
+		color:#666;
+		margin-bottom:2%;
+	}

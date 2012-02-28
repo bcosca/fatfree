@@ -1,0 +1,7 @@
+div * {
+	text-align: center;
+}
+#content {
+	border: 1px #000 solid;
+	text-shadow: #ccc -1px -1px 0px;
+}

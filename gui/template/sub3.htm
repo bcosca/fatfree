@@ -1,0 +1,10 @@
+<F3:repeat group="{{@div}}" key="{{@ikey}}" value="{{@idiv}}">
+<div>
+	<p><span><b>{{@ikey}}</b></span></p>
+	<p>
+	<F3:repeat group="{{@idiv}}" value="{{@ispan}}">
+		<span>{{@ispan}}</span>
+	</F3:repeat>
+	</p>
+</div>
+</F3:repeat>

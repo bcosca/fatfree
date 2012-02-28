@@ -1,0 +1,5 @@
+<table>
+	<f3:repeat group="{{@benchmark}}" key="{{@ikey}}" value="{{@irow}}">
+	<tr><repeat group="{{@irow}}" value="{{@icol}}"><td>{{@icol*@ikey}}</td></repeat></tr>
+	</f3:repeat>
+</table>

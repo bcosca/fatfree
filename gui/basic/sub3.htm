@@ -1,0 +1,10 @@
+<? foreach ($this->get('div') as $ikey=>$idiv): ?>
+<div>
+	<p><span><b><?= $ikey; ?></b></span></p>
+	<p>
+	<? foreach ($idiv as $ispan): ?>
+		<span><?= $ispan; ?></span>
+	<? endforeach; ?>
+	</p>
+</div>
+<? endforeach; ?>

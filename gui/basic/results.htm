@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><?= $this->get('title'); ?></title>
+
+	<link rel="icon" href="<?= $this->get('BASE'); ?>gui/favicon.ico" />
+	<link rel="shortcut icon" href="<?= $this->get('BASE'); ?>gui/favicon.ico" />
+	<style>
+		<?= Web::minify('gui/',array('reset.css','theme.css'),FALSE); ?>
+	</style>
+</head>
+<body>
+	<div id="wrapper">
+		<div id="sidebar">
+			<ul id="menu">
+				<? foreach ($this->get('menu') as $key=>$value): ?>
+					<? if ($this->get('title')==$value): ?>
+						<li><span><?= $value; ?></span></li>
+					<? else: ?>
+						<li><a href="<?= $this->get('BASE').$key; ?>"><?= $value; ?></a></li>
+					<? endif; ?>
+				<? endforeach; ?>
+			</ul>
+		</div>
+		<div id="main">
+			<h3><?= $this->get('title'); ?></h3>
+			<div id="results">
+				<? if ($this->get('TEST')): ?>
+					<? foreach ($this->get('TEST') as $key=>$value): ?>
+						<p><span class="key <?= $value['result']?'pass':'fail'; ?>"><?= $key+1; ?></span> <span class="message"><?= $value['result']?'':'FAILED: '; ?><?= $value['text']; ?></span></p>
+					<? endforeach; ?>
+				<? endif; ?>
+			</div>
+			<div id="profile">
+				<p>Page generated in <?= sprintf('%.3f',microtime(TRUE)-$this->get('timer')); ?> secs &bull; Memory consumed <?= sprintf('%.3f',memory_get_peak_usage()/1e6); ?> Mbytes</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
