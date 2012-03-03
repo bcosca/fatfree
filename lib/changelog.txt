@@ -1,6 +1,7 @@
 CHANGELOG
 
 2.0.10
+*	PHP 5.4-ready
 *	Bug fix: exists() causes persistent sessions
 *	Bug fix: set() COOKIE variable borked [[Bug #3489220]
 

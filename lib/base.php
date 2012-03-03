@@ -572,7 +572,8 @@ class Base {
 							// Variable holds an anonymous function
 							call_user_func_array($ref,str_getcsv($func[2])):
 							// Check if empty array
-							($func[1].$func[2]=='array'?'NULL':$func[0]);
+							($func[1].$func[2]=='array'?'NULL':
+								($func[1]=='array'?'\'Array\'':$func[0]));
 					},
 					preg_replace_callback(
 						// Framework variable
@@ -594,9 +595,9 @@ class Base {
 						$expr[1]
 					)
 				);
-				return !preg_match('/@|\bnew\s+/i',$out) &&
+				return (!preg_match('/@|\bnew\s+/i',$out) &&
 					($eval=eval('return (string)'.$out.';'))!==FALSE?
-						$eval:$out;
+						$eval:$out);
 			},
 			$val
 		);
