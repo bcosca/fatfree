@@ -19,36 +19,6 @@
 class Google extends Base {
 
 	/**
-		Language translator using Google AJAX Language API
-			@return mixed
-			@param $text string
-			@param $from string
-			@param $to string
-			@public
-	**/
-	static function translate($text,$from,$to) {
-		$result=json_decode(
-			Web::http(
-				'GET http://ajax.googleapis.com/'.
-					'ajax/services/language/translate',
-				http_build_query(
-					array(
-						'v'=>'1.0',
-						'q'=>$text,
-						'langpair'=>$from.'|'.$to
-					)
-				)
-			),
-			TRUE
-		);
-		if (is_null($result['responseData'])) {
-			trigger_error($result['responseDetails']);
-			return FALSE;
-		}
-		return $result['responseData']['translatedText'];
-	}
-
-	/**
 		Call Geocoding API and return geographical coordinates of
 		specified address
 			@return array

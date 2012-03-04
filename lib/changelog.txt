@@ -2,7 +2,8 @@ CHANGELOG
 
 2.0.10
 *	PHP 5.4-ready
-*	Bug fix: PHP 5.4's deflate() triggers intermittent data error
+*	Google::translate() deprecated
+*	Bug fix: PHP 5.4's gzdeflate() triggers intermittent data error
 *	Bug fix: exists() causes persistent sessions
 *	Bug fix: set() COOKIE variable borked [[Bug #3489220]
 

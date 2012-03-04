@@ -3336,14 +3336,6 @@ class Main extends F3instance {
 
 		if (extension_loaded('sockets')) {
 
-			$this->set('QUIET',TRUE);
-			$this->expect(
-				Google::translate('I am hungry','en','es')=='Tengo hambre',
-				'Text translated from English to Spanish by Google',
-				'Google translation failure'
-			);
-			$this->set('QUIET',FALSE);
-
 			$this->expect(
 				TRUE,
 				'Google map<br/><img src="/google/map" alt="Google Map"/>'
@@ -3487,10 +3479,10 @@ return unescape(document.cookie.substring(c_start,c_end));}}return""}function se
 		}
 
 		$this->set('QUIET',TRUE);
-		$ping=Net::ping('www.yay.cc',TRUE,1);
+		$ping=Net::ping('www.yxy.cc',TRUE,1);
 		$this->expect(
 			is_bool($ping),
-			'www.yay.cc: No ping reply expected',
+			'www.yxy.cc: No ping reply expected',
 			'Huh? Ping reply from www.yay.cc'
 		);
 		$this->set('QUIET',FALSE);
