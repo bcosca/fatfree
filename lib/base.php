@@ -2056,7 +2056,7 @@ class Cache extends Base {
 		// Serialize data for storage
 		$time=time();
 		// Add timestamp
-		$val=gzdeflate(serialize(array($time,$data)));
+		$val=gzcompress(serialize(array($time,$data)));
 		// Instruct back-end to store data
 		switch (self::$backend['type']) {
 			case 'apc':
@@ -2140,7 +2140,7 @@ class Cache extends Base {
 			return FALSE;
 		}
 		// Unserialize timestamp and data
-		list($time,$data)=unserialize(gzinflate($val));
+		list($time,$data)=unserialize(gzuncompress($val));
 		$stats['CACHE']['backend']['hits']++;
 		// Free up space for level-1 cache
 		while (count(self::$buffer) && strlen(serialize($data))+
