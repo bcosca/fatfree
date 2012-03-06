@@ -698,7 +698,9 @@ class Axon extends Base {
 			$bind=array();
 			foreach ($this->fields as $field=>$val)
 				if (isset($this->mod[$field])) {
-					$fields.=($fields?',':'').$field;
+					$fields.=($fields?',':'').
+						(preg_match('/^mysql$/',$this->backend)?
+							('`'.$field.'`'):$field);
 					$values.=($values?',':'').':'.$field;
 					$bind[':'.$field]=array($val,$this->types[$field]);
 				}
@@ -713,7 +715,9 @@ class Axon extends Base {
 			$set=$cond='';
 			foreach ($this->fields as $field=>$val)
 				if (isset($this->mod[$field])) {
-					$set.=($set?',':'').$field.'=:'.$field;
+					$set.=($set?',':'').
+						(preg_match('/^mysql$/',$this->backend)?
+							('`'.$field.'`'):$field).'=:'.$field;
 					$bind[':'.$field]=array($val,$this->types[$field]);
 				}
 			// Use primary keys to find record
