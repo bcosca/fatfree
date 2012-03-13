@@ -303,7 +303,7 @@ class Base {
 			'/\[\s*[\'"]?|[\'"]?\s*\]|\.|(->)/',self::remix($key),
 			NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		// Referencing a SESSION variable element auto-starts a session
-		if ($set && $matches[0]=='SESSION' && !session_id()) {
+		if ($matches[0]=='SESSION' && !session_id()) {
 			// Use cookie jar setup
 			call_user_func_array('session_set_cookie_params',
 				self::$vars['JAR']);
@@ -2067,7 +2067,7 @@ class Cache extends Base {
 		// Serialize data for storage
 		$time=time();
 		// Add timestamp
-		$val=gzcompress(serialize(array($time,$data)));
+		$val=gzdeflate(serialize(array($time,$data)));
 		// Instruct back-end to store data
 		switch (self::$backend['type']) {
 			case 'apc':
@@ -2151,7 +2151,7 @@ class Cache extends Base {
 			return FALSE;
 		}
 		// Unserialize timestamp and data
-		list($time,$data)=unserialize(gzuncompress($val));
+		list($time,$data)=unserialize(gzinflate($val));
 		$stats['CACHE']['backend']['hits']++;
 		// Free up space for level-1 cache
 		while (count(self::$buffer) && strlen(serialize($data))+
