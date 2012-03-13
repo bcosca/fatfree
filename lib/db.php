@@ -114,8 +114,9 @@ class DB extends Base {
 			$cmds=array($cmds);
 			$args=array($args);
 		}
-		foreach (array_combine($cmds,$args) as $cmd=>$arg) {
-			$hash='sql.'.self::hash($cmd.var_export($args,TRUE));
+		for ($i=0,$len=count($cmds);$i<$len;$i++) {
+			list($cmd,$arg)=array($cmds[$i],$args[$i]);
+			$hash='sql.'.self::hash($cmd.var_export($arg,TRUE));
 			$cached=Cache::cached($hash);
 			if ($ttl && $cached && $_SERVER['REQUEST_TIME']-$cached<$ttl) {
 				// Gather cached queries for profiler

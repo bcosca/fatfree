@@ -8,6 +8,7 @@ CHANGELOG
 *	Bug fix: PHP 5.4's gzdeflate() triggers intermittent data error
 *	Bug fix: exists() causes persistent sessions
 *	Bug fix: set() COOKIE variable borked [[Bug #3489220]
+*	Bug fix: Duplicate statements in transactions [Bug #3467535]
 
 2.0.9
 *	Added ReSTful class support for __call
