@@ -4,6 +4,7 @@ CHANGELOG
 *	PHP 5.4-ready
 *	Google::translate() deprecated
 *	Support for MySQL reserved words as column names
+*	stringify() streamlined
 *	Bug fix: PHP 5.4's gzdeflate() triggers intermittent data error
 *	Bug fix: exists() causes persistent sessions
 *	Bug fix: set() COOKIE variable borked [[Bug #3489220]

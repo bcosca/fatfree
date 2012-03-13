@@ -154,12 +154,23 @@ class Base {
 			@public
 	**/
 	static function stringify($arg) {
-		return preg_replace('/\s+=>\s+/','=>',
-			is_object($arg) && !method_exists($arg,'__set_state')?
-				(method_exists($arg,'__toString')?
-					var_export((string)stripslashes($arg),TRUE):
-					('object:'.get_class($arg))):
-				var_export($arg,TRUE));
+		switch (gettype($arg)) {
+			case 'array':
+				$str='';
+				foreach ($arg as $key=>$val)
+					$str.=($str?',':'').
+						self::stringify($key).'=>'.self::stringify($val);
+				return 'array('.$str.')';
+			case 'object':
+				return '\'object:'.get_class($arg).'\'';
+			case 'string':
+				return '"'.addcslashes($arg,'"').'"';
+			case 'boolean':
+				return $arg?'TRUE':'FALSE';
+			case 'NULL':
+				return 'NULL';
+		}
+		return (string)$arg;
 	}
 
 	/**
@@ -1826,7 +1837,7 @@ class F3 extends Base {
 			@public
 	**/
 	static function stop() {
-		chdir($_SERVER['DOCUMENT_ROOT']);
+		chdir(self::$vars['ROOT']);
 		$error=error_get_last();
 		if ($error && !self::$vars['QUIET'] && in_array($error['type'],
 			array(E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR)))
