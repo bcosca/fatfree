@@ -155,22 +155,19 @@ class Base {
 	**/
 	static function stringify($arg) {
 		switch (gettype($arg)) {
+			case 'object':
+				return method_exists($arg,'__tostring')?
+					(string)stripslashes($arg):
+					get_class($arg).'::__set_state()';
 			case 'array':
 				$str='';
 				foreach ($arg as $key=>$val)
 					$str.=($str?',':'').
 						self::stringify($key).'=>'.self::stringify($val);
 				return 'array('.$str.')';
-			case 'object':
-				return '\'object:'.get_class($arg).'\'';
-			case 'string':
-				return '"'.addcslashes($arg,'"').'"';
-			case 'boolean':
-				return $arg?'TRUE':'FALSE';
-			case 'NULL':
-				return 'NULL';
+			default:
+				return var_export($arg,TRUE);
 		}
-		return (string)$arg;
 	}
 
 	/**
@@ -180,7 +177,8 @@ class Base {
 			@public
 	**/
 	static function csv($args) {
-		return implode(',',array_map('self::stringify',$args));
+		return implode(',',array_map('stripcslashes',
+			array_map('self::stringify',$args)));
 	}
 
 	/**
