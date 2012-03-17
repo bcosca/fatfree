@@ -1881,11 +1881,13 @@ class F3 extends Base {
 			$iter=ltrim($class,'\\');
 			for (;;) {
 				if ($glob=glob($auto.self::fixslashes($ns).'*')) {
-					if ($grep=preg_grep('/^'.preg_quote($auto,'/').
-						implode('[\/_]',explode('\\',$ns.$iter)).
-						'(?:\.class)?\.php/i',$glob)) {
+					$grep=preg_grep('/^'.preg_quote($auto,'/').
+						implode('[\/\.]',explode('\\',$ns.$iter)).
+						'(?:\.class)?\.php/i',$glob);
+					if ($file=current($grep)) {
+						unset($grep);
 						$instance=new F3instance;
-						$instance->sandbox(current($grep));
+						$instance->sandbox($file);
 						// Verify that the class was loaded
 						if (class_exists($class,FALSE)) {
 							// Run onLoad event handler if defined
@@ -1898,12 +1900,12 @@ class F3 extends Base {
 					$parts=explode('\\',$iter,2);
 					if (count($parts)>1) {
 						$iter=$parts[1];
-						if ($grep=preg_grep('/^'.
+						$grep=preg_grep('/^'.
 							preg_quote($auto.self::fixslashes($ns).
-							$parts[0],'/').'$/i',$glob)) {
+							$parts[0],'/').'$/i',$glob);
+						if ($file=current($grep)) {
 							$ns=str_replace('/','\\',preg_replace('/^'.
-								preg_quote($auto,'/').'/','',
-								current($grep))).'\\';
+								preg_quote($auto,'/').'/','',$file)).'\\';
 							continue;
 						}
 						$ns.=$parts[0].'\\';
