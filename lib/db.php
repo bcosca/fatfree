@@ -870,7 +870,7 @@ class Axon extends Base {
 			trigger_error(self::TEXT_AxonConflict);
 			return;
 		}
-		$this->adhoc[$field]=array($expr,NULL);
+		$this->adhoc[$field]=array('('.$expr.')',NULL);
 	}
 
 	/**
