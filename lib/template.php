@@ -165,6 +165,12 @@ class F3markup extends Base {
 							}
 							else
 								$args=$var[2];
+							if (isset($match[2]) &&
+								method_exists(F3::get($match[1]),
+								$temp=str_replace('->','',$match[2])))
+								$str='array(F3::get('.
+									var_export($match[1],TRUE).'),'.
+									var_export($temp,TRUE).')';
 							$str='call_user_func_array('.
 								$str.',array'.$args.')';
 						}
