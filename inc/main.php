@@ -1831,13 +1831,6 @@ class Main extends F3instance {
 			'Object instantiation issue: '.Template::resolve('{{@x}}')
 		);
 
-		$this->set('x',new CustomObj);
-		$this->expect(
-			Template::resolve('{{@x}}')=='CustomObj',
-			'Object converted to string',
-			'Object conversion failed: '.Template::resolve('{{@x}}')
-		);
-
 		$this->set('func',
 			function($x) {
 				return 123;
@@ -1903,12 +1896,6 @@ class Main extends F3instance {
 			Template::resolve('{{@my_plans[plan][city_name]}}')==2,
 			'Got the right value of a deeply-nested array element',
 			'Incorrect evaluation of a deeply-nested array element'
-		);
-
-		$this->expect(
-			Template::resolve('{{@x.@q}}')=='CustomObj indeed',
-			'Mixing object and string produces expected result',
-			'Illegal concatenation: '.Template::resolve('{{@x.@q}}')
 		);
 
 		$out=Template::serve('template/layout.htm');
