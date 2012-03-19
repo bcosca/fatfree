@@ -37,28 +37,12 @@ class Log extends Base {
 	//@}
 
 	/**
-		Return TRUE if log file is locked before timer expires
-			@return boolean
-			@private
-	**/
-	private function ready() {
-		$time=microtime(TRUE);
-		while (!flock($this->handle,LOCK_EX)) {
-			if ((microtime(TRUE)-$time)>self::LOG_Timeout)
-				// Give up
-				return FALSE;
-			usleep(mt_rand(0,100));
-		}
-		return TRUE;
-	}
-
-	/**
 		Write specified text to log file
 			@param $text string
 			@public
 	**/
 	function write($text) {
-		if (!$this->ready()) {
+		if (!flock($this->handle,LOCK_EX|LOCK_NB)) {
 			// Lock attempt failed
 			trigger_error(self::TEXT_LogLock);
 			return;
