@@ -7,6 +7,7 @@ CHANGELOG
 *	stringify() streamlined
 *	Minor optimizations
 *	Workaround: PHP 5.4's gzinflate() triggers intermittent data errors
+*	Remove reference to non-existent class constant
 *	Bug fix: exists() causes persistent sessions
 *	Bug fix: set() COOKIE variable borked [[Bug #3489220]
 *	Bug fix: Duplicate statements in transactions [Bug #3467535]

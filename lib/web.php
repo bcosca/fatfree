@@ -269,6 +269,8 @@ class Web extends Base {
 		else {
 			if (!isset($url['port']))
 				$url['port']=80;
+			if (!isset($url['host']))
+				$url['host']=$_SERVER['SERVER_NAME'];
 			$target=$url['host'];
 		}
 		$socket=@fsockopen($target,$url['port'],$errno,$text);
@@ -345,10 +347,8 @@ class Web extends Base {
 			}
 		}
 		fclose($socket);
-		if ($info['timed_out']) {
-			trigger_error(self::TEXT_Timeout);
+		if ($info['timed_out'])
 			return FALSE;
-		}
 		if (PHP_SAPI!='cli') {
 			if ($gzip)
 				$response=gzinflate(substr($response,10));
