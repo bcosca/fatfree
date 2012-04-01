@@ -1,0 +1,2904 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+		<meta name="description" content="Fat-Free Framework is a powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!">
+		<meta name="keywords" content="fast modular easy simple lightweight PHP web framework MVC ORM Axon M2 Jig"/>
+		<link rel="stylesheet" href="theme/reset.css" />
+		<link rel="stylesheet" href="theme/screen.css" />
+		<link rel="icon" href="theme/favicon.ico" />
+		<link rel="shortcut icon" href="theme/favicon.ico" />
+		<title>PHP Fat-Free Framework: Home</title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>PHP Fat-Free Framework</h1>
+			</div>
+			<div class="main">
+				<div class="sidebar">
+					<div style="text-align:center; margin:15px 0;">
+						<h4 style="color:#000; font-size:22px; text-shadow:0 1px 1px #fff;">Stable Version</h4>
+						<h2 style="color:#f33; font-size:72px; line-height:72px; font-weight:bold; text-shadow:0 2px 1px #fff; margin:-10px 0 0 0; -moz-border-radius:10px;"><a href="http://sourceforge.net/projects/fatfree/files">2.0.9</a></h2>
+					</div>
+					<div class="submenu">
+						<p style="margin:0; height:90px;"><script id="_waubwk">var _wau = _wau || []; _wau.push(["map", "gews6wwlk4rw", "bwk", "180", "90", "night" , "default-red"]);(function() { var s=document.createElement("script");s.src="http://widgets.amung.us/map.js"; s.async=true; document.getElementsByTagName("head")[0].appendChild(s); })();</script></p>
+						<p style="text-align:center; color:#000; margin:0; font-size:9px; text-transform:uppercase; line-height:16px;">F3 Global Community</p>
+						<p>
+						<span><a href="#getting-started">Getting Started</a></span>
+						<span><a href="#routing-engine">Routing Engine</a></span>
+						<span><a href="#framework-variables">Framework Variables</a></span>
+						<span><a href="#views-templates">Views/Templates</a></span>
+						<span><a href="#forms-handler">Forms Handler</a></span>
+						<span><a href="#sql-handler">SQL Handler</a></span>
+						<span><a href="#data-mappers">Data Mappers</a></span>
+						<span><a href="#plug-ins">Plug-Ins</a></span>
+						<span><a href="#optimization">Optimization</a></span>
+						<span><a href="#unit-testing">Unit Testing</a></span>
+						<span><a href="#quick-reference">Quick Reference</a></span>
+						<span><a href="#migration-guide">Migration Guide</a></span>
+						<span><a href="#in-retrospect">In Retrospect</a></span>
+						<span><a href="#support-licensing">Support/Licensing</a></span>
+						</p>
+					</div>
+					<div style="text-align:center; margin:15px 0;">
+						<p style="color:#000; font-size:9px; text-transform:uppercase; margin:0; line-height:16px;">Follow us on Twitter</p>
+						<h4 style="color:#000; font-size:34px; text-shadow:0 1px 1px #fff; margin:0 0 30px 0;"><a href="http://twitter.com/phpfatfree" target="_blank">@phpfatfree</a></h4>
+					</div>
+					<div style="text-align:center; margin:15px 0;">
+						<p><object width="160" height="250"><param name="movie" value="http://widget.chipin.com/widget/id/7f94849c08008a3c"></param><param name="allowScriptAccess" value="always"></param><param name="wmode" value="transparent"></param><param name="event_title" value="Support%20Us"></param><param name="event_desc" value="Your%20PayPal%20donations%20help%20keep%20this%20open-souce%20project%20alive."></param><param name="color_scheme" value="red"></param><embed src="http://widget.chipin.com/widget/id/7f94849c08008a3c" flashVars="event_title=Support%20Us&event_desc=Your%20PayPal%20donations%20help%20keep%20this%20open-souce%20project%20alive.&color_scheme=red" type="application/x-shockwave-flash" allowScriptAccess="always" wmode="transparent" width="160" height="250"></embed></object></p>
+					</div>
+					<div style="text-align:center; margin:15px 0;">
+						<p style="margin:10px 0;"><img src="theme/osi.png"/></p>
+					</div>
+				</div>
+				<div class="content">
+					<h2>Welcome</h2>
+						<h4>Fat-Free Framework is a powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!</h4>
+						<p>Condensed in a single 55KB file, F3 gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing engine, i18n support for multilingual applications, HTML forms processor, integrated multilayer cache engine, spam and bandwidth theft protection, unit testing tools, and code profiler. It's so small and fast - it even has a throttle for controlling Web server traffic.</p>
+						<p>Whether you're a novice or an expert PHP programmer, F3 will get you up and running in no time. No unnecessary and painstaking installation procedures. No complex configuration required. No convoluted directory structures. It's all object-oriented, but you can use it as a procedural code library if you know nothing about OOP. There's no better time to start developing Web applications the easy way than right now!</p>
+						<p>No other PHP framework has three <a href="#data-mappers">object-relational mappers</a> for data abstraction and modeling:-</p>
+						<ul>
+						<li>Axon is F3's smart mini-ORM for SQL databases. It's just as lightweight as the framework, and it supports MySQL, SQLite, MSSQL/Sybase, dblib, and PostgreSQL. No configuration needed.</li>
+						<li>M2 is the <a href="http://www.mongodb.org/" target="_blank">MongoDB</a> mapper. F3 supports NoSQL off-the-shelf.</li>
+						<li>Think database engines are overkill, but you want a mapper to simplify data storage and retrieval? Jig is F3's native NoSQL implementation. It's a lightning-fast mini-ORM that uses flat files.</li>
+						</ul>
+						<p>If you don't mind getting grease on your hands, there's a plug-in for fine-tuning and direct interaction with SQL databases. That's not all. F3 is packaged with other optional plug-ins that extend its capabilities:-</p>
+						<ul style="column-count:2; column-gap:15px; -moz-column-count:2; -moz-column-gap:15px; -webkit-column-count:2; -webkit-column-gap:15px;">
+							<li>Fast and clean template engine,</li>
+							<li>Dynamic XML sitemaps,</li>
+							<li>Atom/RSS feed reader,</li>
+							<li><a href="http://en.wikipedia.org/wiki/CAPTCHA" target="_blank">CAPTCHA</a>, thumbnail and fake image generator,</li>
+							<li>On-the-fly Javascript/CSS compressor,</li>
+							<li><a href="http://en.wikipedia.org/wiki/Identicon" target="_blank">Identicons</a>,</li>
+							<li>User authentication,</li>
+							<li><a href="http://openid.net/" target="_blank">OpenID</a> (consumer),</li>
+							<li>Custom logger,</li>
+							<li>Network diagnostics,</li>
+							<li>Lightweight subsets of PHP's <code>mb_string</code> and <code>intl</code> extensions,</li>
+							<li>SMTP over SSL/TLS,</li>
+							<li>API wrappers for Google, Twitter, Yahoo! and Akismet,</li>
+							<li>Tools for communicating with other servers</li>
+							<li>ZIP archive manager,</li>
+							<li>And more!</li>
+						</ul>
+						<blockquote>
+						<h5>Unlike other frameworks, F3 aims to be usable - not usual.</h5>
+						<p>The philosophy behind the framework and its approach to the Model-View-Controller design pattern is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.</p>
+						</blockquote>
+					<div class="articles">
+			<h3>Version 2.0 Has Arrived</h3>
+		<div class="article">
+									<p>The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that took several months to develop and refine, version 2.0 is finally available for download. Still as user-friendly as before. Same lightweight footprint. Yet sturdier and more powerful than ever!</p>
+
+<p>It is highly recommended that users upgrade to this new version to take advantage of the latest features and significant performance improvements. Check out the <a href="#migration-guide">Migration Guide</a>.</p>
+					</div>
+			<h3>Reviews</h3>
+		<div class="article">
+									<p>If you're looking for independent reviews and articles about the Fat-Free Framework to learn more and find out how well it performs in comparison to other PHP frameworks, visit these pages:</p>
+
+<ul>
+<li><a href="http://www.laurencegellert.com/2011/06/memory-usage-in-php-frameworks/" target="_blank">Memory Usage in PHP Frameworks</a> by Laurence Gellert</li>
+<li><a href="http://dalcu.com/?p=3" target="_blank">PHP Frameworks Speed Test</a> by David Dalcu</li>
+<li><a href="http://leehblue.com/whats-the-best-php-framework/" target="_blank">What's the best PHP framework?</a> by Lee Blue</li>
+<li><a href="http://blog.ssokolow.com/archives/2011/11/13/my-impressions-of-fat-free-framework-for-php/" target="_blank">My impressions of Fat-Free Framework for PHP</a> and<br/><a href="target="_blank">Using Twig with Fat-Free Framework: Why and How</a> by Stephan Sokolow</li>
+<li><a href="http://www.willis-owen.co.uk/2011/09/blog-tutorial-with-fat-free-framework/" target="_blank">Blog Tutorial</a> by Richard Willis-Owen</li>
+<li><a href="http://www.phpbuilder.com/columns/php-fat-free-framework/Jason_Gilmore04052011.php3" target="_blank">Slim Down Your PHP Development</a> by W. Jason Gilmore</li>
+</ul>
+
+<p>F3 redefines the meaning of "lightweight", "easy to use", and "fast". All these in one tiny supercharged package!</p>
+					</div>
+		</div>
+					<a name="getting-started"><h2>Getting Started</h2></a>
+										<blockquote>
+
+<h5>A designer knows he has achieved perfection not when there is nothing left to add, but when there is nothing left to take away.</h5>
+
+<p style="text-align:right;">Antoine de Saint-Exupéry</p>
+
+</blockquote>
+
+<p>Fat-Free Framework makes it easy to build entire Web sites in a jiffy. With the same power and brevity as modern Javascript toolkits and libraries, F3 helps you write better-looking and more reliable PHP programs. One glance at your PHP source code and anyone will find it easy to understand, how much you can accomplish in so few lines of code, and how powerful the results are.</p>
+
+<p>F3 is one of the best documented frameworks around. Learning it costs next to nothing. No truck load of configuration options. No strict set of difficult-to-navigate directory structures and obtrusive programming steps just to display your first <code>'Hello, World'</code> in your browser. Fat-Free gives you a lot of freedom - and style - to get more work done with ease and in less time.</p>
+
+<p>F3's declarative approach to programming makes it easy for novices, OOP coders, and experts alike to understand PHP code. If you're familiar with the programming language Ruby, you'll notice the resemblance between Fat-Free and Sinatra micro-framework because they both employ a simple Domain-Specific Language for RESTful Web services. But unlike Sinatra and its PHP incarnations (Fitzgerald, Limonade, Glue - to name a few), Fat-Free goes beyond just handling routes and controllers (in Model-View-Controller parlance). Views can be in any form, such as plain text, HTML, and XML. The framework comes with a fast and easy-to-use template engine. F3 also works seamlessly with other template engines, including Twig, Smarty, and PHP itself. Models communicate with data mappers like Axon, Jig, M2, and the SQL helper for more complex interactions with various database engines. Other plug-ins extend the base functionality even more. It's a total Web development framework - with a lot of muscle!</p>
+
+<blockquote>
+
+<h5>Got an Existing 1.x-Based Application?</h5>
+
+<p>Upgrading to 2.0 isn't as painful as you might imagine. To find out how easy it is to transition from the old version of the framework to the latest release, read the <a href="#migration-guide">Migration Guide</a>.</p>
+
+</blockquote>
+					<div class="articles">
+			<h3>Enough Said - See For Yourself</h3>
+		<div class="article">
+									<p>Unpack the contents of <code>fatfree-2.0.x.zip</code> anywhere in your hard drive. By default, the framework file and optional plug-ins are located in the <code>lib/</code> path. Organize your directory structures any way you want. You may move the default folders to a path that's not Web-accessible for better security. Delete the plug-ins that you don't need. You can always restore them later and F3 will detect their presence automatically.</p>
+
+<blockquote>
+
+<h5>Important:</h5>
+
+<p>If your application uses APC, XCache, or a filesystem cache, clear all cache entries first before overwriting an older version of the framework with a new one.</p>
+
+</blockquote>
+
+<p>Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 5.3. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by older PHP versions. To find out, open your console (run <code>cmd.exe</code> if you're running Windows):-</p>
+
+<pre>/path/to/php -v</pre>
+
+<p>PHP will let you know which particular version you're running and you should get something that looks like this:-</p>
+
+<pre>PHP 5.3.5 (cli) (built: Jan  5 2011 20:29:28)
+Copyright (c) 1997-2010 The PHP Group
+Zend Engine v2.3.0, Copyright (c) 1998-2010 Zend Technologies
+</pre>
+
+<p>Upgrade if necessary and come back here if you've made the jump to PHP 5.3 or a later release. If you need a PHP 5.3+ hosting service provider, try one of these services:</p>
+
+<ul>
+	<li><a href="http://www.a2hosting.com/2461-15-1-72.html" target="_blank">A2 Hosting</a></li>
+	<li><a href="http://www.dreamhost.com/r.cgi?665472" target="_blank">DreamHost</a></li>
+	<li><a href="http://hostek.com/aff.php?aff=364&amp;plat=L" target="_blank">Hostek</a></span>
+	<li><a href="http://www.siteground.com/index.htm?referrerid=155694" target="_blank">SiteGround</a></li>
+</ul>
+
+<p>Don't forget to visit <a href="http://webhostingsearch.com/" target="_blank">WebHostingSearch.com</a> for the latest hosting reviews.</p>
+
+<p>If you're planning to release your F3-enabled project as open source, look no further. <a href="http://www.sourceforge.net">SourceForge</a> now provides PHP 5.3 hosting.</p>
+					</div>
+			<h3>Hello, World: The Less-Than-A-Minute Fat-Free Recipe</h3>
+		<div class="article">
+									<p>Time to start writing our first application:-</p>
+
+<pre>require_once 'path/to/base.php';
+F3::route('GET /','home');
+	function home() {
+		echo 'Hello, world!';
+	}
+F3::run();</pre>
+
+<p>Prepend <code>base.php</code> on the first line with the appropriate path. Save the above code fragment as <code>index.php</code> in your Web root folder. We've written our first Web page.</p>
+
+<p>The first command tells the PHP interpreter that you want the framework's functions and features available to your application. The <code>F3::route()</code> method informs Fat-Free that a Web page is available at the relative URL indicated by the slash (<code>/</code>). Anyone visiting your site located at <code>http://www.example.com/</code> will see the <code>'Hello, world!'</code> message because the URL <code>/</code> is equivalent to the root page. To create a route that branches out from the root page, like <code>http://www.example.com/inside/</code>, you can define another route with a simple <code>GET /inside</code> string.</p>
+
+<p>The route described above tells the framework to serve the page only when it receives a URL request using the HTTP GET method. More complex Web sites containing forms use other HTTP methods like POST, and you can also implement that as part of an <code>F3::route()</code> specification.</p>
+
+<p>If the framework sees an incoming request for your Web page located at the root URL <code>/</code>, it will automatically route the request to the <code>home()</code> function, which contains the code necessary to process the request and serve the appropriate HTML stuff. In this example, we just send the string <code>'Hello, world!'</code> to the user's Web browser.</p>
+
+<p>So we've established our first route. But that won't do much, except to let F3 know that there's a process that will handle it and there's some text to display on the user's Web browser. If you have a lot more pages on your site, you need to set up different routes for each group. For now, let's keep it simple. To instruct the framework to start waiting for requests, we issue the <code>F3::run()</code> command.</p>
+
+<blockquote>
+
+<h5>Object Mode</h5>
+
+<p>The latest F3 release introduces another way of writing the above code, which may appeal to those who prefer working with objects instead of invoking static methods:-</p>
+
+<pre>$main=require_once 'path/to/base.php';
+$main->route('GET /',
+	function() {
+		echo 'Hello, world!';
+	}
+);
+$main->run();</pre>
+
+</blockquote>
+					</div>
+			<h3>Can't Get the Example Running?</h3>
+		<div class="article">
+									<p>If you save <code>index.php</code> in a path other than the Web root (for example, <code>/root/myapp/index.php</code> where <code>/root</code> is your main HTML folder), make sure you change the route in the above example so it points to the path <code>GET /myapp</code> instead of <code>GET /</code>. The latter (incorrectly) instructs F3 to wait for an HTTP request at <code>http://localhost/</code>. Typing <code>http://localhost/myapp</code> in the address bar of your Web browser will call your application, but the router can't transfer control to the <code>GET /</code> route handler because it sees <code>GET /myapp</code> in the HTTP request. Obviously, they don't match - so the framework displays a 404 Not found message because there are no other routes available. If after changing the route and you're still having trouble getting this simple program to run on your server, take a look at the sample Apache configuration in the following section (along with the Nginx and Lighttpd equivalents).</p>
+					</div>
+		</div>
+					<a name="routing-engine"><h2>Routing Engine</h2></a>
+															<div class="articles">
+			<h3>Overview</h3>
+		<div class="article">
+									<p>Our first example wasn't too hard to swallow, was it? If you like a little more flavor in your Fat-Free soup, insert another route before the <code>F3::run()</code> command:-</p>
+
+<pre>F3::route('GET /about','about');
+	function about() {
+		echo 'Donations go to a local charity... us!';
+	}</pre>
+
+<p>You don't want to clutter the global namespace with too many function names? There's PHP 5.3+ to help you along. It allows you to write the code this way:-</p>
+
+<pre>F3::route('GET /about',
+	function() {
+		echo 'No subliminal messages here...';
+	}
+);</pre>
+
+<p>If you haven't learned about object-oriented programming yet, that's all right. Fat-Free can be used as a procedural code library and you can skip the next few paragraphs without missing a heartbeat.</p>
+
+<p>For developers proficient in OOP concepts:-</p>
+
+<pre>class webpage {
+	static function display() {
+		echo 'I cannot object to an object';
+	}
+}
+F3::route('GET /about','webpage::display');</pre>
+
+<p>Fat-Free recognizes different ways of mapping route handlers to OOP classes and methods:-</p>
+
+<pre>class webpage {
+	function display() {
+		echo 'A rose by any other name is still a rose';
+	}
+}
+F3::route('GET /about','webpage->display');
+
+// The last line is identical to:-
+// F3::route('GET /about',array(new webpage,'display'));</pre>
+					</div>
+			<h3>Routes and Tokens</h3>
+		<div class="article">
+									<p>As a demonstration of Fat-Free's powerful domain-specific language (DSL), you can specify a single route to handle different possibilities:-</p>
+
+<pre>F3::route('GET /brew/@count','drink');
+	function drink() {
+		echo F3::get('PARAMS["count"]').' bottles of beer on the wall.';
+	}</pre>
+
+<p>This example shows how we can specify a token <code>@count</code> to represent part of a URL. The framework will serve any request that matches the <code>/brew/</code> prefix, like <code>/brew/99</code>, <code>/brew/98</code>, etc. This will display <code>99 bottles of beer on the wall</code> and <code>98 bottles of beer on the wall</code>, respectively. Fat-Free will also accept a page request for <code>/brew/broken</code>. (Expect this to display <code>broken bottles of beer on the wall</code>.) When such a dynamic route is specified, Fat-Free automagically populates the global <code>PARAMS</code> array variable with the value of the captured strings in the URL. The <code>F3::get()</code> method inside the <code>drink()</code> function retrieves the value of a framework variable. You can certainly apply this method in your code as part of the presentation or business logic. But we'll discuss that in greater detail later.</p>
+
+<p>An alternative code for our previous example that uses the powerful template engine built into the framework is:-</p>
+
+<pre>F3::route('GET /brew/@count',
+	function() {
+		echo F3::resolve('&#123;&#123;@PARAMS.count&#125;&#125; bottles of beer on the wall.');
+	}
+);</pre>
+
+<p>Notice that Fat-Free understands array dot-notation. Instead of <code>@PARAMS["count"]</code> (which is prone to typo errors and unbalanced braces), you can use <code>@PARAMS.count</code> (similar to Javascript). This feature is limited to Fat-Free commands and templates. The framework won't change the way PHP works - PHP treats the dot as a string concatenation operator.</p>
+
+<p>You can use the asterisk (<code>*</code>) to accept any URL after the <code>/brew</code> route - if you don't really care about the rest of the path:-</p>
+
+<pre>F3::route('GET /brew/*','guzzle');
+	function guzzle() {
+		echo 'Enough beer! We always end up here.';
+	}</pre>
+
+<p>An important point to consider: You will get Fat-Free (and yourself) confused if you have both <code>GET /brew/@count</code> and <code>GET /brew/*</code> together in the same application. Use one or the other. Another thing: Fat-Free sees <code>GET /brew</code> as separate and distinct from the route <code>GET /brew/@count</code>. Each can have different route handlers.</p>
+					</div>
+			<h3>Dynamic Web Sites</h3>
+		<div class="article">
+									<p>Wait a second - in all the previous examples, we never really created any directory in our hard drive to store these routes. The answer: we don't have to. All F3 routes are virtual. They don't mirror our hard disk folder structure. If you have programs or static files (images, CSS, etc.) that do not use the framework - as long as the paths to these files do not conflict with any route defined in your application - your Web server software will deliver them to the user's browser, provided the server is configured properly.</p>
+					</div>
+			<h3>Sample Apache Configuration</h3>
+		<div class="article">
+									<p>If you're using Apache, make sure you activate the URL rewriting module (<code>mod_rewrite</code>) in your <code>apache.conf</code> (or <code>httpd.conf</code>) file. You should also create a <code>.htaccess</code> file containing the following:-</p>
+
+<pre>RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [L,QSA]</pre>
+
+<p>The script tells Apache that whenever an HTTP request arrives and if no physical file (<code>!-f</code>) or path (<code>!-d</code>) can be found, it should transfer control to <code>index.php</code>, which contains our main/front controller, and which in turn, invokes the framework.</p>
+
+<blockquote>
+
+<h5>RewriteBase, Sub-folders, and .htaccess</h5>
+
+<p>Adjust <code>RewriteBase</code> if your application is situated in a subfolder under the Web root. If the root is <code>/var/www/html</code> and your F3-based application is managed by <code>/var/www/html/subfolder/index.php</code>, then <code>RewriteBase</code> should point to <code>/subfolder</code>, instead of <code>/</code>.</p>
+
+<p>The <code>.htaccess</code> file containing the Apache directives stated above should always be in the same folder as <code>index.php</code>.</p>
+
+</blockquote>
+
+<p>You also need to set up Apache so it knows the physical location of <code>index.php</code> in your hard drive. A typical configuration is:-</p>
+
+<pre>DocumentRoot "/var/www/html"
+&lt;Directory "/var/www/html"&gt;
+	Options -Indexes FollowSymLinks Includes
+	AllowOverride All
+	Order allow,deny
+	Allow from All
+&lt;/Directory&gt;
+</pre>
+
+<p>If you're developing several applications simultaneously, a virtual host configuration is easier to manage:-</p>
+
+<pre>NameVirtualHost *
+
+&lt;VirtualHost *&gt;
+	ServerName site1.com
+	DocumentRoot "/var/www/site1"
+	&lt;Directory "/var/www/site1"&gt;
+		Options -Indexes FollowSymLinks Includes
+		AllowOverride All
+		Order allow,deny
+		Allow from All
+	&lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+
+&lt;VirtualHost *&gt;
+	ServerName site2.com
+	DocumentRoot "/var/www/site2"
+	&lt;Directory "/var/www/site2"&gt;
+		Options -Indexes FollowSymLinks Includes
+		AllowOverride All
+		Order allow,deny
+		Allow from All
+	&lt;/Directory&gt;
+&lt;/VirtualHost&gt;</pre>
+
+<p>Each <code>ServerName</code> (<code>site1.com</code> and <code>site2.com</code> in our example) must be listed in your <code>/etc/hosts</code> file. On Windows, you should edit <code>C:/WINDOWS/system32/drivers/etc/hosts</code>. A reboot might be necessary to effect the changes. You can then point your Web browser to the address <code>http://site1.com</code> or <code>http://site2.com</code>. Virtual hosts make your applications a lot easier to deploy.</p>
+					</div>
+			<h3>Sample Nginx Configuration</h3>
+		<div class="article">
+									<p>For <a href="http://nginx.org/en/" target="_blank">Nginx</a> servers, here's the recommended configuration (replace <code><i>ip_address:port</i></code> with your environment's FastCGI PHP settings):-</p>
+
+<pre>server {
+	root /var/www/html;
+	location / {
+		index index.php index.html index.htm;
+		if (!-f $request_filename) {
+			rewrite ^(.+)$ /index.php last;
+			break;
+		}
+	}
+	location ~ \.php$ {
+		fastcgi_pass <i>ip_address:port</i>;
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
+		include fastcgi_params;
+	}
+}</pre>
+					</div>
+			<h3>Sample Lighttpd Configuration</h3>
+		<div class="article">
+									<p><a href="http://www.lighttpd.net/" target="_blank">Lighttpd</a> servers are configured in a similar manner:-</p>
+
+<pre>$HTTP["host"] =~ "www\.example\.com$" {
+	url.rewrite-once = ( "^/(.*)$"=>"/index.php/$1" )
+}</pre>
+					</div>
+			<h3>Multiple Route Handlers/Function Chains</h3>
+		<div class="article">
+									<p>Back to our application code. Each route (the HTTP method and URL) is not limited to a single route handler. You can also define multiple handlers (also called function chains), as shown below:-</p>
+
+<pre>F3::route('GET /','rock; roll');
+	function rock() {
+		echo 'We rock!';
+	}
+	function roll() {
+		echo 'We roll...';
+	}</pre>
+
+<p>Having separate functions in a route gives you the ability to share code with other routes so you don't have to repeat code in each function:-</p>
+
+<pre>F3::route('POST /barrel','rock; rattle; roll');
+	function rattle() {
+		echo 'What\'s a rattle?';
+	}</pre>
+
+<p>Here we simply define the route handler <code>rattle()</code> because we've declared <code>rock()</code> and <code>roll()</code> in a previous route. Also, if you noticed, we used the <code>POST</code> method in our last example. F3 can handle other HTTP request methods like <code>POST</code>, <code>HEAD</code>, <code>PUT</code>, and <code>DELETE</code>. We're not limited to <code>GET</code> requests.</p>
+
+<blockquote>
+
+<h5>Note:</h5>
+<p>The semi-colon (<code>;</code>), comma (<code>,</code>), or pipe (<code>|</code>) may be used interchangeably as separators in function chains.</p>
+
+</blockquote>
+					</div>
+			<h3>Import Files</h3>
+		<div class="article">
+									<p>One more thing. Did we mention that Fat-Free also allows PHP files as route handlers? They're called F3 import files. Just specify the file name:-</p>
+
+<pre>F3::route('POST /soda','shake.php; shriek.php; rattle; roll');</pre>
+
+<p>This will run <code>shake.php</code> and <code>shriek.php</code> followed by the code contained in the <code>rattle()</code> and <code>roll()</code> functions.</p>
+
+<p>This is one way of managing large applications. In consonance with the Model-View-Controller (MVC) pattern, this can help you compartmentalize routing/control, business logic and the user interface in your applications. You can have one file that handles routing/control of everything. Your other files will be either directly related to business logic or presentation. So you can imagine this singular file - the main (or front) controller - to be a rule set of all routes:-</p>
+
+<pre>F3::set('IMPORTS','inc/');
+F3::route('GET /','main.php; home.php');
+F3::route('GET /login','main.php; login.php');
+F3::route('GET /wiki/@term','main.php; auth.php; wikiterm.php');
+F3::route('GET /blog/@page','main.php; auth.php; blogpage.php');
+F3::run();</pre>
+
+<p>Now, that's organized. In step with MVC, one import file can implement business logic while another manages the user interface, such as an HTML page. We'll discuss this separation in greater detail in the following section.</p>
+
+<p>There's one important difference between PHP's <code>include_once/require_once</code> (or <code>include/require</code>) and Fat-Free's import files: you might have the impression that local PHP variables used in one imported file are persistent and become available to the next imported file in the chain. They won't. Unlike the way PHP handles the <code>include/require</code> and <code>include_once/require_once</code> directives, F3 runs each imported file in the chain <code>'first.php; second.php; third.php'</code> in a sandbox.</p>
+
+<p>Import files running in scoped environments (sandboxes) give application development teams a worry-free approach to coding. There is no way one programmer will clobber a variable or function with the same name defined by another. If you need to share function libraries with other members of your team, you can still use the PHP <code>include</code> or <code>require</code> command sets within each independent imported file.</p>
+
+<p>Before you use Fat-Free import files/chains, you have to tell the framework where to look for your import files, like <code>inc/</code> in our example. The framework uses several global variables for searching files to help keep your application directory structure clean and organized.</p>
+
+<blockquote>
+
+<h5>A Quick Look at Framework Variables</h5>
+
+<p>To facilitate the transfer of data between models, views, and controllers, Fat-Free maintains a registry (or symbol table) of variables in your application.</p>
+
+<p>If you have to pass variables/values between the MVC components, you use:-</p>
+
+<pre>F3::set('variable',value)</pre>
+
+<p>To display the value of a framework variable, you can do this:-</p>
+
+<pre>echo F3::get('variable');</pre>
+
+</blockquote>
+
+<p>Use the global variable <code>IMPORTS</code> to let Fat-Free know the location of your import files. That's done by setting the global <code>IMPORTS</code> variable - in our example: <code>F3::set('IMPORTS','inc/');</code>. The path specified may be relative to your Web root, or an absolute path - which is particularly useful when you don't want your import files under the Web root and thereby accessible via a static route (an open invitation to hackers). If left unchanged, <code>IMPORTS</code> is set to the value of PHP's <code>$_SERVER['DOCUMENT_ROOT']</code> (your Web root).</p>
+					</div>
+			<h3>Calling Route Handlers</h3>
+		<div class="article">
+									<p>To import a file programmatically, invoke the <code>F3::call()</code> method:-</p>
+
+<pre>F3::call('home.php');</pre>
+
+<p>The framework will look for <code>home.php</code> in your <code>IMPORTS</code> folder, then runs it in a sandbox. Again, if you have an import file calling another import file and you want to pass variables from parent to child, use the <code>F3::set()</code> and <code>F3::get</code> methods. Also, like <code>F3::route()</code>, if the string argument specified in the <code>F3::call()</code> method refers to a PHP script, it will import the file.
+
+<pre>F3::call('home');
+	function home() {
+		// native function call that runs in isolation
+		// with its own scope (in essence, a sandbox!)
+	}</pre>
+
+<p>Like the <code>F3::route()</code> method, you can also programmatically call daisy-chained functions and imported files:-</p>
+
+<pre>F3::call('include1.php; include2.php'); // calls include1.php and include2.php
+F3::call('func1; func2'); // executes func1() followed by func2()
+F3::call('func; proc.php'); // runs func() then proc.php</pre>
+
+<blockquote>
+
+<h5>Class/Object-Based Route Handlers</h5>
+
+<p>For object-oriented programmers, <code>F3::call()</code> is unnecessary. You can invoke any class or object using the familiar <code>class::method()</code> or <code>object->method()</code> syntax. And you don't need a bunch of <code>include</code> or <code>require</code> statements to load your classes. Fat-Free has a way of loading classes only at the time you need them, so they don't gobble up more memory than a particular segment of your application needs. Auto-loading classes are described in a later section.</p>
+
+</blockquote>
+					</div>
+			<h3>Rerouting</h3>
+		<div class="article">
+									<p>So let's get back to coding. You can declare a page obsolete and redirect your visitors to another site:-</p>
+
+<pre>F3::route('GET /obsoletepage',
+	function() {
+		F3::reroute('http://www.example2.com');
+	}
+);</pre>
+
+<p>If someone tries to access <code>www.example.com/obsoletepage/</code>, the framework redirects the user to the URL: <code>www.example2.com/</code> as shown in the above example.</p>
+
+<p>Rerouting can be particularly useful when you need to do some maintenance work on your site. You can have a route handler that informs your visitors that your site is offline for a short period. A practical application of <code>F3::reroute()</code> is shortening URLs. You'll find a complete working example in the Sourceforge download page.</p>
+
+<p>HTTP redirects are expensive. As much as possible, refrain from using <code>F3::reroute()</code> to send a user to another page on the same Web site. Direct the flow of your application by using <code>F3::call()</code> or by invoking the function or method that handles the target route. However, calling the function, method or import file associated with a route instead of using HTTP redirection will not change the URL on the address bar of the user's Web browser. If this is not the behavior you want and you really need to send a user to another page, in instances like successful submission of a form or after a user has been authenticated, Fat-Free sends an HTTP 303 header. For all other attempts to reroute to another page or site, the framework sends an HTTP 301 header.</p>
+					</div>
+			<h3>Triggering a 404</h3>
+		<div class="article">
+									<p>At runtime, Fat-Free automatically generates an HTTP 404 error whenever it sees that an incoming HTTP request does not match any of the routes defined in your application. However, there are instances when you need to trigger it yourself.</p>
+
+<p>Take for instance a route defined as <code>GET /dogs/@breed</code>. Your application logic may involve searching a database and attempting to retrieve the record corresponding to the value of <code>@breed</code> in the incoming HTTP request. Since Fat-Free will accept any value after the <code>/dogs/</code> prefix because of the presence of the <code>@breed</code> token, displaying an HTTP 404 message programmatically becomes necessary when the program doesn't find any match in our database. To do that, use the following command:-</p>
+
+<pre>F3::error(404);</pre>
+					</div>
+			<h3>Representational State Transfer (REST) and Classes/Objects</h3>
+		<div class="article">
+									<p>Fat-Free's architecture is based on the concept that HTTP URIs represent abstract Web resources (not limited to HTML) and each resource can move from one application state to another. Here's an example of a REST interface:-</p>
+
+<pre>F3::set('IMPORTS','inc/');
+F3::route('GET /cart/@item','showitem.php');
+F3::route('POST /cart/@item','additem.php');
+F3::route('PUT /cart/@item','updateitem.php');
+F3::route('DELETE /cart/@item','deleteitem.php');
+F3::run();</pre>
+
+<p>And the alternative object-oriented code:-</p>
+
+<pre>class item {
+	function get() {
+		// same as showitem.php
+	}
+	function post() {
+		// same as additem.php
+	}
+	function put() {
+		// same as updateitem.php
+	}
+	function delete() {
+		// same as deleteitem.php
+	}
+}
+
+F3::set('IMPORTS','inc/');
+F3::map('/cart/@item','item');
+F3::run();</pre>
+
+<p>Fat-Free's <code>F3::map()</code> method provides a REST interface by mapping routes to the equivalent methods of an object or a PHP class. If your application receives an incoming HTTP request like <code>GET /cart/123</code>, Fat-Free will automatically transfer control to the object's or class' get method.</p>
+
+<blockquote>
+
+<h5>Note:</h5>
+<p>Not all browsers implement the HTTP <code>PUT</code> and <code>DELETE</code> methods, so use these in your routes only if you have a good understanding of your user's environment.</p>
+
+</blockquote>
+					</div>
+			<h3>The F3 Autoloader</h3>
+		<div class="article">
+									<p>With Fat-Free, you don't have to write a long list of <code>include</code> or <code>require</code> statements just to load PHP classes saved in different files and different locations. The framework can do this automatically for you. Just save your files (one class per file) in a folder and tell the framework to automatically load the appropriate file once you invoke a method in the class:-</p>
+
+<pre>F3::set('AUTOLOAD','autoload/');</pre>
+
+<p>You can assign a different location for your autoloaded classes by changing the value of the <code>AUTOLOAD</code> global variable. You can also have multiple autoload paths. If you have your classes organized and in different folders, you can instruct the framework to autoload the appropriate class when a static method is called or when an object is instantiated. Modify the AUTOLOAD variable this way:-</p>
+
+<pre>F3::set('AUTOLOAD','admin/autoload/; user/autoload/; default/');</pre>
+
+<p>In the same way that class constructors are called when objects are instantiated, F3 also has an <code>onLoad()</code> event listener for classes with static methods so you can define an event handler for bootstrapping/initializing your class. <code>onload()</code> is executed only once: the first time you call any static method inside the class.</p>
+
+<blockquote>
+
+<h5>Important:</h5>
+<p>Except for the <code>.php</code> extension, the class name and file name must be identical, for the framework to autoload your class properly.</p>
+
+</blockquote>
+					</div>
+			<h3>Working with Namespaces</h3>
+		<div class="article">
+									<p><code>AUTOLOAD</code> allows class hierarchies to reside in similarly-named subfolders, so if you want the framework to autoload a PHP 5.3 namespaced class that's invoked in the following manner:-</p>
+
+<pre>F3::set('AUTOLOAD','autoload/');
+$obj=new gadgets\ipad;
+// or gadgets\ipad::start();</pre>
+
+<p>You can create a folder hierarchy that follows the same structure:-</p>
+
+<pre>autoload/gadgets/ipad.php</pre>
+
+<p><code>ipad.php</code> should have the following code structure:-</p>
+
+<pre>namespace gadgets;
+
+class ipad {
+	static function start() {
+	}
+}
+</pre>
+
+<blockquote>
+
+<h5>New in 2.0</h5>
+
+<p>The latest release provides an alternative namespacing scheme for those who prefer to store all autoloaded classes in a single folder. Instead of a directory-based hierarchy like <code>autoload/gadgets/android.php</code>, and <code>autoload/gadgets/ipad.php</code>, you can use a flat structure like <code>autoload/gadgets_android.php</code> and <code>autoload/gadgets_ipad.php</code>.</p>
+					</div>
+			<h3>Routing to a Namespaced Class</h3>
+		<div class="article">
+									<p>F3, being a namespace-aware framework, allows you to use a method in namespaced class as a route handler, and there are several ways of doing it. To call a static method:-</p>
+
+<pre>F3::set('AUTOLOAD','classes/');
+F3::route('GET /','main\home::show');</pre>
+
+<p>The above code will invoke the <code>show()</code> method of the class <code>home</code> within the <code>main</code> namespace.</p>
+
+<p>If you prefer to work with objects:-</p>
+
+<pre>F3::route('GET /','main\home->show');</pre>
+
+<p>will instantiate the <code>home</code> object and call the <code>show()</code> method.</p>
+
+					</div>
+			<h3>Event Handlers</h3>
+		<div class="article">
+									<p>For OOP coders, F3 has a couple of routing event handlers that might help you improve the flow and structure of controller classes.</p>
+
+<p>Say you have a route defined as follows:-</p>
+
+<pre>F3::route('GET /','main->home');</pre>
+
+<p>If the application receives an HTTP request matching the above route, F3 instantiates <code>main</code> as an object. But before executing the <code>home()</code> method, the framework looks for a method in the <code>main</code> class named <code>beforeRoute()</code>. In case it's found, F3 runs the code contained in the <code>beforeRoute()</code> event handler before transferring control to the <code>home()</code> method. Once this is accomplished, the framework looks for an <code>afterRoute()</code> event handler in the <code>main</code> class. Like <code>beforeRoute()</code>, the method gets executed if it's defined.</p>
+					</div>
+			<h3>Dynamic Route Handlers</h3>
+		<div class="article">
+									<p>Here's another F3 goodie:-</p>
+
+<pre>F3::route('GET /products/@action','&#123;&#123;@PARAMS["action"]&#125;&#125;');</pre>
+
+<p>If your application receives a request for, say, <code>/products/itemize</code>, F3 will extract the <code>itemize</code> string from the URL and store this value in the <code>PARAMS</code> array variable, <code>action</code> element. Since the route handler is defined as a token referencing the value of <code>PARAMS["action"]</code>, F3 will look for a <code>itemize()</code> function and execute it.</p>
+
+<p>OOP-based dynamic route handlers may also be used:-</p>
+
+<pre>// static method
+F3::route('GET /public/@genre','Main::&#123;&#123;@PARAMS.genre&#125;&#125;');
+// object mode
+F3::route('GET /public/@controller/@action','&#123;&#123;@PARAMS.controller&#125;&#125;->&#123;&#123;@PARAMS.action&#125;&#125;');
+// global variable
+F3::route('GET /public/@controller','&#123;&#123;@PARAMS.controller&#125;&#125;->&#123;&#123;@GET.view&#125;&#125;');</pre>
+
+<p>F3 triggers a <code>404 Not Found</code> error at runtime if it cannot transfer control to the class or method associated with the current route, e.g. <code>$_GET['view']</code> doesn't exist, or undefined <code>action()</code> method, or the value of <code>@controller</code> does not map to any defined class.</p>
+					</div>
+		</div>
+					<a name="framework-variables"><h2>Framework Variables</h2></a>
+															<div class="articles">
+			<h3>Basic Use</h3>
+		<div class="article">
+									<p>Variables defined in Fat-Free are global, i.e. they can be accessed by any MVC component. Framework globals are not identical to PHP globals. An F3 variable named <code>content</code> is not identical to PHP's <code>$content</code>. F3 is a domain-specific language in its own right and maintains its own separate symbol table for system and application variables. The framework, like every well-designed object-oriented program, does not pollute the PHP global namespace with constants, variables, functions or classes that might conflict with any application. Unlike other frameworks, F3 does not use PHP's <code>define()</code> statement. All framework constants are confined to classes.</p>
+
+<p>To assign a value to a Fat-Free global:</p>
+
+<pre>F3::set('var',value)</pre>
+
+<blockquote>
+
+<h5>Note:</h5>
+<p>Fat-Free is so versatile, its variables accept all PHP data types, including objects and anonymous functions.</p>
+
+</blockquote>
+
+<p>To retrieve the value of a framework variable named <code>var</code>:-</p>
+
+<pre>F3::get('var')</pre>
+
+<p>To remove a Fat-Free variable from memory if you no longer need it (discard it so it doesn't interfere with your other functions/methods), use the method:-</p>
+
+<pre>F3::clear('var')</pre>
+
+<p>To find out if a variable has been previously defined:-</p>
+
+<pre>F3::exists('variable')</pre>
+
+<blockquote>
+
+<h5>Object Mode</h5>
+<p>F3 can also be treated as an object, instead of an ordinary class library with static methods:-</p>
+
+<pre>$app=require 'lib/base.php';
+$app->set('AUTOLOAD','classes/');
+$app->route('GET /','Main->home');
+$app->run();</pre>
+
+<p>The contents of the <code>classes/main.php</code> file can be something like:-</p>
+
+<pre>class Main extends F3instance {
+	function home() {
+		$this->set('greeting','Hello, world');
+	}
+}</pre>
+
+<p>Notice that by extending the <code>F3instance</code> class, PHP's <code>$this</code> pseudo-variable can be used as a substitute for the <code>F3</code> class prefix. Thus, the behavior of <code>$this->set()</code> is identical to the <code>F3::set()</code> static call. All framework methods (except plug-ins) can be invoked in this manner. The choice is yours.</p>
+
+</blockquote>					</div>
+			<h3>Globals</h3>
+		<div class="article">
+									<p>F3 maintains its own symbol table for framework and application variables, which are independent of PHP's. Some variables are mapped to PHP globals: Fat-Free's <code>SESSION</code> is equivalent to <code>$_SESSION</code>, and <code>REQUEST</code> maps to <code>$_REQUEST</code>. Use of framework variables is recommended, instead of PHP's, to help you with data transfer across different Fat-Free import files, functions, classes and methods. They also have other advantages:-</p>
+
+<ul>
+	<li>You can use framework variables directly in your templates.</li>
+	<li>You don't have to instruct PHP to reference a variable outside the current scope using a <code>global</code> keyword inside each function or method. All F3 variables are global.</li>
+	<li>Setting the Fat-Free equivalent of a PHP global like <code>SESSION</code> also changes PHP's <code>$_SESSION</code>. Altering the latter also alters the framework counterpart.</li>
+	<li>Fat-Free automates session management. Assigning or retrieving a value in F3's <code>SESSION</code> variable auto-starts the session. If you use <code>$_SESSION</code> (or session-related functions) instead of the framework variable <code>SESSION</code>, your application becomes responsible for managing sessions.</li>
+</ul>
+
+<p>There are several global variables used internally by Fat-Free, and you can read their values as well as change some of them. Be sure you know what you're doing. Altering some Fat-Free global variables may result in unexpected framework behavior.</p>
+
+<p>The framework has several variables to help you keep your files and directory structures organized. We've seen how we can link routes to import files, and the <code>IMPORTS</code> global variable is used by Fat-Free to locate them. There's a <code>UI</code> global variable, which contains the path pointing to the location of your HTML views/templates. <code>FONTS</code> is another variable containing the path to your CAPTCHA fonts (discussed in a later section). The default value of these variables is your Web root. You may replace the value of any of these variables with an absolute path or a directory relative to your Web root.</p>
+
+<p>Refer the the <a href="/page/quick-reference">Quick Reference</a> if you need a comprehensive list of F3 framework variables.</p>
+					</div>
+			<h3>Naming Rules</h3>
+		<div class="article">
+									<p>A framework variable may contain any number of letters, digits and underscores. It must start with an alpha character and should have no spaces. Variable names are case-sensitive.</p>
+
+<p>F3 uses all-capital letters for internal global variables. Nothing stops you from using variable names consisting of all-caps in your own program, but as a general rule, stick to lowercase (or camelCase) when you set up your own variables so you can avoid any possible conflict with current and future framework releases.</p>
+
+<p>You should not use PHP reserved words like <code>if</code>, <code>for</code>, <code>class</code>, etc. as framework variable names. These may cause unpredictable results.</p>
+					</div>
+			<h3>Working with String and Array Variables</h3>
+		<div class="article">
+									<p>F3 provides a number of tools to help you with framework variables. To concatenate one string value to another, there's <code>F3::concat()</code>:-</p>
+
+<pre>F3::set('a','fire');
+F3::concat('a','cracker');
+echo F3::get('a'); // returns the string 'firecracker'</pre>
+
+<p>The <code>F3::copy()</code> method copies the contents of one framework variable to another:-</p>
+
+<pre>F3::copy('a','b');
+echo F3::get('b'); // returns the same string: 'firecracker'</pre>
+
+<p>F3 also provides some base methods for working with array variables:-</p>
+
+<pre>F3::set('colors',array('red','blue','yellow'));
+
+F3::push('colors','green'); // works like PHP's array_push()
+echo F3::pop('colors'); // returns 'green'
+F3::unshift('colors','purple'); // similar to array_unshift()
+echo F3::shift('colors'); // returns 'purple'
+
+F3::set('grays',array('light','dark'));
+
+$result=F3::merge('colors','grays'); // merges the two arrays</pre>
+					</div>
+			<h3>Do-It-Yourself Directory Structures</h3>
+		<div class="article">
+									<p>Unlike other frameworks that have rigid folder structures, F3 gives you a lot of flexibility. You can have a folder structure that looks like this (parenthesized words in all-caps represent the F3 framework variables that need tweaking):-</p>
+
+<pre>/ (your Web root where index.php is located)
+	cache/ (CACHE)
+	fonts/ (FONTS)
+	inc/ (IMPORTS)
+	lib/ (you can store base.php here)
+	templates/ (GUI or UI)
+		css/
+		js/
+	tmp/ (TEMP)</pre>
+
+<p>Feel free to organize your files and directories any way you want. Just set the appropriate F3 global variables. If you want a really secure site, Fat-Free even allows you to store all your files in a non-Web-accessible directory. The only requirement is that you leave <code>index.php</code> in your Web root and your public files, like CSS, JavaScript, images, etc. The <code>.htaccess</code> file should also be in your Web root if you're using Apache.</p>
+					</div>
+			<h3>About the F3 Error Handler</h3>
+		<div class="article">
+									<p>Fat-Free generates its own error pages, with stack traces to help you with debugging. Here's an example:-</p>
+
+<blockquote>
+
+<p><span style="font-size:1.25em; font-weight:bold;">Internal Server Error</span><br/>
+<i>The configuration file test.cfg was not found</i></p>
+<p>#0 var/html/dev/index.php:16 F3::config('test.cfg')</p>
+
+</blockquote>
+
+<p>If you feel it's a bit too plain or wish to do other things when the error occurs, you may create your own custom error handler:-</p>
+
+<pre>
+F3::set('ONERROR','myErrorHandler');
+	function myErrorHandler() {
+		// custom error handler code goes here
+		// use this if u want to display errors in a
+		// format consistent with your site's theme
+	}
+</pre>
+
+<p>F3 maintains a global variable containing the details of the latest error that occurred in your application. The <code>ERROR</code> variable is structured as follows:-</p>
+
+<pre>
+ERROR['code'] - displays the error code (404, 500, etc.)
+ERROR['title'] - header and page title
+ERROR['text'] - error context
+ERROR['trace'] - stack trace
+</pre>
+
+<p>Once your application is ready for release, insert the following command somewhere in your application's bootstrap sequence:-</p>
+
+<pre>
+F3::set('DEBUG',0);
+</pre>
+
+<p>This will suppress the stack trace output in any system-generated HTML error page (because it's not meant to be seen by your site visitors).</p>
+
+<p><code>DEBUG</code> can have values ranging from 0 (stack trace suppressed) to 3 (most verbose).</p>
+
+<blockquote>
+
+<h5>Don't forget!</h5>
+<p>Stack traces may contain paths and file names. You might expose your Web site to unnecessary security risks if you fail to set the <code>DEBUG</code> global variable properly.</p>
+
+</blockquote>
+					</div>
+			<h3>Variable Variables</h3>
+		<div class="article">
+									<p>F3 allows you to use tokens and expressions with both <code>F3::get()</code> and <code>F3::set methods</code>. Using an F3 expression on the left-hand side of a framework variable assignment can give you powerful data manipulation capabilities. Take a look at the following:-</p>
+
+<pre>F3::set('a',123); // a=123
+F3::set('b','c'); // b='c'
+F3::set('c','whatever'); // c='whatever'
+F3::set('&#123;&#123;@b&#125;&#125;','wherever'); // c='wherever'
+F3::set('&#123;&#123;@b&#125;&#125;','&#123;&#123;@a+1&#125;&#125;'); // c='124'
+F3::set('&#123;&#123;@b&#125;&#125;',F3::get('a')+1); // c=124</pre>
+
+<p>Take note of the difference in results between the last two lines. Remember,F3 always converts expressions and tokens enclosed in double-braces to strings. In contrast, <code>F3::get()</code> preserves data types.</p>
+					</div>
+			<h3>Configuration Files</h3>
+		<div class="article">
+									<p>If your application needs to be user-configurable, F3 provides a handy method for reading configuration files to set up your application. This way, you and your users can tweak the application without touching a bit of code.</p>
+
+<p>Instead of creating a PHP script that contains the following sample code:-</p>
+
+<pre>F3::set('num',123);
+F3::set('str','abc');
+F3::set('hash',array('x'=>1,'y'=>2,'z'=>3));
+F3::set('list',array(7,8,9));
+F3::set('mix',array('this',123.45,FALSE));</pre>
+
+<p>You can construct a configuration file that does the same thing:-</p>
+
+<pre>[globals]
+num=123
+; this is a comment
+str=abc
+; here's another way of assigning strings:-
+; str="abc"
+hash.x=1
+hash.y=2
+hash.z=3
+; array assignments like these are also accepted:-
+; hash[x]=1
+; hash[y]=2
+; hash[z]=3
+list=7,8,9
+mix="this",123.45,FALSE</pre>
+
+<p>Instead of the lengthy <code>F3::set()</code> statements in your code, you can instruct the framework to load a configuration file as code substitute. Let's save the above text as <code>setup.cfg</code>. We can then call it with a simple:-</p>
+
+<pre>F3::config('setup.cfg');</pre>
+
+<p>Don't worry about performance. F3 automatically converts the configuration file to PHP code and uses the built-in cache engine to speed up code execution.</p>
+
+<p>You can also save a long series of Fat-Free HTTP routes in like manner:-</p>
+
+<pre>[routes]
+GET /=home
+GET /404=app::page404
+GET /@series=func1;func2;func3</pre>
+
+<p>The <code>[globals]</code> and <code>[routes]</code> section headers are required. You can combine both sections in a single configuration file - although having <code>[routes]</code> in a separate file is recommended. You wouldn't want anybody meddling with your routing logic.</p>
+
+<p>String values need not be quoted, unless you want leading or trailing spaces included. If a comma should be treated as part of a string, enclose the string using double-quotes - otherwise, the value will be treated as an array (the comma used as an array element separator).</p>
+					</div>
+		</div>
+					<a name="views-templates"><h2>Views/Templates</h2></a>
+															<div class="articles">
+			<h3>Separation of Concerns</h3>
+		<div class="article">
+									<p>A user interface like an HTML page should be independent of the underlying PHP code related to routing and business logic. This is fundamental to the MVC paradigm. A basic revision like converting <code>&lt;h3&gt;</code> to <code>&lt;p&gt;</code> should not demand a change in your application code. In the same manner, transforming a simple route like <code>GET /about</code> to <code>GET /about-us</code> should not have any effect on your user interface (the view) and business logic (the model).</p>
+
+<p>Mixing any or all of the MVC components in a single file, like spaghetti coding, makes future application maintenance a nightmare.</p>
+					</div>
+			<h3>PHP as a Template Engine</h3>
+		<div class="article">
+									<p>F3 supports PHP as a template engine. Take a look at this HTML fragment saved as <code>template.htm</code>:-.</p>
+
+<pre>&lt;p&gt;Hello, &lt;?php echo F3::get('name'); ?&gt;!&lt;/p&gt;</pre>
+
+<p>If short tags are enabled on your server, this should work too:-</p>
+
+<pre>&lt;p&gt;Hello, &lt;?=F3::get('name')?&gt;&lt;/p&gt;</pre>
+
+<p>To display this template, you can have PHP code that looks like this (saved in a separate file, of course):-</p>
+
+<pre>require_once 'lib/base.php';
+F3::route('GET /','main');
+	function main() {
+		F3::set('name','world');
+		echo F3::render('template.htm');
+	}
+F3::run();</pre>
+
+<p>The only issue with embedding PHP code in your templates is the conscious effort needed to stick to MVC principles. Nothing stops you from inserting application logic into the data presentation layer.</p>
+					</div>
+			<h3>A Quick Look at the F3 Template Language</h3>
+		<div class="article">
+									<p>As an alternative to PHP, you can use F3's own template engine. The above HTML fragment can be rewritten as:-</p>
+
+<pre>&lt;p&gt;Hello, &#123;&#123;@name&#125;&#125;!&lt;/p&gt;</pre>
+
+<p>and the code needed to view this template:-</p>
+
+<pre>require_once 'lib/base.php';
+F3::route('GET /','main');
+	function main() {
+		F3::set('name','world');
+		echo Template::serve('template.htm');
+	}
+F3::run();</pre>
+
+<p>Like routing tokens used for catching variables in URLs (still remember the <code>GET /brew/@count</code> example in the previous section?), F3 template tokens begin with the <code>@</code> symbol followed by a series of letters and digits enclosed in curly braces. The first character must be alpha. Template tokens have a one-to-one correspondence with framework variables. The framework automatically replaces a token with the value stored in a variable of the same name.</p>
+
+<p>In our example, F3 replaces the <code>@name</code> token in our template with the value we assigned to the name variable. At runtime, the output of the above code will be:-</p>
+
+<pre>&lt;p&gt;Hello, world&lt;/p&gt;</pre>
+
+<blockquote>
+
+<h5>Worried about performance of F3 templates?</h5>
+
+<p>At runtime, the framework parses and converts an F3 template to PHP code the first time it's displayed via <code>Template::serve()</code>. The framework then uses this optimized code in all subsequent calls. Hence, performance should be the same as PHP templates, if not better due to code optimization done by the template compiler.<p>
+
+<p>F3 will render your template even faster if you have APC or XCache available on your server. If you're still not satisfied (and if you have the access privileges to modify your server's PHP settings), try enabling both <code>allow_url_fopen</code> and <code>allow_url_include</code>.</p>
+
+</blockquote>
+
+<p>Framework variables can hold any PHP data type. However, usage of non-scalar data types in F3 templates may produce strange results. Expressions will always be evaluated and converted to string. You should limit your user interface variables to simple string, integer, boolean or float values.</p>
+
+<p>But what about arrays? The Fat-Free Framework recognizes arrays and you can use them in your templates. You can have something like:-</p>
+
+<pre>&lt;p&gt;&#123;&#123;@buddy[0]&#125;&#125;, &#123;&#123;@buddy[1]&#125;&#125;, and &#123;&#123;@buddy[2]&#125;&#125;&lt;/p&gt;</pre>
+
+<p>And populate the <code>@buddy</code> array in your PHP code before serving the template:-</p>
+
+<pre>F3::set('buddy',array('Tom','Dick','Harry'));</pre>
+
+<p>However, if you simply insert <code>&#123;&#123;@buddy&#125;&#125;</code> in your template, Fat-Free will replace the token with <code>Array</code> because it converts the token to a string, in much the same way that PHP displays the string <code>Array</code> when you try to <code>echo</code> a variable containing such type.</p>
+
+<p>We could have written the above template fragment using F3 array dot-notation (which looks cleaner):</p>
+
+<pre>&#123;&#123;@buddy.0&#125;&#125;, &#123;&#123;@buddy.1&#125;&#125;, and &#123;&#123;@buddy.2&#125;&#125;</pre>
+
+<p>Notice that an F3 template is not as verbose as its short tag equivalent:-</p>
+
+<pre>&lt;?=F3::get('buddy.0')?&gt;, &lt;?=F3::get('buddy.1')?&gt;, and &lt;?=F3::get('buddy.2')?&gt;</pre>
+					</div>
+			<h3>Template Expressions</h3>
+		<div class="article">
+									<p>F3 allows you to embed expressions in templates. These expressions may take on various forms, like arithmetic calculations, boolean expressions, PHP constants, etc. Here are a few examples:-</p>
+
+<pre>&#123;&#123;2*(@page-1)&#125;&#125;
+&lt;option value="F" &#123;&#123;@active?'selected="selected"':''&#125;&#125;>Female&lt;/option&gt;
+&#123;&#123;(int)765.29+1.2e3&#125;&#125;
+&#123;&#123;var_dump(@xyz)&#125;&#125;
+You answered &#123;&#123;(preg_match('/Yes/i',@response)?'posi':'nega')&#125;&#125;tively
+&#123;&#123;@obj->property&#125;&#125;
+</pre>
+
+<p>Framework variables may also contain anonymous functions:</p>
+
+<pre>F3::set('func',
+	function($a,$b) {
+		return $a.', '.$b;
+	}
+);</pre>
+
+<p>The F3 template engine will interpret the token as expected, if you specify the following expression:</p>
+
+<pre>&#123;&#123;@func('hello','world')&#125;&#125;</pre>
+
+<p>The only limit here is your ability to stick to MVC guidelines and resist the temptation of having business logic enter your user interface.</p>					</div>
+			<h3>Templates Within Templates</h3>
+		<div class="article">
+									<p>Simple variable substitution is one thing all template engines have. Fat-Free has more up its sleeves:-</p>
+
+<pre>&lt;F3:include href="header.htm"/&gt;</pre>
+
+<p>The <code>&lt;F3:include&gt;</code> directive will embed the contents of the <code>header.htm</code> template at the exact position where the directive is stated. You can also have dynamic content in the form of:-</p>
+
+<pre>&lt;F3:include href="&#123;&#123;@content&#125;&#125;"/&gt;</pre>
+
+<p>A practical use for such template directive is when you have several pages with a common HTML layout but with different content. Instructing the framework to insert a sub-template into your main template is as simple as writing the following PHP code:-</p>
+
+<pre>// switch content to your blog sub-template
+F3::set('content','blog.htm');
+// in another route, switch content to the wiki sub-template
+F3::set('content','wiki.htm');</pre>
+
+<p>A sub-template may in turn contain any number of <code>&lt;F3:include&gt;</code> directives. F3 allows unlimited nested templates.</p>
+
+<p>You can specify filenames with something other than <code>.htm</code> or <code>.html</code> file extensions, but it's easier to preview them in your Web browser during the development and debugging phase. <code>Template::serve()</code> requires the complete filename - due to the fact that the template engine is not limited to rendering HTML files. In fact you can use the template engine to serve other kinds of files.</p>
+
+<blockquote>
+
+<h4>Note:</h4>
+
+<p>Static OOP methods use double colons (::), called <i>Paamayim Nekudotayim</i> in PHP. Template directives, on the other hand, use a single colon (:) in their tag names, which is the standard way of specifying XHTML/XML namespaces.</p>
+
+</blockquote>
+
+<p>The <code>&lt;F3:include&gt;</code> directive also has an optional <code>if</code> attribute so you can specify a condition that needs to be satisfied before the sub-template is inserted:-</p>
+
+<pre>&lt;F3:include if="&#123;&#123;count(@items)&#125;&#125;" href="items.htm"/&gt;</pre>
+					</div>
+			<h3>Exclusion of Segments</h3>
+		<div class="article">
+									<p>During the course of writing/debugging F3-enabled programs and designing templates, there may be instances when disabling the display of a block of HTML may be handy. You can use the <code>&lt;F3:exclude&gt;</code> directive for this purpose:-</p>
+
+<pre>&lt;F3:exclude&gt;
+	&lt;p&gt;A chunk of HTML we don't want displayed at the moment&lt;/p&gt;
+&lt;/F3:exclude&gt;</pre>
+
+<p>That's like the <code>&lt;-- comment !--&gt;</code> HTML comment tag, but the <code>&lt;F3:exclude&gt;</code> directive makes the HTML block totally invisible once the template is rendered.</p>
+
+<p>Here's another way of excluding template content:-</p>
+
+<pre>&#123;&#123;* &lt;p&gt;A chunk of HTML we don't want displayed at the moment&lt;/p&gt; *&#125;&#125;</pre>
+					</div>
+			<h3>Conditional Segments</h3>
+		<div class="article">
+									<p>Another useful template feature is the <code>&lt;F3:check&gt;</code> directive. It allows you to embed an HTML fragment depending on the evaluation of a certain condition. Here are a few examples:-</p>
+
+<pre>&lt;F3:check if="&#123;&#123;@loggedin&#125;&#125;"&gt;
+	&lt;F3:true&gt;
+		&lt;p&gt;HTML chunk to be included if condition is true&lt;/p&gt;
+	&lt;/F3:true&gt;
+&lt;/F3:check&gt;
+
+&lt;F3:check if="&#123;&#123;@page=='Home'&#125;&#125;"&gt;
+	&lt;F3:false&gt;
+		&lt;span&gt;Inserted if condition is false&lt;/span&gt;
+	&lt;/F3:false&gt;
+&lt;/F3:check>
+
+&lt;F3:check if="&#123;&#123;@gender=='M'&#125;&#125;"&gt;
+	&lt;F3:true&gt;
+		&lt;div&gt;Appears when condition is true&lt;/div&gt;
+	&lt;/F3:true&gt;
+	&lt;F3:false>
+		&lt;div&gt;Appears when condition is false&lt;/div&gt;
+	&lt;/F3:false&gt;
+&lt;/F3:check&gt;</pre>
+
+<p>You can have as many nested <code>&lt;F3:check&gt;</code> directives as you need.</p>
+
+<p>An F3 expression inside an <code>if</code> attribute that equates to <code>NULL</code>, an empty string, a boolean <code>FALSE</code>, an empty array or zero, automatically invokes <code>&lt;F3:false&gt;</code>.</p>
+
+<blockquote>
+
+<h5>New in 2.0</h5>
+<p>If your template has no <code>&lt;F3:false&gt;</code> content, the <code>&lt;F3:true&gt;</code> opening and closing tags are optional.</p>
+
+</blockquote>
+					</div>
+			<h3>Repeating Segments</h3>
+		<div class="article">
+									<p>Fat-Free can also handle repetitive HTML blocks:-</p>
+
+<pre>&lt;F3:repeat group="&#123;&#123;@fruits&#125;&#125;" value="&#123;&#123;@fruit&#125;&#125;"&gt;
+	&lt;p&gt;&#123;&#123;trim(@fruit)&#125;&#125;&lt;/p&gt;
+&lt;/F3:repeat&gt;</pre>
+
+<p>The <code>group</code> attribute <code>@fruits</code> inside the <code>F3:repeat</code> directive must be an array and should be set in your PHP code accordingly:</p>
+
+<pre>F3::set('fruits',array('apple','orange ',' banana'));</pre>
+
+<p>Nothing is gained by assigning a value to <code>@fruit</code>. Fat-Free ignores any preset value it may have because it uses the variable to represent the current item during iteration over the group. The output of the above HTML template fragment and the corresponding PHP code becomes:-</p>
+
+<pre>&lt;p&gt;apple&lt;/p&gt;
+&lt;p&gt;orange&lt;/p&gt;
+&lt;p&gt;banana&lt;/p&gt;</pre>
+
+<p>The framework allows unlimited nesting of <code>&lt;F3:repeat&gt;</code> blocks:-</p>
+
+<pre>&lt;F3:repeat group="&#123;&#123;@div&#125;&#125;" key="&#123;&#123;@ikey&#125;&#125;" value="&#123;&#123;@idiv&#125;&#125;"&gt;
+&lt;div&gt;
+	&lt;p&gt;&lt;span&gt;&lt;b&gt;&#123;&#123;@ikey&#125;&#125;&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;
+	&lt;p&gt;
+	&lt;F3:repeat group="&#123;&#123;@idiv&#125;&#125;" value="&#123;&#123;@ispan&#125;&#125;"&gt;
+		&lt;span&gt;&#123;&#123;@ispan&#125;&#125;&lt;/span&gt;
+	&lt;/F3:repeat&gt;
+	&lt;/p&gt;
+&lt;/div&gt;
+&lt;/F3:repeat&gt;</pre>
+
+<p>Apply the following PHP command:-</p>
+
+<pre>F3::set('div',
+	array(
+		'coffee'=&gt;array('arabica','barako','liberica','kopiluwak'),
+		'tea'=&gt;array('darjeeling','pekoe','samovar')
+	)
+);</pre>
+
+<p>As a result, you get the following HTML fragment:-</p>
+
+<pre>&lt;div&gt;
+	&lt;p&gt;&lt;span&gt;&lt;b&gt;coffee&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;
+	&lt;p&gt;
+		&lt;span&gt;arabica&lt;/span&gt;
+		&lt;span&gt;barako&lt;/span&gt;
+		&lt;span&gt;liberica&lt;/span&gt;
+		&lt;span&gt;kopiluwak&lt;/span&gt;
+	&lt;/p&gt;
+&lt;/div&gt;
+&lt;div&gt;
+	&lt;p&gt;&lt;span&gt;&lt;b&gt;tea&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;
+	&lt;p&gt;
+		&lt;span&gt;darjeeling&lt;/span&gt;
+		&lt;span&gt;pekoe&lt;/span&gt;
+		&lt;span&gt;samovar&lt;/span&gt;
+	&lt;/p&gt;
+&lt;/div&gt;</pre>
+
+<p>Amazing, isn't it? And the only thing you had to do in PHP was to define the value of a single variable <code>div</code> to replace the <code>@div</code> token. Fat-Free makes both programming and Web template design really easy.</p>
+
+<p>The <code>&lt;F3::repeat&gt;</code> template directive's <code>value</code> attribute returns the value of the current element in the iteration. If you need to get the array key of the current element, use the <code>key</code> attribute instead. The <code>key</code> attribute is optional.</p>
+
+<p><code>&lt;F3::repeat&gt;</code> also has an optional <code>counter</code> attribute that can be used as follows:-</p>
+
+<pre>&lt;F3:repeat group="&#123;&#123;@fruits&#125;&#125;" value="&#123;&#123;@fruit&#125;&#125;" counter="&#123;&#123;@ctr&#125;&#125;"&gt;
+	&lt;p class="&#123;&#123;@ctr%2?'odd':'even'&#125;&#125;"&gt;&#123;&#123;trim(@fruit)&#125;&#125;&lt;/p&gt;
+&lt;/F3:repeat&gt;</pre>
+
+<p>Internally, F3's template engine records the number of loop iterations and saves that value in the variable/token <code>@ctr</code>, which is used in our example to determine the odd/even classification.</p>
+
+					</div>
+			<h3>Embedding Javascript and CSS</h3>
+		<div class="article">
+									<p>If you have to insert F3 tokens inside a <code>&lt;script&gt;</code> or <code>&lt;style&gt;</code> section of your template, the framework will still replace them the usual way:-</p>
+
+<pre>&lt;script type="text/javascript"&gt;
+	function doNothing() {
+		alert('You are logged in as: &#123;&#123;@userID&#125;&#125;');
+	}
+&lt;/script&gt;</pre>
+
+<p>Embedding template directives inside your <code>&lt;script&gt;</code> or <code>&lt;style&gt;</code> tags requires no special handling:-</p>
+
+<pre>&lt;script type="text/javascript"&gt;
+	&lt;F3:repeat group="&#123;&#123;@rates&#125;&#125;" value="&#123;&#123;@rate&#125;&#125;">
+		// whatever you want to repeat in Javascript
+	&lt;/F3:repeat&gt;
+&lt;/script&gt;</pre>
+					</div>
+			<h3>Document Encoding</h3>
+		<div class="article">
+									<p>By default, Fat-Free uses UTF-8 character encoding unless changed. You can override this behavior by issuing something like:-</p>
+
+<pre>F3::set('ENCODING','iso-8859-1');</pre>
+
+<p>Once you inform the framework of the desired character set, F3 will use it in all HTML and XML templates.</p>
+					</div>
+			<h3>All Kinds of Templates</h3>
+		<div class="article">
+									<p>As mentioned earlier in this section, the framework isn't limited to HTML templates. You can process XML templates just as well. The mechanics are pretty much similar. You still have the same <code>&#123;&#123;@variable&#125;&#125;</code> and <code>&#123;&#123;expression&#125;&#125;</code> tokens, <code>&lt;F3:repeat&gt;</code>, <code>&lt;F3:check&gt;</code>, <code>&lt;F3:include&gt;</code>, and <code>&lt;F3:exclude&gt;</code> directives at your disposal. Just tell F3 that you're passing an XML file instead of HTML:-</p>
+
+<pre>echo Template::serve('template.xml','application/xml');</pre>
+
+<p>The second argument represents the MIME type of the document being rendered.</p>
+
+<p>The View component of MVC covers everything that doesn't fall under the Model and Controller, which means your presentation can and should include all kinds of user interfaces, like RSS, e-mail, RDF, FOAF, text files, etc. The example below shows you how to separate your e-mail presentation from your application's business logic:-</p>
+
+<pre>MIME-Version: 1.0
+Content-type: text/html; charset=&#123;&#123;@ENCODING&#125;&#125;
+From: &lt;&#123;&#123;@from&#125;&#125;&gt;
+To: "&lt;&#123;&#123;@to&#125;&#125;&gt;
+Subject: &#123;&#123;@subject&#125;&#125;
+
+&lt;p&gt;Welcome, and thanks for joining &#123;&#123;@site&#125;&#125;!&lt;/p&gt;</pre>
+
+<p>Save the above e-mail template as <code>welcome.txt</code>. The associated F3 code would be:-</p>
+
+<pre>F3::set('from','no-reply@mysite.com');
+F3::set('to','slasher@throats.com');
+F3::set('subject','Welcome');
+ini_set('sendmail_from',F3::get('from'));
+mail(F3::get('to'),F3::get('subject'),F3::serve('email.txt','text/html'));</pre>
+
+<blockquote>
+
+<h5>Tip:</h5>
+
+<p>Replace the SMTP <code>mail()</code> function with <code>imap_mail()</code> if your script communicates with an IMAP server.</p>
+
+</blockquote>
+
+<p>Now isn't that something? Of course, if you have a bundle of e-mail recipients, you'd be using a database to populate the <code>firstName</code>, <code>lastName</code>, and <code>email</code> tokens.</p>
+
+<blockquote>
+
+<h5>New in 2.0</h5>
+
+<p>Here's an alternative solution using the new SMTP plug-in:-</p>
+
+<pre>$mail=new SMTP('smtp.gmail.com',465,'SSL','account@gmail.com','secret');
+$mail->set('from','&lt;no-reply@mysite.com&gt;');
+$mail->set('to','&quot;Slasher&quot; &lt;slasher@throats.com&gt;');
+$mail->set('subject','Welcome');
+$mail->send(Template::serve('email.txt'));</pre>
+
+</blockquote>
+					</div>
+			<h3>Multilingual Support</h3>
+		<div class="article">
+									<p>F3 supports multiple languages right out of the box.</p>
+
+<p>First, create a dictionary file with the following structure (one file per language):-</p>
+
+<pre>&lt;?php
+
+return array(
+	'love'=>'I love F3',
+	'today'=>'Today is &#123;0,date&#125;',
+	'pi'=>'&#123;0,number&#125;',
+	'money'=>'Amount remaining: &#123;0,number,currency&#125;'
+);</pre>
+
+<p>Save it as <code>dict/en.php</code>. Let's create another dictionary, this time for German. Save the file as <code>dict/de.php</code>:-</p>
+
+<pre>&lt;?php
+
+return array(
+	'love'=>'Ich liebe F3',
+	'today'=>'Heute ist &#123;0,date&#125;',
+	'money'=>'Restbetrag: &#123;0,number,currency&#125;'
+);</pre>
+
+<p>Dictionaries are nothing more than key-value pairs. F3 automatically instantiates framework variables based on the keys in the language files. As such, it's easy to embed these variables as tokens in your templates. Using the F3 template engine:-</p>
+
+<pre>&lt;h1&gt;&#123;&#123;@love&#125;&#125;&lt;/h1&gt;
+&lt;p&gt;&#123;&#123;@today\time()&#125;&#125;.&lt;br /&gt;&#123;&#123;@money\365.25&#125;&#125;&lt;/p&gt;
+&#123;&#123;@pi&#125;&#125;&lt;/p&gt;</pre>
+
+<p>And the version that utilizes PHP as a template engine:-</p>
+
+<pre>&lt;h1&gt;&lt;?php echo F3::get('love'); ?&gt;&lt;/h1&gt;
+&lt;p&gt;&lt;?php echo F3::get('today',time()); ?&gt;.&lt;br /&gt;&lt;?php echo F3::get('money',365.25); ?&gt;
+&lt;?php echo F3::get('pi'); ?&gt;&lt;/p&gt;</pre>
+
+<p>Next, we instruct F3 to look for dictionaries in the <code>dict/</code> folder:-</p>
+
+<pre>F3::set('LOCALES','dict/');</pre>
+
+<p>But how does the framework determine which language to use? F3 will detect it automatically by looking at the HTTP request headers, specifically the <code>Accept-Language</code> header.</p>
+
+<p>To override this behavior, you can instruct F3 to use a language specified by the user or application:-</p>
+
+<pre>F3::set('LANGUAGE','de');</pre>
+
+<blockquote>
+
+<h5>Note:</h5>
+<p>In the above example, the key <code>pi</code> exists only in the English dictionary. The framework will always use English (<code>en</code>) as a fallback to populate keys that are not present in the specified (or detected) language.</p>
+<p>You may also create dictionary files for language variants like <code>en-US</code>, <code>es-AR</code>, etc. In this case, F3 will use the language variant first (like <code>es-AR</code>). If there are keys that do not exist in the variant, the framework will look up the key in the root language (<code>es</code>), then use the <code>en</code> language file as the final fallback.</p>
+
+</blockquote>
+
+<p>Dictionary key-value pairs become F3 variables once referenced. Make sure the keys do not conflict with any framework variable instantiated via <code>F3::set()</code>, <code>F3::mset()</code>, or <code>F3::config()</code>.</p>
+
+<blockquote>
+
+<h5>ICU-Formatted Strings:</h5>
+<p>Did you notice the peculiar <code>'Today is &#123;0,date&#125;'</code> pattern in our example? F3's multilingual capability hinges on string/message formatting rules of the <a href="http://site.icu-project.org/">ICU project</a>. The framework uses PHP's new <code>intl</code> extension to accomplish this feat. If <code>intl</code> is not available on your server, F3 will use its own (subset) ICU string formatting implementation.</p>
+
+</blockquote>
+					</div>
+		</div>
+					<a name="forms-handler"><h2>Forms Handler</h2></a>
+															<div class="articles">
+			<h3>Forms and Input Fields</h3>
+		<div class="article">
+									<p>In much the same manner that we map routes/URLs to their respective handlers, working with HTML forms in Fat-Free is a declarative process. If your HTML template has something like:-</p>
+
+<pre>&lt;F3:check if="&#123;&#123;!is_null(@message)&#125;&#125;"&gt;
+	&#123;&#123;@message&#125;&#125;
+&lt;/F3:check&gt;
+&lt;input type="text" name="userID"&gt;
+&lt;input type="submit" name="submit"&gt;</pre>
+
+<p>You only have to define the code for validating or manipulating the input field as follows:-</p>
+
+<pre>F3::input('userID',
+	function($value) {
+		if (empty($value))
+			F3::set('message','User ID should not be blank');
+		elseif (strlen($value)>255)
+			F3::set('message','Invalid user ID');
+	}
+);</pre>
+
+<p>The <code>@message</code> token will be replaced by the corresponding value when the user interface is rendered at runtime (and only if the Fat-Free variable named message has been assigned a value because of an error in the user's input).</p>
+
+<p>You can do any kind of validation on the data returned by the anonymous (lambda) function inside the <code>F3::input()</code> method. As shown below, you can also specify a chain of functions as the second argument, similar to Fat-Free routes. This way, you can have shared code in the validation of various form fields.</p>
+
+<pre>F3::input('status','alpha; reqd; len255');
+	function alpha($value) {
+		return !preg_match('/[A-Za-z]/',$value);
+	}
+	function reqd() {
+		return array_key_exists('status',$_REQUEST);
+	}
+	function len255($value) {
+		return strlen($value)>255;
+	}
+F3::input('name','alpha; reqd');</pre>
+
+<p>However, unlike route handlers, import files used as form field handlers are not allowed.</p>
+
+					</div>
+			<h3>Data Sanitation</h3>
+		<div class="article">
+									<p>By default, the forms handler strips out all HTML, PHP and Javascript tags from input fields to protect you from possible XSS and code injection attacks. On the other hand, if you have a textarea editor like TinyMCE or CKEditor which allow HTML tags to give you nice-looking formatted output, you can alter the framework's default behavior by adding a third argument to the <code>F3::input()</code> method:-</p>
+
+<pre>F3::input(
+	'field',
+	function($value) {
+		// $value may contain the HTML tags mentioned below;
+		// if tags are not specified, Fat-Free will remove all
+		// HTML and PHP tags from $value before the code in
+		// this function is executed
+	},
+	'p; br; span; div; a'
+);</pre>
+
+<p>Fat-Free does not disinfect the PHP globals <code>$_REQUEST</code>, <code>$_GET</code>, <code>$_POST</code>, <code>$_SESSION</code>, and <code>$_COOKIE</code> automatically - to allow some flexibility in user input. You can use <code>F3::scrub($variable,'b; u; i; br');</code> to get the sanitized value. If the first argument is an array, <code>F3::scrub()</code> will apply the HTML tag-stripping rule to all string elements. If you want to be strict about all user input - applying a single rule across the board, insert the following line(s) somewhere in your application's bootstrap code (before you use any of the PHP globals):-</p>
+
+<pre>// Sanitizing Fat-Free's REQUEST global also sanitizes PHP's $_REQUEST
+F3::set('REQUEST',F3::scrub($_REQUEST));</pre>
+
+<p>You can use <code>F3::scrub()</code> to strip off HTML tags from any PHP global and the corresponding F3 variable: <code>$_GET</code>, <code>$_POST</code>, <code>$_COOKIE</code>, and <code>$_SESSION</code>. In theory, you can do the same with <code>$GLOBALS</code>, but there's a good chance you'll bump into PHP's <code>memory_limit</code>.</p>
+
+<p>F3 removes all tags if the second argument of the <code>F3::scrub()</code> method is absent or <code>NULL</code>. On the other hand, an asterisk (<code>*</code>) permits all HTML tags to pass through untouched.</p>
+
+					</div>
+			<h3>CAPTCHA Generation</h3>
+		<div class="article">
+									<p>Another security feature available in the Expansion plug-in is the ability to generate <a href="http://en.wikipedia.org/wiki/CAPTCHA">CAPTCHA</a> images, as shown below:-</p>
+
+<p style="text-align:center;"><img src="/asset/captcha.png" title="Captcha" alt="Captcha"/></p>
+
+<p>CAPTCHA images are designed to prevent spammers from performing such actions as filling in form fields using automated software. The idea here is that humans have better visual perception and would be able to recognize characters that bots and other hacking tools would not.</p>
+
+<p>F3 allows you to generate a CAPTCHA image that you can embed in your Web page. First, you need to use an HTML <code>img</code> tag in your template and the corresponding field to hold the user's input, like:-</p>
+
+<pre>&lt;img src="/captcha" title="captcha image" alt="captcha"/&gt;
+&lt;label for="code"&gt;Security Code&lt;/label&gt;
+&lt;input type="text" name="code"/&gt;
+&lt;p&gt;{@message}&lt;/p&gt;</pre>
+
+<p>We added a <code>@message</code> template token so we can display a message as a way ofproviding feedback in case the user's input did not match the CAPTCHA image.</p>
+
+<p>Then in your application, you should have a route to handle the <code>/captcha</code> URL specified inside the <code>src</code> attribute:-</p>
+
+<pre>F3::route('GET /captcha','securityCode');
+	function securityCode() {
+		Graphics::captcha(150,60,5);
+	}</pre>
+
+<p>The first argument represents the width of the image (150 pixels). The second argument corresponds to the height (60 pixels). The third argument is the number of random hexadecimal digits to generate (5 characters). More characters make it harder for both humans and automated hacking tools.</p>
+
+<p>The input validation script would be something like:-</p>
+
+<pre>F3::input('code',
+	function($value) {
+		if (empty($value))
+			F3::set('message','Security code is required');
+		elseif ($value!=$_SESSION['captcha'])
+			F3::set('message','Invalid security code');
+	}
+);</pre>
+
+<p>F3 automatically generates a random image and populates the <code>$_SESSION['captcha']</code> variable with the equivalent code every time the <code>Graphics::captcha()</code> method is called, as shown in the above example.</p>
+					</div>
+			<h3>Adjusting CAPTCHA Fonts and Colors</h3>
+		<div class="article">
+									<p>The framework uses TamaFactory's free "<a href="http://www.dafont.com/01-tama.font">Cube</a>" TrueType font as the default. This font uses outlines and background reversals in its design that OCR programs find difficult to decode. You can replace it with your own TrueType font. Make sure you save it in your <code>IMPORTS</code> folder and add the font name (without the <code>.ttf</code> file extension) as the fourth argument in the <code>Graphics::captcha()</code> method call. You can also configure Fat-Free to use one of several TrueType fonts at random:-</p>
+
+<pre>Graphics::captcha(150,60,4,'cube; arial; tahoma; verdana');</pre>
+
+<p>Make sure your CAPTCHA validation code compensates for a TrueType font's actual output. Some fonts do not have lowercase letters.</p>
+
+<p>You might want to change the behavior of the CAPTCHA generator to fit your site's color palette. The default values are intended for sites with white and light-colored backgrounds. You can do this by adjusting some framework globals: the background color thru the <code>BGCOLOR</code> global variable and the transparency level thru <code>FGTRANS</code>. <code>BGCOLOR</code> accepts a 3- or 6-character hex triad - like CSS color specifications without the hash (<code>#</code>) prefix - to represent RGB values. <code>FGTRANS</code> is an integer value from zero (opaque) to 127 (invisible).</p>
+					</div>
+		</div>
+					<a name="sql-handler"><h2>SQL Handler</h2></a>
+															<div class="articles">
+			<h3>Connecting to a Database Engine</h3>
+		<div class="article">
+									<p>Fat-Free is designed to make the job of interfacing with SQL databases a breeze. If you're not the type to immerse yourself in details about SQL, but lean more towards object-oriented data handling, you can go directly to the next section of this tutorial. However, if you need to do some complex data-handling and database performance optimization tasks, SQL is the way to go.</p>
+
+<p>Establishing communication with a SQL engine like MySQL, SQLite, SQL Server, Sybase, and Oracle is done using the familiar <code>F3::set()</code> command. Connecting to a SQLite database would be:-</p>
+
+<pre>F3::set('DB',new DB('sqlite:/absolute/path/to/your/database'));</pre>
+
+<p>Another example, this time with MySQL:-</p>
+
+<pre>F3::set('DB',
+	new DB(
+		'mysql:host=localhost;port=3306;dbname=mysqldb',
+		'admin',
+		'p455w0rD'
+	)
+);</pre>
+					</div>
+			<h3>Querying the Database</h3>
+		<div class="article">
+									<p>OK. That was easy, wasn't it? That's pretty much how you would do the same thing in ordinary PHP. You just need to know the DSN format of the database you're connecting to. What makes handling databases a cinch in F3 is the next command:-</p>
+
+<pre>DB::sql('SELECT brandName FROM mydb WHERE brandID=&#123;&#123;@id&#125;&#125;');</pre>
+
+<p>Huh, what's going on here? Shouldn't we be setting up things like PDOs, statements, cursors, etc.? The simple answer is: you don't have to.</p>
+
+<p>That's great! But where can we find the result of the SQL query we issued and how do we access it?</p>
+
+<p>First, we create an HTML template like <code>abc.htm</code> that has at a minimum the following:-</p>
+
+<pre>&lt;F3:repeat group="&#123;&#123;@DB->result&#125;&#125;" value="&#123;&#123;@item&#125;&#125;"&gt;
+	&lt;span&gt;&#123;&#123;@item.brandName&#125;&#125;&lt;/span&gt;
+&lt;/F3:repeat&gt;</pre>
+
+<p>And use the following Fat-Free script:</p>
+
+<pre>DB::sql('SELECT brandName FROM wherever');
+echo Template::serve('abc.htm');</pre>
+
+<p>You can also iterate over the result of the query using a <code>foreach</code> statement like this:-</p>
+
+<pre>
+foreach (F3::get('DB->result') as $row) {
+	// whatever you want to do with $row
+}</pre>
+
+<p>This is particularly useful in instances where you need to do some further processing on the result of the query. If you do it this way, you're responsible for setting up the <code>&lt;F3:repeat&gt;</code> directive's <code>group</code> attribute accordingly. In most instances, the SQL command set should be enough to generate a Web-ready result so you can use the global <code>DB->result</code> array variable in your template directly.</p>
+
+<p>Be that as it may, Fat-Free will not stop you from getting into its SQL handler internals. In fact, you still have access to the underlying PHP PDO components and primitives involved in each process, if you need some fine-grain control.</p>
+					</div>
+			<h3>Under the Hood</h3>
+		<div class="article">
+									<p>Fat-Free saves all SQL-related objects in the global <code>DB</code> variable. You've seen how we defined <code>DB->dsn</code> and <code>DB->user</code> at the start of this section (when we established the database connection - and we have to do that only once in the entire application.) We've used the <code>DB->result</code> variable and its corresponding template token in our last example. You also have access to the PHP PDO, and it's saved in <code>DB->pdo</code>. When you need a better grip on each SQL statement you issue, the <code>PDOStatement</code> (the PHP object itself) is saved in <code>DB->query</code>. It also contains the last SQL statement executed.</p>
+					</div>
+			<h3>Transactions</h3>
+		<div class="article">
+									<p>Here's another example. Instead of a single statement provided as an argument to the <code>DB::sql()</code> command, you can also pass an array of SQL statements:-</p>
+
+<pre>DB::sql(
+	array(
+		'DELETE FROM ...',
+		'INSERT INTO ...',
+		'SELECT ...'
+	)
+);</pre>
+
+<p>F3 is smart enough to know that if you're passing an array of SQL instructions, this indicates a SQL batch transaction. You don't have to worry about SQL rollbacks and commits because the framework will automatically revert to the initial state of the database if any error occurs during the transaction. If successful, F3 commits all changes made to the database.</p>
+					</div>
+			<h3>Parameterized Queries</h3>
+		<div class="article">
+									<p>Passing string arguments to SQL statements is fraught with danger.</p>
+
+<p>Consider this:-</p>
+
+<pre>DB::sql('SELECT * FROM users WHERE userID="&#123;&#123;@POST.userID&#125;&#125;"');</pre>
+
+<p>If the POST variable <code>userID</code> does not go through any data sanitation process, a malicious user can pass the following string and damage your database irreversibly:-</p>
+
+<pre>admin"; DELETE FROM users; SELECT "1</pre>
+
+<p>Parameterized queries help you mitigate these risks:-</p>
+
+<pre>DB::sql(
+	'SELECT * FROM users WHERE userID=:uID",
+	array(':uID'=>F3::get('POST.userID'))
+);</pre>
+
+<p>If F3 detects that the value of the query parameter/token is a string, F3 escapes the string and adds quotes as necessary. To override this behavior:-</p>
+
+<pre>DB::sql(
+	'SELECT * FROM users WHERE userID=:uID",
+	array(':uid'=>array(F3::get('POST.userID'),PDO::PARAM_INT))
+);</pre>
+
+					</div>
+			<h3>Multiple Databases</h3>
+		<div class="article">
+									<p>F3's SQL handler allows you to communicate with several databases simultaneously. To connect to another database:-</p>
+
+<pre>F3::set('mydb',
+	new DB(
+		'mysql:host=localhost;port=3306;dbname=testdb',
+		'admin',
+		'p455w0rD'
+	)
+);
+F3::sql('SELECT * from gadgets',NULL,0,'mydb');
+foreach (F3::get('mydb->result') as $row) {
+	echo $row['quantity'];
+}</pre>
+					</div>
+		</div>
+					<a name="data-mappers"><h2>Data Mappers</h2></a>
+															<div class="articles">
+			<h3>CRUD (But With a Lot of Style)</h3>
+		<div class="article">
+									<p>F3 is packed with three easy-to-use object-relational mappers (ORMs) named Axon, M2, and Jig. These mappers sit between your application and your data - making it a lot easier and faster for you to write programs that handle common data operations - like creating, retrieving, updating, and deleting (CRUD) information from SQL/relational (Axon), MongoDB (M2) and flat-file (Jig) databases. Data mappers do most of the work by mapping PHP object interactions to the corresponding backend queries.</p>
+
+<p>Suppose you have an existing MySQL database containing a table of <code>users</code> of your application. (SQLite, PostgreSQL, SQL Server, Sybase will do just as well.) It would have been created using the following SQL command:-</p>
+
+<pre>
+CREATE TABLE users (
+	userID VARCHAR(30),
+	password VARCHAR(30),
+	visits INT,
+	PRIMARY KEY(userID)
+);</pre>
+
+<blockquote>
+
+<h5>Note:</h5>
+
+<p>MongoDB, like other NoSQL database engines, are schema-less. The pseudo-database engine that powers up the Jig front-end does not require a schema either. There are no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.</p>
+
+</blockquote>
+
+<p>To retrieve a record from this table:-</p>
+
+<pre>F3::set('DB',
+	new DB(
+		'mysql:host=localhost;port=3306;dbname=mysqldb',
+		'admin',
+		'wh4t3v3r'
+	)
+);
+$user=new Axon('users');
+$user->load('userID="tarzan"');</pre>
+
+<p>If you read the previous section of this tutorial, the <code>DB</code> framework variable that we configured prior to issuing SQL queries is the same setup parameter we use to establish communication with our database using the Axon ORM. The second line of our code snippet is where most of the action is. Here, we instantiate an Axon object that interacts with the <code>users</code> table. Behind the scene, F3 retrieves the structure of the <code>users</code> table and identifies which field(s) are defined as primary key(s). At this point, the Axon object contains no data yet (dry state) so <code>$user</code> is nothing more than a structured object - but it contains the methods it needs to perform the basic CRUD operations and some extras. To retrieve a record from our users table with a <code>userID</code> field containing the string value <code>tarzan</code>, we use the Axon <code>load()</code> method. This process is called "auto-hydrating" the Axon.</p>
+
+<p>In the case of M2 - the MongoDB Mapper:-</p>
+
+<pre>// Define the MongoDB connection string
+F3::set('DB',new MongoDB(new Mongo('mongodb://localhost:27017'),'testdb'));
+$user=new M2('users');
+$user->load(array('userID'=>'tarzan'));</pre>
+
+<p>Jig, the flat-file data mapper operates in a similar fashion:-</p>
+
+<pre>// Define the filesystem path to the data files
+F3::set('DB','data/');
+$user=new Jig('users');
+$user->load(array('userID'=>'tarzan'));</pre>
+
+<p>Easy, wasn't it? Unlike other frameworks, F3 requires no extra class declarations (unless you want to extend Axon, M2, or Jig to fit complex objects), no redundant field mappings (duplication of efforts), no code generators (which require code regeneration if the database structure changes), no superfluous commands just to retrieve a single record from an existing database. With F3, a simple resizing of a <code>varchar</code> field in MySQL does not demand a change in your application code. Consistent with MVC and "separation of concerns", the database admin has as much control over the data (and the structures) as a template designer has over HTML/XML templates.</p>
+
+<blockquote>
+
+<h5>Axon: The Auto-Mapping ORM</h5>
+
+<p>The framework automatically maps the field <code>visits</code> in our table to an Axon property during object instantiation, i.e. <code>$user=new Axon('users');</code>. Similarly, <code>$user->password</code> and <code>$user->userID</code> would map to the <code>password</code> and <code>userID</code> fields in our table, respectively.</p>
+
+<p>You can't add or delete an Axon-mapped field, or change a table's structure using the Axon ORM. You must do this in MySQL, or whatever database engine you're using. After you make the changes in your database engine, Fat-Free will automatically synchronize the new table structure with your Axon when you run your application.</p>
+
+<p>F3 derives the Axon structure directly from the database schema. No guesswork involved. And it requires no XML/YAML files to configure your models. It understands the differences between MySQL, SQLite, MSSQL, Sybase, and PostgreSQL database engines.</p>
+
+<p>SQL identifiers should be limited to alphanumeric characters <code>A-Z</code>, <code>0-9</code>, and the underscore symbol (<code>_</code>). Column names containing spaces (or special characters) and surrounded by quotes in the data definition are not compatible with Axon. They cannot be represented properly as PHP object properties.</p>
+
+</blockquote>
+
+<p>Let's say we want to increment the user's number of <code>visits</code> and update the corresponding record in our <code>users</code> table, we can add the following code:-</p>
+
+<pre>$user->visits++;
+$user->save();</pre>
+
+<p>If we wanted to insert a record, we follow this process:-
+
+<pre>$user=new Axon('users');
+// or $user=new M2('users');
+// or $user=new Jig('users');
+$user->userID='jane';
+$user->password=md5('secret');
+$user->visits=0;
+$user->save();</pre>
+
+<p>We still use the same <code>save()</code> method. But how does F3 know when a record should be inserted or updated? At the time an Axon object is auto-hydrated by a record retrieval, the framework keeps track of the record's primary keys (or object <code>_id</code>, in the case of M2 and Jig) - so it knows which record should be updated or deleted - even when the values of the primary keys are changed. A programmatically-hydrated Axon - the values of which were not retrieved from the database, but populated by the application - will not have any memory of previous values in its primary keys. The same applies to M2 and Jig, but using object <code>_id</code> as reference. So, when we instantiated the <code>$user</code> object above and populated its properties with values from our program - without at all retrieving a record from the user table, F3 knows that it should insert this record.</p>
+
+<blockquote>
+
+<h5>Caveat for SQL Tables</h5>
+
+<p>Although the issue of having primary keys in all tables in your database is argumentative, F3 does not stop you from creating an Axon object that communicates with a table containing no primary keys. The only drawback is: you can't delete or update an Axon-mapped record because there's absolutely no way for F3 to determine which record you're referring to plus the fact that positional references are not reliable. Row IDs are not portable across different SQL engines and may not be returned by the PHP database driver.</p>
+
+</blockquote>
+
+<p>To remove a mapped record from our table, invoke the <code>erase()</code> method on an auto-hydrated Axon. For example:-</p>
+
+<pre>$user=new Axon('users');
+$user->load('userID="cheetah"');
+$user->erase();</pre>
+
+<p>The M2 equivalent would be:-</p>
+
+<pre>$user=new M2('users');
+$user->load(array('userID'=>'cheetah'));
+$user->erase();</pre>
+
+<p>There's little difference in the usage of the Jig flat file mapper:-</p>
+
+<pre>$user=new Jig('users');
+$user->load(array('userID'=>'cheetah'));
+$user->erase();</pre>
+
+<blockquote>
+
+<h5>Parameterized Queries in Axon</h5>
+
+<p>Like the underlying SQL handler, Axon allows the use of parameterized queries. Instead of:-</p>
+
+<pre>$user->load('userID="cheetah"');</pre>
+
+<p>you can use the more secure format:-</p>
+
+<pre>$user->load(array('userID=:uid',array(':uid'=>'cheetah')));</pre>
+
+<p>Parameters need not be quoted. Axon is aware of a field's data type. It will also escape quotes in strings according to the database engine's rules if it finds it necessary.</p>
+
+</blockquote>
+					</div>
+			<h3>The Weather Report</h3>
+		<div class="article">
+									<p>To find out whether our Axon, M2, or Jig object was hydrated or not:-</p>
+
+<pre>if ($user->dry())
+	echo 'No record matching criteria';</pre>
+					</div>
+			<h3>Beyond CRUD</h3>
+		<div class="article">
+									<p>We've covered the CRUD handlers. There are some extra methods that you might find useful:-</p>
+
+<pre>F3::set('user',new Axon('users'));
+F3::get('user')->copyFrom('REQUEST');
+F3::get('user')->save();</pre>
+
+<p>Notice that we can also use Fat-Free variables as containers for mapper objects.</p>
+
+<p>The <code>copyFrom()</code> method hydrates the Axon, M2 or Jig object with elements from a framework array variable, the array keys of which must have names identical to the mapper object properties, which in turn correspond to the record's field names. So, when a Web form is submitted (assuming the HTML name attribute is set to <code>userID</code>), the contents of that input field is transferred to <code>$_REQUEST['userID']</code>, duplicated by F3 in its <code>REQUEST.userID</code> variable, and saved to the Axon-mapped field <code>$user->userID</code> in the database. The process becomes very simple if they all have identically-named elements. Consistency in array keys, i.e. template token names, framework variable names and field names is key :)</p>
+
+<p>On the other hand, if we wanted to retrieve a record and copy the field values to a framework variable for later use, like template rendering:-</p>
+
+<pre>F3::set('user',new Axon('users'));
+F3::get('user')->load('userID="jane"');
+F3::get('user')->copyTo('REQUEST');</pre>
+
+<p>We can then assign <code>&#123;&#123;@REQUEST.userID&#125;&#125;</code> to the same input field's <code>value</code> attribute. To sum up, the HTML input field will look like this:-</p>
+
+<pre>&lt;input type="text" name="userID" value="&#123;&#123;@REQUEST.userID&#125;&#125;"/&gt;</pre>
+
+					</div>
+			<h3>Navigation and Pagination</h3>
+		<div class="article">
+									<p>By default, a data mapper's <code>load()</code> method retrieves only the first record that matches the specified criteria. If you have more than one that meets the same condition as the first record loaded, you can use the <code>skip()</code> method for navigation:-</p>
+
+<pre>$user=new Axon('users'); 	// $user=new M2('users');
+$user->load('visits>3'); // $user->load(array('visits'=>array('$gt'=>3)));
+// Display the userID of the first record that matches the criteria
+echo $user->userID;
+
+// Go to the next record that matches the same criteria
+$user->skip(); // Identical to $user->skip(1);
+
+// Back to the first record
+$user->skip(-1);
+
+// Move three records forward
+$user->skip(3);</pre>
+
+<p>Use the <code>dry()</code> method to check if you've maneuvered beyond the limits of the result set. <code>dry()</code> will return <code>TRUE</code> if you try <code>skip(-1)</code> on the first record. It will also return <code>TRUE</code> if you <code>skip(1)</code> on the last record that meets the retrieval criteria. Any further attempt to use the <code>skip()</code> method beyond the boundaries of the set will trigger an error.</p>
+
+<p>The <code>load()</code> method accepts a second argument: a string containing a comma-separated list of fields you want to use for determining sequence (the <code>ORDER</code> of records, in SQL).</p>
+					</div>
+			<h3>Virtual Fields</h3>
+		<div class="article">
+									<p>There are instances when you need to retrieve a computed value of a field, or a cross-referenced value from another table. Enter virtual fields. The Axon ORM gives you access to three methods that allow you to work on data derived from existing fields.</p>
+
+<p>First, the <code>def()</code> method. Suppose we have a table of <code>products</code> with fields <code>unitprice</code> and <code>quantity</code>. No <code>totalprice</code> field exists, so we can tell the framework to request from the database engine the arithmetic product of the two fields:-</p>
+
+<pre>$item=new Axon('products');
+$item->def('totalprice','unitprice*quantity');
+$item->load(array('productID=:pid',array(':pid'=>'apple')));
+echo $item->totalprice;</pre>
+
+<p>The above code snippet defines a virtual field called <code>totalprice</code> which is computed by multiplying <code>unitprice</code> by the <code>quantity</code>. The Axon ORM saves that rule/formula, so when the time comes to retrieve the record from the database, we can use the virtual field like a regular Axon-mapped field.</p>
+
+<p>You can have more complex virtual fields:-</p>
+
+<pre>$item=new Axon('products');
+$item->def('mostNumber','MAX(quantity)');
+$item->load();
+echo $item->mostNumber;</pre>
+
+<p>This time the framework retrieves the product with the highest <code>quantity</code> (notice the <code>load()</code> method does not define any criteria: all records in the table will be processed). Of course, the virtual field <code>mostNumber</code> will still give you the right figure if you wish to limit the expression to a specific group of records that match a specified criteria.</p>
+
+<p>You can also derive a value from another table:-</p>
+
+<pre>$item=new Axon('products');
+$item->def('buyersName',
+	'SELECT name FROM buyers WHERE products.buyerID=buyers.buyerID'
+);
+$item->load();
+echo $item->buyerName;</pre>
+
+<p>Every time you load a record from the <code>products</code> table, the Axon ORM cross-references the <code>buyerID</code> in the <code>products</code> table with the <code>buyerID</code> in the <code>buyers</code> table.</p>
+
+<p>To destroy a virtual field, use <code>$item->undef('totalPrice');</code>. The <code>$item->isdef('totalPrice')</code> expression returns <code>TRUE</code> if the <code>totalPrice</code> virtual field was defined, or <code>FALSE</code> if otherwise.</p>
+
+<p>Remember that a virtual field must be defined prior to data retrieval. The Axon ORM does not perform the actual computation, nor the derivation of results from another table. It is the database engine that does all the hard work.</p>
+					</div>
+			<h3>Seek and You Shall Find</h3>
+		<div class="article">
+									<p>If you have no need for record-by-record navigation, you can retrieve an entire batch of records in one shot:-</p>
+
+<pre>$frequentUsers=$user->find('visits&gt;3','userID');</pre>
+
+<p>and the equivalent code in M2 and Jig:-</p>
+
+<pre>$frequentUsers=$user->find(array('visits'=&gt;array('$gt'=&gt;3)),array('userID'=&gt;1));</pre>
+
+<p>The <code>find()</code> method searches the <code>users</code> table for records that match the criteria <code>visits&gt;3</code>, sorts the result by <code>userID</code> and returns the result as an array. The object <code>$user</code> is not altered in any way by the <code>find()</code> method. <code>find()</code> is only a convenience method. Declaring an empty condition, <code>NULL</code>, or a zero-length string as the first argument will retrieve all records. Be sure you know what you're doing - you might exceed PHP's <code>memory_limit</code> on large tables or collections.</p>
+
+<p>The <code>find()</code> method has the following syntax:-</p>
+
+<pre>find( [<i>criteria</i>],[<i>order</i>],[<i>limit</i>],[<i>offset</i>] );</pre>
+
+<p><code>find()</code> returns an array of objects. Each object is a mapper to a record that matches the specified criteria.:-</p>
+
+<pre>$place=new Axon('places');
+$list=$place->find('state="New York"');
+foreach ($list as $obj)
+	echo $obj->city.', '.$obj->country;</pre>
+
+<p>If you prefer working with simple arrays, instead of objects, use <code>afind()</code>:-</p>
+
+<pre>$place=new Axon('places');
+$list=$place->afind('state="New York"');
+foreach ($list as $obj)
+	echo $obj['city'].', '.$obj['country'];</pre>
+
+<p>To retrieve the number of records in a table that match a certain condition, use the <code>found()</code> method.</p>
+
+<pre>if (!$user->found('visits&gt;10'))
+	echo 'We need a better ad campaign!';</pre>
+
+<p>There's also a <code>lookup()</code> method that's similar to <code>find()</code> but provides more fine-grained controls. It has a SQL-like syntax:-</p>
+
+<pre>lookup( <i>fields</i>,[<i>criteria</i>],[<i>grouping</i>],[<i>order</i>],[<i>limit</i>],[<i>offset</i>] );</pre>
+
+<p>Much like the <code>find()</code> method, <code>lookup()</code> does not alter the Axon's contents. It only serves as a convenience method for querying an Axon-mapped table. The return value of these methods is an array. Using <code>dry()</code> to determine whether a record was found by an of these methods is inappropriate. If no records match the <code>find()</code> or <code>lookup()</code> criteria, the return value is an empty array. <code>select()</code> is an alias of <code>lookup()</code>. You can use them interchangeably.</p>
+					</div>
+			<h3>Sometimes It Just Ain't Enough</h3>
+		<div class="article">
+									<p>In most cases, you can live by the comforts given by the data mapper methods we've discussed so far. If you need the framework to do some heavy-duty work, you can extend the Axon mapper by declaring your own classes with custom methods - but you can't avoid getting your hands greasy on some hardcore SQL:-</p>
+
+<pre>class Vendor extends Axon {
+
+	// All Axon-derived classes MUST implement this method!
+	public function __construct() {
+		// This is where the Axon and DB structure synchronization occurs
+		$this->sync('vendors');
+		// This can also be used:-
+		// parent::__construct('vendors');
+	}
+
+	// Some plain vanilla SQL query
+	public function listByCity() {
+		DB::sql(
+			'SELECT vendorID,name,city FROM vendors '.
+			'ORDER BY city;'
+		);
+		return F3::get('DB')->result;
+		// We could have done the the same thing without SQL:-
+		// return $this->lookup('vendorID,name,city',NULL,NULL,'city');
+	}
+
+	// Axon ORM has various event listeners; This method is called
+	// automatically after the vendor record is deleted
+	public function afterErase() {
+		// We can interact with other Axons here; in this case, we do
+		// not want to leave orphan records in a related table
+		$product=new Product;
+		$items=$product->find('vendorID='.$this->vendorID);
+		foreach ($items as $item) {
+			$product->load('productId='.$item['productID']);
+			$product->erase();
+		}
+		// Of course, a good DBA would have created a SQL trigger at
+		// the database end so we don't have to do this programmatically
+	}
+}
+
+$vendor=new Vendor;
+$vendor->listByCity();
+$vendor->load('vendorID=12345');
+$vendor->erase();</pre>
+
+<p>M2 and Jig mappers can also be extended in similar fashion to form your application's models.</p>
+					</div>
+			<h3>Event Handlers</h3>
+		<div class="article">
+									<p>The inline comments in the previous example should be self-explanatory. In the case of event handlers, like the <code>afterErase()</code> method, the data mappers (Axon, Jig, and M2) allow you to define any (or all) of the following methods:-</p>
+
+<ul>
+	<li><code>beforeSync()</code></li>
+	<li><code>afterSync()</code></li>
+	<li><code>beforeLoad()</code></li>
+	<li><code>afterLoad()</code></li>
+	<li><code>beforeSave()</code></li>
+	<li><code>afterSave()</code></li>
+	<li><code>beforeErase()</code></li>
+	<li><code>afterErase()</code></li>
+</ul>
+					</div>
+			<h3>Pros and Cons</h3>
+		<div class="article">
+									<p>If you're handy with SQL, you'd probably say: everything in the ORM can be handled with old-school SQL queries. Indeed. We can do without the additional event listeners by using database triggers and stored procedures. We can accomplish relational queries with joined tables. The ORM is just unnecessary overhead. But the point is - the Axon ORM gives you the added functionality of using objects to represent database entities. As a developer, you can write code faster and be more productive. The resulting program will be cleaner, if not shorter. But you'll have to weigh the benefits against the compromise in speed - specially when handling large and complex data stores. Remember, all ORMS - no matter how thin they are - will always be just another abstraction layer. They still have to pass the work to the underlying SQL engines.</p>
+
+<p>By design, the Axon ORM does not provide methods for directly connecting objects to each other, i.e. SQL joins - because this opens up a can of worms. It makes your application more complex than it should be, and there's the tendency of objects thru eager or lazy fetching techniques to be deadlocked and even out of sync due to object inheritance and polymorphism (impedance mismatch) with the database entities they're mapped to. There are indirect ways of doing it in the Axon ORM, e.g. event listeners and virtual fields - but you'll have to do this programmatically and at your own risk.</p>
+
+<p>If you are tempted to apply "pure" OOP concepts in your application to represent all your data (because "everything is an object"), keep in mind that data almost always lives longer than the application. Your program may already be outdated long before the data has lost its value. Don't add another layer of complexity in your program by using intertwined objects and classes that deviate too much from the schema and physical structure of the data.</p>
+
+<p>Before you weave multiple objects together in your application to manipulate the underlying tables in your database, think about this: creating views to represent relationships and triggers to define object behavior in the database engine are more efficient. Relational database engines are designed to handle views, joined tables and triggers. They are not dumb data stores. Tables joined in a view will appear as a single table, and Fat-Free can auto-map a view just as well as a regular table. Replicating JOINs as relational objects in PHP is slower compared to the database engine's machine code, relational algebra and optimization logic. Besides, joining tables repeatedly in our application is a sure sign that the database design needs to be audited, and views considered an integral part of data retrieval. If a table cross-references data from another table frequently, consider creating a view instead. Then create an Axon to auto-map that view. It's faster and requires less effort.</p>
+
+<p>Consider this SQL view created inside your database engine:-</p>
+
+<pre>CREATE VIEW combined AS
+	SELECT
+		projects.project_id AS project,
+		users.name AS name
+	FROM
+		projects
+	LEFT OUTER JOIN users ON
+		projects.project_id=users.project_id AND
+		projects.user_id=users.user_id;</pre>
+
+<p>Your application code becomes simple because it does not have to maintain two Axons (one for the projects table and another for users) just to retrieve data from two joined tables:-</p>
+
+<pre>$combined=new Axon('combined');
+$combined->load('project=123');
+echo $combined->name;</pre>
+
+<blockquote>
+
+<h5>Tip:</h5>
+<p>Use the tools as they're designed for. Fat-Free already has an easy-to-use SQL helper. Use it if you need a bigger hammer :) Try to seek a balance between convenience and performance. SQL will always be your fallback if you're working on complex and legacy data structures.</p>
+
+</blockquote>
+					</div>
+		</div>
+					<a name="plug-ins"><h2>Plug-Ins</h2></a>
+															<div class="articles">
+			<h3>About F3 Plug-ins</h3>
+		<div class="article">
+									<p>Plug-ins are nothing more than autoloaded classes that use framework built-ins to extend F3's features and functionality. If you'd like to contribute, leave a note at the <a href="http://sourceforge.net/projects/fatfree/forums/forum/1041719">Fat-Free Developers Forum</a> or tell us about it in the FreeNode #fatfree IRC channel. Someone else might be involved in a similar project. The framework community will appreciate it a lot if we unify our efforts.</p>
+					</div>
+			<h3>Sitemaps</h3>
+		<div class="article">
+									<p>Need a sitemap so search engines can crawl your Web pages with ease? You don't have to do this by hand because Fat-Free has a dynamic sitemap generator that follows the XML sitemap protocol used by Google, Bing, Yahoo and Ask. It's fast because the framework doesn't rely on the PHP <code>libcurl</code> package to extract your site's contents. That's not all! It's really easy to use. Just add a route in your application:-</p>
+
+<pre>F3::route('GET /sitemap',
+	function() {
+		Web::sitemap();
+	}
+);</pre>
+
+<p>When you're done, add the following line to your <code>robots.txt</code> file in your Web root:-</p>
+
+<pre>Sitemap: http://www.example.com/sitemap</pre>
+
+<p>Then open your browser and "ping" your favorite search engines:-</p>
+
+<pre>http://www.google.com/webmasters/tools/ping?sitemap=http://www.example.com/sitemap
+http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=http://www.example.com/sitemap
+http://www.bing.com/webmaster/ping.aspx?siteMap=http://www.example.com/sitemap
+http://submissions.ask.com/ping?sitemap=http://www.example.com/sitemap</pre>
+
+<blockquote>
+
+<h5>Note:</h5>
+<p>Fat-Free crawls your Web site and generates sitemaps in real-time, i.e. when you add something to your Web page and a search engine tries to retrieve your sitemap, your updates will also be included in the latest sitemap. You should have no problem if you have a few hundred pages to index, but on larger sites, a separate script that sends the output of <code>Web::sitemap()</code> to a file on a periodic basis is recommended - due to the XML sitemap protocol's limits: 10MB uncompressed XML output or 50 thousand URLs. One more thing to consider, a low PHP <code>max_execution_time</code> setting might cause you application to terminate before the indexing of your Web pages is completed. You can, of course, use <code>set_time_limit(0);</code> in your code before calling the <code>Web::sitemap()</code> method.</p>
+
+</blockquote>
+					</div>
+			<h3>Resizing Images on the Fly</h3>
+		<div class="article">
+									<p>You'd probably be aware of the fact that resizing photos/images by hand to generate thumbnails for your Web site, specially if you have a huge photo/image library, is a very long and tedious process. Have no fear! The Web plug-in contains a thumbnail image creator that works seamlessly with F3's powerful cache engine. The effortless way of generating thumbnails is by simply adding a URL and route to your template and script, respectively. Here's some sample HTML:-</p>
+
+<pre>&lt;img src="/thumbs/logo.jpg" alt="Logo" title="Company logo"/&gt;
+&lt;img src="/thumbs/large.gif" alt="Large photo" title="1280x800 photo"/&gt;</pre>
+
+<p>In your script, you can have a route handler that transfers control to F3's thumbnail creator:-</p>
+
+<pre>F3::route('GET /thumbs/@file',
+	function() {
+		Graphics::thumb(F3::get('PARAMS[file]'),360,240);
+	},
+	86400
+);</pre>
+
+<p>If Fat-Free detects an incoming HTTP request that contains <code>/thumbs</code> in the URL, it looks for the corresponding route in your script and executes the associated handler. The filename following <code>/thumbs</code> is captured at runtime. In our first HTML tag, <code>logo.jpg</code> is sent to <code>Graphics::thumb()</code>, which then resizes the image down to a maximum width of 360 pixels width and a maximum height of 240 pixels. <code>Graphics::thumb()</code> does not change the aspect ratio of images, so the thumbnail images created follow the same proportions as the original images. Like cached routes, F3 stores the thumbnail image that it automatically created in the cache for a period of 86400 seconds (24 hours) on the server-side and instructs the Web browser to do the same on the client-side.</p>
+					</div>
+			<h3>Sometimes a Fake Can Be a Good Subtitute for the Real Thing</h3>
+		<div class="article">
+									<p>If you ever need to insert some graphic images in your Web pages but haven't found the right one yet, you can call on the <pre>Graphics::fakeimage()</pre> method to help you out. Create a route handler:-</p>
+
+<pre>F3::route('GET /blank',
+	function() {
+		Graphics::fakeimage($_REQUEST['width'],$_REQUEST['height']);
+	}
+);</pre>
+
+<p>Then point your HTML img tag to the specified route:-</p>
+
+<pre>&lt;img src="/blank?width=150&height=240"/&gt;</pre>
+
+<p>Voila! You get what you asked for. It's not a pretty view - just a plain gray image, but it should help you with your page dimensions, CSS alignments, etc. You can change the color by specifying a 3- or 6-character hex triad as a third argument to the <code>Graphics::fakeimage()</code> method, e.g. <code>C0D9D9</code> (light blue).</p>
+					</div>
+			<h3>Identicons</h3>
+		<div class="article">
+									<p>Popularized by the Web 2.0 culture, identicons are almost everywhere. You'll see these kaleidoscope images in most blogs and forums. They're automatically generated for people who have not uploaded their photos/avatars in these sites. Now you don't have to ask Web site members and visitors to subscribe to a service like <a href="http://gravatar.com">Gravatar</a> just so you can have identicons for them. F3 has its own <code>Graphics::identicon()</code> method to work for you. First, you need some unique user attribute, such as an e-mail address, user ID, IP address, etc. - something that's different for every user in your application:-</p>
+
+<pre>F3::set('users',
+	array(
+		array(
+			"id"=>"tarzan",
+			"email"=>"tarzan@example.com"
+		),
+		array(
+			"id"=>"jane",
+			"email"=>""jane@example.com"
+		)
+	)
+);
+F3::serve('articles.htm');</pre>
+
+<p>You'd normally be retrieving this information from a database - but let's use an array here so we can keep it simple. Exposing personal information is a big no-no, so you need some code fragment that generates an MD5 (or SHA1) hash from users' e-mail addresses. You can do it in your your template (this qualifies as presentation logic, but if you're an MVC purist, you can also have it in your Fat-Free script - let's not have any argument here). Time to add the <code>&lt;img/&gt;</code> placeholders for your users' identicons:-</p>
+
+<pre>&lt;F3::repeat group="{@users}" value="{@user}"&gt;
+	&lt;img src="/identicons/{sha1(@user.email)}" title="{@user.id}"/&gt;
+	// We can associate this identicon with a user's comment,
+	// blog article or forum post
+&lt;/F3:repeat&gt;</pre>
+
+<p>Any hash function that generates at least 12 hex digits in the resulting string should work. That's enough to generate more than a trillion combinations of colors and shapes possible with <code>Graphics::identicon()</code>.</p>
+
+<p>In your main (front) controller, you can have the following route handler that caches the images for 24 hours (server-side and client-side):-</p>
+
+<pre>F3::route('GET /identicons/@hash',
+	function() {
+		Graphics::identicon(F3::get('@PARAMS.hash'));
+		// or Graphics::identicon('{@PARAMS.hash}');
+	},
+	86400
+);</pre>
+
+<p>Once your application is up and running, you'll see the following images generated by the framework:-</p>
+
+<table style="margin:0 auto; width:240px;">
+	<tr>
+		<td style="text-align:center;"><p><code>Tarzan</code></p><p><img src="/asset/identicon-tarzan.png" alt="Tarzan" title="Tarzan"/></p></td>
+		<td style="text-align:center;"><p><code>Jane</code></p><p><img src="/asset/identicon-jane.png" alt="Jane" title="Jane"/></p></td>
+	</tr>
+</table>
+
+<p>The default size of Fat-Free identicons is 64x64 pixels. You can change the default by adding an integer as the second argument. For example, 48x48 pixels would translate to:-</p>
+
+<pre>Graphics::identicon('&#123;&#123;@PARAMS.hash&#125;&#125;',48));</pre>
+					</div>
+			<h3>Grabbing Data from Another Site</h3>
+		<div class="article">
+									<p>We've covered almost every feature available in the framework to run a stand-alone Web server. For most applications, these features will serve you quite well. But what do you do if your application needs data from another Web server on the network? F3 has the <code>Web::http()</code> method to help you in this situation:-</p>
+
+<pre>$contents=Web::http('GET http://www.yahoo.com');</pre>
+
+<p>This simple example retrieves the contents of the Web page located at <code>www.yahoo.com</code> and stores it in the <code>$contents</code> PHP variable. We could have saved the contents using the <code>F3::set</code> command, or <code>echo</code>'ed the output directly to our browser. Retrieving another HTML page on the net may not have any practical purpose. But how about a dynamic Google Map on your site?</p>
+
+<pre>echo Web::http(
+	'GET http://maps.google.com/maps/api/staticmap',
+	http_build_query(
+		array(
+			'center'=>'Brooklyn Bridge, New York, NY',
+			'zoom'=>14,
+			'size'=>'512x512',
+			'maptype'=>'roadmap',
+			'sensor'=>'true'
+		)
+	)
+);</pre>
+
+<p>The framework forwards the target server's HTTP headers to our Web server automatically so the output is rendered properly.</p>
+
+<p>Although optional, you can pass an array of additional HTTP headers (including cookies) as an argument to the <code>Web::http()</code> method:-</p>
+
+<pre>echo Web::http(
+	'POST https://www.example.com:443/',
+	http_build_query(
+		array('key1'=>'value1','key2'=>'value2')
+	),
+	array(
+		'Accept: text/html,application/xhtml+xml,application/xml',
+		'Accept-Language: en-us'
+	)
+);</pre>
+
+<p>If the server you are sending the request to uses a non-standard port number (80 for HTTP, 443 for HTTPS), specify the correct TCP port as part of the URI pattern. Port 443 in our sample HTTPS request is optional.</p>
+
+<p><code>Web::http()</code> follows HTTP 30x redirects faithfully and returns the contents of the page it was redirected to. It can also handle compressed pages if the target Web server supports it. It's a mini-Web browser built into the framework. You can even use it as a remote component for unit testing.</p>
+
+<p>Fat-Free doesn't need <code>libcurl</code> for the <code>Web::http()</code> method to run.</p>
+
+<blockquote>
+
+<h5>Remoting and Distributed Applications</h5>
+<p>The <code>Web::http()</code> method can also be used in complex SOAP or XML-RPC applications - if you find the need for another Web server to process data on your computer's behalf - thus harnessing the power of distributing computing. W3Schools.com has an excellent tutorial on <a href="http://www.w3schools.com/soap/default.asp">SOAP</a>. On the other hand, TutorialsPoint.com gives a nice overview of <a href="http://www.tutorialspoint.com/xml-rpc/index.htm">XML-RPC</a>.</p>
+
+</blockquote>
+					</div>
+		</div>
+					<a name="optimization"><h2>Optimization</h2></a>
+															<div class="articles">
+			<h3>Cache Engine</h3>
+		<div class="article">
+									<p>Caching static Web pages - so the code in some route handlers can be skipped and templates don't have to be reprocessed - is one way of reducing your Web server's work load so it can focus on other tasks. You can activate the framework's cache engine by providing a third argument to the <code>F3::route()</code> method. Just specify the number of seconds before a cached Web page expires:-</p>
+
+<pre>F3::route('GET /my_page','my_func',60);</pre>
+
+<p>Here's how it works. In this example, when F3 detects that the URL <code>/my_page</code> is accessed for the first time, it executes <code>my_func()</code> and saves all browser output to the framework's built-in cache (server-side). A similar instruction is automatically sent to the user's Web browser (client-side), so that instead of sending an identical request to the server within the 60-second period, the browser can just retrieve the page locally. The framework uses the cache for an entirely different purpose - serving framework-cached data to other users asking for the same Web page within the 60-second time frame. It skips execution of <code>my_func()</code> and serves the previously-saved page directly from disk. When someone tries to access the same URL after the 60-second timer has lapsed, F3 will refresh the cache with a new copy.</p>
+
+<p>Web pages with static data are the most likely candidates for caching. Fat-Free will not cache a Web page at a specified URL if the third argument in the <code>F3::route()</code> method is zero or unspecified.</p>
+
+<p>Here's an important point to consider when designing your application. Don't cache Web pages unless you understand the possible unwanted side-effects of the cache at the client-side. Make sure that you activate caching on Web pages that have nothing to do with the user's session state.</p>
+
+<p>For example, you designed your site in such a way that all your Web pages have the menu options: <code>"Home"</code>, <code>"About Us"</code>, and <code>"Login"</code>, displayed when a user is not logged into your application. You also want the menu options to change to: <code>"Home"</code>, <code>"About Us"</code>, and <code>"Logout"</code>, once the user has logged in. If you instructed Fat-Free to cache the contents of <code>"About Us"</code> page (which includes the menu options), it does so and also sends the same instruction to the HTTP client. Regardless of the user's session state, i.e. logged in or logged out, the user's browser will take a snapshot of the page at the session state it was in. Future requests by the user for the <code>"About Us"</code> page before the cache timeout expires will display the same menu options available at that time the page was initially saved. Now, a user may have already logged in, but the menu options are still the same as if no such event occurred. That's not the kind of behavior we want from our application. Some pointers:-</p>
+
+<ul>
+	<li>Don't cache dynamic pages. It's quite obvious you don't want to cache data that changes frequently. You can, however, activate caching on pages that contain data updated on an hourly, daily or even yearly basis.</li>
+	<li>For security reasons, the framework restricts cache engine usage to HTTP GET routes only. It will not cache submitted forms!</li>
+	<li>Don't activate the cache on Web pages that at first glance look static. In our example, the <code>"About Us"</code> content may be static, but the menu isn't.</li>
+	<li>Activate caching on pages that are available only in ONE session state. If you want to cache the <code>"About Us"</code> page, make sure it's available only when a user is not logged in.</li>
+	<li>For security reasons, don't cache URLs that call the CAPTCHA image generator. CAPTCHA images should always be fresh.</li>
+	<li>If you have a RAMdisk, configure the <code>CACHE</code> global variable so it points to that drive. This will make your application run like a Formula 1 race car.</li>
+</ul>
+
+<p>One additional note: Don't set the timeout value to a very long period until you're ready to roll out your application, i.e. the release or production state. Changes you make to any of your PHP scripts may not have the expected effect on the displayed output if the page exists in the framework cache and the expiration period has not lapsed. If you do alter a program that generates a page affected by the cache timer and you want these changes to take effect immediately, you should clear the cache by erasing the files in the <code>cache/</code> directory (or whatever path the <code>CACHE</code> global variable points to). F3 will automatically refresh the cache if necessary. At the client-side, there's little you can do but instruct the user to clear the browser's cache or wait for the cache period to expire.</p>
+
+<p>PHP needs to be set up correctly for the F3 cache engine to work properly. Your operating system timezone should be synchronized with the <code>date.timezone</code> setting in the <code>php.ini</code> file.</p>
+
+<p>Similar to routes, Fat-Free also allows you to cache database queries. Speed gains can be quite significant, specially when used on complex SQL statements that involve look-up of static data or database content that rarely changes. Activating the database query cache so the framework doesn't have to re-execute the SQL statements every time is as simple as adding a 3rd argument to the F3::sql command - the cache timeout. For example:-</p>
+
+<pre>F3::sql('SELECT * from sizes;',NULL,86400);</pre>
+
+<p>If we expect the result of this database query to always be <code>Small</code>, <code>Medium</code>, and <code>Large</code> within a 24-hour period, we specify <code>86400</code> seconds as the 2nd argument so Fat-Free doesn't have to execute the query more than once a day. Instead, the framework will store the result in the cache, retrieve it from the cache every time a request comes in during the specified 24-hour time frame, and re-execute the query when the timer lapses.</p>
+
+<p>The Axon ORM also uses the cache engine to optimize synchronization of table structures with the Axon objects that represent them. The default is <code>60</code> seconds. If you make any changes to a table's structure in your database engine, you'll have to wait for the cache timer to expire before seeing the effect in your application. You can change this behavior by adjusting the <code>SYNC</code> global variable. Set it to a high value if you don't expect to make any further changes to your table structure.</p>
+
+<p>By default, Fat-Free's cache engine auto-detects PHP extensions and uses an appropriate back-end, such as APC, XCache, etc. If none are installed, F3 uses the filesystem, i.e. the <code>cache/</code> folder in your Web root, and the <code>CACHE</code> global variable is set to the value <code>folder=cache/</code>. To override the auto-detected setting:-</p>
+
+<pre>F3::set('CACHE','apc');
+// or F3::set('CACHE','xcache');</pre>
+
+<p>MemCache isn't auto-detected because you need to set up some parameters to use it. If you have MemCache installed, you can configure the cache engine this way:-</p>
+
+<pre>F3::set('CACHE','memcache=cache.example.com:11211');
+// If you have multiple MemCache servers, do it this way:
+// F3::set('CACHE','memcache=server1.example.com;server2.example.com');
+// Fat-Free will use default port 11211 if not specified</pre>
+
+<p>If you have none of the above PHP extensions installed, Fat-Free uses the <code>cache/</code> folder as the default:-</p>
+
+<pre>F3::set('CACHE','folder=tmp/');</pre>
+
+<p>Disabling the cache is as simple as:-</p>
+
+<pre>F3::set('CACHE',FALSE);</pre>
+
+<p>You can also use the cache engine to store your own variables. These variables will persist between HTTP requests and remain in cache until the engine receives instructions to delete them. To save a value in the cache:-</p>
+
+<pre>F3::set('var','I want this value saved',TRUE);</pre>
+
+<p><code>F3::set()</code> method's third argument instructs the framework to save the variable in the cache. When it sees an <code>F3::get('var')</code>, it will automatically retrieve the value from cache. In like manner, an <code>F3::clear('var')</code> will purge the value from both cache and RAM. If you want to determine if a variable exists in cache, <code>F3::cached('var'));</code> returns one of two possible values: <code>FALSE</code> if the framework variable passed does not exist in cache, or an integer representing the time the variable was saved (Un*x time in seconds).</p>					</div>
+			<h3>Keeping Javascript and CSS on a Healthy Diet</h3>
+		<div class="article">
+									<p>Fat-Free also has a Javascript and CSS compressor available in the Web plug-in. It can combine all your CSS files into one stylesheet (or Javascript files into a single script) so the number of components on a Web page are decreased. Reducing the number of HTTP requests to your Web server results in faster page loading. First you need to prepare your HTML template so it can take advantage of this feature. Something like:-</p>
+
+<pre>&lt;link rel="stylesheet" type="text/css"
+	href="/min?base=css/&amp;files=typo.css,grid.css"/&gt;</pre>
+
+<p>Do the same with your Javascript files:-</p>
+
+<pre>&lt;script type="text/javascript" src="/min?base=js/&amp;files=jquery.js,mylib.js"&gt;
+&lt/script&gt;</pre>
+
+<p>Of course we need to set up a route so your application can handle the necessary call to the Fat-Free CSS/Javascript compressor:-</p>
+
+<pre>F3::route('GET /min',
+	function() {
+		Web::minify($_GET['base'],explode(',',$_GET['files']));
+	},
+	3600
+);</pre>
+
+<p>And that's all there is to it! <code>Web::minify</code> reads each file (<code>typo.css</code> and <code>grid.css</code> in our CSS example, <code>jquery.js</code> and <code>mylib.js</code> in our Javascript example), strips off all unnecessary whitespaces and comments, combines all of the related items as a single Web page component, and attaches a far-future expiry date so the user's Web browser can cache the data. It's important that the HTTP GET variable <code>base</code> points to the correct path. Otherwise, the URL rewriting mechanism inside the compressor won't find the CSS/Javascript files.</p>
+
+<blockquote>
+
+<h5>Note:</h5>
+<p>Like other Javascript/CSS compression engines, Fat-Free will not go to the trouble of compressing CSS files defined by the <code>@import</code> directive. Add the <code>@import</code> files to the <code>/min</code> route's <code>files</code> variable instead.</p>
+
+</blockquote>
+					</div>
+			<h3>Client-Side Caching</h3>
+		<div class="article">
+									<p>In our examples, the framework sends a far-future expiry date to the client's Web browser so any request for the same CSS or Javascript block will come from the user's hard drive. On the server side, F3 will check each request and see if the CSS or Javascript blocks have already been cached. The route we specified has a cache refresh period of <code>3600</code> seconds. Additionally, if the Web browser sends an <code>If-Modified-Since</code> request header and the framework sees the cache hasn't changed, F3 just sends an HTTP 304 Not Modified response so no content is actually delivered. Without the <code>If-Modified-Since</code> header, Fat-Free renders the output from the cached file if available. Otherwise, the relevant code is executed.</p>
+
+<blockquote>
+
+<h5>Tip:</h5>
+<p>If you're not modifying your Javascript/CSS files frequently (as it would be if you're using a Javascript library like jQuery, MooTools, Dojo, etc.), consider adding a cache timer to the route leading to your Javascript/CSS minify handler (3rd argument of <code>F3::route()</code>) so Fat-Free doesn't have compress and combine these files each time such a request is received.</p>
+
+</blockquote>
+					</div>
+			<h3>PHP Code Acceleration</h3>
+		<div class="article">
+									<p>Want to make your site run even faster? Fat-Free works best with either <a href="http://php.net/manual/en/book.apc.php">Alternative PHP Cache</a> (APC) or <a href="http://eaccelerator.net/">eAccelerator</a>. Both PHP extensions boost performance of your application by optimizing your PHP scripts (including the framework code). Choose one or the other. APC and eAccelerator are PECL extensions but they're not bundled with PHP.</p>
+
+<blockquote>
+
+<h5>For Windows Users:</h5>
+<p>If you want a hassle-free Windows server installation of the latest stable releases of PHP (5.3.3) with APC (3.1.3p1), MySQL (5.1.52), Apache (2.2.17), Adminer (3.0.1), and MemCached (1.2.4b), head over to the <a href="http://zwamp.sourceforge.net">Z:WAMP project site</a> to download the server pack.</p>
+<p>It's preconfigured to work with F3 right out of the box.</p>
+
+</blockquote>
+
+<p>For more information regarding the installation of APC on other operating systems, visit <a href="http://www.php.net/manual/en/apc.installation.php">http://www.php.net/manual/en/apc.installation.php</a>.</p>
+
+<p>On the other hand, the eAccelerator project is located at <a href="http://eaccelerator.net/">http://eaccelerator.net</a>.</p>
+					</div>
+			<h3>Sending Spammers to a Blackhole</h3>
+		<div class="article">
+									<p>An important feature of Fat-Free not found in any other framework is its ability to detect spammers by cross-referencing a user's IP address against public spam registries like SORBS, SpamCop, SpamHaus, etc. You can redirect spammers to a URL contained in the <code>SPAM</code> global variable. Use it to send a spammer automatically to another site, or a page on your site that informs the user why access to your application is prohibited. Assign a spam blacklist service to the <code>DNSBL</code> global variable to validate a user's IP address against it. If you want to check against several systems:-</p>
+
+<pre>F3::set('DNSBL','dnsbl.sorbs.net; xbl.spamhaus.org; ubl.lashback.com');</pre>
+
+<p>A list of active registries can be found at: <code><a href="http://www.dnsbl.info/dnsbl-list.php">http://www.dnsbl.info/dnsbl-list.php</a></code>.</p>
+
+<p>The framework's default action, if the <code>SPAM</code> global variable is not set, is to generate an HTTP 404 message so your application is automatically protected.</p>
+
+<p>Given this behavior, if you selected a blacklist service and you're geting a 404 message yourself when you deploy your application, be it on a shared host or a <a href="http://webhostingsearch.com/virtual-private-server.php" target="_blank">virtual private server</a>, chances are high that your IP address belongs to a blacklisted IP range. If you're not comfortable with this, change the <code>DNSBL</code> global variable so it uses another blacklist, like SORBS, SpamHaus XBL or NJABL. To find out if your IP address is blacklisted somewhere, go to <code><a href="http://whatismyipaddress.com/staticpages/index.php/is-my-ip-address-blacklisted">http://whatismyipaddress.com/staticpages/index.php/is-my-ip-address-blacklisted</a></code>.</p>
+
+<p>You may also use the <code>EXEMPT</code> global variable to specify a list of IP addresses that should not be checked against the <code>DNSBL</code>. The default value of <code>EXEMPT</code> is <code>127.0.0.1</code>.</p>
+					</div>
+			<h3>Bandwidth Throttling</h3>
+		<div class="article">
+									<p>A fast application that processes all HTTP requests and responds to them at the shortest time possible is not always a good idea - specially if your bandwidth is limited or traffic on your Web site is particularly heavy. Serving pages ASAP also makes your application vulnerable to Denial-of-Service (DOS) attacks. F3 has a bandwidth throttling feature that allows you to control how fast your Web pages are served. The global variable <code>THROTTLE</code> specifies how much time it should take to process each request:-</p>
+
+<pre>F3::set('THROTTLE',300);</pre>
+
+<p>In this example, the framework will serve the Web page NOT earlier than 300 milliseconds.</p>
+
+<p>The <code>THROTTLE</code> setting applies to all Web pages on your site. You can also define response time of specific routes:-</p>
+
+<pre>F3::route(
+	'GET /login', // the route being throttled
+	'routeHandler',
+	FALSE, // page contains a form; do not cache
+	300 // throttle the login page
+);</pre>
+
+<p>Bandwidth throttling at the application level is good protection against hackers trying to break into a user's account using dictionary attacks. Delayed responses in these cases is a good way of mitigating this kind of security risk.</p>
+					</div>
+			<h3>Handling File Downloads</h3>
+		<div class="article">
+									<p>F3 has a utility for sending files to an HTTP client, i.e. fulfilling download requests. <code>F3::send()</code> doesn't expose the real path to your download files. This adds some layer of security because users won't be able to download files if they don't know the file names and their locations. Here's how you use it:-</p>
+
+<pre>// Define a virtual path
+F3::route('GET /downloads/@filename',
+	function() {
+		// send method returns FALSE if file doesn't exist
+		if (!F3::send('/real/path/&#123;&#123;@filename&#125;&#125;',256))
+			// Generate an HTTP 404
+			F3::http404();
+	}
+);</pre>
+
+<p>Your HTML links for the downloadable files will then look something like these:-</p>
+
+<pre>&lt;a href="/downloads/win1.2.3.msi"&gt;Windows MSI package&lt;/a&gt;
+&lt;a href="/downloads/win1.2.3.exe"&gt;Windows EXE version&lt;/a&gt;
+&lt;a href="/downloads/linux1.2.3.tgz"&gt;Linux version&lt;/a&gt;</pre>
+
+<p>If you have data coming from an array or a database, the HTML fragment will look similar:-</p>
+
+<pre>&lt;F3:repeat group="&#123;&#123;@files&#125;&#125;" value="&#123;&#123;@file&#125;&#125;"&gt;
+	&lt;a href="/downloads/&#123;&#123;@file.name&#125;&#125;"&gt;&#123;&#123;@file.description&#125;&#125;&lt;/a&gt;
+&lt;/F3:repeat&gt;</pre>
+
+<p>F3 allows you to control file transfer rates, so no single user can monopolize network bandwidth. Say you want users to download files at a maximum rate of 256 kilobytes per second, just specify 256 as the second argument to the <code>F3::send()</code> command, as shown above.</p>
+					</div>
+			<h3>Code Profiling</h3>
+		<div class="article">
+									<p>F3 can also help you when you need to conduct an analysis of a running application and identifying performance bottlenecks. The built-in code profiler automatically gathers all the information you need to understand your program's behavior. The <code>F3::profile()</code> method returns an array structured as follows:-</p>
+
+<pre>TIME (Unix timestamps with microseconds)
+	start (float) The time the framework was loaded
+	elapsed (float) Number of seconds
+MEMORY (all figures in bytes)
+	start (integer) Framework base line
+	current (integer) Memory consumed at time F3::profile was issued
+	peak (integer Peak memory allocated by PHP to application
+DB
+	cache (array) cached queries and number of times called
+	queries (array) executed queries and number of occurrences
+FILES (file sizes in bytes)
+	includes (array) all PHP include files and file sizes
+	minified (array) all minified files and file sizes
+CACHE
+	level-1
+		hits (integer)
+		misses (integer)
+	level-2
+		hits (integer)
+		misses (integer)</pre>
+
+<p><code>F3::profile()</code> can prove really valuable during unit testing and performance audit of your programs. You can invoke this method any number of times in your code to help you gain optimum performance - in your code and programming efforts. If you do a lot of tweaking in your application, it might be a good idea to have a template specifically designed for presentation of profiler-generated data.</p>
+					</div>
+		</div>
+					<a name="unit-testing"><h2>Unit Testing</h2></a>
+															<div class="articles">
+			<h3>Bullet-Proof Code</h3>
+		<div class="article">
+									<p>Robust applications are the result of comprehensive testing. Verifying that each part of your program conforms to the specifications and lives up to the expectations of the end-user means finding bugs and fixing them as early as possible in the application development cycle.</p>
+
+<p>If you know little or nothing about unit testing methodologies, you'd probably embed pieces of code directly in your existing program to help you with debugging. That of course means you have to remove them once the program is running. Leftover code fragments, poor design and faulty implementation can creep up as bugs when you roll out your application later.</p>
+
+<p>F3 makes it easy for you to debug programs - without getting in the way of your regular thought processes. The framework does not require you to build complex OOP classes, heavy test structures, and obtrusive procedures.</p>
+
+<p>A unit (or test fixture) can be a function, an OOP class, an import file, and even an entire application. Let's have a simple example:-</p>
+
+<pre>require_once 'lib/base.php';
+F3::route('GET /','home');
+	function home() {
+		echo 'Hello, world!';
+	}
+F3::run();
+</pre>
+
+<p>Save it as <code>index.php</code>. Now how do we know it really runs as expected? Let's create our test procedure:-</p>
+
+<pre>require_once 'lib/base.php';
+
+// Set up
+F3::clear('TEST');
+F3::mock('GET /');
+
+F3::call('index.php'); // Our test fixture will run in a sandbox
+
+// This is where the tests begin
+F3::expect(F3::get('RESPONSE'),'Passed','Failed: No response');
+F3::expect('&#123;&#123;is_string(@RESPONSE)&#125;&#125;','OK','Failed: Not a string');
+F3::expect('&#123;&#123;strlen(@RESPONSE)&lt;120&#125;&#125;','Great!','Failed: Too long');
+F3::expect('&#123;&#123;!@ERROR&#125;&#125;','Done','Failed: An error occurred');
+
+// Display the results of each test
+foreach (F3::get('TEST') as $test) {
+	echo $test['text'].'&lt;br/&gt;';
+	if ($test['result'])
+		$passed++;
+	else
+		$failed++;
+}
+echo '&lt;br/&gt;';
+
+// If you have no need for detailed messages, you can do this:
+// rotate TEST array variable so rows become columns, and vice-versa
+F3::set('TEST',Matrix::transpose(F3::get('TEST')));
+// then, distribute the number of passed/failed tests
+list($passed,$failed)=array_count_values(F3::get('TEST.result'));
+
+if ($failed) echo 'Our test fixture failed in '.$failed.' tests.';
+else echo 'Hoohah!';</pre>
+
+<p>Save it as <code>test.php</code> - in the same folder as <code>index.php</code>. Our test procedure is not a part of <code>index.php</code> at all. This way we can preserve the integrity of <code>index.php</code>. Let's analyze each line:-</p>
+
+<p>The first line instructs PHP to fire up the framework so we can perform unit testing. Fat-Free uses a global variable called <code>TEST</code> as a stack for tracking the results of unit tests. We would normally clear this variable every time we start a new test case/suite. Just so we're sure it's empty, we issue the <code>F3::clear()</code> command. <code>F3::mock()</code> simulates an incoming HTTP <code>GET</code> request for a <code>/</code> URL - which we know <code>index.php</code> is capable of handling. (Any other route is beyond the bounds of our testing procedure.) <code>F3::call('index.php')</code> instructs the framework to load <code>index.php</code> - like a regular F3 import file!</p>
+					</div>
+			<h3>Expecting the Worst that can Happen</h3>
+		<div class="article">
+									<p>Now here's the meat of our unit testing process.</p>
+
+<p>The line <code>F3::expect(F3::get('RESPONSE'),'Passed','Failed: No response');</code> means: retrieve the output generated by <code>index.php</code> and test if there was any HTTP response at all sent to the browser. If that test succeeds, Fat-Free creates a new element in the <code>TEST</code> global variable (used internally as a stack). If the test succeeds, the <code>TEST</code> global variable will have a new element equivalent to: <code>array(TRUE,'Passed')</code>. Otherwise, <code>array(FALSE,'Failed: No response')</code> is appended.</p>
+
+<blockquote>
+
+<h5>Note:</h5>
+<p>You don't have to use the <code>F3::mock()</code> command and <code>RESPONSE</code> global variable at all if your test fixture does not involve HTTP.</p>
+
+</blockquote>
+
+<p>The lines containing <code>is_string(&#123;&#123;@RESPONSE&#125;&#125;)</code>, <code>strlen(&#123;&#123;@RESPONSE&#125;&#125;)</code>, and <code>!@ERROR</code> demonstrate how you can employ template tokens as input to the <code>F3::expect()</code> method.</p>
+
+<p>Now that we have informed Fat-Free about the possible scenarios that could result in failures in our tiny program, we then process the <code>TEST</code> global variable. The <code>foreach</code> loop just cycles through the values stored in our <code>TEST</code> global variable and displays a success/failure message. The statement <code>list($fail,$pass)=array_count_values(F3::get('TEST'));</code> counts the number of failed or successful tests.</p>
+
+<p>Beyond that statement, Fat-Free gives you the freedom to display test results in any way you want. You can have the output in XML, YAML, a regular text file or even a nice-looking HTML template!</p>
+
+<p>How do we run our unit test? Simple. Since you saved <code>test.php</code> in the same folder as <code>index.php</code>, you just open your browser and specify the address <code>http://<i>localhost</i>/test.php</code>. That's all there is to it.</p>
+					</div>
+			<h3>Husshh!</h3>
+		<div class="article">
+									<p>Fat-Free has a <code>QUIET</code> global variable that you can use to suppress or display output during testing. Setting it to <code>TRUE</code> (the default is <code>FALSE</code>) will instruct the framework to ignore all output generated by <code>echo/print</code> commands in your application. The <code>RESPONSE</code> global variable will still contain the actual output.</p>
+
+<p>The framework also suppresses error log messages if <code>QUIET</code> is set to <code>TRUE</code>.</p>					</div>
+			<h3>The Black Box</h3>
+		<div class="article">
+									<p>When writing unit tests, start with the smallest application components first - functions and class/object methods. Say, we want to know if the following function will not fail:-</p>
+
+<pre>function blackbox($x,$y) {
+	// Internals shouldn't matter for now;
+	// We're just interested in the return value
+}</pre>
+
+<p>Let's subject this component to our first test:-</p>
+
+<pre>F3::clear('TEST');
+F3::call('blackbox.php'); // where our function is saved
+F3::expect(blackbox(1,2)==3,'Result is 3','Result is incorrect');
+echo F3::get('TEST[0].text');</pre>
+
+<p>This is what we get:-</p>
+
+<pre>Result is 3</pre>
+
+<p>So we got the result we expected. Adding more test cases with integer arguments shouldn't be any different from the above <tt>expect()</tt> statement. Suppose we wish to find out how the function will handle invalid input. You might be tempted to write something like:-</p>
+
+<pre>F3::expect(blackbox(1)===FALSE,'Incorrect number of arguments','How did this happen?');
+echo F3::get('TEST[1].text'));</pre>
+
+<p>That's fine if <tt>blackbox()</tt> contains code that instructs it to behave nicely and allows our program to display the result of all tests in an organized manner. However, if the application triggers an error:-</p>
+
+<blockquote>
+
+<h3>Internal Server Error</h3>
+<p><i>Missing argument 2 for blackbox(), called in /var/www/htdocs/test.php on line 9 and defined</i></p>
+<p>#0 /var/www/htdocs/test.php:9 F3::expect()</p>
+
+</blockquote>
+
+<p>This messes up our plan to present the test results properly. Let's rewrite the last code snippet a bit to tame this beast:-</p>
+
+<pre>F3::set('QUIET',TRUE);
+blackbox(1);
+F3::set('QUIET',FALSE);
+F3::expect(F3::get('ERROR.code')==500,'Internal error expected','No error triggered');
+echo F3::get('TEST[1].text'));</pre>
+
+<p>Here's how it works. The first line instructs F3 to suppress all output, including error pages, but capture the result and store it in the <code>RESPONSE</code> variable. The framework will also populate the <code>ERROR</code> variable with the appropriate values should any error condition occur. After this preparation, the framework executes the second line. We don't care about the return value right now. Let's find out if the function triggers an error and the error reported is indeed the right one. That's what the <code>expect()</code> call does in our example above.</p>
+
+<p>This is another way of presenting the test results, using an F3 template:-</p>
+
+<pre>&lt;ul&gt;
+	&lt;F3:repeat group="&#123;&#123;@TEST&#125;&#125;" value="&#123;&#123;@case&#125;&#125;"&gt;
+		&lt;li class="&#123;&#123;@case.result?'pass':'fail'&#125;&#125;&gt;&#123;&#123;@case.text&#125;&#125;&lt;/li&gt;
+	&lt;/F3:repeat&gt;
+&lt;/ul&gt;</pre>
+
+<p>The template engine will loop through each element of the <code>TEST</code> array, and display each line with a reference to one of two CSS classes: <code>pass</code> is rendered in green and <code>fail</code> appears in red. The general idea is that simple visual cues should be enough to tell you at runtime if your test fixture has problems.</p>
+
+<p>Once you get the hang of testing the smallest units of your application, you can then move on to the bigger components, modules, and subsystems - checking along the way if the parts are correctly communicating with each other. Testing manageable chunks of code leads to more reliable programs that work as you expect, and weaves the testing process into the fabric of your development cycle. The question to ask yourself is:- Have I tested all possible scenarios? More often than not, those situations that have not been taken into consideration are the likely causes of bugs. Unit testing helps a lot in minimizing these occurrences. Even a few tests on each fixture can greatly reduce headaches. On the other hand, writing applications without unit testing at all invites trouble.</p>
+					</div>
+		</div>
+					<a name="quick-reference"><h2>Quick Reference</h2></a>
+															<div class="articles">
+			<h3>System Variables</h3>
+		<div class="article">
+									<h5><small>string</small> AUTOLOAD</h5>
+
+<p>Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. If a static <code>onload()</code> method is defined in an autoloaded class, it is automatically executed before the method associated with the current call. Accepts a pipe (<code>|</code>), comma (<code>,</code>), or semi-colon (<code>;</code>) as path separator.</p>
+
+<h5><small>string</small> BASE</h5>
+
+<p>Path to the <code>index.php</code> main/front controller. This is a read-only variable.</p>
+
+<h5><small>string</small> BGCOLOR</h5>
+
+<p>Background color of generated <code>CAPTCHA</code> image. Must be a 3- or 6-digit hex triad, e.g. F00 or FF0000 (red).</p>
+
+<h5><small>boolean/string</small> CACHE</h5>
+
+<p>Cache backend. F3 auto-detects the presence of <code>apc</code> and <code>xcache</code> and uses the first available PHP module if set to <code>TRUE</code>. The framework disables the cache engine if assigned a <code>FALSE</code> value. To use a Memcache-based backend, use <code>memcache = <i>host1</i> [:<i>port1</i>] [;<i>host2</i> [:<i>port2</i>]]</code>. If none of these PHP modules are available, a filesystem-based cache can be defined by assigning the value <code>folder = <i>path/</i></code>.</p>
+
+<h5><small>array</small> COOKIE, GET, POST, REQUEST, SESSION, FILES, SERVER, ENV</h5>
+
+<p>Framework equivalents of PHP globals. Variables may be used throughout an application. However, direct use in templates is not advised due to security risks.</p>
+
+<h5><small>object</small> DB</h5>
+
+<p>Identifier for the default database.</p>
+
+<ul>
+
+<li>SQLite<br/>
+<code>F3::set('DB',new DB('sqlite:<i>path/test.sqlite</i>'));</code></li>
+<li>MySQL<br/>
+<code>F3::set('DB',new DB('mysql:host=<i>localhost</i> [;port=<i>port</i>] [;dbname=<i>testdb</i>]','<i>userid</i>','<i>password</i>'));</code></li>
+<li>MongoDB<br/>
+<code>F3::set('DB',new MongoDB(new Mongo('mongodb://<i>localhost</i> [:<i>port</i> ]'),'<i>testdb</i>'));</code></li>
+<li>Jig</br/>
+<code>F3::set('DB',new FileDB('<i>path/</i>'));</code></li>
+<li>Other SQL engines<br/>
+Refer to the PHP manual for the appropriate DSN.</li>
+
+</ul>
+
+<h5><small>integer</small> DEBUG</h5>
+
+<p>Stack trace verbosity. Assign <code>0</code> to suppress the stack trace on a production server. Values <code>1</code> to <code>3</code> represent increasing verbosity levels.</p>
+
+<h5><small>string</small> DNSBL</h5>
+
+<p>Host names of public blacklist services for looking IP addresses of spammers. Accepts a pipe (<code>|</code>), comma (<code>,</code>), or semi-colon (<code>;</code>) as name separator.</p>
+
+<h5><small>string</small> E404, E500</h5>
+
+<p>Deprecated in 2.0. <code>ONERROR</code> provides greater error handling control and better integration with HTML layouts, than the more restrictive <code>E404</code> and <code>E500</code> variables which are limited to templates (and can go out of sync with a site's main layout).</p>
+
+<h5><small>string</small> ENCODING</h5>
+
+<p>Character set used for document encoding. Default value is <code>utf-8</code>.</p>
+
+<h5><small>array</small> ERROR</h5>
+
+<p>Profile of the last HTTP error that occurred. <code>ERROR.code</code> is the HTTP status code. <code>ERROR.title</code> contains a brief description of the error. <code>ERROR.text</code> provides greater detail. For HTTP 500 errors, use <code>ERROR.trace</code> to retrieve the stack trace.</p>
+
+<h5><small>string</small> EXEMPT</h5>
+
+<p>List of IP addresses that should not be cross-checked against the DNS blacklist. Default value is <code>NULL</code>. Private IP addresses need not be specified. F3 automatically excludes all private IP ranges from spam checks, e.g. <code>127.0.0.1</code>, <code>192.168.0.3</code>, etc. Accepts a pipe (<code>|</code>), comma (<code>,</code>), or semi-colon (<code>;</code>) as list separator.</p>
+
+<h5><small>boolean</small> EXTEND</h5>
+
+<p>Allow or prohibit application classes to extend/override similarly-named framework methods.</p>
+
+<h5><small>integer</small> FGTRANS</h5>
+
+<p>Transparency/opacity of generated <code>CAPTCHA</code> image. Range is <code>0</code> to <code>255</code>.</p>
+
+<h5><small>string</small> FONTS</h5>
+
+<p>Location of font files used by the <code>captcha()</code> method. Default is the Web root.</p>
+
+<h5><small>string</small> GUI, UI</h5>
+
+<p>Search path for user interface files used by <code>serve()</code> and <code>render()</code>. Default value is the Web root. <code>GUI</code> and <code>UI</code> may be used interchangeably. Accepts a pipe (<code>|</code>), comma (<code>,</code>), or semi-colon (<code>;</code>) as path separator.</p>
+
+<h5><small>array</small> HEADERS</h5>
+
+<p>List of HTTP headers received by <code>Web::http()</code>.</p>
+
+<h5><small>string</small> HOTLINK</h5>
+
+<p>The URI for forwarding attempts to link directly to specific routes, images, media files, etc. Useful for preventing bandwidth theft.</p>
+
+<h5><small>integer</small> IBLOCKS</h5>
+
+<p>Number of horizontal/vertical identicon blocks.</p>
+
+<h5><small>string</small> IMPORTS</h5>
+
+<p>Search path for non-OOP import files. Default is the Web root. Accepts a pipe (<code>|</code>), comma (<code>,</code>), or semi-colon (<code>;</code>) as path separator.</p>
+
+<h5><small>integer</small> IPIXELS</h5>
+
+<p>Height/width of an identicon (in pixels).</p>
+
+<h5><small>string</small> LANGUAGE</h5>
+
+<p>Current active language. Value is used to load the appropriate language translation file in the folder pointed to by <code>LOCALES</code>. If set to <code>NULL</code>, language is auto-detected from the HTTP <code>Accept-Language</code> request header.</p>
+
+<h5><small>string</small> LOCALES</h5>
+
+<p>Location of the language translation files.</p>
+
+<h5><small>string</small> LOGS</h5>
+
+<p>Location of custom logs.</p>
+
+<h5><small>integer</small> MAXSIZE</h5>
+
+<p>Maximum file upload size in bytes. Derived from <code>upload_max_filesize</code> setting in the PHP configuration file.</p>
+
+<h5><small>string</small> MYSQL</h5>
+
+<p>MySQL character set. Default value is <code>utf8</code>.</p>
+
+<h5><small>mixed</small> ONERROR</h5>
+
+<p>Callback function to use as custom error handler.</p>
+
+<h5><small>array</small> PARAMS</h5>
+
+<p>Captured values of tokens defined in a <code>route()</code> pattern. <code>PARAMS.0</code> contains the captured URL relative to the Web root.</p>
+
+<h5><small>string</small> PLUGINS</h5>
+
+<p>Location of F3 plugins. Default value is the folder where the framework code resides, i.e. the path to <code>base.php</code>.</p>
+
+<h5><small>string</small> PROTOCOL</h5>
+
+<p>Server protocol, i.e. <code>http</code> or <code>https</code>. This is a read-only variable.</p>
+
+<h5><small>boolean</small> PROXY</h5>
+
+<p>Allow or prohibit the application from calling a non-F3 method using an <code>F3</code> class prefix, e.g. permit the use of <code>F3::http()</code> as a substitute for <code>Web::http()</code>. Note: This feature is meant to support pre-2.0 code. This variable may be dropped in the future. Use of the appropriate class names is advised.</p>
+
+<h5><small>resource</small> PUT</h5>
+
+<p>Stream handle for incoming HTTP PUT request.</p>
+
+<h5><small>boolean</small> QUIET</h5>
+
+<p>Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.</p>
+
+<h5><small>string</small> RESPONSE</h5>
+
+<p>The body of the last HTTP response. F3 populates this variable regardless of the <code>QUIET</code> setting.</p>
+
+<h5><small>string</small> ROOT</h5>
+
+<p>Absolute path to document root folder.</p>
+
+<h5><small>array</small> ROUTES</h5>
+
+<p>Contains the defined application routes. This is a read-only variable.</p>
+
+<h5><small>string</small> SPAM</h5>
+
+<p>The URI for redirecting a user identified by a DNS blacklist as a spammer.</p>
+
+<h5><small>array</small> STATS</h5>
+
+<p>System variable containing various runtime statistics used by <code>profile()</code>. This is a read-only variable.</p>
+
+<h5><small>string</small> TEMP</h5>
+
+<p>Temporary folder for compiled F3 templates. Default is the <code>temp/</code> folder inside the Web root. Adjust accordingly to conform to your site's security policies.</p>
+
+<h5><small>array</small> TEST</h5>
+
+<p>Associative array containing the results of each <code>expect()</code> statement.</p>
+
+<h5><small>integer</small> THROTTLE</h5>
+
+<p>The minimum number of milliseconds to serve a Web page. Used to regulate the speed of HTTP response in limited bandwidth environments and/or during a denial-of-service attack. Value of <code>0</code> disables the setting.</p>
+
+<h5><small>array</small> TIDY</h5>
+
+<p>Array of <a href="http://tidy.sourceforge.net/docs/quickref.html">HTML-Tidy configuration options</a> used by <code>render()</code> and <code>serve()</code>.</p>
+
+<h5><small>string</small> VERSION</h5>
+
+<p>The framework version.</p>
+					</div>
+			<h3>Template Directives</h3>
+		<div class="article">
+									<h5>@token</h5>
+
+<p>Replace <code>@token</code> with value of equivalent global variable.</p>
+
+<h5>&lbrace;&lbrace;expression&rbrace;&rbrace;</h5>
+
+<p>Evaluate <code>expression</code> and replace with result (converted to string). <code>expression</code> may include template tokens, constants, operators (unary, arithmetic, ternary and relational), parentheses, data type converters, and PHP functions.</p>
+
+<h5>&lt;F3:include [ if=" <small>boolean</small> <i>condition</i> " ] href=" <small>string</small> <i>filename</i> "/&gt;</h5>
+
+<p>Get contents of <code>filename</code> and insert at current position in template if optional <code>condition</code> is <tt>TRUE</tt>.</p>
+
+<h5>&lt;F3:exclude&gt;
+<dd><i>text-block</i></dd>
+&lt;/F3:exclude&gt;</h5>
+
+<p>Remove <code>text-block</code> at runtime. Used for embedding comments in templates.</p>
+
+<h5><dl>&lt;F3:check if=" <small>boolean</small> <i>condition</i> "&gt;
+<dd>&lt;F3:true&gt; <i>true-block</i> &lt;/F3:true&gt;</dd>
+<dd>&lt;F3:false&gt; <i>false-block</i> &lt;/F3:false&gt;</dd>
+&lt;/F3:check&gt;</dl></h5>
+
+<p>Evaluate <code>condition</code>. If <code>TRUE</code>, <code>true-block</code> is displayed. Otherwise, <code>false-block</code> is used.</p>
+
+<h5>&lt;F3:loop counter=" <small>integer</small> <i>@counter</i> " from=" <small>integer</small> <i>@start</i> " to=" <small>integer</small> <i>@end</i> " [ step=" <small>integer</small> <i>@step</i> " ]&gt;
+<dd><i>text-block</i></dd>
+&lt;/F3:loop&gt;</h5>
+
+<p>Assign <code>@counter</code> variable the value of <code>@start</code> and iterate over the <code>true-block</code> until <code>@end</code> is reached. An optional <code>@step</code> increment value may be specified.</p>
+
+<h5>&lt;F3:repeat group=" <small>array</small> <i>@group</i> " [ key=" <small>scalar</small> <i>@key</i> " ] value=" <small>mixed</small> <i>@value</i> " [ counter=" <small>integer</small> <i>@counter</i> " ]&gt;
+<dd><i>text-block</i></dd>
+&lt;/F3:repeat&gt;</h5>
+
+<p>Repeat <code>text-block</code> as many times as there are elements in the array variable <code>@group</code>. <code>@key</code> and <code>@value</code> function in the same manner as the key-value pair in PHP <code>foreach()</code> statement. The optional <code>@counter</code> variable is set automatically by the framework to the number of iterations during execution (useful for odd/even calculations, etc.)</p>
+
+<h5>&lbrace;&lbrace;* <i>text-block</i> *&rbrace;&rbrace;</h5>
+
+<p>Alias for <code>&lt;F3:exclude&gt;</code>.</p>
+					</div>
+		</div>
+					<a name="migration-guide"><h2>Migration Guide</h2></a>
+										<p>This guide is intended to ease the transition from version 1.x of the framework to the new 2.0 platform. While some 1.x applications will still run without any change, there exist incompatibilities and behavioral differences between the versions as described below.</p> 
+ 
+<h4>autoload/ Folder, AUTOLOAD and PLUGINS</h4> 
+ 
+<p>Prior to 2.0, the default location of F3 1.x plugins was the <code>autoload/</code> folder. The plugins in the 2.0 distribution package are now situated in the <code>lib/</code> folder, sharing the same location with the framework core, now <code>base.php</code> (<code>F3.php</code> previously).</p> 
+ 
+<p>The relocation of the plugins is intended to help separate the framework's auto-loaded classes (i.e., the plugins) from the application's. As such, the <code>AUTOLOAD</code> variable can now be used to define the search path for auto-loaded classes belonging to the application, while the new <code>PLUGINS</code> variable instructs F3 to look for framework plugins in a specified folder (same path as <code>base.php</code> by default).</p> 
+ 
+<h4>IMPORTS and Import Files</h4> 
+ 
+<p>The colon (<code>:</code>) prefix to indicate a 1.x import file in a <code>route()</code> or <code>call()</code> argument has been deprecated in favor of the more recognizable <code>folder/filename</code> syntax. You should convert:-</p> 
+ 
+<pre>F3::route('GET /',':home')</pre> 
+ 
+<p>to the following code:-</p> 
+ 
+<pre>F3::route('GET /','home.php');</code></pre> 
+ 
+<p>The <code>IMPORTS</code> variable in 2.0 allows multiple paths, e.g. <code>F3::set('IMPORTS','app/controllers/;app/models/');</code></p> 
+ 
+<h4>Template Engine</h4> 
+ 
+<p>The F3 template engine has been rewritten from scratch to improve overall performance, add new features and fix various issues present in 1.x templates. What used to be a 1.x expression like <code>{@greeting}</code> should be rewritten as <code>&#123;&#123;@greeting&#125;&#125;</code> in 2.0.</p> 
+ 
+<p>The new F3 template engine now allows access to properties of framework variables containing objects:<p> 
+ 
+<pre>$foo=new stdClass;
+$foo->phrase='99 bottles of beer';
+F3::set('myvar',$foo);</pre> 
+ 
+<p>To display the property of an object, use the syntax: <code>&#123;&#123;@myvar->phrase&#125;&#125;</code>.</p> 
+ 
+<p>A <code>temp/</code> folder under the Web root is created automatically by the new engine for storing compiled templates. Emptying this folder will not harm the application in any way. F3 will simply recompile a template if the associated temporary file is erased. To transfer the location of temporary files, point the <code>TEMP</code> variable to the new folder.</p> 
+ 
+<p>The <code>&lt;F3:repeat&gt;</code> template directive's <code>index</code> attribute has been renamed to <code>value</code> to remove ambiguity.</p> 
+ 
+<h4>Route Handler Syntax</h4> 
+ 
+<p>Instantiating a controller object in a <code>route()</code> is now simpler than the 1.x equivalent. In addition to this formal PHP callback definition:-</p> 
+ 
+<pre>F3::route('GET /about',array(new myClass,'about'));</pre> 
+ 
+<p>2.0 allows this too:-</p> 
+ 
+<pre>F3::route('GET /about','myClass->about');</pre> 
+ 
+<h4>RELEASE and DEBUG</h4> 
+ 
+<p>The <code>RELEASE</code> global variable has been deprecated. It was formerly used to suppress the stack trace in error pages. 2.0 unites this feature with the <code>DEBUG</code> variable, so assigning <code>DEBUG</code> a value of zero will now achieve the same effect. Stack trace verbosity level can now be adjusted from 1 to 3.</p> 
+ 
+<h4>DB</h4> 
+ 
+<p>A significant difference in 1.x and 2.0 is the way <code>DB</code> is defined and how it interacts with the SQL plugin. The structure of the <code>DB</code> variable has changed - from an associative array to a SQL <code>DB</code> object, to eliminate a vulnerability in some 1.x-based applications. A <code>DB</code> definition in 1.x that looks like:-</p> 
+ 
+<pre>F3::set('DB',
+	array(
+		'dsn'=>'mysql:host=localhost;port=3306;dbname=test',
+		'user'=>'admin',
+		'p455w0rD'
+	)
+);</pre> 
+ 
+<p>should be revised as follows:-</p> 
+ 
+<pre>F3::set('DB',
+	new DB(
+		'mysql:host=localhost;port=3306;dbname=mysqldb',
+		'admin',
+		'p455w0rD'
+	)
+);</pre> 
+ 
+<p>This new <code>DB</code> structure is designed to prevent storage of user ID and password in a configuration file saved in a dangerous Web-accessible location. You should store this data in a safer place.</p> 
+ 
+<p>As an object, <code>F3::get('DB')->result</code> or <code>F3::get('DB->result')</code> should now be used to retrieve the result of a SQL query. Array elements <code>query</code> and <code>pdo</code> in 1.x are now object properties <code>DB->query</code> and <code>DB->pdo</code>, respectively.</p> 
+ 
+<p>A non-SELECT <code>sql()</code> query now returns the number of rows affected.</p> 
+ 
+<h4>Axon</h4> 
+ 
+<p>One thing you might notice is the absence of a separate <code>axon.php</code> file containing the pre-2.0 Axon ORM. For performance reasons, the <code>Axon</code> class is now defined in the <code>db.php</code> file that contains the SQL handler (Axon's dependency). Since it's not appropriate to instantiate an <code>Axon</code> object without instantiating a <code>DB</code> object necessary to connect to a SQL back-end, both classes have been merged in a single file.</p> 
+ 
+<p>Axon 2.0 advocates the use of parameterized queries for increased security. For example:-</p> 
+ 
+<pre>$axon->load('id="'.$_POST['id'].'"');</pre> 
+ 
+<p>Above line is vulnerable to a SQL attack, hence version 2.0 recommends the following revision:-</p> 
+ 
+<pre>$axon->load(array('id=:id',array(':id'=>$_POST['id'])));
+// or $axon->load(array('id=?',array(1=>$_POST['id'])));</pre> 
+ 
+<p>Axon methods <code>load()</code>, <code>erase()</code>, <code>find()</code>, <code>afind()</code>, <code>findone()</code>, and <code>afindone()</code> are aware of this structural variant in the SQL search criteria.</p> 
+ 
+<p>Another difference in 2.0 is Axon's <code>find()</code> behavior. The result of a <code>find()</code> is now an array of <code>Axon</code> objects, instead of an array of records (where each record is represented as an associative array of field name-value pairs). The new <code>afind()</code> method mimics 1.x <code>find()</code> behavior.</p> 
+ 
+<p>Getting the <code>lastInsertId()</code> in 1.x involved:-</p> 
+ 
+<pre>$item=new Axon('items');
+$item->description=$_POST['desc'];
+$item->save();
+echo F3::get('DB')->pdo->lastInsertId();</pre> 
+ 
+<p>which is not as elegant as the 2.0 equivalent:-</p> 
+ 
+<pre>$item=new Axon('items');
+$item->description=$_POST['desc'];
+$item->save();
+echo $item->_id;</pre> 
+ 
+<h4>M2</h4> 
+ 
+<p>M2's behavior closely follows the change in Axon's <code>find()</code> and <code>afind()</code>. You can expect the former to generate an array of M2 objects, while the latter produces an array of arrays. 2.0 also introduces <code>afindone()</code></p> 
+ 
+<h4>E404 and E500</h4> 
+ 
+<p>The special 1.x global variables <code>E404</code> and <code>E500</code> which point to user-defined error templates have been deprecated. 2.0 has a more powerful <code>ONERROR</code> variable. It can be used to define a callback function or method that will be invoked by the framework in the event of an error.</p> 
+ 
+<h4>PROXY</h4> 
+ 
+<p>Using the framework's <code>F3</code> prefix as a proxy for another class is now discouraged. A method call like <code>F3::sql()</code> instead of the more appropriate <code>DB::sql()</code>, or <code>F3::captcha()</code> instead of <code>Graphics::captcha()</code> is not advised. The <code>PROXY</code> variable in 2.0 can be used to maintain backward-compatibility. Assigning <code>TRUE</code> to <code>PROXY</code> allows the use of the <code>F3</code> prefix as a substitute for the plugin or auto-loaded class name. This variable is set to <code>FALSE</code> by default. <code>PROXY</code> will be deprecated in a future framework release.</p> 
+ 
+<h4>GUI and UI</h4> 
+ 
+<p>2.0 introduces the <code>UI</code> variable, which can be used as an alias of <code>GUI</code>.</p> 
+ 
+<p><code>Web::minify()</code> and <code>Graphics::thumb()</code> dependence on <code>GUI</code> variable have been removed. Path can now be any valid filesystem location.</p> 
+ 
+<h4>Path Separators</h4> 
+ 
+<p>Pipe (<code>|</code>), semi-colon (<code>;</code>) or comma (<code>,</code>) may now be used as separators for <code>route()</code> and <code>input()</code> function chains, <code>IMPORTS</code>, <code>GUI</code>, <code>UI</code>, and <code>AUTOLOAD</code> paths.</p> 
+ 
+<h4>PHP intl module</h4> 
+ 
+<p>2.0 does not require PHP's <code>intl</code> module anymore to localize strings. If not present in your server, F3 will use a lightweight i18n implementation of ICU formatting rules.</p> 
+ 
+<h4>DIACRITICS</h4> 
+ 
+<p><code>diacritics()</code> in 1.x is now a framework variable. Default Latin translations will be merged with any user-defined <code>DIACRITICS</code> associative array once <code>Web::slug()</code> is called.</p> 
+ 
+<h4>Read-Only Framework Variables</h4> 
+ 
+<p>The global framework variables <code>BASE</code>, <code>ROUTES</code>, and <code>STATS</code> are now set to read-only to prevent misuse.</p> 
+ 
+<h4>Namespaced Classes</h4> 
+ 
+<p>2.0 supports both <code>namespace/class.php</code> and <code>namespace_class.php</code> file organization. The latter format does not allow underscores in class names.</p>
+					<a name="in-retrospect"><h2>In Retrospect</h2></a>
+										<p>Too often we see code hyped up as "frameworks". But when it comes to applying them to real-world situations, they fall short and sloppy or at the other end of the scale - are huge beasts that behave like control freaks - which make them unusable or hostile to average programmers.</p>
+
+<p>Some are touted as frameworks yet they act simply as front-end controllers which do nothing more than route URLs to classes, functions or include files. They make programming a bit easier, but lacking in many MVC aspects. Some require fixed directory structures based on whimsical decisions of their designers. Other frameworks use complex class abstraction layers; nothing wrong with this - but too much abstraction leads to obfuscation, as well as distraction from project objectives. Most frameworks are just too bloated with more features than you'll ever need in simple applications.</p>
+
+<p>Most frameworks brag about being "lightweight" - which seems to be a relative term. Does a 10MByte framework with all the bells and whistles that consumes a lot of resources qualify as lightweight? Let's call a spade a spade. A cargo truck is lightweight compared to a jumbo jet. Indeed. But if all we need to do to get from here to there on a "regular" basis is a car with some room to spare, why ride the space shuttle? Extra features are more often overkill, like using a jackhammer to drive a half-inch nail.</p>
+
+<h5>Form vs. Function</h5>
+
+<p>It seems like in the name of "improving" their software, developers simply forgot or ignored the fact that frameworks are meant to support structures, that is, make applications easier to fabricate and provide order along with industrial strength - not to be imposing structures themselves. This point is argumentative and has been going on since the days of the pyramid builders. Architects and engineers have gone thru endless debates because the first is focused on artistic freedom, the latter on structural integrity.</p>
+
+<p>At the other extreme, the term "lightweight" also means a framework lacking in features that count the most. So it becomes necessary to integrate a lot of third-party modules just to make up for the most important ingredients.</p>
+
+<p>Whichever the case may be, balance and minimalism in framework design - where elegant architectural patterns, engineering excellence and Formula-1 performance are available - is not a philosophy that's commonplace. However, it does manage to find its niche here and there.</p>
+
+<p>This is where the PHP Fat-Free Framework makes its mark. The minimalist framework is so rooted in its Zen world of construction components, that an entire Web application can be developed in so little, yet streamlined, code. That of course means a lot when we're talking programmer productivity and time-to-deploy.</p>
+
+<h5>Usability is King</h5>
+
+<p>The entire framework weighs in at a compact 55KB of source code, with inline documentation, but make no mistake about its puny size, it's got everything a Web designer needs to get any kind of job done. You won't see the fancy stuff found in large frameworks. It aims to be usable - not usual. It's very much like a modern compact Javascript toolkit for PHP.</p>
+
+<p>Fat-Free gives you a lot of freedom. It won't change your programming style, only your habits - albeit due to the powerful tools you'll have at your disposal. Despite that, Fat-Free is certainly not an end-all, be-all framework. It's not for everyone - only for those who want raw power behind simplicity.</p>										
+					<a name="support-licensing"><h2>Support/Licensing</h2></a>
+
+<p>Technical support is available at: <code><a href="http://sourceforge.net/projects/fatfree/forums/forum/1041718">http://sourceforge.net/projects/fatfree/forums/forum/1041718</a></code>. If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit <code><a href="http://webchat.freenode.net/" target="_blank">http://webchat.freenode.net/</a></code> to join the conversation. You can also download the Firefox <a href="http://addons.mozilla.org/en-US/firefox/addon/16">Chatzilla</a> add-on if you don't have an IRC client so you can participate in the live chat.</p>
+
+<h3>Fair Licensing</h3>
+
+<p>Permissive and "closed-source" licensing terms are available if you intend to use the software for business or commercial gain. For academic and personal use, the PHP Fat-Free Framework and other files included in the distribution are subject to the terms of the <a href="http://www.gnu.org/licenses/gpl-3.0-standalone.html">GPL v3</a>. You may not use the software, documentation, and samples except in compliance with the license.</p>
+
+<p>If you feel that this software is one great weapon to have in your programming arsenal, it saves you a lot of time and money, use it for commercial gain or in your business organization, please consider making a donation to the project. A significant amount of time, effort, and money has been spent on this project. Your donations help keep this project alive and the development team motivated. Donors and sponsors get priority support (24-hour response time on business days).</p>
+
+<h3>Credits</h3>
+
+<p>The Fat-Free Framework is community-driven software. It can't be what it is today without the help and support from the following people and organizations:</p>
+
+<ul style="column-count:3; column-gap:15px; -moz-column-count:3; -moz-column-gap:15px; -webkit-column-count:3; -webkit-column-gap:15px;">
+	<li>SourceForge</li>
+	<li>Sascha Ohms</li>
+	<li>Jermaine Maree</li>
+	<li>Sergey Zaretsky</li>
+	<li>Daniel Kloke</li>
+	<li>Brian Nelson</li>
+	<li>Roberts Lapins</li>
+	<li>Boris Gurevich</li>
+	<li>Eyðun Lamhauge</li>
+	<li>Jose Maria Garrido Diaz</li>
+	<li>Dawn Comfort</li>
+	<li>Johan Viberg</li>
+	<li>Povilas Musteikis</li>
+	<li>Andrew Snook</li>
+	<li>Jafar Amjad</li>
+	<li>Taylor McCall</li>
+	<li>Raymond Kirkland</li>
+	<li>Yuriy Gerassimenko</li>
+	<li>William Stam</li>
+	<li>Sam George</li>
+	<li>Steve Wasiura</li>
+	<li>Andreas Ljunggren</li>
+	<li>Sashank Tadepalli</li>
+	<li>Chad Bishop</li>
+	<li>Bradley Slavik</li>
+	<li>Lee Blue</li>
+	<li>Alexander Shatilo</li>
+	<li>Justin Noel</li>
+	<li>Ivan Kovac</li>
+	<li>Tony's Internet Solutions</li>
+	<li>Charles Stigler</li>
+	<li>Attila van der Velde</li>
+	<li>Indoblo Commerce Limited</li>
+	<li>Jens Níemeyer</li>
+	<li>Raghu Veer Dendukuri</li>
+	<li>NovelLead B.V.</li>
+	<li>Emir Alp</li>
+	<li>Dominic Schwarz</li>
+	<li>Sven Zahrend</li>
+	<li>LucidStorm</li>
+	<li>Nevatech</li>
+	<li>Matt Wielgos</li>
+	<li>Maximilian Summe</li>
+	<li>Christian Knuth</li>
+	<li>Caspar Frey</li>
+	<li>G Holdings, LLC</li>
+	<li>FocusHeart</li>
+	<li>Philip Lawrence</li>
+	<li>Peter Beverwyk</li>
+	<li>Randal Hintz</li>
+</ul>
+
+<p>Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.</p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align:center; padding:0; margin:0 auto 15px auto; background:transparent;">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="B58783SS6AUZS">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" style="border:0;">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+
+<h3>Nightly Builds</h3>
+
+<p>F3 uses <a href="http://mercurial.selenic.com/" target="_blank">Mercurial</a> and <a href="http://git-scm.com" target="_blank">Git</a> for version control. To clone the stable branch of the Mercurial code repository:-</p>
+
+<pre>hg clone http://fatfree.hg.sourceforge.net:8000/hgroot/fatfree/stable</pre>
+
+<p>The SourceForge Git repository (stable branch) is located at:</p>
+
+<pre>git://fatfree.git.sourceforge.net/gitroot/fatfree/stable</pre>
+
+<p>The Fat-Free code base is also on GitHub. Grab it at:</p>
+
+<pre>git://git@github.com:bcosca/Fat-Free-Framework.git</pre>
+
+<p>If you want to grab the bleeding edge code and play with the new features of 3.0:</p>
+
+<pre>http://fatfree.hg.sourceforge.net/hgroot/fatfree/dev</pre>
+
+<h4>Contact Us</h4>
+
+<p>If you have any questions (not bug-related), comments, suggestions, and ideas, or if you want to volunteer for translation of the pages on this Web site to your language/locale, feel free to leave a message using the form below. To file a bug report, visit this link:- <code><a href="https://sourceforge.net/tracker/?group_id=288268&atid=1220992">https://sourceforge.net/tracker/?group_id=288268&atid=1220992</a></code></p>
+		</div>
+														</div>
+			</div>
+			<div class="footer">
+				<p>Copyright &copy; 2011 Bong Cosca/F3::Factory. All rights reserved | <a href="/page/privacy-policy">Privacy Policy</a></p>
+			</div>
+		</div>
+			<script type="text/javascript">
+				var gaJsHost=(("https:"==document.location.protocol)?"https://ssl.":"http://www.");document.write(unescape("%3Cscript src='"+gaJsHost+"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+			</script>
+			<script type="text/javascript">
+				try {var pageTracker=_gat._getTracker("UA-5250189-2");pageTracker._trackPageview();}catch(err){}
+			</script>
+			<script type="text/javascript">
+				var sc_project=5666392;
+				var sc_invisible=1;
+				var sc_partition=65;
+				var sc_click_stat=1;
+				var sc_security="fd7c8312";
+			</script>
+			<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script>
+			<noscript>
+				<div class="statcounter">
+					<a title="iweb visitor" class="statcounter" href="http://www.statcounter.com/iweb/">
+						<img class="statcounter" src="http://c.statcounter.com/5666392/0/fd7c8312/1/" alt="iweb visitor"/>
+					</a>
+				</div>
+			</noscript>
+			</body>
+</html>
