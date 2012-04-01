@@ -19,7 +19,7 @@
 				<div class="sidebar">
 					<div style="text-align:center; margin:15px 0;">
 						<h4 style="color:#000; font-size:22px; text-shadow:0 1px 1px #fff;">Stable Version</h4>
-						<h2 style="color:#f33; font-size:72px; line-height:72px; font-weight:bold; text-shadow:0 2px 1px #fff; margin:-10px 0 0 0; -moz-border-radius:10px;"><a href="http://sourceforge.net/projects/fatfree/files">2.0.9</a></h2>
+						<h2 style="color:#f33; font-size:72px; line-height:72px; font-weight:bold; text-shadow:0 2px 1px #fff; margin:-10px 0 0 0; -moz-border-radius:10px;"><a href="https://github.com/bcosca/fatfree/zipball/master">2.0.9</a></h2>
 					</div>
 					<div class="submenu">
 						<p style="margin:0; height:90px;"><script id="_waubwk">var _wau = _wau || []; _wau.push(["map", "gews6wwlk4rw", "bwk", "180", "90", "night" , "default-red"]);(function() { var s=document.createElement("script");s.src="http://widgets.amung.us/map.js"; s.async=true; document.getElementsByTagName("head")[0].appendChild(s); })();</script></p>
@@ -166,7 +166,6 @@ Zend Engine v2.3.0, Copyright (c) 1998-2010 Zend Technologies
 
 <p>Don't forget to visit <a href="http://webhostingsearch.com/" target="_blank">WebHostingSearch.com</a> for the latest hosting reviews.</p>
 
-<p>If you're planning to release your F3-enabled project as open source, look no further. <a href="http://www.sourceforge.net">SourceForge</a> now provides PHP 5.3 hosting.</p>
 					</div>
 			<h3>Hello, World: The Less-Than-A-Minute Fat-Free Recipe</h3>
 		<div class="article">
@@ -487,7 +486,7 @@ F3::call('func; proc.php'); // runs func() then proc.php</pre>
 
 <p>If someone tries to access <code>www.example.com/obsoletepage/</code>, the framework redirects the user to the URL: <code>www.example2.com/</code> as shown in the above example.</p>
 
-<p>Rerouting can be particularly useful when you need to do some maintenance work on your site. You can have a route handler that informs your visitors that your site is offline for a short period. A practical application of <code>F3::reroute()</code> is shortening URLs. You'll find a complete working example in the Sourceforge download page.</p>
+<p>Rerouting can be particularly useful when you need to do some maintenance work on your site. You can have a route handler that informs your visitors that your site is offline for a short period. A practical application of <code>F3::reroute()</code> is shortening URLs. You'll find some complete working examples <a href="https://github.com/bcosca/fatfree/tree/examples">here</a>.</p>
 
 <p>HTTP redirects are expensive. As much as possible, refrain from using <code>F3::reroute()</code> to send a user to another page on the same Web site. Direct the flow of your application by using <code>F3::call()</code> or by invoking the function or method that handles the target route. However, calling the function, method or import file associated with a route instead of using HTTP redirection will not change the URL on the address bar of the user's Web browser. If this is not the behavior you want and you really need to send a user to another page, in instances like successful submission of a form or after a user has been authenticated, Fat-Free sends an HTTP 303 header. For all other attempts to reroute to another page or site, the framework sends an HTTP 301 header.</p>
 					</div>
@@ -1855,7 +1854,7 @@ echo $combined->name;</pre>
 															<div class="articles">
 			<h3>About F3 Plug-ins</h3>
 		<div class="article">
-									<p>Plug-ins are nothing more than autoloaded classes that use framework built-ins to extend F3's features and functionality. If you'd like to contribute, leave a note at the <a href="http://sourceforge.net/projects/fatfree/forums/forum/1041719">Fat-Free Developers Forum</a> or tell us about it in the FreeNode #fatfree IRC channel. Someone else might be involved in a similar project. The framework community will appreciate it a lot if we unify our efforts.</p>
+									<p>Plug-ins are nothing more than autoloaded classes that use framework built-ins to extend F3's features and functionality. If you'd like to contribute, leave a note at the <a href="https://groups.google.com/forum/#!forum/f3-framework">Fat-Free Discussion Area</a> hosted by Google Groups or tell us about it in the FreeNode #fatfree IRC channel. Someone else might be involved in a similar project. The framework community will appreciate it a lot if we unify our efforts.</p>
 					</div>
 			<h3>Sitemaps</h3>
 		<div class="article">
@@ -2777,7 +2776,7 @@ echo $item->_id;</pre>
 <p>Fat-Free gives you a lot of freedom. It won't change your programming style, only your habits - albeit due to the powerful tools you'll have at your disposal. Despite that, Fat-Free is certainly not an end-all, be-all framework. It's not for everyone - only for those who want raw power behind simplicity.</p>										
 					<a name="support-licensing"><h2>Support/Licensing</h2></a>
 
-<p>Technical support is available at: <code><a href="http://sourceforge.net/projects/fatfree/forums/forum/1041718">http://sourceforge.net/projects/fatfree/forums/forum/1041718</a></code>. If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit <code><a href="http://webchat.freenode.net/" target="_blank">http://webchat.freenode.net/</a></code> to join the conversation. You can also download the Firefox <a href="http://addons.mozilla.org/en-US/firefox/addon/16">Chatzilla</a> add-on if you don't have an IRC client so you can participate in the live chat.</p>
+<p>Technical support is available at: <code><a href="https://groups.google.com/forum/#!forum/f3-framework">https://groups.google.com/forum/#!forum/f3-framework</a></code>. If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit <code><a href="http://webchat.freenode.net/" target="_blank">http://webchat.freenode.net/</a></code> to join the conversation. You can also download the Firefox <a href="http://addons.mozilla.org/en-US/firefox/addon/16">Chatzilla</a> add-on if you don't have an IRC client so you can participate in the live chat.</p>
 
 <h3>Fair Licensing</h3>
 
@@ -2790,7 +2789,7 @@ echo $item->_id;</pre>
 <p>The Fat-Free Framework is community-driven software. It can't be what it is today without the help and support from the following people and organizations:</p>
 
 <ul style="column-count:3; column-gap:15px; -moz-column-count:3; -moz-column-gap:15px; -webkit-column-count:3; -webkit-column-gap:15px;">
-	<li>SourceForge</li>
+	<li>GitHub</li>
 	<li>Sascha Ohms</li>
 	<li>Jermaine Maree</li>
 	<li>Sergey Zaretsky</li>
@@ -2853,25 +2852,13 @@ echo $item->_id;</pre>
 
 <h3>Nightly Builds</h3>
 
-<p>F3 uses <a href="http://mercurial.selenic.com/" target="_blank">Mercurial</a> and <a href="http://git-scm.com" target="_blank">Git</a> for version control. To clone the stable branch of the Mercurial code repository:-</p>
+<p>F3 uses <a href="http://git-scm.com" target="_blank">Git</a> for version control. To clone the Git code repository:-</p>
 
-<pre>hg clone http://fatfree.hg.sourceforge.net:8000/hgroot/fatfree/stable</pre>
-
-<p>The SourceForge Git repository (stable branch) is located at:</p>
-
-<pre>git://fatfree.git.sourceforge.net/gitroot/fatfree/stable</pre>
-
-<p>The Fat-Free code base is also on GitHub. Grab it at:</p>
-
-<pre>git://git@github.com:bcosca/Fat-Free-Framework.git</pre>
-
-<p>If you want to grab the bleeding edge code and play with the new features of 3.0:</p>
-
-<pre>http://fatfree.hg.sourceforge.net/hgroot/fatfree/dev</pre>
+<pre>git clone git://git@github.com:bcosca/Fat-Free-Framework.git</pre>
 
 <h4>Contact Us</h4>
 
-<p>If you have any questions (not bug-related), comments, suggestions, and ideas, or if you want to volunteer for translation of the pages on this Web site to your language/locale, feel free to leave a message using the form below. To file a bug report, visit this link:- <code><a href="https://sourceforge.net/tracker/?group_id=288268&atid=1220992">https://sourceforge.net/tracker/?group_id=288268&atid=1220992</a></code></p>
+<p>If you have any questions (not bug-related), comments, suggestions, and ideas, feel free to leave a message using the form below. To file a bug report, visit this link:- <code><a href="https://github.com/bcosca/fatfree/issues">https://github.com/bcosca/fatfree/issues</a></code></p>
 		</div>
 														</div>
 			</div>
