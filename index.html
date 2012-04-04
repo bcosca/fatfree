@@ -22,7 +22,7 @@
 				<div class="sidebar">
 					<div style="text-align:center; margin:15px 0;">
 						<h4 style="color:#000; font-size:22px; text-shadow:0 1px 1px #fff;">Stable Version</h4>
-						<h2 style="color:#f33; font-size:72px; line-height:72px; font-weight:bold; text-shadow:0 2px 1px #fff; margin:-10px 0 0 0; -moz-border-radius:10px;"><a href="https://github.com/bcosca/fatfree/tree/releases">2.0.9</a></h2>
+						<h2 style="color:#f33; font-size:72px; line-height:72px; font-weight:bold; text-shadow:0 2px 1px #fff; margin:-10px 0 0 0; -moz-border-radius:10px;"><a href="http://github.com/bcosca/fatfree/downloads">2.0.9</a></h2>
 					</div>
 					<div class="submenu">
 						<p style="margin:0; height:90px;"><script id="_waubwk">var _wau = _wau || []; _wau.push(["map", "gews6wwlk4rw", "bwk", "180", "90", "night" , "default-red"]);(function() { var s=document.createElement("script");s.src="http://widgets.amung.us/map.js"; s.async=true; document.getElementsByTagName("head")[0].appendChild(s); })();</script></p>
@@ -489,7 +489,7 @@ F3::call('func; proc.php'); // runs func() then proc.php</pre>
 
 <p>If someone tries to access <code>www.example.com/obsoletepage/</code>, the framework redirects the user to the URL: <code>www.example2.com/</code> as shown in the above example.</p>
 
-<p>Rerouting can be particularly useful when you need to do some maintenance work on your site. You can have a route handler that informs your visitors that your site is offline for a short period. A practical application of <code>F3::reroute()</code> is shortening URLs. You'll find some complete working examples <a href="https://github.com/bcosca/fatfree/tree/examples">here</a>.</p>
+<p>Rerouting can be particularly useful when you need to do some maintenance work on your site. You can have a route handler that informs your visitors that your site is offline for a short period. A practical application of <code>F3::reroute()</code> is shortening URLs. You'll find a complete working example <a href="http://github.com/bcosca/fatfree/downloads">here</a>.</p>
 
 <p>HTTP redirects are expensive. As much as possible, refrain from using <code>F3::reroute()</code> to send a user to another page on the same Web site. Direct the flow of your application by using <code>F3::call()</code> or by invoking the function or method that handles the target route. However, calling the function, method or import file associated with a route instead of using HTTP redirection will not change the URL on the address bar of the user's Web browser. If this is not the behavior you want and you really need to send a user to another page, in instances like successful submission of a form or after a user has been authenticated, Fat-Free sends an HTTP 303 header. For all other attempts to reroute to another page or site, the framework sends an HTTP 301 header.</p>
 					</div>
