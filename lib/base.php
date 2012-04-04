@@ -669,7 +669,7 @@ class Base {
 	**/
 	static function mkdir($name,$perm=0775) {
 		$parent=dirname($name);
-		if (!@is_writable($parent) && !chmod($parent,775)) {
+		if (!@is_writable($parent) && !chmod($parent,$perm)) {
 			$uid=posix_getpwuid(posix_geteuid());
 			trigger_error(sprintf(self::TEXT_Write,
 				$uid['name'],realpath(dirname($name))));
@@ -1262,7 +1262,8 @@ class F3 extends Base {
 			$wild=is_int(strpos($uri,'/*'));
 			// Inspect each defined route
 			foreach ($route as $method=>$proc) {
-				if (!preg_match('/'.$method.'/',$_SERVER['REQUEST_METHOD']))
+				if (!preg_match('/HEAD|'.$method.'/',
+					$_SERVER['REQUEST_METHOD']))
 					continue;
 				$found=TRUE;
 				list($funcs,$ttl,$throttle,$hotlink)=$proc;
