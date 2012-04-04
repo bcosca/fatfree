@@ -1262,7 +1262,7 @@ class F3 extends Base {
 			$wild=is_int(strpos($uri,'/*'));
 			// Inspect each defined route
 			foreach ($route as $method=>$proc) {
-				if (!preg_match('/'.$method.'/',$_SERVER['REQUEST_METHOD']))
+				if (!preg_match('/'.$method.'/',($_SERVER['REQUEST_METHOD']=='HEAD'?'GET':$_SERVER['REQUEST_METHOD'])))
 					continue;
 				$found=TRUE;
 				list($funcs,$ttl,$throttle,$hotlink)=$proc;
