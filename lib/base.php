@@ -21,7 +21,7 @@ class Base {
 	//@{ Framework details
 	const
 		TEXT_AppName='Fat-Free Framework',
-		TEXT_Version='2.0.9',
+		TEXT_Version='2.0.10',
 		TEXT_AppURL='http://fatfree.sourceforge.net';
 	//@}
 
