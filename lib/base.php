@@ -423,7 +423,7 @@ class Base {
 				trigger_error(sprintf(self::TEXT_NotArray,
 					self::stringify($arg)));
 		}
-		call_user_func_array('array_merge',$args);
+		return call_user_func_array('array_merge',$args);
 	}
 
 	/**
