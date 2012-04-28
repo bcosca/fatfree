@@ -255,6 +255,16 @@ class F3markup extends Base {
 							$file=self::resolve($hvar);
 							if ($hvar!=$file)
 								self::$cache=FALSE;
+							$nested=false;
+							foreach($this->syms as $pvar) if(strstr($hvar,$pvar)) $nested=true;
+							if($nested) {
+								$inc_var = preg_split("/[\s]*[}}{{][\s]*/i", $hvar, -1, PREG_SPLIT_NO_EMPTY);
+								foreach($inc_var as &$pval)
+									if(substr($pval,0,1)=='@') $pval = preg_replace(array('/<\?php echo /','/; \?>/'),'',self::expr('{{'.$pval.'}}'));
+									else $pval = var_export($pval,true);
+								$text='<?php echo Template::serve('.implode('.',$inc_var).'); ?>';
+								$out.= isset($ival)?('<?php if ('.trim($cond).'): ?>'.$text.'<?php endif; ?>'):$text;
+							} else 
 							foreach (self::split(self::$vars['GUI']) as $gui)
 								if (is_file($view=$gui.$file)) {
 									$text=$doc->load(
