@@ -412,6 +412,7 @@ class Base {
 
 	/**
 		Merge one or more framework array variables
+			@return array
 			@public
 	**/
 	static function merge() {
@@ -423,7 +424,7 @@ class Base {
 				trigger_error(sprintf(self::TEXT_NotArray,
 					self::stringify($arg)));
 		}
-		call_user_func_array('array_merge',$args);
+		return call_user_func_array('array_merge',$args);
 	}
 
 	/**
@@ -964,7 +965,9 @@ class F3 extends Base {
 						$csv=array_map(
 							function($val) {
 								$val=trim($val);
-								return is_numeric($val) || defined($val)?
+								return is_numeric($val) ||
+									preg_match('/[_a-z0-9]/i',$val) &&
+									defined($val)?
 									eval('return '.$val.';'):$val;
 							},
 							str_getcsv($parts[4])
