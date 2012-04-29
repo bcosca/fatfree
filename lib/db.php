@@ -918,7 +918,7 @@ class Axon extends Base {
 	**/
 	function __set($field,$val) {
 		if (array_key_exists($field,$this->fields)) {
-			if ($this->fields[$field]!=$val && !isset($this->mod[$field]))
+			if ($this->fields[$field]!==$val && !isset($this->mod[$field]))
 				$this->mod[$field]=TRUE;
 			$this->fields[$field]=$val;
 			if (!is_null($val))

@@ -338,7 +338,7 @@ class Jig extends Base {
 					return isset($obj[$key])?
 						call_user_func($val,$obj[$key]):TRUE;
 				}
-				elseif (!isset($obj[$field]))
+				elseif (!isset($obj[$field]) && !is_null($obj[$field]))
 					$result=FALSE;
 				elseif (is_array($cond)) {
 					$map=array(
