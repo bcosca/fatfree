@@ -335,7 +335,8 @@ class Base {
 					else
 						$var=&$var[$match];
 				}
-				elseif ($obj && isset($var->$match)) {
+				elseif ($obj &&
+					(isset($var->$match) || method_exists($var,'__get'))) {
 					// Object property found
 					$var=$var->$match;
 					$obj=FALSE;
