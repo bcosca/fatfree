@@ -172,7 +172,7 @@ class F3markup extends Base {
 									var_export($match[1],TRUE).'),'.
 									var_export($temp,TRUE).')';
 							$str='call_user_func_array('.
-								$str.',array'.$args.')';
+								'$_'.$match[1].'='.$str.',array'.$args.')';
 						}
 						elseif (isset($var[3]))
 							$str=str_replace(')',',array('.
