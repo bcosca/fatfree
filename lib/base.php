@@ -967,7 +967,7 @@ class F3 extends Base {
 							function($val) {
 								$val=trim($val);
 								return is_numeric($val) ||
-									preg_match('/[_a-z0-9]/i',$val) &&
+									preg_match('/^[_a-z0-9]+$/i',$val) &&
 									defined($val)?
 									eval('return '.$val.';'):$val;
 							},
