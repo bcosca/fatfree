@@ -151,7 +151,7 @@ class F3markup extends Base {
 						$isfunc=isset($var[2]) && $var[2];
 						if (in_array($match[1],$syms))
 							return '$_'.$self::remix($var[1]).
-								($isfunc?$var[2]:'');
+								($isfunc?$self->expr('{{'.$var[2].'}}'):'');
 						$str='F3::get('.var_export($var[1],TRUE).')';
 						if ($isfunc) {
 							preg_match_all($regex,$var[2],$parts,
@@ -181,7 +181,8 @@ class F3markup extends Base {
 							!preg_match('/('.$self::PHP_Globals.')\b/',
 								$match[1])) {
 							$syms[]=$match[1];
-							$str='($_'.$match[1].'='.$str.')';
+							if (!$isfunc)
+								$str='($_'.$match[1].'='.$str.')';
 						}
 						return $str;
 					},
