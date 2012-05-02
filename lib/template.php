@@ -8,11 +8,11 @@
 	compliance with the license. Any of the license terms and conditions
 	can be waived if you get permission from the copyright holder.
 
-	Copyright (c) 2009-2011 F3::Factory
+	Copyright (c) 2009-2012 F3::Factory
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Template
-		@version 2.0.9
+		@version 2.0.10
 **/
 
 //! Template engine
@@ -172,7 +172,7 @@ class F3markup extends Base {
 									var_export($match[1],TRUE).'),'.
 									var_export($temp,TRUE).')';
 							$str='call_user_func_array('.
-								$str.',array'.$args.')';
+								'$_'.$match[1].'='.$str.',array'.$args.')';
 						}
 						elseif (isset($var[3]))
 							$str=str_replace(')',',array('.
@@ -256,25 +256,42 @@ class F3markup extends Base {
 							if ($hvar!=$file)
 								self::$cache=FALSE;
 							$nested=false;
-							foreach($this->syms as $pvar) if(strstr($hvar,$pvar)) $nested=true;
-							if($nested) {
-								$inc_var = preg_split("/[\s]*[}}{{][\s]*/i", $hvar, -1, PREG_SPLIT_NO_EMPTY);
-								foreach($inc_var as &$pval)
-									if(substr($pval,0,1)=='@') $pval = preg_replace(array('/<\?php echo /','/; \?>/'),'',self::expr('{{'.$pval.'}}'));
-									else $pval = var_export($pval,true);
-								$text='<?php echo Template::serve('.implode('.',$inc_var).'); ?>';
-								$out.= isset($ival)?('<?php if ('.trim($cond).'): ?>'.$text.'<?php endif; ?>'):$text;
-							} else 
-							foreach (self::split(self::$vars['GUI']) as $gui)
-								if (is_file($view=$gui.$file)) {
-									$text=$doc->load(
-										self::getfile($view),$this->syms
-									);
-									$out.=isset($ival)?
-										('<?php if ('.trim($cond).'): ?>'.
-											$text.'<?php endif; ?>'):$text;
-									break;
-								}
+							foreach ($this->syms as $pvar)
+								if (strstr($hvar,$pvar))
+									$nested=true;
+							if ($nested) {
+								$inc_var=preg_split("/[\s]*[}}{{][\s]*/i",
+									$hvar,-1,PREG_SPLIT_NO_EMPTY);
+								foreach ($inc_var as &$pval)
+									if ($pval[0]=='@')
+										$pval=preg_replace(
+											array(
+												'/<\?php echo /',
+												'/; \?>/'
+											),'',
+											self::expr('{{'.$pval.'}}')
+										);
+									else
+										$pval=var_export($pval,true);
+								$text='<?php echo Template::serve('.
+									implode('.',$inc_var).'); ?>';
+								$out.= isset($ival)?
+									('<?php if ('.trim($cond).'): ?>'.$text.
+									'<?php endif; ?>'):$text;
+							}
+							else
+								foreach (self::split(self::$vars['GUI'])
+									as $gui)
+									if (is_file($view=$gui.$file)) {
+										$text=$doc->load(
+											self::getfile($view),$this->syms
+										);
+										$out.=isset($ival)?
+											('<?php if ('.trim($cond).'): ?>'.
+												$text.'<?php endif; ?>'):
+											$text;
+										break;
+									}
 							break;
 						case 'loop':
 							// <loop> directive

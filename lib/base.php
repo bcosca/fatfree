@@ -8,11 +8,11 @@
 	compliance with the license. Any of the license terms and conditions
 	can be waived if you get permission from the copyright holder.
 
-	Copyright (c) 2009-2011 F3::Factory
+	Copyright (c) 2009-2012 F3::Factory
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Base
-		@version 2.0.9
+		@version 2.0.10
 **/
 
 //! Base structure
@@ -21,7 +21,7 @@ class Base {
 	//@{ Framework details
 	const
 		TEXT_AppName='Fat-Free Framework',
-		TEXT_Version='2.0.9',
+		TEXT_Version='2.0.10',
 		TEXT_AppURL='http://fatfree.sourceforge.net';
 	//@}
 
@@ -335,7 +335,8 @@ class Base {
 					else
 						$var=&$var[$match];
 				}
-				elseif ($obj && isset($var->$match)) {
+				elseif ($obj &&
+					(isset($var->$match) || method_exists($var,'__get'))) {
 					// Object property found
 					$var=$var->$match;
 					$obj=FALSE;
@@ -412,6 +413,7 @@ class Base {
 
 	/**
 		Merge one or more framework array variables
+			@return array
 			@public
 	**/
 	static function merge() {
@@ -964,7 +966,9 @@ class F3 extends Base {
 						$csv=array_map(
 							function($val) {
 								$val=trim($val);
-								return is_numeric($val) || defined($val)?
+								return is_numeric($val) ||
+									preg_match('/[_a-z0-9]/i',$val) &&
+									defined($val)?
 									eval('return '.$val.';'):$val;
 							},
 							str_getcsv($parts[4])
