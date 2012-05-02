@@ -1261,7 +1261,7 @@ class F3 extends Base {
 					'(?P<\1>[\w\-\.!~\*\'"(),\s]+)',
 					// Wildcard character in URI
 					str_replace('\*','(.*)',preg_quote($uri,'/'))
-				).'\/?(?:\?.*)?$/iu',$req,$args))
+				).'\/?(?:\?.*)?$/ium',$req,$args))
 				continue;
 			$wild=is_int(strpos($uri,'/*'));
 			// Inspect each defined route
