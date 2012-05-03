@@ -94,7 +94,7 @@ class DB extends Base {
 	function exec($cmds,array $args=NULL,$ttl=0) {
 		if (!$this->pdo)
 			self::instantiate();
-		$stats=&self::ref('STATS');
+		$stats=&self::$vars['STATS'];
 		if (!isset($stats[$this->dsn]))
 			$stats[$this->dsn]=array(
 				'cache'=>array(),
