@@ -1257,11 +1257,11 @@ class F3 extends Base {
 			if (!preg_match('/^'.
 				preg_replace(
 					'/(?:{{)?@(\w+\b)(?:}})?/',
-					// Valid URL characters (RFC 1738)
-					'(?P<\1>[\w\-\.!~\*\'"(),\s]+)',
+					// Delimiter-based matching
+					'(?P<\1>[^\/&]+)',
 					// Wildcard character in URI
 					str_replace('\*','(.*)',preg_quote($uri,'/'))
-				).'\/?(?:\?.*)?$/iu',$req,$args))
+				).'\/?(?:\?.*)?$/ium',$req,$args))
 				continue;
 			$wild=is_int(strpos($uri,'/*'));
 			// Inspect each defined route
