@@ -180,7 +180,22 @@ class Web extends Base {
 					}
 				}
 				continue;
-			}
+			}			
+			if($ext[1]=='css' && ($src[$ptr]==')' || $src[$ptr]==']')) {
+                $ofs = $ptr+1;
+                $spc = false;
+                // attribute depending and structural pseudo-class selectors
+                // needs a space after closing the selectors argument brackets
+                while($ofs<strlen($src)){
+                    if($src[$ofs]=='{') {
+                        $dst.=$src[$ptr].($spc?' ':'');
+                        $ptr++;
+                        break;
+                    } elseif(!ctype_space($src[$ofs])) $spc = true;
+                    if($src[$ofs]=='}') break;
+                    $ofs++;
+                }
+            }
 			if (ctype_space($src[$ptr])) {
 				$last=substr($dst,-1);
 				$ofs=$ptr+1;
