@@ -1253,16 +1253,25 @@ class F3 extends Base {
 		$time=time();
 		$req=preg_replace('/^'.preg_quote(self::$vars['BASE'],'/').
 			'\b(.+)/','\1',rawurldecode($_SERVER['REQUEST_URI']));
-		foreach (self::$vars['ROUTES'] as $uri=>$route) {
-			if (!preg_match('/^'.
-				preg_replace(
-					'/(?:{{)?@(\w+\b)(?:}})?/',
-					// Valid URL characters (RFC 1738)
-					'(?P<\1>[\w\-\.!~\*\'"(),\s]+)',
-					// Wildcard character in URI
-					str_replace('\*','(.*)',preg_quote($uri,'/'))
-				).'\/?(?:\?.*)?$/iu',$req,$args))
-				continue;
+        $routes = array();
+        foreach (self::$vars['ROUTES'] as $uri=>$route) {
+            if (!preg_match('/^'.
+                preg_replace(
+                    '/(?:{{)?@(\w+\b)(?:}})?/',
+                    // Valid URL characters (RFC 1738)
+                    '(?P<\1>[\w\-\.!~\*\'"(),\s]+)',
+                    // Wildcard character in URI
+                    str_replace('\*','(.*)',preg_quote($uri,'/'))
+                ).'\/?(?:\?.*)?$/iu',$req,$args))
+                continue;
+            $routes[$uri] = $route;
+            //$routes[$uri]['req'] = $req;
+            $routes[$uri]['args'] = $args;
+        }
+        if(empty($routes))
+            // No such Web page
+            self::error(404);
+        foreach ($routes as $uri=>$route) {
 			$wild=is_int(strpos($uri,'/*'));
 			// Inspect each defined route
 			foreach ($route as $method=>$proc) {
@@ -1279,11 +1288,11 @@ class F3 extends Base {
 					self::reroute(self::$vars['HOTLINK']);
 				if (!$wild)
 					// Save named uri captures
-					foreach (array_keys($args) as $key)
+					foreach (array_keys($route['args']) as $key)
 						// Remove non-zero indexed elements
 						if (is_numeric($key) && $key)
-							unset($args[$key]);
-				self::$vars['PARAMS']=$args;
+							unset($route['args'][$key]);
+				self::$vars['PARAMS']=$route['args'];
 				// Default: Do not cache
 				self::expire(0);
 				if ($_SERVER['REQUEST_METHOD']=='GET' && $ttl) {
@@ -1358,18 +1367,16 @@ class F3 extends Base {
 					// Display response
 					echo self::$vars['RESPONSE'];
 			}
-			if ($found)
-				// Hail the conquering hero
-				return;
-			// Method not allowed
-			if (PHP_SAPI!='cli' && !headers_sent())
-				header(self::HTTP_Allow.': '.
-					implode(',',array_keys($route)));
-			self::error(405);
-			return;
 		}
-		// No such Web page
-		self::error(404);
+        if ($found)
+            // Hail the conquering hero
+            return;
+        // Method not allowed
+        if (PHP_SAPI!='cli' && !headers_sent())
+            header(self::HTTP_Allow.': '.
+                implode(',',array_keys($route)));
+        self::error(405);
+        return;
 	}
 
 	/**
