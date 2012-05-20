@@ -1722,6 +1722,15 @@ class F3 extends Base {
 			dirname(self::fixslashes($_SERVER['SCRIPT_FILENAME']));
 		// Adjust HTTP request time precision
 		$_SERVER['REQUEST_TIME']=microtime(TRUE);
+		if (PHP_SAPI=='cli') {
+			// Command line: Parse GET variables in URL, if any
+			if (isset($_SERVER['argc']) && $_SERVER['argc']<2)
+				array_push($_SERVER['argv'],'/');
+			// Detect host name from environment
+			$_SERVER['SERVER_NAME']=gethostname();
+			// Convert URI to human-readable string
+			self::mock('GET '.$_SERVER['argv'][1]);
+		}
 		// Hydrate framework variables
 		$base=self::fixslashes(
 			preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME']));
@@ -1826,15 +1835,6 @@ class F3 extends Base {
 						$val=stripslashes($val);
 					}
 				);
-		}
-		if (PHP_SAPI=='cli') {
-			// Command line: Parse GET variables in URL, if any
-			if (isset($_SERVER['argc']) && $_SERVER['argc']<2)
-				array_push($_SERVER['argv'],'/');
-			// Detect host name from environment
-			$_SERVER['SERVER_NAME']=gethostname();
-			// Convert URI to human-readable string
-			self::mock('GET '.$_SERVER['argv'][1]);
 		}
 		// Initialize autoload stack and shutdown sequence
 		spl_autoload_register(__CLASS__.'::autoload');
