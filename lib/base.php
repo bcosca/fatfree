@@ -1265,7 +1265,6 @@ class F3 extends Base {
                 ).'\/?(?:\?.*)?$/iu',$req,$args))
                 continue;
             $routes[$uri] = $route;
-            //$routes[$uri]['req'] = $req;
             $routes[$uri]['args'] = $args;
         }
         if(empty($routes))
