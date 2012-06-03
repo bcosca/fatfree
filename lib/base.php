@@ -1145,14 +1145,16 @@ class F3 extends Base {
 			@public
 	**/
 	static function map($url,$class,$ttl=0,$throttle=0,$hotlink=TRUE) {
-		foreach (explode('|',self::HTTP_Methods) as $method)
-			if (method_exists($class,$method)) {
-				$ref=new ReflectionMethod($class,$method);
-				self::route($method.' '.$url,$ref->isStatic()?
-					array($class,$method):array(new $class,$method),$ttl,
+		foreach (explode('|',self::HTTP_Methods) as $httpmethod) {
+			$classmethod = (self::get('MAPPING_PREFIX')?:'').$httpmethod;
+			if (method_exists($class,$httpmethod)) {
+				$ref=new ReflectionMethod($class,$classmethod);
+				self::route($httpmethod.' '.$url,$ref->isStatic()?
+					array($class,$classmethod):array(new $class,$classmethod),$ttl,
 					$throttle,$hotlink);
 				unset($ref);
 			}
+		}
 	}
 
 	/**
