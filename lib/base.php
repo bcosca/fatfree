@@ -1147,7 +1147,7 @@ class F3 extends Base {
 	static function map($url,$class,$ttl=0,$throttle=0,$hotlink=TRUE) {
 		foreach (explode('|',self::HTTP_Methods) as $httpmethod) {
 			$classmethod = (self::get('MAPPING_PREFIX')?:'').$httpmethod;
-			if (method_exists($class,$httpmethod)) {
+			if (method_exists($class,$classmethod)) {
 				$ref=new ReflectionMethod($class,$classmethod);
 				self::route($httpmethod.' '.$url,$ref->isStatic()?
 					array($class,$classmethod):array(new $class,$classmethod),$ttl,
