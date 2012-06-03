@@ -621,10 +621,10 @@ class Base {
 			@public
 	**/
 	static function realip() {
-		if (isset($_SERVER['HTTP_CLIENT_IP']))
+		if (isset($_SERVER['HTTP_CLIENT_IP']) && $_SERVER['HTTP_CLIENT_IP'])
 			// Behind proxy
 			return $_SERVER['HTTP_CLIENT_IP'];
-		elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR']) {
 			// Use first IP address in list
 			list($ip)=explode(',',$_SERVER['HTTP_X_FORWARDED_FOR']);
 			return $ip;
