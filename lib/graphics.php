@@ -66,7 +66,7 @@ class Graphics extends Base {
 			@public
 	**/
 	static function captcha(
-		$dimx=150,$dimy=50,$len=5,$ttfs='cube',$var='captcha',$die=TRUE) {
+		$dimx=150,$dimy=50,$len=5,$ttfs='cube',$var='captcha',$die=TRUE,$ob=FALSE) {
 		$base=self::rgb(self::$vars['BGCOLOR']);
 		$trans=self::$vars['FGTRANS'];
 		// Specify Captcha seed
@@ -119,7 +119,7 @@ class Graphics extends Base {
 		// Make the background transparent
 		imagecolortransparent($captcha,$bg);
 		// Send output as PNG image
-		if (PHP_SAPI!='cli' && !headers_sent()) {
+		if (PHP_SAPI!='cli' && !headers_sent() && !$ob) {
 			header(self::HTTP_Content.': image/png');
 			header(self::HTTP_Powered.': '.self::TEXT_AppName.' '.
 				'('.self::TEXT_AppURL.')');
