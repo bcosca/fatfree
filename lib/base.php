@@ -1735,7 +1735,7 @@ class F3 extends Base {
 		$jar=array(
 			'expire'=>0,
 			'path'=>$base?:'/',
-			'domain'=>'.'.$_SERVER['SERVER_NAME'],
+			'domain'=>'.'.($_SERVER['HTTP_HOST']?:$_SERVER['SERVER_NAME']),
 			'secure'=>($scheme=='https'),
 			'httponly'=>TRUE
 		);
