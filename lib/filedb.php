@@ -92,11 +92,13 @@ class FileDB extends Base {
 			@public
 	**/
 	function read($file) {
+		$out = '';
 		$file=$this->path.$file;
 		if (!is_file($file))
 			return array();
 		$text=self::getfile($file);
 		switch ($this->format) {
+			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::FORMAT_GZip:
 				$text=gzinflate($text);
 			case self::FORMAT_Plain:
@@ -271,12 +273,22 @@ class Jig extends Base {
 		TEXT_JigField='Field %s does not exist';
 	//@}
 
+	//@{ Locale-specific error/exception messages
+	const
+		TEXT_Criteria='Invalid criteria: %s',
+		TEXT_Callback='Invalid callback: %s';
+	//@}
+
 	//@{
 	//! Jig properties
 	public
-		$_id;
+		$_id,$id,$data,$stamp;
+	/** @var $db FileDB */
 	private
-		$db,$table,$object,$mod,$cond,$seq,$ofs;
+		$db;
+	private
+		$table,$object,$mod,$cond,$seq,$ofs;
+
 	//@}
 
 	/**
@@ -484,7 +496,7 @@ class Jig extends Base {
 	function copyTo($name,$fields=NULL) {
 		if ($this->dry()) {
 			trigger_error(self::TEXT_JigEmpty);
-			return FALSE;
+			return NULL;
 		}
 		if (is_string($fields))
 			$list=preg_split('/[\|;,]/',$fields,0,PREG_SPLIT_NO_EMPTY);
@@ -523,7 +535,7 @@ class Jig extends Base {
 			if ($jig=$this->findone($cond,$seq,$ofs)) {
 				if (method_exists($this,'beforeLoad') &&
 					$this->beforeLoad()===FALSE)
-					return;
+					return NULL;
 				// Hydrate Jig
 				$this->_id=$jig->_id;
 				foreach ($jig->object as $key=>$val)
@@ -665,6 +677,15 @@ class Jig extends Base {
 			$this->afterSync();
 	}
 
+	function beforeLoad() {return TRUE;}
+	function afterLoad() {}
+	function beforeSave() {return TRUE;}
+	function afterSave() {}
+	function beforeErase() {return TRUE;}
+	function afterErase() {}
+	function beforeSync() {return TRUE;}
+	function afterSync() {}
+
 	/**
 		Return value of Jig-mapped property
 			@return boolean
@@ -725,5 +746,4 @@ class Jig extends Base {
 		// Execute mandatory sync method
 		call_user_func_array(array($this,'sync'),func_get_args());
 	}
-
 }

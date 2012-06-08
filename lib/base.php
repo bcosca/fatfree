@@ -621,10 +621,10 @@ class Base {
 			@public
 	**/
 	static function realip() {
-		if (isset($_SERVER['HTTP_CLIENT_IP']))
+		if (isset($_SERVER['HTTP_CLIENT_IP']) && $_SERVER['HTTP_CLIENT_IP'])
 			// Behind proxy
 			return $_SERVER['HTTP_CLIENT_IP'];
-		elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR']) {
 			// Use first IP address in list
 			list($ip)=explode(',',$_SERVER['HTTP_X_FORWARDED_FOR']);
 			return $ip;
@@ -667,9 +667,10 @@ class Base {
 		permission to create folder in the specified path
 			@param $name string
 			@param $perm int
+			@param $recur bool
 			@public
 	**/
-	static function mkdir($name,$perm=0775) {
+	static function mkdir($name,$perm=0775,$recur=TRUE) {
 		$parent=dirname($name);
 		if (!@is_writable($parent) && !chmod($parent,$perm)) {
 			$uid=posix_getpwuid(posix_geteuid());
@@ -678,7 +679,7 @@ class Base {
 			return FALSE;
 		}
 		// Create the folder
-		mkdir($name,$perm);
+		mkdir($name,$perm,$recur);
 	}
 
 	/**
@@ -1145,14 +1146,16 @@ class F3 extends Base {
 			@public
 	**/
 	static function map($url,$class,$ttl=0,$throttle=0,$hotlink=TRUE) {
-		foreach (explode('|',self::HTTP_Methods) as $method)
-			if (method_exists($class,$method)) {
-				$ref=new ReflectionMethod($class,$method);
-				self::route($method.' '.$url,$ref->isStatic()?
-					array($class,$method):array(new $class,$method),$ttl,
+		foreach (explode('|',self::HTTP_Methods) as $httpmethod) {
+			$classmethod = (self::get('MAPPING_PREFIX')?:'').$httpmethod;
+			if (method_exists($class,$classmethod)) {
+				$ref=new ReflectionMethod($class,$classmethod);
+				self::route($httpmethod.' '.$url,$ref->isStatic()?
+					array($class,$classmethod):array(new $class,$classmethod),$ttl,
 					$throttle,$hotlink);
 				unset($ref);
 			}
+		}
 	}
 
 	/**
@@ -1733,7 +1736,7 @@ class F3 extends Base {
 		$jar=array(
 			'expire'=>0,
 			'path'=>$base?:'/',
-			'domain'=>'.'.$_SERVER['SERVER_NAME'],
+			'domain'=>'.'.($_SERVER['HTTP_HOST']?:$_SERVER['SERVER_NAME']),
 			'secure'=>($scheme=='https'),
 			'httponly'=>TRUE
 		);

@@ -29,6 +29,8 @@ class Text extends Base {
 	static function adiff(array $old,array $new) {
 		$matrix=array();
 		$maxlen=0;
+		$omax=0;
+		$nmax=0;
 		foreach ($old as $ondx=>$val) {
 			// Retrieve keys with the same substring
 			$nkeys=array_keys($new,$val);
