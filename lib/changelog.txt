@@ -1,5 +1,9 @@
 CHANGELOG
 
+2.0.11
+*	NEW: CASELESS variable for specifying case-sensitivity of route patterns;
+	default is TRUE
+
 2.0.10
 *	PHP 5.4-ready
 *	Google::translate() deprecated

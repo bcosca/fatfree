@@ -1261,7 +1261,8 @@ class F3 extends Base {
 					'(?P<\1>[^\/&]+)',
 					// Wildcard character in URI
 					str_replace('\*','(.*)',preg_quote($uri,'/'))
-				).'\/?(?:\?.*)?$/ium',$req,$args))
+				).'\/?(?:\?.*)?$/um'.
+				(self::$vars['CASELESS']?'':'i'),$req,$args))
 				continue;
 			$wild=is_int(strpos($uri,'/*'));
 			// Inspect each defined route
@@ -1753,6 +1754,8 @@ class F3 extends Base {
 			'BASE'=>$base,
 			// Cache backend to use (autodetect if true; disable if false)
 			'CACHE'=>FALSE,
+			// Case-sensitivity of route patterns
+			'CASELESS'=>TRUE,
 			// Stack trace verbosity:
 			// 0-no stack trace, 1-noise removed, 2-normal, 3-verbose
 			'DEBUG'=>1,
