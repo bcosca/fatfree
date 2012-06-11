@@ -1000,6 +1000,24 @@ class Main extends F3instance {
 			'Issue with URL-encoded data containing spaces'
 		);
 
+		$this->mock('GET /%6f%6c%64-adage/a/fool-and/his-money-are/soon-parted/');
+		$this->run();
+		$this->expect(
+			$this->get('PARAMS.token1')==='fool-and' &&
+			$this->get('PARAMS.token2')==='his-money-are' &&
+			$this->get('PARAMS.token3')==='soon-parted',
+			'Raw URL-encoded data in request URI handled properly',
+			'Issue with raw URL-encoded data'
+		);
+
+		$this->mock('GET /a?hello=%40%77%6f%72%6c%64');
+		$this->run();
+		$this->expect(
+			$this->get('GET.hello')==='@world',
+			'Raw URL-encoded data in GET variable',
+			'Issue with URL-encoded data in GET variable'
+		);
+
 		$this->clear('ROUTES');
 
 		@mkdir('inc/temp',0755);

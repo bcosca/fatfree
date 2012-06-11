@@ -967,7 +967,7 @@ class F3 extends Base {
 							function($val) {
 								$val=trim($val);
 								return is_numeric($val) ||
-									preg_match('/[_a-z0-9]/i',$val) &&
+									preg_match('/^\w+$/i',$val) &&
 									defined($val)?
 									eval('return '.$val.';'):$val;
 							},
@@ -1258,11 +1258,11 @@ class F3 extends Base {
             if (!preg_match('/^'.
                 preg_replace(
                     '/(?:{{)?@(\w+\b)(?:}})?/',
-                    // Valid URL characters (RFC 1738)
-                    '(?P<\1>[\w\-\.!~\*\'"(),\s]+)',
+                    // Delimiter-based matching
+                    '(?P<\1>[^\/&]+)',
                     // Wildcard character in URI
                     str_replace('\*','(.*)',preg_quote($uri,'/'))
-                ).'\/?(?:\?.*)?$/iu',$req,$args))
+                ).'\/?(?:\?.*)?$/ium',$req,$args))
                 continue;
             $routes[$uri] = $route;
             $routes[$uri]['args'] = $args;

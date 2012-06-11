@@ -75,7 +75,7 @@ class Log extends Base {
 	**/
 	function __construct($file) {
 		$this->filename=$this->ref('LOGS').$file;
-		$this->handle=fopen($file,'a+');
+		$this->handle=fopen($this->filename,'a+');
 		if (!is_resource($this->handle)) {
 			// Unable to open file
 			trigger_error(self::TEXT_LogOpen);
