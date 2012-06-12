@@ -136,8 +136,8 @@ class Graphics extends Base {
 			@public
 	**/
 	static function invert($file,$die=TRUE) {
-		preg_match('/\.(gif|jp[e]*g|png)$/',$file,$ext);
-		$ext[1]=str_replace('jpg','jpeg',$ext[1]);
+		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
+		$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
 		$file=self::fixslashes(self::resolve($file));
 		$img=imagecreatefromstring(self::getfile($file));
 		imagefilter($img,IMG_FILTER_NEGATE);
@@ -156,8 +156,8 @@ class Graphics extends Base {
 			@public
 	**/
 	static function grayscale($file,$die=TRUE) {
-		preg_match('/\.(gif|jp[e]*g|png)$/',$file,$ext);
-		$ext[1]=str_replace('jpg','jpeg',$ext[1]);
+		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
+		$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
 		$file=self::fixslashes(self::resolve($file));
 		$img=imagecreatefromstring(self::getfile($file));
 		imagefilter($img,IMG_FILTER_GRAYSCALE);
@@ -178,9 +178,9 @@ class Graphics extends Base {
 			@public
 	**/
 	static function thumb($file,$dimx,$dimy,$die=TRUE) {
-		preg_match('/\.(gif|jp[e]*g|png)$/',$file,$ext);
+		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
 		if ($ext) {
-			$ext[1]=str_replace('jpg','jpeg',$ext[1]);
+			$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
 			$file=self::fixslashes(self::resolve($file));
 			$img=imagecreatefromstring(self::getfile($file));
 			// Get image dimensions
