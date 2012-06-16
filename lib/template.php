@@ -256,10 +256,10 @@ class F3markup extends Base {
 							$file=self::resolve($hvar);
 							if ($hvar!=$file)
 								self::$cache=FALSE;
-							$nested=false;
+							$nested=FALSE;
 							foreach ($this->syms as $pvar)
 								if (strstr($hvar,$pvar))
-									$nested=true;
+									$nested=TRUE;
 							if ($nested) {
 								$inc_var=preg_split("/[\s]*[}}{{][\s]*/i",
 									$hvar,-1,PREG_SPLIT_NO_EMPTY);
