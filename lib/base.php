@@ -1256,7 +1256,7 @@ class F3 extends Base {
 		foreach (self::$vars['ROUTES'] as $uri=>$route) {
 			if (!preg_match('/^'.
 				preg_replace(
-					'/(?:{{)?@(\w+\b)(?:}})?/',
+					'/(?:\{\{)?@(\w+\b)(?:\}\})?/',
 					// Delimiter-based matching
 					'(?P<\1>[^\/&]+)',
 					// Wildcard character in URI
