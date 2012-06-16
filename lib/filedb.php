@@ -101,7 +101,6 @@ class FileDB extends Base {
 		switch ($this->format) {
 			case self::FORMAT_GZip:
 				$text=gzinflate($text);
-				break;
 			case self::FORMAT_Plain:
 				if (ini_get('allow_url_fopen') &&
 					ini_get('allow_url_include'))
