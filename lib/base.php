@@ -1450,33 +1450,40 @@ class F3 extends Base {
 			foreach (explode('|','GET|POST|REQUEST') as $var)
 				if (self::exists($var.'.'.$field)) {
 					$key=&self::ref($var.'.'.$field);
-					$key=self::scrub($key,$tags);
-					$val=filter_var($key,$filter,$opt);
-					foreach ($funcs as $func)
-						if ($func) {
-							if (is_string($func) &&
-								preg_match('/([\w\\\]+)\s*->\s*(\w+)/',
-									$func,$match))
-								// Convert class->method syntax
-								$func=array(new $match[1],$match[2]);
-							if (!is_callable($func)) {
-								// Invalid handler
-								trigger_error(
-									sprintf(self::TEXT_Form,$field)
-								);
-								return;
+					if (is_array($key))
+						foreach ($key as $sub)
+							self::input(
+								$sub,$funcs,$tags,$filter,$opt,$assign
+							);
+					else {
+						$key=self::scrub($key,$tags);
+						$val=filter_var($key,$filter,$opt);
+						foreach ($funcs as $func)
+							if ($func) {
+								if (is_string($func) &&
+									preg_match('/([\w\\\]+)\s*->\s*(\w+)/',
+										$func,$match))
+									// Convert class->method syntax
+									$func=array(new $match[1],$match[2]);
+								if (!is_callable($func)) {
+									// Invalid handler
+									trigger_error(
+										sprintf(self::TEXT_Form,$field)
+									);
+									return;
+								}
+								if (!$found) {
+									$out=call_user_func($func,$val,$field);
+									if (!$assign)
+										return $out;
+									if ($out)
+										$key=$out;
+									$found=TRUE;
+								}
+								elseif ($assign && $out)
+									$key=$val;
 							}
-							if (!$found) {
-								$out=call_user_func($func,$val,$field);
-								if (!$assign)
-									return $out;
-								if ($out)
-									$key=$out;
-								$found=TRUE;
-							}
-							elseif ($assign && $out)
-								$key=$val;
-						}
+					}
 				}
 			if (!$found) {
 				// Invalid handler
