@@ -680,7 +680,7 @@ class Axon extends Base {
 		Insert record/update database
 			@public
 	**/
-	function save() {
+	function save($id=NULL) {
 		if ($this->dry() ||
 			method_exists($this,'beforeSave') &&
 			$this->beforeSave()===FALSE)
@@ -710,6 +710,8 @@ class Axon extends Base {
 					'INSERT INTO '.$this->table.' ('.$fields.') '.
 						'VALUES ('.$values.');',$bind);
 			$this->_id=$this->db->pdo->lastinsertid();
+			if ($id)
+				$this->pkeys[$id]=$this->_id;
 		}
 		elseif (!is_null($this->mod)) {
 			// Update record
