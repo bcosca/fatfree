@@ -1184,8 +1184,10 @@ class F3 extends Base {
 							as $path)
 							if (is_file($file=$path.$func)) {
 								$instance=new F3instance;
-								return $instance->sandbox($file);
+								if ($instance->sandbox($file)===FALSE)
+									return FALSE;
 							}
+						return TRUE;
 					}
 					self::error(404);
 					return FALSE;
