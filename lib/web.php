@@ -68,7 +68,7 @@ class Web extends Base {
 				[basename($file)]=filesize($path.$file);
 			// Rewrite relative URLs in CSS
 			$src.=preg_replace_callback(
-				'/\b(?<=url)\(([\"\'])*([^\1\r\n]+?)\1\)/',
+				'/\b(?<=url)\(([\"\'])?(.+?)\1\)/s',
 				function($url) use($path,$file) {
 					// Ignore absolute URLs
 					if (preg_match('/https?:/',$url[2]))
