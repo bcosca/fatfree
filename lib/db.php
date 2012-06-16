@@ -89,9 +89,10 @@ class DB extends Base {
 			@param $cmds mixed
 			@param $args array
 			@param $ttl int
+			@param $assoc bool
 			@public
 	**/
-	function exec($cmds,array $args=NULL,$ttl=0) {
+	function exec($cmds,array $args=NULL,$ttl=0,$assoc=TRUE) {
 		if (!$this->pdo)
 			self::instantiate();
 		$stats=&self::$vars['STATS'];
@@ -151,7 +152,8 @@ class DB extends Base {
 					}
 				if (preg_match(
 					'/^\s*(?:SELECT|PRAGMA|SHOW|EXPLAIN)\s/i',$cmd)) {
-					$this->result=$query->fetchall(PDO::FETCH_ASSOC);
+					$this->result=$query->
+						fetchall($assoc?PDO::FETCH_ASSOC:PDO::FETCH_COLUMN);
 					$this->rows=$query->rowcount();
 				}
 				else
@@ -678,6 +680,7 @@ class Axon extends Base {
 
 	/**
 		Insert record/update database
+			@param $id string
 			@public
 	**/
 	function save($id=NULL) {
