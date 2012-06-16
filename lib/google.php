@@ -37,7 +37,7 @@ class Google extends Base {
 			),
 			TRUE
 		);
-		if (is_null($result['results'])) {
+		if (!isset($result['results'])) {
 			trigger_error($result['status']);
 			return FALSE;
 		}
