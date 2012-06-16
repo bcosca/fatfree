@@ -136,15 +136,19 @@ class Graphics extends Base {
 			@public
 	**/
 	static function invert($file,$die=TRUE) {
-		preg_match('/\.(gif|jp[e]*g|png)$/',$file,$ext);
-		$ext[1]=str_replace('jpg','jpeg',$ext[1]);
-		$file=self::fixslashes(self::resolve($file));
-		$img=imagecreatefromstring(self::getfile($file));
-		imagefilter($img,IMG_FILTER_NEGATE);
-		if (PHP_SAPI!='cli' && !headers_sent())
-			header(self::HTTP_Content.': image/'.$ext[1]);
-		// Send output in same graphics format as original
-		eval('image'.$ext[1].'($img);');
+		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
+		if ($ext) {
+			$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
+			$file=self::fixslashes(self::resolve($file));
+			$img=imagecreatefromstring(self::getfile($file));
+			imagefilter($img,IMG_FILTER_NEGATE);
+			if (PHP_SAPI!='cli' && !headers_sent())
+				header(self::HTTP_Content.': image/'.$ext[1]);
+			// Send output in same graphics format as original
+			eval('image'.$ext[1].'($img);');
+		}
+		else
+			trigger_error(self::TEXT_Image);
 		if ($die)
 			die;
 	}
@@ -156,15 +160,19 @@ class Graphics extends Base {
 			@public
 	**/
 	static function grayscale($file,$die=TRUE) {
-		preg_match('/\.(gif|jp[e]*g|png)$/',$file,$ext);
-		$ext[1]=str_replace('jpg','jpeg',$ext[1]);
-		$file=self::fixslashes(self::resolve($file));
-		$img=imagecreatefromstring(self::getfile($file));
-		imagefilter($img,IMG_FILTER_GRAYSCALE);
-		if (PHP_SAPI!='cli' && !headers_sent())
-			header(self::HTTP_Content.': image/'.$ext[1]);
-		// Send output in same graphics format as original
-		eval('image'.$ext[1].'($img);');
+		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
+		if ($ext) {
+			$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
+			$file=self::fixslashes(self::resolve($file));
+			$img=imagecreatefromstring(self::getfile($file));
+			imagefilter($img,IMG_FILTER_GRAYSCALE);
+			if (PHP_SAPI!='cli' && !headers_sent())
+				header(self::HTTP_Content.': image/'.$ext[1]);
+			// Send output in same graphics format as original
+			eval('image'.$ext[1].'($img);');
+		}
+		else
+			trigger_error(self::TEXT_Image);
 		if ($die)
 			die;
 	}
@@ -178,9 +186,9 @@ class Graphics extends Base {
 			@public
 	**/
 	static function thumb($file,$dimx,$dimy,$die=TRUE) {
-		preg_match('/\.(gif|jp[e]*g|png)$/',$file,$ext);
+		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
 		if ($ext) {
-			$ext[1]=str_replace('jpg','jpeg',$ext[1]);
+			$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
 			$file=self::fixslashes(self::resolve($file));
 			$img=imagecreatefromstring(self::getfile($file));
 			// Get image dimensions
