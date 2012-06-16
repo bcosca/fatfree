@@ -58,7 +58,7 @@ class M2 extends Base {
 		$hash='mdb.'.self::hash($cmd);
 		$cached=Cache::cached($hash);
 		$db=(string)$this->db;
-		$stats=&self::ref('STATS');
+		$stats=&self::$vars['STATS'];
 		if ($ttl && $cached && $_SERVER['REQUEST_TIME']-$cached<$ttl) {
 			// Gather cached queries for profiler
 			if (!isset($stats[$db]['cache'][$cmd]))
