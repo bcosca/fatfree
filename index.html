@@ -363,10 +363,7 @@ RewriteRule .* index.php [L,QSA]</pre>
 	root /var/www/html;
 	location / {
 		index index.php index.html index.htm;
-		if (!-f $request_filename) {
-			rewrite ^(.+)$ /index.php last;
-			break;
-		}
+		try_files $uri /index.php
 	}
 	location ~ \.php$ {
 		fastcgi_pass <i>ip_address:port</i>;
