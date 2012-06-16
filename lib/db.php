@@ -624,7 +624,7 @@ class Axon extends Base {
 			if ($axon=$this->findone($cond,$seq,$ofs)) {
 				if (method_exists($this,'beforeLoad') &&
 					$this->beforeLoad()===FALSE)
-					return;
+					return FALSE;
 				// Hydrate Axon
 				foreach ($axon->fields as $field=>$val) {
 					$this->fields[$field]=$val;
@@ -808,7 +808,7 @@ class Axon extends Base {
 	function copyTo($name,$keys=NULL) {
 		if ($this->dry()) {
 			trigger_error(self::TEXT_AxonEmpty);
-			return FALSE;
+			return;
 		}
 		$list=array_diff(preg_split('/[\|;,]/',$keys,0,
 			PREG_SPLIT_NO_EMPTY),array(''));

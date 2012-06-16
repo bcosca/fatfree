@@ -331,7 +331,7 @@ class M2 extends Base {
 	function copyTo($name,$fields=NULL) {
 		if ($this->dry()) {
 			trigger_error(self::TEXT_M2Empty);
-			return FALSE;
+			return;
 		}
 		if (is_string($fields))
 			$list=preg_split('/[\|;,]/',$fields,0,PREG_SPLIT_NO_EMPTY);
@@ -368,7 +368,7 @@ class M2 extends Base {
 			if ($m2=$this->findOne($cond,$seq,$ofs)) {
 				if (method_exists($this,'beforeLoad') &&
 					$this->beforeLoad()===FALSE)
-					return;
+					return FALSE;
 				// Hydrate M2
 				foreach ($m2->object as $key=>$val)
 					$this->object[$key]=$val;
