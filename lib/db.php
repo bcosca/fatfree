@@ -435,7 +435,7 @@ class Axon extends Base {
 	**/
 	function factory($row) {
 		$self=get_class($this);
-		$axon=new $self($this->table,$this->db);
+		$axon=new $self($this->table,$this->db,FALSE);
 		foreach ($row as $field=>$val) {
 			if (array_key_exists($field,$this->fields)) {
 				$axon->fields[$field]=$val;
@@ -833,6 +833,8 @@ class Axon extends Base {
 			@public
 	**/
 	function sync($table,$db=NULL,$ttl=60) {
+		if (is_bool($ttl) && !$ttl)
+			return;
 		if (!$db) {
 			if (isset(self::$vars['DB']) && is_a(self::$vars['DB'],'DB'))
 				$db=self::$vars['DB'];
