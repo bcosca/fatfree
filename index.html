@@ -1494,7 +1494,7 @@ foreach (F3::get('DB->result') as $row) {
 		'p455w0rD'
 	)
 );
-F3::sql('SELECT * from gadgets',NULL,0,'mydb');
+DB::sql('SELECT * from gadgets',NULL,0,'mydb');
 foreach (F3::get('mydb->result') as $row) {
 	echo $row['quantity'];
 }</pre>
@@ -2837,14 +2837,17 @@ echo $item->_id;</pre>
 	<li>LucidStorm</li>
 	<li>Nevatech</li>
 	<li>Matt Wielgos</li>
-	<li>Maximilian Summe</li>
 	<li>Christian Knuth</li>
+	<li>Maximilian Summe</li>
 	<li>Caspar Frey</li>
 	<li>G Holdings, LLC</li>
 	<li>FocusHeart</li>
 	<li>Philip Lawrence</li>
 	<li>Peter Beverwyk</li>
 	<li>Randal Hintz</li>
+	<li>Franz Josef</li>
+	<li>Biswajit Nayak</li>
+	<li>R Mohan</li>
 </ul>
 
 <p>Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.</p>
