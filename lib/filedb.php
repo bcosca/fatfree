@@ -28,7 +28,8 @@ class FileDB extends Base {
 
 	//@{ Locale-specific error/exception messages
 	const
-		TEXT_Criteria='Invalid criteria: %s';
+		TEXT_Criteria='Invalid criteria: %s',
+		TEXT_Callback='Invalid callback: %s';
 	//@}
 
 	public
@@ -96,9 +97,11 @@ class FileDB extends Base {
 		if (!is_file($file))
 			return array();
 		$text=self::getfile($file);
+		$out='';
 		switch ($this->format) {
 			case self::FORMAT_GZip:
 				$text=gzinflate($text);
+				break;
 			case self::FORMAT_Plain:
 				if (ini_get('allow_url_fopen') &&
 					ini_get('allow_url_include'))
