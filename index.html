@@ -1751,11 +1751,11 @@ foreach ($list as $obj)
 <pre>if (!$user->found('visits&gt;10'))
 	echo 'We need a better ad campaign!';</pre>
 
-<p>There's also a <code>lookup()</code> method that's similar to <code>find()</code> but provides more fine-grained controls. It has a SQL-like syntax:-</p>
+<p>There's also a <code>select()</code> method that's similar to <code>find()</code> but provides more fine-grained controls. It has a SQL-like syntax:-</p>
 
-<pre>lookup( <i>fields</i>,[<i>criteria</i>],[<i>grouping</i>],[<i>order</i>],[<i>limit</i>],[<i>offset</i>] );</pre>
+<pre>select( <i>fields</i>,[<i>criteria</i>],[<i>grouping</i>],[<i>order</i>],[<i>limit</i>],[<i>offset</i>] );</pre>
 
-<p>Much like the <code>find()</code> method, <code>lookup()</code> does not alter the Axon's contents. It only serves as a convenience method for querying an Axon-mapped table. The return value of these methods is an array. Using <code>dry()</code> to determine whether a record was found by an of these methods is inappropriate. If no records match the <code>find()</code> or <code>lookup()</code> criteria, the return value is an empty array. <code>select()</code> is an alias of <code>lookup()</code>. You can use them interchangeably.</p>
+<p>Much like the <code>find()</code> method, <code>select()</code> does not alter the Axon's contents. It only serves as a convenience method for querying an Axon-mapped table. The return value of these methods is an array. Using <code>dry()</code> to determine whether a record was found by an of these methods is inappropriate. If no records match the <code>find()</code> or <code>select()</code> criteria, the return value is an empty array.</p>
 					</div>
 			<h3>Sometimes It Just Ain't Enough</h3>
 		<div class="article">
@@ -1779,7 +1779,7 @@ foreach ($list as $obj)
 		);
 		return F3::get('DB')->result;
 		// We could have done the the same thing without SQL:-
-		// return $this->lookup('vendorID,name,city',NULL,NULL,'city');
+		// return $this->select('vendorID,name,city',NULL,NULL,'city');
 	}
 
 	// Axon ORM has various event listeners; This method is called
