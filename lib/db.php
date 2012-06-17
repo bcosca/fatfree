@@ -228,7 +228,7 @@ class DB extends Base {
 			'mysql'=>array(
 				'SHOW columns FROM `'.$this->dbname.'`.'.$table.';',
 				'Field','Key','PRI','Type'),
-			'mssql|sybase|dblib|pgsql|ibm|odbc'=>array(
+			'mssql|sqlsrv|sybase|dblib|pgsql|ibm|odbc'=>array(
 				'SELECT c.column_name AS field,'.
 				'c.data_type AS type,t.constraint_type AS pkey '.
 				'FROM information_schema.columns AS c '.
@@ -299,7 +299,7 @@ class DB extends Base {
 					'sqlite2?'=>
 						'SELECT name FROM sqlite_master '.
 						'WHERE type=\'table\' AND name=\''.$table.'\';',
-					'mysql|mssql|sybase|dblib|pgsql'=>
+					'mysql|mssql|sqlsrv|sybase|dblib|pgsql'=>
 						'SELECT table_name FROM information_schema.tables '.
 						'WHERE '.
 							(preg_match('/pgsql/',$self->backend)?
