@@ -451,7 +451,7 @@ class Web extends Base {
 				// Add new URL
 				$item=$xml->addChild('url');
 				// Add URL elements
-				$item->addChild('loc',$host.$key);
+				$item->addChild('loc',$host.($key[0]=='/'?'':'/').$key);
 				$item->addChild('lastmod',gmdate('c',$ref['mod']));
 				$item->addChild('changefreq',
 					self::frequency($ref['freq']));
