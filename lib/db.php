@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package DB
-		@version 2.0.10
+		@version 2.0.11
 **/
 
 //! SQL data access layer

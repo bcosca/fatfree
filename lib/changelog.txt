@@ -12,6 +12,8 @@ CHANGELOG
 	with framework's get() method when used in non-static context
 *	Change in behavior: input() now allows array fields and scrubs elements
 	uniformly using specified data scrubbing rules
+*	NEW: Add support for sqlsrv PDO in Axon
+*	Bug fix: Variables in main template don't persist across subtemplates
 *	Bug fix: Dev mode COOKIE/JAR domain not recognized by Chrome browsers
 *	Bug fix: Mixed case file extensions in Graphics plugin
 *	Bug fix: Curly braces in dynamic routes
@@ -22,6 +24,7 @@ CHANGELOG
 *	Bug fix: geocode() handling failure [Bug #3483149]
 *	Bug fix: M2 profiling statistics
 *	Bug fix: Redundant sync() in Axon factory()
+*	Bug fix: invalid loc field in sitemap() [Bug #3464164]
 *	Code cleanup
 
 2.0.10
