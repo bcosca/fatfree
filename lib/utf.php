@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Unicode
-		@version 2.0.10
+		@version 2.0.11
 **/
 
 //! Unicode-aware string functions

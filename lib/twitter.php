@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Twitter
-		@version 2.0.10
+		@version 2.0.11
 **/
 
 //! Collection of Twitter API adaptors

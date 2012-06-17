@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Base
-		@version 2.0.10
+		@version 2.0.11
 **/
 
 //! Base structure
@@ -21,7 +21,7 @@ class Base {
 	//@{ Framework details
 	const
 		TEXT_AppName='Fat-Free Framework',
-		TEXT_Version='2.0.10',
+		TEXT_Version='2.0.11',
 		TEXT_AppURL='http://fatfree.sourceforge.net';
 	//@}
 
