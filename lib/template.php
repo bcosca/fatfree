@@ -29,9 +29,11 @@ class Template extends Base {
 			@param $file string
 			@param $mime string
 			@param $globals boolean
+			@param $syms array
 			@public
 	**/
-	static function serve($file,$mime='text/html',$globals=TRUE) {
+	static function serve(
+		$file,$mime='text/html',$globals=TRUE,$syms=array()) {
 		$file=self::resolve($file);
 		$found=FALSE;
 		foreach (preg_split('/[\|;,]/',self::$vars['GUI'],0,
@@ -58,7 +60,7 @@ class Template extends Base {
 		}
 		else {
 			// Parse raw template
-			$doc=new F3markup($mime,$globals);
+			$doc=new F3markup($mime,$globals,$syms);
 			$text=$doc->load(self::getfile($view));
 			if (self::$vars['CACHE'] && $doc::$cache)
 				// Save PHP-compiled template to cache
@@ -252,7 +254,8 @@ class F3markup extends Base {
 									return;
 								}
 							}
-							$doc=new F3markup($this->mime,$this->globals);
+							$doc=new F3markup(
+								$this->mime,$this->globals,$this->syms);
 							$file=self::resolve($hvar);
 							if ($hvar!=$file)
 								self::$cache=FALSE;
@@ -275,7 +278,9 @@ class F3markup extends Base {
 									else
 										$pval=var_export($pval,true);
 								$text='<?php echo Template::serve('.
-									implode('.',$inc_var).'); ?>';
+									implode('.',$inc_var).',\'text/html\','.
+									'TRUE,'.var_export($this->syms,TRUE).
+									'); ?>';
 								$out.= isset($ival)?
 									('<?php if ('.trim($cond).'): ?>'.$text.
 									'<?php endif; ?>'):$text;
@@ -511,9 +516,10 @@ class F3markup extends Base {
 			@param $globals boolean
 			@public
 	**/
-	function __construct($mime,$globals) {
+	function __construct($mime,$globals,$syms) {
 		$this->mime=$mime;
 		$this->globals=$globals;
+		$this->syms=$syms;
 	}
 
 }
