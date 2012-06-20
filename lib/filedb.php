@@ -26,12 +26,6 @@ class FileDB extends Base {
 		FORMAT_GZip=3;
 	//@}
 
-	//@{ Locale-specific error/exception messages
-	const
-		TEXT_Criteria='Invalid criteria: %s',
-		TEXT_Callback='Invalid callback: %s';
-	//@}
-
 	public
 		//! Exposed properties
 		$path,$result;
@@ -271,6 +265,12 @@ class Jig extends Base {
 		TEXT_JigEmpty='Jig is empty',
 		TEXT_JigTable='Table %s does not exist',
 		TEXT_JigField='Field %s does not exist';
+	//@}
+
+	//@{ Locale-specific error/exception messages
+	const
+		TEXT_Criteria='Invalid criteria: %s',
+		TEXT_Callback='Invalid callback: %s';
 	//@}
 
 	//@{
