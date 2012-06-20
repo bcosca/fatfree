@@ -1262,7 +1262,7 @@ class F3 extends Base {
 		krsort(self::$vars['ROUTES']);
 		$time=time();
 		$req=preg_replace('/^'.preg_quote(self::$vars['BASE'],'/').
-			'\b(.+)/'.(self::$vars['CASELESS']?'':'i'),'\1',
+			'\b(.+)/'.(self::$vars['CASELESS']?'i':''),'\1',
 			rawurldecode($_SERVER['REQUEST_URI']));
 		foreach (self::$vars['ROUTES'] as $uri=>$route) {
 			if (!preg_match('/^'.
