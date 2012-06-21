@@ -1195,10 +1195,12 @@ class F3 extends Base {
 								if ($instance->sandbox($file)===FALSE)
 									return FALSE;
 							}
-						return TRUE;
+						// Drop down
 					}
-					self::error(404);
-					return FALSE;
+					else {
+						self::error(404);
+						return FALSE;
+					}
 				}
 			}
 			if (!is_callable($func)) {
