@@ -261,6 +261,8 @@ class Jig extends Base {
 
 	//@{ Locale-specific error/exception messages
 	const
+		TEXT_JigCriteria='Invalid criteria: %s',
+		TEXT_JigCallback='Invalid callback: %s';
 		TEXT_JigConnect='Undefined database',
 		TEXT_JigEmpty='Jig is empty',
 		TEXT_JigTable='Table %s does not exist',
@@ -314,7 +316,7 @@ class Jig extends Base {
 					if (!is_array($cond)) {
 						trigger_error(
 							sprintf(
-								self::TEXT_Criteria,
+								self::TEXT_JigCriteria,
 								$this->stringify($cond)
 							)
 						);
@@ -331,7 +333,7 @@ class Jig extends Base {
 					if (!is_array($cond) || !is_callable($val)) {
 						trigger_error(
 							sprintf(
-								self::TEXT_Callback,
+								self::TEXT_JigCallback,
 								$this->stringify($val)
 							)
 						);
