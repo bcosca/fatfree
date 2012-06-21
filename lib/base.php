@@ -1173,6 +1173,7 @@ class F3 extends Base {
 	static function call($funcs,$listen=FALSE) {
 		$classes=array();
 		$funcs=is_string($funcs)?self::split($funcs):array($funcs);
+		$out=NULL;
 		foreach ($funcs as $func) {
 			if (is_string($func)) {
 				$func=self::resolve($func);
@@ -1188,19 +1189,20 @@ class F3 extends Base {
 				}
 				elseif (!function_exists($func)) {
 					if (preg_match('/\.php$/i',$func)) {
+						$found=FALSE;
 						foreach (self::split(self::$vars['IMPORTS'])
 							as $path)
 							if (is_file($file=$path.$func)) {
 								$instance=new F3instance;
 								if ($instance->sandbox($file)===FALSE)
 									return FALSE;
+								$found=TRUE;
 							}
-						// Drop down
+						if ($found)
+							continue;
 					}
-					else {
-						self::error(404);
-						return FALSE;
-					}
+					self::error(404);
+					return FALSE;
 				}
 			}
 			if (!is_callable($func)) {
