@@ -1188,6 +1188,7 @@ class F3 extends Base {
 						new $match[1]:$match[1],$match[3]);
 				}
 				elseif (!function_exists($func)) {
+					$found=FALSE;
 					if (preg_match('/\.php$/i',$func)) {
 						$found=FALSE;
 						foreach (self::split(self::$vars['IMPORTS'])
