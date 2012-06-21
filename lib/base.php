@@ -667,9 +667,10 @@ class Base {
 		permission to create folder in the specified path
 			@param $name string
 			@param $perm int
+			@param $recursive bool
 			@public
 	**/
-	static function mkdir($name,$perm=0775) {
+	static function mkdir($name,$perm=0775,$recursive=TRUE) {
 		$parent=dirname($name);
 		if (!@is_writable($parent) && !chmod($parent,$perm)) {
 			$uid=posix_getpwuid(posix_geteuid());
@@ -678,7 +679,7 @@ class Base {
 			return FALSE;
 		}
 		// Create the folder
-		mkdir($name,$perm);
+		mkdir($name,$perm,$recursive);
 	}
 
 	/**
