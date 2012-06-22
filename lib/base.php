@@ -905,14 +905,14 @@ class F3 extends Base {
 			@param $pfx string
 			@public
 	**/
-	static function mset($arg,$pfx='') {
+	static function mset($arg,$pfx='',$resolve=TRUE) {
 		if (!is_array($arg))
 			// Invalid argument
 			trigger_error(self::TEXT_MSet);
 		else
 			// Bind key-value pairs
 			foreach ($arg as $key=>$val)
-				self::set($pfx.$key,$val);
+				self::set($pfx.$key,$val,FALSE,$resolve);
 	}
 
 	/**
