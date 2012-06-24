@@ -262,7 +262,7 @@ class Jig extends Base {
 	//@{ Locale-specific error/exception messages
 	const
 		TEXT_JigCriteria='Invalid criteria: %s',
-		TEXT_JigCallback='Invalid callback: %s';
+		TEXT_JigCallback='Invalid callback: %s',
 		TEXT_JigConnect='Undefined database',
 		TEXT_JigEmpty='Jig is empty',
 		TEXT_JigTable='Table %s does not exist',
