@@ -832,15 +832,6 @@ class Main extends F3instance {
 		);
 
 		$this->set('routed',0);
-		$this->mock('GET /a/');
-		$this->run();
-		$this->expect(
-			$this->get('routed')===1,
-			'Slash-terminated URI routed properly',
-			'Slash-terminated URI routing issue'
-		);
-
-		$this->set('routed',0);
 		$this->mock('GET /a/b/c');
 		$this->run();
 		$this->expect(
@@ -859,15 +850,6 @@ class Main extends F3instance {
 		);
 
 		$this->set('routed',0);
-		$this->mock('GET /a-b/c/');
-		$this->run();
-		$this->expect(
-			$this->get('routed')===3,
-			'Slash-terminated URI (with special characters) routed properly',
-			'Slash-terminated URI (with special characters) routing issue'
-		);
-
-		$this->set('routed',0);
 		$this->mock('GET /a-b/c?x=557&y=355');
 		$this->run();
 		$this->expect(
@@ -880,15 +862,6 @@ class Main extends F3instance {
 			$this->get('GET')==array('x'=>'557','y'=>'355'),
 			'GET variables passed to framework-mirrored PHP variable',
 			'Issue with GET variables in URI: '.var_export($this->get('GET'),TRUE)
-		);
-
-		$this->set('routed',0);
-		$this->mock('GET /a-b/c/?x=557&y=355');
-		$this->run();
-		$this->expect(
-			$this->get('GET')==array('x'=>'557','y'=>'355'),
-			'GET variables in slash-terminated URI passed properly',
-			'Issue with slash-terminated URI: '.var_export($this->get('GET'),TRUE)
 		);
 
 		$this->set('routed',0);
@@ -968,18 +941,7 @@ class Main extends F3instance {
 			'Incorrect handling of URI tokens'
 		);
 
-		$this->mock('GET /old-adage/a/bird/in/hand/');
-		$this->run();
-		$this->expect(
-			$this->get('routed')===3 &&
-			$this->get('PARAMS.token1')==='bird' &&
-			$this->get('PARAMS.token2')==='in' &&
-			$this->get('PARAMS.token3')==='hand',
-			'URI tokens handled correctly even with a trailing slash',
-			'Incorrect handling of URI tokens'
-		);
-
-		$this->mock('GET /old-adage/a/fool-and/his-money-are/soon-parted/');
+		$this->mock('GET /old-adage/a/fool-and/his-money-are/soon-parted');
 		$this->run();
 		$this->expect(
 			$this->get('routed')===3 &&
@@ -990,7 +952,7 @@ class Main extends F3instance {
 			'Incorrect distribution of URI tokens'
 		);
 
-		$this->mock('GET /old-adage/a/fool and/his money are/soon parted/');
+		$this->mock('GET /old-adage/a/fool and/his money are/soon parted');
 		$this->run();
 		$this->expect(
 			$this->get('PARAMS.token1')==='fool and' &&
@@ -1000,7 +962,7 @@ class Main extends F3instance {
 			'Issue with URL-encoded data containing spaces'
 		);
 
-		$this->mock('GET /%6f%6c%64-adage/a/fool-and/his-money-are/soon-parted/');
+		$this->mock('GET /%6f%6c%64-adage/a/fool-and/his-money-are/soon-parted');
 		$this->run();
 		$this->expect(
 			$this->get('PARAMS.token1')==='fool-and' &&
