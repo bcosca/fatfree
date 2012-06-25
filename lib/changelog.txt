@@ -1,5 +1,11 @@
 CHANGELOG
 
+2.0.12
+*	Bug fix: Static/dynamic input() handlers
+*	Bug fix: Jig error messages
+*	Bug fix: Chained routes fail to run in succession
+*	Bug fix: Session handling
+
 2.0.11
 *	NEW: CASELESS variable for specifying case-sensitivity of route patterns;
 	default is TRUE
