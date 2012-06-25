@@ -1478,7 +1478,7 @@ class F3 extends Base {
 						foreach ($funcs as $func)
 							if ($func) {
 								if (is_string($func) &&
-									preg_match('/(.+)\s*(->|::)\s*(.+)/',
+									preg_match('/(.+)\s*(?:->|::)\s*(.+)/',
 										$func,$match))
 									// Convert class->method syntax
 									$func=array(new $match[1],$match[2]);
