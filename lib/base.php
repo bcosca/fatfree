@@ -889,13 +889,7 @@ class F3 extends Base {
 			$key=self::resolve($key);
 		if (!self::valid($key))
 			return FALSE;
-		$id=session_id();
 		$var=&self::ref($key,FALSE);
-		if (!$id && session_id()) {
-			// End the session
-			session_unset();
-			session_destroy();
-		}
 		return isset($var);
 	}
 
