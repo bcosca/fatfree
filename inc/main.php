@@ -3305,7 +3305,7 @@ class Main extends F3instance {
 
 			$this->expect(
 				TRUE,
-				'Google map<br/><img src="/google/map" alt="Google Map"/>'
+				'Google map<br/><img src="'.$this->get('BASE').'/google/map" alt="Google Map"/>'
 			);
 
 			$search=Google::search('google');
@@ -3357,7 +3357,7 @@ class Main extends F3instance {
 			);
 
 			$this->set('QUIET',TRUE);
-			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].'/minified/reset.css');
+			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/reset.css');
 			$this->expect(
 				$text=='html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block;}body{line-height:1;}ol,ul{list-style:none;}blockquote,q{quotes:none;}blockquote:before,blockquote:after,q:before,q:after{content:\'\';content:none;}table{border-collapse:collapse;border-spacing:0;}',
 				'CSS minified '.round(100*(filesize('gui/reset.css')-strlen($text))/filesize('gui/reset.css'),1).'%: '.strlen($text).' bytes; '.
@@ -3367,7 +3367,7 @@ class Main extends F3instance {
 			$this->set('QUIET',FALSE);
 
 			$this->set('QUIET',TRUE);
-			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].'/minified/simple.css');
+			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/simple.css');
 			$this->expect(
 				$text=='div *{text-align:center;}#content{border:1px #000 solid;text-shadow:#ccc -1px -1px 0px;}',
 				'CSS minified properly - necessary (and IE-problematic) spaces preserved',
@@ -3376,7 +3376,7 @@ class Main extends F3instance {
 			$this->set('QUIET',FALSE);
 
 			$this->set('QUIET',TRUE);
-			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].'/minified/cookie.js');
+			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/cookie.js');
 			$this->expect(
 				$text=='function getCookie(cname){var out=\'\';if(document.cookie.length>0){var cstart=document.cookie.indexOf(cname+\'=\');if(cstart!=-1){cstart=cstart+cname.length+1;var cend=document.cookie.indexOf(\';\',cstart);if(cend==-1){cend=document.cookie.length;}var s=document.cookie.substring(cstart,cend);out=decodeURIComponent(s);}}return out;}function setCookie(cname,value,expiredays){var exdate=new Date();var d=exdate.getDate();exdate.setDate(d+expiredays);var ed=\'\';if(expiredays>0){ed=\'; expires=\'+exdate.toUTCString();}document.cookie=cname+\'=\'+encodeURIComponent(value)+ed;}function checkCookie(){var un=getCookie(\'username\');if(un.length>0){alert(\'Welcome again \'+un+\'!\');}else{var un2=prompt(\'Please enter your name:\',\'\');var oneyear=365;if(un2.length>0){setCookie(\'username\',un2,oneyear);}}}',
 				'Javascript minified '.round(100*(filesize('gui/cookie.js')-strlen($text))/filesize('gui/cookie.js'),1). '%: '.strlen($text).' bytes; '.
@@ -3543,7 +3543,7 @@ class Main extends F3instance {
 		$openid=new OpenID;
 		$openid->identity='https://www.google.com/accounts/o8/id';
 		$openid->return_to=$this->get('PROTOCOL').'://'.
-			$_SERVER['SERVER_NAME'].'/openid2';
+			$_SERVER['SERVER_NAME'].$this->get('BASE').'/openid2';
 
 		$this->expect(
 			$openid->auth(),
