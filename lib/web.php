@@ -109,10 +109,8 @@ class Web extends Base {
 					$ofs=$ptr;
 					while ($ofs>0) {
 						$ofs--;
-					// Pattern should be preceded by parenthesis,
-					// colon or assignment operator
-					if ($src[$ofs]=='(' || $src[$ofs]==':' ||
-						$src[$ofs]=='=') {
+						// Pattern should be preceded by a punctuation
+						if (ctype_punct($src[$ofs])) {
 							while ($ptr<strlen($src)) {
 								$str=strstr(substr($src,$ptr+1),'/',TRUE);
 								if (!strlen($str) && $src[$ptr-1]!='/' ||
