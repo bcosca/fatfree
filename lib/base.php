@@ -2284,7 +2284,7 @@ class F3instance {
 			@param $vars array
 			@public
 	*/
-	function sandbox($file,$vars) {
+	function sandbox($file,$vars=array()) {
 		extract($vars);
 		return require $file;
 	}
