@@ -606,9 +606,9 @@ class Base {
 						$expr[1]
 					)
 				);
-				return (!preg_match('/@|\bnew\s+/i',$out) &&
-					($eval=eval('return (string)'.$out.';'))!==FALSE?
-						$eval:$out);
+				return preg_match('/(?=\w)@/i',$out) ||
+					($eval=eval('return (string)'.$out.';'))===FALSE?
+						$out:$eval;
 			},
 			$val
 		);
