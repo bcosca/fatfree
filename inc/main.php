@@ -1797,16 +1797,25 @@ class Main extends F3instance {
 			'Incorrect evaluation of integer zero: '.Template::resolve('{{@x}}')
 		);
 
-		$this->set('x','{{a@b.com}}');
+		$this->set('p','an old man in');
+		$this->set('q','a new house');
 		$this->expect(
-			Template::resolve('{{@x}}')=='\'a@b.com\'',
-			'E-mail address preserved',
-			'Incorrect interpretation of e-mail address: '.Template::resolve('{{@x}}')
+			($result=Template::resolve('{{@p}} {{@q}}'))=='an old man in a new house',
+			'"new" preserved as string',
+			'"new" interpreted as PHP keyword: '.$result
+		);
+
+		$this->set('d','my email address is');
+		$this->set('e','xyz@example.com');
+		$this->expect(
+			($result=Template::resolve('{{@d}} {{@e}}'))=='my email address is xyz@example.com',
+			'E-mail address preserved as string',
+			'E-mail address should not be quoted: '.$result
 		);
 
 		$this->set('x','{{new CustomObj}}');
 		$this->expect(
-			Template::resolve('{{@x}}')=='\'new CustomObj\'',
+			Template::resolve('{{@x}}')=='CustomObj',
 			'Object instantiation using template engine prohibited',
 			'Object instantiation issue: '.Template::resolve('{{@x}}')
 		);
