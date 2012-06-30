@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package FileDB
-		@version 2.0.10
+		@version 2.0.11
 **/
 
 //! Flat-file data access layer
@@ -24,11 +24,6 @@ class FileDB extends Base {
 		FORMAT_Serialized=1,
 		FORMAT_JSON=2,
 		FORMAT_GZip=3;
-	//@}
-
-	//@{ Locale-specific error/exception messages
-	const
-		TEXT_Criteria='Invalid criteria: %s';
 	//@}
 
 	public
@@ -96,6 +91,7 @@ class FileDB extends Base {
 		if (!is_file($file))
 			return array();
 		$text=self::getfile($file);
+		$out='';
 		switch ($this->format) {
 			case self::FORMAT_GZip:
 				$text=gzinflate($text);
@@ -265,10 +261,18 @@ class Jig extends Base {
 
 	//@{ Locale-specific error/exception messages
 	const
+		TEXT_JigCriteria='Invalid criteria: %s',
+		TEXT_JigCallback='Invalid callback: %s',
 		TEXT_JigConnect='Undefined database',
 		TEXT_JigEmpty='Jig is empty',
 		TEXT_JigTable='Table %s does not exist',
 		TEXT_JigField='Field %s does not exist';
+	//@}
+
+	//@{ Locale-specific error/exception messages
+	const
+		TEXT_Criteria='Invalid criteria: %s',
+		TEXT_Callback='Invalid callback: %s';
 	//@}
 
 	//@{
@@ -312,7 +316,7 @@ class Jig extends Base {
 					if (!is_array($cond)) {
 						trigger_error(
 							sprintf(
-								self::TEXT_Criteria,
+								self::TEXT_JigCriteria,
 								$this->stringify($cond)
 							)
 						);
@@ -329,7 +333,7 @@ class Jig extends Base {
 					if (!is_array($cond) || !is_callable($val)) {
 						trigger_error(
 							sprintf(
-								self::TEXT_Callback,
+								self::TEXT_JigCallback,
 								$this->stringify($val)
 							)
 						);
@@ -484,7 +488,7 @@ class Jig extends Base {
 	function copyTo($name,$fields=NULL) {
 		if ($this->dry()) {
 			trigger_error(self::TEXT_JigEmpty);
-			return FALSE;
+			return;
 		}
 		if (is_string($fields))
 			$list=preg_split('/[\|;,]/',$fields,0,PREG_SPLIT_NO_EMPTY);
@@ -523,7 +527,7 @@ class Jig extends Base {
 			if ($jig=$this->findone($cond,$seq,$ofs)) {
 				if (method_exists($this,'beforeLoad') &&
 					$this->beforeLoad()===FALSE)
-					return;
+					return FALSE;
 				// Hydrate Jig
 				$this->_id=$jig->_id;
 				foreach ($jig->object as $key=>$val)

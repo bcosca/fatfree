@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Network
-		@version 2.0.10
+		@version 2.0.11
 **/
 
 //! Network utilities

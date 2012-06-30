@@ -1,7 +1,7 @@
 Identicons<br/>
 <nobr>
 <? foreach ($this->get('icons') as $item): ?>
-	<img src="/identicon/<? echo $item['md5']; ?>/<? echo $item['size']; ?>"/>&nbsp;
+	<img src="<?= $this->get('BASE').'/identicon/'.$item['md5'].'/'.$item['size']; ?>"/>&nbsp;
 <? endforeach; ?>
 </nobr>
 <p/>

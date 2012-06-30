@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Base
-		@version 2.0.10
+		@version 2.0.11
 **/
 
 //! Base structure
@@ -21,7 +21,7 @@ class Base {
 	//@{ Framework details
 	const
 		TEXT_AppName='Fat-Free Framework',
-		TEXT_Version='2.0.10',
+		TEXT_Version='2.0.11',
 		TEXT_AppURL='http://fatfree.sourceforge.net';
 	//@}
 
@@ -606,9 +606,9 @@ class Base {
 						$expr[1]
 					)
 				);
-				return (!preg_match('/@|\bnew\s+/i',$out) &&
-					($eval=eval('return (string)'.$out.';'))!==FALSE?
-						$eval:$out);
+				return preg_match('/(?=\w)@/i',$out) ||
+					($eval=eval('return (string)'.$out.';'))===FALSE?
+						$out:$eval;
 			},
 			$val
 		);
@@ -667,9 +667,10 @@ class Base {
 		permission to create folder in the specified path
 			@param $name string
 			@param $perm int
+			@param $recursive bool
 			@public
 	**/
-	static function mkdir($name,$perm=0775) {
+	static function mkdir($name,$perm=0775,$recursive=TRUE) {
 		$parent=dirname($name);
 		if (!@is_writable($parent) && !chmod($parent,$perm)) {
 			$uid=posix_getpwuid(posix_geteuid());
@@ -678,7 +679,7 @@ class Base {
 			return FALSE;
 		}
 		// Create the folder
-		mkdir($name,$perm);
+		mkdir($name,$perm,$recursive);
 	}
 
 	/**
@@ -888,13 +889,7 @@ class F3 extends Base {
 			$key=self::resolve($key);
 		if (!self::valid($key))
 			return FALSE;
-		$id=session_id();
 		$var=&self::ref($key,FALSE);
-		if (!$id && session_id()) {
-			// End the session
-			session_unset();
-			session_destroy();
-		}
 		return isset($var);
 	}
 
@@ -904,14 +899,14 @@ class F3 extends Base {
 			@param $pfx string
 			@public
 	**/
-	static function mset($arg,$pfx='') {
+	static function mset($arg,$pfx='',$resolve=TRUE) {
 		if (!is_array($arg))
 			// Invalid argument
 			trigger_error(self::TEXT_MSet);
 		else
 			// Bind key-value pairs
 			foreach ($arg as $key=>$val)
-				self::set($pfx.$key,$val);
+				self::set($pfx.$key,$val,FALSE,$resolve);
 	}
 
 	/**
@@ -1142,17 +1137,25 @@ class F3 extends Base {
 			@param $ttl int
 			@param $throttle int
 			@param $hotlink bool
+			@param $prefix string
 			@public
 	**/
-	static function map($url,$class,$ttl=0,$throttle=0,$hotlink=TRUE) {
-		foreach (explode('|',self::HTTP_Methods) as $method)
-			if (method_exists($class,$method)) {
-				$ref=new ReflectionMethod($class,$method);
-				self::route($method.' '.$url,$ref->isStatic()?
-					array($class,$method):array(new $class,$method),$ttl,
-					$throttle,$hotlink);
+	static function map(
+		$url,$class,$ttl=0,$throttle=0,$hotlink=TRUE,$prefix='') {
+		foreach (explode('|',self::HTTP_Methods) as $method) {
+			$func=$prefix.$method;
+			if (method_exists($class,$func)) {
+				$ref=new ReflectionMethod($class,$func);
+				self::route(
+					$method.' '.$url,
+					$ref->isStatic()?
+						array($class,$func):
+						array(new $class,$func),
+					$ttl,$throttle,$hotlink
+				);
 				unset($ref);
 			}
+		}
 	}
 
 	/**
@@ -1165,6 +1168,7 @@ class F3 extends Base {
 	static function call($funcs,$listen=FALSE) {
 		$classes=array();
 		$funcs=is_string($funcs)?self::split($funcs):array($funcs);
+		$out=NULL;
 		foreach ($funcs as $func) {
 			if (is_string($func)) {
 				$func=self::resolve($func);
@@ -1179,13 +1183,19 @@ class F3 extends Base {
 						new $match[1]:$match[1],$match[3]);
 				}
 				elseif (!function_exists($func)) {
+					$found=FALSE;
 					if (preg_match('/\.php$/i',$func)) {
+						$found=FALSE;
 						foreach (self::split(self::$vars['IMPORTS'])
 							as $path)
 							if (is_file($file=$path.$func)) {
 								$instance=new F3instance;
-								return $instance->sandbox($file);
+								if ($instance->sandbox($file)===FALSE)
+									return FALSE;
+								$found=TRUE;
 							}
+						if ($found)
+							continue;
 					}
 					self::error(404);
 					return FALSE;
@@ -1252,7 +1262,8 @@ class F3 extends Base {
 		krsort(self::$vars['ROUTES']);
 		$time=time();
 		$req=preg_replace('/^'.preg_quote(self::$vars['BASE'],'/').
-			'\b(.+)/','\1',rawurldecode($_SERVER['REQUEST_URI']));
+			'\b(.+)/'.(self::$vars['CASELESS']?'i':''),'\1',
+			rawurldecode($_SERVER['REQUEST_URI']));
 		foreach (self::$vars['ROUTES'] as $uri=>$route) {
 			if (!preg_match('/^'.
 				preg_replace(
@@ -1261,7 +1272,8 @@ class F3 extends Base {
 					'(?P<\1>[^\/&]+)',
 					// Wildcard character in URI
 					str_replace('\*','(.*)',preg_quote($uri,'/'))
-				).'\/?(?:\?.*)?$/ium',$req,$args))
+				).'\/?(?:\?.*)?$/'.(self::$vars['CASELESS']?'':'i').'um',
+				$req,$args))
 				continue;
 			$wild=is_int(strpos($uri,'/*'));
 			// Inspect each defined route
@@ -1269,6 +1281,13 @@ class F3 extends Base {
 				if (!preg_match('/HEAD|'.$method.'/',
 					$_SERVER['REQUEST_METHOD']))
 					continue;
+				if ($method=='GET' &&
+					strlen($path=parse_url($req,PHP_URL_PATH))>1 &&
+					substr($path,-1)=='/') {
+					$query=parse_url($req,PHP_URL_QUERY);
+					self::reroute(substr($path,0,-1).
+						($query?('?'.$query):''));
+				}
 				$found=TRUE;
 				list($funcs,$ttl,$throttle,$hotlink)=$proc;
 				if (!$hotlink && isset(self::$vars['HOTLINK']) &&
@@ -1449,33 +1468,40 @@ class F3 extends Base {
 			foreach (explode('|','GET|POST|REQUEST') as $var)
 				if (self::exists($var.'.'.$field)) {
 					$key=&self::ref($var.'.'.$field);
-					$key=self::scrub($key,$tags);
-					$val=filter_var($key,$filter,$opt);
-					foreach ($funcs as $func)
-						if ($func) {
-							if (is_string($func) &&
-								preg_match('/([\w\\\]+)\s*->\s*(\w+)/',
-									$func,$match))
-								// Convert class->method syntax
-								$func=array(new $match[1],$match[2]);
-							if (!is_callable($func)) {
-								// Invalid handler
-								trigger_error(
-									sprintf(self::TEXT_Form,$field)
-								);
-								return;
+					if (is_array($key))
+						foreach ($key as $sub)
+							self::input(
+								$sub,$funcs,$tags,$filter,$opt,$assign
+							);
+					else {
+						$key=self::scrub($key,$tags);
+						$val=filter_var($key,$filter,$opt);
+						foreach ($funcs as $func)
+							if ($func) {
+								if (is_string($func) &&
+									preg_match('/(.+)\s*(?:->|::)\s*(.+)/',
+										$func,$match))
+									// Convert class->method syntax
+									$func=array(new $match[1],$match[2]);
+								if (!is_callable($func)) {
+									// Invalid handler
+									trigger_error(
+										sprintf(self::TEXT_Form,$field)
+									);
+									return;
+								}
+								if (!$found) {
+									$out=call_user_func($func,$val,$field);
+									if (!$assign)
+										return $out;
+									if ($out)
+										$key=$out;
+									$found=TRUE;
+								}
+								elseif ($assign && $out)
+									$key=$val;
 							}
-							if (!$found) {
-								$out=call_user_func($func,$val,$field);
-								if (!$assign)
-									return $out;
-								if ($out)
-									$key=$out;
-								$found=TRUE;
-							}
-							elseif ($assign && $out)
-								$key=$val;
-						}
+					}
 				}
 			if (!$found) {
 				// Invalid handler
@@ -1722,6 +1748,15 @@ class F3 extends Base {
 			dirname(self::fixslashes($_SERVER['SCRIPT_FILENAME']));
 		// Adjust HTTP request time precision
 		$_SERVER['REQUEST_TIME']=microtime(TRUE);
+		if (PHP_SAPI=='cli') {
+			// Command line: Parse GET variables in URL, if any
+			if (isset($_SERVER['argc']) && $_SERVER['argc']<2)
+				array_push($_SERVER['argv'],'/');
+			// Detect host name from environment
+			$_SERVER['SERVER_NAME']=gethostname();
+			// Convert URI to human-readable string
+			self::mock('GET '.$_SERVER['argv'][1]);
+		}
 		// Hydrate framework variables
 		$base=self::fixslashes(
 			preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME']));
@@ -1733,7 +1768,9 @@ class F3 extends Base {
 		$jar=array(
 			'expire'=>0,
 			'path'=>$base?:'/',
-			'domain'=>'.'.$_SERVER['SERVER_NAME'],
+			'domain'=>is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
+				!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
+				('.'.$_SERVER['SERVER_NAME']):'',
 			'secure'=>($scheme=='https'),
 			'httponly'=>TRUE
 		);
@@ -1744,6 +1781,8 @@ class F3 extends Base {
 			'BASE'=>$base,
 			// Cache backend to use (autodetect if true; disable if false)
 			'CACHE'=>FALSE,
+			// Case-sensitivity of route patterns
+			'CASELESS'=>TRUE,
 			// Stack trace verbosity:
 			// 0-no stack trace, 1-noise removed, 2-normal, 3-verbose
 			'DEBUG'=>1,
@@ -1826,15 +1865,6 @@ class F3 extends Base {
 						$val=stripslashes($val);
 					}
 				);
-		}
-		if (PHP_SAPI=='cli') {
-			// Command line: Parse GET variables in URL, if any
-			if (isset($_SERVER['argc']) && $_SERVER['argc']<2)
-				array_push($_SERVER['argv'],'/');
-			// Detect host name from environment
-			$_SERVER['SERVER_NAME']=gethostname();
-			// Convert URI to human-readable string
-			self::mock('GET '.$_SERVER['argv'][1]);
 		}
 		// Initialize autoload stack and shutdown sequence
 		spl_autoload_register(__CLASS__.'::autoload');
@@ -2251,9 +2281,11 @@ class F3instance {
 	/*
 		Run PHP code in sandbox
 			@param $file string
+			@param $vars array
 			@public
 	*/
-	function sandbox($file) {
+	function sandbox($file,$vars=array()) {
+		extract($vars);
 		return require $file;
 	}
 

@@ -1,5 +1,38 @@
 CHANGELOG
 
+2.0.12
+*	Bug fix: Static/dynamic input() handlers
+*	Bug fix: Jig error messages
+*	Bug fix: Chained routes fail to run in succession
+*	Bug fix: Session handling
+
+2.0.11
+*	NEW: CASELESS variable for specifying case-sensitivity of route patterns;
+	default is TRUE
+*	NEW: DB exec() now has a fourth argument to indicate whether the return
+	value should be an associative- or 0-indexed array; Default is associative
+*	NEW: Axon save() now allows auto-increment field name to be specified as
+	input argument so the primary key is automatically remembered once a new
+	record is inserted
+*	NEW: map() now accepts a prefix for methods to avert possible conflict
+	with framework's get() method when used in non-static context
+*	Change in behavior: input() now allows array fields and scrubs elements
+	uniformly using specified data scrubbing rules
+*	NEW: Add support for sqlsrv PDO in Axon
+*	Bug fix: Variables in main template don't persist across subtemplates
+*	Bug fix: Dev mode COOKIE/JAR domain not recognized by Chrome browsers
+*	Bug fix: Mixed case file extensions in Graphics plugin
+*	Bug fix: Curly braces in dynamic routes
+*	Bug fix: Missing callback error message in Jig plugin
+*	Bug fix: Templates fail when using __get() magic method [Bug #3432322]
+*	Bug fix: Chained include files in routes [Bug #3486901]; An explicit
+	FALSE return value of a chained member halts route execution
+*	Bug fix: geocode() handling failure [Bug #3483149]
+*	Bug fix: M2 profiling statistics
+*	Bug fix: Redundant sync() in Axon factory()
+*	Bug fix: invalid loc field in sitemap() [Bug #3464164]
+*	Code cleanup
+
 2.0.10
 *	PHP 5.4-ready
 *	Google::translate() deprecated

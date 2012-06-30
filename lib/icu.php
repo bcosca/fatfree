@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package ICU
-		@version 2.0.10
+		@version 2.0.11
 **/
 
 //! Language support tools
@@ -255,7 +255,7 @@ class ICU extends Base {
 			if (is_file($file) && ($trans=require_once $file) &&
 				is_array($trans))
 				// Combine dictionaries and assign key/value pairs
-				F3::mset($trans);
+				F3::mset($trans,'',FALSE);
 		}
 		if (!extension_loaded('intl') &&
 			!isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))

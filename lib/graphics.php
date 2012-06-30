@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Graphics
-		@version 2.0.10
+		@version 2.0.11
 **/
 
 //! Graphics plugin
@@ -137,14 +137,18 @@ class Graphics extends Base {
 	**/
 	static function invert($file,$die=TRUE) {
 		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
-		$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
-		$file=self::fixslashes(self::resolve($file));
-		$img=imagecreatefromstring(self::getfile($file));
-		imagefilter($img,IMG_FILTER_NEGATE);
-		if (PHP_SAPI!='cli' && !headers_sent())
-			header(self::HTTP_Content.': image/'.$ext[1]);
-		// Send output in same graphics format as original
-		eval('image'.$ext[1].'($img);');
+		if ($ext) {
+			$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
+			$file=self::fixslashes(self::resolve($file));
+			$img=imagecreatefromstring(self::getfile($file));
+			imagefilter($img,IMG_FILTER_NEGATE);
+			if (PHP_SAPI!='cli' && !headers_sent())
+				header(self::HTTP_Content.': image/'.$ext[1]);
+			// Send output in same graphics format as original
+			eval('image'.$ext[1].'($img);');
+		}
+		else
+			trigger_error(self::TEXT_Image);
 		if ($die)
 			die;
 	}
@@ -157,14 +161,18 @@ class Graphics extends Base {
 	**/
 	static function grayscale($file,$die=TRUE) {
 		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
-		$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
-		$file=self::fixslashes(self::resolve($file));
-		$img=imagecreatefromstring(self::getfile($file));
-		imagefilter($img,IMG_FILTER_GRAYSCALE);
-		if (PHP_SAPI!='cli' && !headers_sent())
-			header(self::HTTP_Content.': image/'.$ext[1]);
-		// Send output in same graphics format as original
-		eval('image'.$ext[1].'($img);');
+		if ($ext) {
+			$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
+			$file=self::fixslashes(self::resolve($file));
+			$img=imagecreatefromstring(self::getfile($file));
+			imagefilter($img,IMG_FILTER_GRAYSCALE);
+			if (PHP_SAPI!='cli' && !headers_sent())
+				header(self::HTTP_Content.': image/'.$ext[1]);
+			// Send output in same graphics format as original
+			eval('image'.$ext[1].'($img);');
+		}
+		else
+			trigger_error(self::TEXT_Image);
 		if ($die)
 			die;
 	}

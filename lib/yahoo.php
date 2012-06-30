@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Yahoo
-		@version 2.0.10
+		@version 2.0.11
 **/
 
 //! API wrapper for Yahoo! Web services
