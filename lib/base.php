@@ -1269,7 +1269,7 @@ class F3 extends Base {
 				preg_replace(
 					'/(?:\\\{\\\{)?@(\w+\b)(?:\\\}\\\})?/',
 					// Delimiter-based matching
-					'(?P<\1>[^\/&]+)',
+					'(?P<\1>[^\/&\?]+)',
 					// Wildcard character in URI
 					str_replace('\*','(.*)',preg_quote($uri,'/'))
 				).'\/?(?:\?.*)?$/'.(self::$vars['CASELESS']?'':'i').'um',
