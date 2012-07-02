@@ -64,6 +64,12 @@ class Google extends Base {
 			$format='png',
 			$language='en',
 			array $markers=NULL) {
+        switch($format){
+            case 'gif': header("Content-Type: image/gif"); break;
+            case 'jpeg': header("Content-Type: image/jpeg"); break;
+            default:
+            case 'png':  header("Content-Type: image/png"); break;
+        }
 		echo Web::http(
 			'GET http://maps.google.com/maps/api/staticmap',
 			http_build_query(
