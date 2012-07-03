@@ -58,6 +58,7 @@ class Google extends Base {
 			@param $format string
 			@param $language string
 			@param $markers array
+			@param $die bool
 			@public
 	**/
 	static function
