@@ -765,15 +765,18 @@ class F3 extends Base {
 			return;
 		}
 		$var=&self::ref($key);
-		if (is_string($val) && $resolve)
-			$val=self::resolve($val);
-		elseif (is_array($val)) {
-			$var=array();
-			// Recursive token substitution
-			foreach ($val as $subk=>$subv)
-				self::set($key.'['.var_export($subk,TRUE).']',
-					$subv,FALSE);
-			return;
+		if ($resolve) {
+			if (is_string($val))
+				$val=self::resolve($val);
+			elseif (is_array($val)) {
+				$var=array();
+				// Recursive token substitution
+				foreach ($val as $subk=>$subv) {
+					$subp=$key.'['.var_export($subk,TRUE).']';
+					self::set($subp,$subv);
+					$val[$subk]=self::get($subp);
+				}
+			}
 		}
 		$var=$val;
 		if (preg_match('/LANGUAGE|LOCALES/',$key) && class_exists('ICU'))
