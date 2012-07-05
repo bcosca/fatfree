@@ -774,7 +774,7 @@ class F3 extends Base {
 				foreach ($val as $subk=>$subv) {
 					$subp=$key.'['.var_export($subk,TRUE).']';
 					self::set($subp,$subv);
-					$val[$subk]=self::get($subp);
+					$val[$subk]=self::ref($subp);
 				}
 			}
 		}
@@ -1871,7 +1871,7 @@ class F3 extends Base {
 				);
 		}
 		// Initialize autoload stack and shutdown sequence
-		spl_autoload_register(__CLASS__.'::autoload');
+		spl_autoload_register(__CLASS__.'::autoload',TRUE,TRUE);
 		register_shutdown_function(__CLASS__.'::stop');
 	}
 
@@ -1960,7 +1960,7 @@ class F3 extends Base {
 			}
 		}
 		if (count(spl_autoload_functions())==1)
-			// No other registered autoload functions exist
+			// No other registered autoload function exists
 			trigger_error(sprintf(self::TEXT_Class,$class));
 	}
 
