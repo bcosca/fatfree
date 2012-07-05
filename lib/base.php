@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Base
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! Base structure
@@ -21,7 +21,7 @@ class Base {
 	//@{ Framework details
 	const
 		TEXT_AppName='Fat-Free Framework',
-		TEXT_Version='2.0.11',
+		TEXT_Version='2.0.12',
 		TEXT_AppURL='http://fatfree.sourceforge.net';
 	//@}
 
@@ -897,6 +897,7 @@ class F3 extends Base {
 		Multi-variable assignment using associative array
 			@param $arg array
 			@param $pfx string
+			@param $resolve bool
 			@public
 	**/
 	static function mset($arg,$pfx='',$resolve=TRUE) {
@@ -2263,8 +2264,10 @@ class Cache extends Base {
 //! F3 object mode
 class F3instance {
 
+	//@{ Locale-specific error/exception messages
 	const
 		TEXT_Conflict='%s conflicts with framework method name';
+	//@}
 
 	/**
 		Get framework variable reference; Workaround for PHP's
@@ -2278,12 +2281,12 @@ class F3instance {
 		return F3::ref($key,$set);
 	}
 
-	/*
+	/**
 		Run PHP code in sandbox
 			@param $file string
 			@param $vars array
 			@public
-	*/
+	**/
 	function sandbox($file,$vars=array()) {
 		extract($vars);
 		return require $file;

@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Google
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! Collection of Google API adaptors

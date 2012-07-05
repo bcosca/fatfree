@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Zip
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! Utility class for ZIP archives

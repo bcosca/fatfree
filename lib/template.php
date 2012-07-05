@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Template
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! Template engine

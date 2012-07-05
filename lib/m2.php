@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package M2
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! MongoDB Mapper
