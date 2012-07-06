@@ -1959,9 +1959,6 @@ class F3 extends Base {
 				break;
 			}
 		}
-		if (count(spl_autoload_functions())==1)
-			// No other registered autoload function exists
-			trigger_error(sprintf(self::TEXT_Class,$class));
 	}
 
 	/**
