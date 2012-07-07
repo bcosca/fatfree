@@ -1262,6 +1262,7 @@ class F3 extends Base {
 			return;
 		}
 		$found=FALSE;
+		$allowed=array();
 		// Detailed routes get matched first
 		krsort(self::$vars['ROUTES']);
 		$time=time();
@@ -1384,15 +1385,17 @@ class F3 extends Base {
 			if ($found)
 				// Hail the conquering hero
 				return;
-			// Method not allowed
-			if (PHP_SAPI!='cli' && !headers_sent())
-				header(self::HTTP_Allow.': '.
-					implode(',',array_keys($route)));
-			self::error(405);
+			$allowed=array_keys($route);
+		}
+		if (!$allowed) {
+			// No such Web page
+			self::error(404);
 			return;
 		}
-		// No such Web page
-		self::error(404);
+		// Method not allowed
+		if (PHP_SAPI!='cli' && !headers_sent())
+			header(self::HTTP_Allow.': '.implode(',',$allowed));
+		self::error(405);
 	}
 
 	/**
