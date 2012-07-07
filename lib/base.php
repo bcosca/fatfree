@@ -2125,7 +2125,7 @@ class Cache extends Base {
 				$ok=self::putfile(self::$backend['id'].$key,$val);
 				break;
 		}
-		if (is_bool($ok) && !$ok) {
+		if ($ok===FALSE) {
 			trigger_error(sprintf(self::TEXT_Store,$name));
 			return FALSE;
 		}
@@ -2237,7 +2237,7 @@ class Cache extends Base {
 					@unlink(self::$backend['id'].$key);
 				break;
 		}
-		if (is_bool($ok) && !$ok) {
+		if ($ok===FALSE) {
 			if (!$quiet)
 				trigger_error(sprintf(self::TEXT_Clear,$name));
 			return FALSE;
