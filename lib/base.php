@@ -1775,7 +1775,8 @@ class F3 extends Base {
 		$jar=array(
 			'expire'=>0,
 			'path'=>$base?:'/',
-			'domain'=>is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
+			'domain'=>isset($_SERVER['SERVER_NAME']) &&
+				is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
 				!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
 				('.'.$_SERVER['SERVER_NAME']):'',
 			'secure'=>($scheme=='https'),
