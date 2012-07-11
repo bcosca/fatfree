@@ -1,7 +1,7 @@
 function getCookie(cname) {
 	var out = '';
 	if (document.cookie.length > 0) {
-		var cstart = document.cookie.indexOf(cname + '=');
+		var cstart = document.cookie.indexOf(cname + '='); /* this is a comment */
 		if (cstart != -1) {
 			cstart = cstart + cname.length + 1;
 			var cend = document.cookie.indexOf(';', cstart);
@@ -9,7 +9,7 @@ function getCookie(cname) {
 				cend = document.cookie.length;
 			}
 			var s = document.cookie.substring(cstart, cend);
-			out = decodeURIComponent(s);
+			out = decodeURIComponent(s); // this is another comment
 		}
 	}
 	return out;
