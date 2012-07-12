@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Template
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! Template engine
@@ -151,7 +151,7 @@ class F3markup extends Base {
 							return FALSE;
 						}
 						$isfunc=isset($var[2]) && $var[2];
-						if (isset($syms['_'.$match[1]]))
+						if (array_key_exists('_'.$match[1],$syms))
 							return '$_'.$self::remix($var[1]).
 								($isfunc?$self->expr('{{'.$var[2].'}}'):'');
 						$str='F3::get('.var_export($var[1],TRUE).')';

@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Expansion
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! Web pack
@@ -80,8 +80,7 @@ class Web extends Base {
 					$i=0;
 					while ($i<count($rewrite))
 						// Analyze each URL segment
-						if ($i>0 &&
-							$rewrite[$i]=='..' &&
+						if ($i && $rewrite[$i]=='..' &&
 							$rewrite[$i-1]!='..') {
 							// Simplify URL
 							unset($rewrite[$i],$rewrite[$i-1]);
@@ -102,12 +101,28 @@ class Web extends Base {
 		$dst='';
 		while ($ptr<strlen($src)) {
 			if ($src[$ptr]=='/') {
-				// Presume it's a regex pattern
-				$regex=TRUE;
-				if ($ptr>0) {
+				if (substr($src,$ptr+1,2)=='*@') {
+					// Conditional block
+					$str=strstr(substr($src,$ptr+3),'@*/',TRUE);
+					$dst.='/*@'.$str.$src[$ptr].'@*/';
+					$ptr+=strlen($str)+6;
+				}
+				elseif ($src[$ptr+1]=='*') {
+					// Multiline comment
+					$str=strstr(substr($src,$ptr+2),'*/',TRUE);
+					$ptr+=strlen($str)+4;
+				}
+				elseif ($src[$ptr+1]=='/') {
+					// Single-line comment
+					$str=strstr(substr($src,$ptr+2),"\n",TRUE);
+					$ptr+=strlen($str)+2;
+				}
+				else {
+					// Presume it's a regex pattern
+					$regex=TRUE;
 					// Backtrack and validate
 					$ofs=$ptr;
-					while ($ofs>0) {
+					while ($ofs) {
 						$ofs--;
 						// Pattern should be preceded by a punctuation
 						if (ctype_punct($src[$ofs])) {
@@ -136,27 +151,7 @@ class Web extends Base {
 							break;
 						}
 					}
-					if ($regex && $ofs<1)
-						$regex=FALSE;
-				}
-				if (!$regex || $ptr<1) {
-					if (substr($src,$ptr+1,2)=='*@') {
-						// Conditional block
-						$str=strstr(substr($src,$ptr+3),'@*/',TRUE);
-						$dst.='/*@'.$str.$src[$ptr].'@*/';
-						$ptr+=strlen($str)+6;
-					}
-					elseif ($src[$ptr+1]=='*') {
-						// Multiline comment
-						$str=strstr(substr($src,$ptr+2),'*/',TRUE);
-						$ptr+=strlen($str)+4;
-					}
-					elseif ($src[$ptr+1]=='/') {
-						// Single-line comment
-						$str=strstr(substr($src,$ptr+2),"\n",TRUE);
-						$ptr+=strlen($str)+2;
-					}
-					else {
+					if (!$regex) {
 						// Division operator
 						$dst.=$src[$ptr];
 						$ptr++;

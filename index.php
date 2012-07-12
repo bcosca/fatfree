@@ -81,7 +81,7 @@ $app->route('GET /google/map',
 );
 $app->route('GET /minified/@script',
 	function() use($app) {
-		Web::minify($app->get('GUI'),array(f3::get('PARAMS.script')));
+		Web::minify($app->get('GUI'),array($app->get('PARAMS.script')));
 	}
 );
 

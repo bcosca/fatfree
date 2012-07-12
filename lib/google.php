@@ -12,11 +12,16 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Google
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! Collection of Google API adaptors
 class Google extends Base {
+
+	//@{ Locale-specific error/exception messages
+	const
+		TEXT_Image='Unsupported image format';
+	//@}
 
 	/**
 		Call Geocoding API and return geographical coordinates of
@@ -53,6 +58,7 @@ class Google extends Base {
 			@param $format string
 			@param $language string
 			@param $markers array
+			@param $die bool
 			@public
 	**/
 	static function
@@ -63,24 +69,35 @@ class Google extends Base {
 			$type='roadmap',
 			$format='png',
 			$language='en',
-			array $markers=NULL) {
-		echo Web::http(
-			'GET http://maps.google.com/maps/api/staticmap',
-			http_build_query(
-				array_merge(
-					array(
-						'center'=>$center,
-						'zoom'=>$zoom,
-						'size'=>$size,
-						'maptype'=>$type,
-						'format'=>$format,
-						'language'=>$language,
-						'sensor'=>'true'
-					),
-					$markers?$markers:array()
+			array $markers=NULL,
+			$die=TRUE) {
+		preg_match('/(gif|jp[e]*g|png)$/i',$format,$ext);
+		if ($ext) {
+			$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
+			if (PHP_SAPI!='cli' && !headers_sent())
+				header(self::HTTP_Content.': image/'.$ext[1]);
+			echo Web::http(
+				'GET http://maps.google.com/maps/api/staticmap',
+				http_build_query(
+					array_merge(
+						array(
+							'center'=>$center,
+							'zoom'=>$zoom,
+							'size'=>$size,
+							'maptype'=>$type,
+							'format'=>$format,
+							'language'=>$language,
+							'sensor'=>'true'
+						),
+						$markers?$markers:array()
+					)
 				)
-			)
-		);
+			);
+		}
+		else
+			trigger_error(self::TEXT_Image);
+		if ($die)
+			die;
 	}
 
 	/**

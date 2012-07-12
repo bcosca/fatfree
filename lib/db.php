@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package DB
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! SQL data access layer
@@ -833,7 +833,7 @@ class Axon extends Base {
 			@public
 	**/
 	function sync($table,$db=NULL,$ttl=60) {
-		if (is_bool($ttl) && !$ttl)
+		if ($ttl===FALSE)
 			return;
 		if (!$db) {
 			if (isset(self::$vars['DB']) && is_a(self::$vars['DB'],'DB'))

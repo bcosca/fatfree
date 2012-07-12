@@ -5,6 +5,11 @@ CHANGELOG
 *	Bug fix: Jig error messages
 *	Bug fix: Chained routes fail to run in succession
 *	Bug fix: Session handling
+*	Bug fix: Quoted strings in CSS minify()
+*	Bug fix: Extra quotes around strings containing e-mail addresses and
+	the "new" keyword
+*	Bug fix: PARAMS array not capturing correct arguments
+*	Bug fix: Google staticmap() doesn't output any header
 
 2.0.11
 *	NEW: CASELESS variable for specifying case-sensitivity of route patterns;

@@ -12,14 +12,14 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package ICU
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! Language support tools
 class ICU extends Base {
 
 	static
-		// Languages indexed by ISO 639-1 codes
+		//! Languages indexed by ISO 639-1 codes
 		$languages=array(
 			'aa'=>'Afar',
 			'ab'=>'Abkhazian',

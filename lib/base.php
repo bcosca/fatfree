@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Base
-		@version 2.0.11
+		@version 2.0.12
 **/
 
 //! Base structure
@@ -21,7 +21,7 @@ class Base {
 	//@{ Framework details
 	const
 		TEXT_AppName='Fat-Free Framework',
-		TEXT_Version='2.0.11',
+		TEXT_Version='2.0.12',
 		TEXT_AppURL='http://fatfree.sourceforge.net';
 	//@}
 
@@ -765,15 +765,18 @@ class F3 extends Base {
 			return;
 		}
 		$var=&self::ref($key);
-		if (is_string($val) && $resolve)
-			$val=self::resolve($val);
-		elseif (is_array($val)) {
-			$var=array();
-			// Recursive token substitution
-			foreach ($val as $subk=>$subv)
-				self::set($key.'['.var_export($subk,TRUE).']',
-					$subv,FALSE);
-			return;
+		if ($resolve) {
+			if (is_string($val))
+				$val=self::resolve($val);
+			elseif (is_array($val)) {
+				$var=array();
+				// Recursive token substitution
+				foreach ($val as $subk=>$subv) {
+					$subp=$key.'['.var_export($subk,TRUE).']';
+					self::set($subp,$subv);
+					$val[$subk]=self::ref($subp);
+				}
+			}
 		}
 		$var=$val;
 		if (preg_match('/LANGUAGE|LOCALES/',$key) && class_exists('ICU'))
@@ -897,6 +900,7 @@ class F3 extends Base {
 		Multi-variable assignment using associative array
 			@param $arg array
 			@param $pfx string
+			@param $resolve bool
 			@public
 	**/
 	static function mset($arg,$pfx='',$resolve=TRUE) {
@@ -1258,6 +1262,7 @@ class F3 extends Base {
 			return;
 		}
 		$found=FALSE;
+		$allowed=array();
 		// Detailed routes get matched first
 		krsort(self::$vars['ROUTES']);
 		$time=time();
@@ -1269,7 +1274,7 @@ class F3 extends Base {
 				preg_replace(
 					'/(?:\\\{\\\{)?@(\w+\b)(?:\\\}\\\})?/',
 					// Delimiter-based matching
-					'(?P<\1>[^\/&]+)',
+					'(?P<\1>[^\/&\?]+)',
 					// Wildcard character in URI
 					str_replace('\*','(.*)',preg_quote($uri,'/'))
 				).'\/?(?:\?.*)?$/'.(self::$vars['CASELESS']?'':'i').'um',
@@ -1380,15 +1385,17 @@ class F3 extends Base {
 			if ($found)
 				// Hail the conquering hero
 				return;
-			// Method not allowed
-			if (PHP_SAPI!='cli' && !headers_sent())
-				header(self::HTTP_Allow.': '.
-					implode(',',array_keys($route)));
-			self::error(405);
+			$allowed=array_keys($route);
+		}
+		if (!$allowed) {
+			// No such Web page
+			self::error(404);
 			return;
 		}
-		// No such Web page
-		self::error(404);
+		// Method not allowed
+		if (PHP_SAPI!='cli' && !headers_sent())
+			header(self::HTTP_Allow.': '.implode(',',$allowed));
+		self::error(405);
 	}
 
 	/**
@@ -1768,7 +1775,8 @@ class F3 extends Base {
 		$jar=array(
 			'expire'=>0,
 			'path'=>$base?:'/',
-			'domain'=>is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
+			'domain'=>isset($_SERVER['SERVER_NAME']) &&
+				is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
 				!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
 				('.'.$_SERVER['SERVER_NAME']):'',
 			'secure'=>($scheme=='https'),
@@ -1867,7 +1875,7 @@ class F3 extends Base {
 				);
 		}
 		// Initialize autoload stack and shutdown sequence
-		spl_autoload_register(__CLASS__.'::autoload');
+		spl_autoload_register(__CLASS__.'::autoload',TRUE,TRUE);
 		register_shutdown_function(__CLASS__.'::stop');
 	}
 
@@ -1955,9 +1963,6 @@ class F3 extends Base {
 				break;
 			}
 		}
-		if (count(spl_autoload_functions())==1)
-			// No other registered autoload functions exist
-			trigger_error(sprintf(self::TEXT_Class,$class));
 	}
 
 	/**
@@ -2124,7 +2129,7 @@ class Cache extends Base {
 				$ok=self::putfile(self::$backend['id'].$key,$val);
 				break;
 		}
-		if (is_bool($ok) && !$ok) {
+		if ($ok===FALSE) {
 			trigger_error(sprintf(self::TEXT_Store,$name));
 			return FALSE;
 		}
@@ -2236,7 +2241,7 @@ class Cache extends Base {
 					@unlink(self::$backend['id'].$key);
 				break;
 		}
-		if (is_bool($ok) && !$ok) {
+		if ($ok===FALSE) {
 			if (!$quiet)
 				trigger_error(sprintf(self::TEXT_Clear,$name));
 			return FALSE;
@@ -2263,8 +2268,10 @@ class Cache extends Base {
 //! F3 object mode
 class F3instance {
 
+	//@{ Locale-specific error/exception messages
 	const
 		TEXT_Conflict='%s conflicts with framework method name';
+	//@}
 
 	/**
 		Get framework variable reference; Workaround for PHP's
@@ -2278,12 +2285,12 @@ class F3instance {
 		return F3::ref($key,$set);
 	}
 
-	/*
+	/**
 		Run PHP code in sandbox
 			@param $file string
 			@param $vars array
 			@public
-	*/
+	**/
 	function sandbox($file,$vars=array()) {
 		extract($vars);
 		return require $file;
