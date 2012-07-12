@@ -254,7 +254,7 @@ class ICU extends Base {
 		array_unshift($list,'en');
 		foreach (array_unique($list) as $language) {
 			$file=self::fixslashes(self::$vars['LOCALES']).$language.'.php';
-			if (is_file($file) && ($trans=require_once $file) &&
+			if (is_file($file) && ($trans=require $file) &&
 				is_array($trans))
 				// Combine dictionaries and assign key/value pairs
 				F3::mset($trans,'',FALSE);
