@@ -230,7 +230,9 @@ class ICU extends Base {
 					if (strtoupper(substr(PHP_OS,0,3))=='WIN')
 						$def=key(preg_grep('/'.strstr($def,'_',TRUE).'/',
 							self::$languages));
-					elseif (!preg_match('/^\w{2}(?:_\w{2})?\b/',$def))
+					elseif (preg_match('/^(\w{2})(?:_\w{2})?\b/',$def,$m))
+						$def=$m[1];
+					else
 						// Environment points to invalid language
 						$def='en';
 				}
