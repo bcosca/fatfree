@@ -223,7 +223,7 @@ class ICU extends Base {
 					Locale::getDefault();
 			else {
 				if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-					$def=preg_replace('/^(\w+-\w+)\b.*/','\1',
+					$def=preg_replace('/^(\w+)(?:-\w+)?\b|[,;].*/','\1',
 						$_SERVER['HTTP_ACCEPT_LANGUAGE']);
 				else {
 					$def=setlocale(LC_ALL,NULL);
