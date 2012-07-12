@@ -223,14 +223,16 @@ class ICU extends Base {
 					Locale::getDefault();
 			else {
 				if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-					$def=preg_replace('/^(\w+-\w+)\b.*/','\1',
+					$def=preg_replace('/^(\w+)(?:-\w+)?\b|[,;].*/','\1',
 						$_SERVER['HTTP_ACCEPT_LANGUAGE']);
 				else {
 					$def=setlocale(LC_ALL,NULL);
 					if (strtoupper(substr(PHP_OS,0,3))=='WIN')
 						$def=key(preg_grep('/'.strstr($def,'_',TRUE).'/',
 							self::$languages));
-					elseif (!preg_match('/^\w{2}(?:_\w{2})?\b/',$def))
+					elseif (preg_match('/^(\w{2})(?:_\w{2})?\b/',$def,$m))
+						$def=$m[1];
+					else
 						// Environment points to invalid language
 						$def='en';
 				}
@@ -252,7 +254,7 @@ class ICU extends Base {
 		array_unshift($list,'en');
 		foreach (array_unique($list) as $language) {
 			$file=self::fixslashes(self::$vars['LOCALES']).$language.'.php';
-			if (is_file($file) && ($trans=require_once $file) &&
+			if (is_file($file) && ($trans=require $file) &&
 				is_array($trans))
 				// Combine dictionaries and assign key/value pairs
 				F3::mset($trans,'',FALSE);
