@@ -1515,7 +1515,7 @@ class Main extends F3instance {
 		$money=63950.25;
 
 		$this->set('sub','sub6.htm');
-		$this->set('LANGUAGE','en-us');
+		$this->set('LANGUAGE','en-US');
 		$out=$this->render('basic/layout.htm');
 		// PHP 5.3.2 inserts a line feed at end of translation
 		$this->expect(
@@ -2061,7 +2061,7 @@ class Main extends F3instance {
 		$money=63950.25;
 
 		$this->set('sub','sub6.htm');
-		$this->set('LANGUAGE','en-us');
+		$this->set('LANGUAGE','en-US');
 		$out=trim(Template::serve('template/layout.htm'));
 		// PHP 5.3.2 inserts a line feed at end of translation
 		$this->expect(

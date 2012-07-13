@@ -223,14 +223,14 @@ class ICU extends Base {
 					Locale::getDefault();
 			else {
 				if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-					$def=strtolower(preg_replace('/^(\w{2}(-\w{2})?)\b/','\1',
-						$_SERVER['HTTP_ACCEPT_LANGUAGE']));
+					$def=preg_replace('/^(\w{2}(?:-\w{2})?).*/','\1',
+						$_SERVER['HTTP_ACCEPT_LANGUAGE']);
 				else {
 					$def=setlocale(LC_ALL,NULL);
 					if (strtoupper(substr(PHP_OS,0,3))=='WIN')
 						$def=key(preg_grep('/'.strstr($def,'_',TRUE).'/',
 							self::$languages));
-					elseif (preg_match('/^\w{2}\b/',$def,$match))
+					elseif (preg_match('/^\w{2}/',$def,$match))
 						$def=$match[0];
 					else
 						// Environment points to invalid language
@@ -241,11 +241,11 @@ class ICU extends Base {
 		}
 		$def=self::$vars['LANGUAGE'];
 		$list=array($def);
-		if (preg_match('/^\w{2}\b/',$def,$match)) {
+		if (preg_match('/^\w{2}/',$def,$match)) {
 			array_unshift($list,$match[0]);
 			if (extension_loaded('intl'))
 				Locale::setDefault($match[0]);
-			else {
+			elseif (isset(self::$languages[$match[0]])) {
 				self::$locale=setlocale(LC_ALL,NULL);
 				setlocale(LC_ALL,self::$languages[$match[0]]);
 			}
@@ -279,7 +279,7 @@ class ICU extends Base {
 			if (preg_match('/@\w+\b/',$arg))
 				$arg=self::resolve('{{'.$arg.'}}');
 		self::$locale=setlocale(LC_ALL,NULL);
-		if (preg_match('/^\w{2}\b/',self::$vars['LANGUAGE'],$match))
+		if (preg_match('/^\w{2}/',self::$vars['LANGUAGE'],$match))
 			setlocale(LC_ALL,self::$languages[$match[0]]);
 		$info=localeconv();
 		$out=preg_replace_callback(
