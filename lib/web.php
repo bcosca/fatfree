@@ -157,9 +157,8 @@ class Web extends Base {
 						$ptr++;
 					}
 				}
-				continue;
 			}
-			if ($src[$ptr]=='\'' || $src[$ptr]=='"') {
+			elseif ($src[$ptr]=='\'' || $src[$ptr]=='"') {
 				$match=$src[$ptr];
 				// String literal
 				while ($ptr<strlen($src)) {
@@ -172,20 +171,13 @@ class Web extends Base {
 						break;
 					}
 				}
-				continue;
 			}
-			if (ctype_space($src[$ptr])) {
-				$last=substr($dst,-1);
-				$ofs=$ptr+1;
-				if ($ofs+1<strlen($src)) {
-					while (ctype_space($src[$ofs]))
-						$ofs++;
-					if (preg_match('/[\w%]'.
-						'[\w'.($ext[1]=='css'?'\)\]\}#\-*\.':'').'$]/',
-						$last.$src[$ofs]))
-						$dst.=$src[$ptr];
-				}
-				$ptr=$ofs;
+			elseif (ctype_space($src[$ptr])) {
+				if ($ptr+1<strlen($src) &&
+					preg_match('/[\w'.($ext[1]=='css'?'+*#\-\)\]':'').']{2}/',
+					substr($dst,-1).$src[$ptr+1]))
+					$dst.=' ';
+				$ptr++;
 			}
 			else {
 				$dst.=$src[$ptr];

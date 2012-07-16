@@ -5,3 +5,9 @@ div * {
 	border: 1px #000 solid;
 	text-shadow: #ccc -1px -1px 0px;
 }
+tr:nth-child(odd) td {
+	line-height:1.2em;
+}
+h1[name] span {
+	font-size:12pt;
+}
