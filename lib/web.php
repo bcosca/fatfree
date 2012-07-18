@@ -173,8 +173,8 @@ class Web extends Base {
 				}
 			}
 			elseif (ctype_space($src[$ptr])) {
-				if ($ptr+1<strlen($src) &&
-					preg_match('/[\w'.($ext[1]=='css'?'+*#\-\)\]':'').']{2}/',
+				if ($ptr+1<strlen($src) && preg_match(
+					'/[\w'.($ext[1]=='css'?'+*#\.\-\)\]':'').']{2}/',
 					substr($dst,-1).$src[$ptr+1]))
 					$dst.=' ';
 				$ptr++;
