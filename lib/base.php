@@ -315,7 +315,8 @@ class Base {
 		else
 			$var=self::$vars;
 		$obj=FALSE;
-		foreach ($matches as $match)
+		$i=0;
+		foreach ($matches as $match) {
 			if ($match=='->')
 				$obj=TRUE;
 			else {
@@ -341,13 +342,27 @@ class Base {
 					$var=$var->$match;
 					$obj=FALSE;
 				}
-				elseif (is_array($var) && isset($var[$match]))
+				elseif (is_array($var)) {
 					// Array element found
-					$var=$var[$match];
+					if (isset($var[$match]))
+						// Normal key
+						$var=$var[$match];
+					elseif (isset(
+						$var[$slice=implode(".",array_slice($matches,$i))])) {
+						// Key contains a dot (.)
+						$var=$var[$slice];
+						break;
+					}
+					else
+						// Property/array element doesn't exist
+						return self::$null;
+				}
 				else
 					// Property/array element doesn't exist
 					return self::$null;
 			}
+			$i++;
+		}
 		if ($set && count($matches)>1 &&
 			preg_match('/GET|POST|COOKIE/',$matches[0],$php)) {
 			// Sync with REQUEST
