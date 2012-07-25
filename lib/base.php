@@ -724,8 +724,8 @@ class Base {
 			@public
 	**/
 	static function instance() {
-		return eval('return new '.get_called_class().
-			'('.self::csv(func_get_args()).');');
+		$ref=new ReflectionClass(get_called_class());
+		return $ref->newInstanceArgs(func_get_args());
 	}
 
 	/**
@@ -1793,7 +1793,7 @@ class F3 extends Base {
 			'domain'=>isset($_SERVER['SERVER_NAME']) &&
 				is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
 				!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
-				('.'.$_SERVER['SERVER_NAME']):'',
+				$_SERVER['SERVER_NAME']:'',
 			'secure'=>($scheme=='https'),
 			'httponly'=>TRUE
 		);
