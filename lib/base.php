@@ -799,7 +799,7 @@ class F3 extends Base {
 			ICU::load();
 		// Initialize cache if explicitly defined
 		elseif ($key=='CACHE' && $val)
-			Cache::prep();
+			self::$vars['CACHE']=Cache::load();
 		if ($persist) {
 			$hash='var.'.self::hash(self::remix($key));
 			Cache::set($hash,$val);
@@ -2025,257 +2025,207 @@ class F3 extends Base {
 //! Cache engine
 class Cache extends Base {
 
-	//@{ Locale-specific error/exception messages
-	const
-		TEXT_Backend='Cache back-end is invalid',
-		TEXT_Store='Unable to save %s to cache',
-		TEXT_Fetch='Unable to retrieve %s from cache',
-		TEXT_Clear='Unable to clear %s from cache';
-	//@}
-
-	static
-		//! Level-1 cached object
-		$buffer,
-		//! Cache back-end
-		$backend;
+	private static
+		//! Cache engine
+		$engine,
+		//! Resource/reference
+		$ref;
 
 	/**
-		Auto-detect extensions usable as cache back-ends; MemCache must be
-		explicitly activated to work properly; Fall back to file system if
-		none declared or detected
-			@public
+		Return timestamp of cache entry or FALSE if not found
+			@return float|FALSE
+			@param $key string
 	**/
-	static function detect() {
-		$ref=array_merge(array_intersect(array('apc','xcache'),
-			array_map('strtolower',get_loaded_extensions())),array());
-		self::$vars['CACHE']=array_shift($ref)?:
-			('folder='.self::$vars['ROOT'].'cache/');
-	}
-
-	/**
-		Initialize cache backend
-			@return bool
-			@public
-	**/
-	static function prep() {
-		if (!self::$vars['CACHE'])
-			return TRUE;
-		if (is_bool(self::$vars['CACHE']))
-			// Auto-detect backend
-			self::detect();
-		if (preg_match(
-			'/^(apc)|(memcache)=(.+)|(xcache)|(folder)=(.+\/)/i',
-			self::$vars['CACHE'],$match)) {
-			if (isset($match[5]) && $match[5]) {
-				if (!is_dir($match[6]))
-					self::mkdir($match[6]);
-				// File system
-				self::$backend=array('type'=>'folder','id'=>$match[6]);
-			}
-			else {
-				$ext=strtolower($match[1]?:($match[2]?:$match[4]));
-				if (!extension_loaded($ext)) {
-					trigger_error(sprintf(self::TEXT_PHPExt,$ext));
-					return FALSE;
+	static function cached($key) {
+		if (!self::$engine)
+			return FALSE;
+		$ndx=self::hash(__DIR__).'.'.$key;
+		switch (self::$engine['type']) {
+			case 'apc':
+				if ($data=apc_fetch($ndx))
+					break;
+				return FALSE;
+			case 'xcache':
+				if ($data=xcache_get($ndx))
+					break;
+				return FALSE;
+			case 'shmop':
+				if ($ref=self::$ref) {
+					$data=self::mutex(
+						__FILE__,
+						function() use($ref,$ndx) {
+							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
+							return isset($dir[$ndx])?
+								shmop_read($ref,$dir[$ndx][0],$dir[$ndx][1]):
+								FALSE;
+						}
+					);
+					if ($data)
+						break;
 				}
-				if (isset($match[2]) && $match[2]) {
-					// Open persistent MemCache connection(s)
-					$mcache=NULL;
-					foreach (self::split($match[3]) as $server) {
-						// Hostname:port
-						list($host,$port)=explode(':',$server);
-						if (is_null($port))
-							// Use default port
-							$port=11211;
-						// Connect to each server
-						if (is_null($mcache))
-							$mcache=memcache_pconnect($host,$port);
-						else
-							memcache_add_server($mcache,$host,$port);
-					}
-					// MemCache
-					self::$backend=array('type'=>$ext,'id'=>$mcache);
-				}
-				else
-					// APC and XCache
-					self::$backend=array('type'=>$ext);
-			}
-			self::$buffer=NULL;
-			return TRUE;
+				return FALSE;
+			case 'memcache':
+				if ($data=memcache_get(self::$ref,$ndx))
+					break;
+				return FALSE;
+			case 'folder':
+				if (is_file($file=self::$ref.$ndx) &&
+					$data=self::getfile($file))
+					break;
+				return FALSE;
 		}
-		// Unknown back-end
-		trigger_error(self::TEXT_Backend);
+		if (isset($data)) {
+			self::$engine['data']=
+				list($time,$ttl,$val)=unserialize($data);
+			if (!$ttl || $time+$ttl>microtime(TRUE))
+				return $time;
+			$this->clear($key);
+		}
 		return FALSE;
 	}
 
 	/**
-		Store data in framework cache; Return TRUE/FALSE on success/failure
-			@return bool
-			@param $name string
-			@param $data mixed
-			@public
+		Store value in cache
+			@return mixed
+			@param $key string
+			@param $val mixed
+			@param $ttl int
 	**/
-	static function set($name,$data) {
-		if (!self::$vars['CACHE'])
+	static function set($key,$val,$ttl=0) {
+		if (!self::$engine)
 			return TRUE;
-		if (is_null(self::$backend)) {
-			// Auto-detect back-end
-			self::detect();
-			if (!self::prep())
-				return FALSE;
-		}
-		$key=$_SERVER['SERVER_NAME'].'.'.$name;
-		// Serialize data for storage
-		$time=time();
-		// Add timestamp
-		$val=serialize(array($time,$data));
-		// Instruct back-end to store data
-		switch (self::$backend['type']) {
+		$ndx=self::hash(__DIR__).'.'.$key;
+		self::$engine['data']=NULL;
+		$data=serialize(array(microtime(TRUE),$ttl,$val));
+		switch (self::$engine['type']) {
 			case 'apc':
-				$ok=apc_store($key,$val);
-				break;
-			case 'memcache':
-				$ok=memcache_set(self::$backend['id'],$key,$val);
-				break;
+				return apc_store($ndx,$data,$ttl);
 			case 'xcache':
-				$ok=xcache_set($key,$val);
-				break;
+				return xcache_set($ndx,$data,$ttl);
+			case 'shmop':
+				return ($ref=self::$ref)?
+					self::mutex(
+						__FILE__,
+						function() use($ref,$ndx,$data) {
+							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
+							$edge=0xFFFF;
+							foreach ($dir as $stub)
+								$edge=$stub[0]+$stub[1];
+							shmop_write($ref,$data,$edge);
+							unset($dir[$ndx]);
+							$dir[$ndx]=array($edge,strlen($data));
+							shmop_write($ref,serialize($dir).chr(0),0);
+						}
+					):
+					FALSE;
+			case 'memcache':
+				return memcache_set(self::$ref,$ndx,$data,0,$ttl);
 			case 'folder':
-				$ok=self::putfile(self::$backend['id'].$key,$val);
-				break;
+				return self::putfile(self::$ref.$ndx,$data);
 		}
-		if ($ok===FALSE) {
-			trigger_error(sprintf(self::TEXT_Store,$name));
-			return FALSE;
-		}
-		// Free up space for level-1 cache
-		while (count(self::$buffer) && strlen(serialize($data))+
-			strlen(serialize(array_slice(self::$buffer,1)))>
-			ini_get('memory_limit')-memory_get_peak_usage())
-				self::$buffer=array_slice(self::$buffer,1);
-		self::$buffer[$name]=array('data'=>$data,'time'=>$time);
-		return TRUE;
+		return FALSE;
 	}
 
 	/**
-		Retrieve value from framework cache
+		Retrieve value of cache entry
 			@return mixed
-			@param $name string
-			@param $quiet bool
-			@public
+			@param $key string
 	**/
-	static function get($name,$quiet=FALSE) {
-		if (!self::$vars['CACHE'])
+	static function get($key) {
+		if (!self::$engine || !self::cached($key))
 			return FALSE;
-		if (is_null(self::$backend)) {
-			// Auto-detect back-end
-			self::detect();
-			if (!self::prep())
-				return FALSE;
+		list($time,$ttl,$val)=self::$engine['data'];
+		return $val;
+	}
+
+	/**
+		Delete cache entry
+			@return void
+			@param $key string
+	**/
+	static function clear($key) {
+		if (!self::$engine)
+			return;
+		$ndx=self::hash(__DIR__).'.'.$key;
+		self::$engine['data']=NULL;
+		switch (self::$engine['type']) {
+			case 'apc':
+				return apc_delete($ndx);
+			case 'xcache':
+				return xcache_unset($ndx);
+			case 'shmop':
+				return ($ref=self::$ref) &&
+					self::mutex(
+						__FILE__,
+						function() use($ref,$ndx) {
+							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
+							unset($dir[$ndx]);
+							shmop_write($ref,serialize($dir).chr(0),0);
+						}
+					);
+			case 'memcache':
+				return memcache_delete(self::$ref,$ndx);
+			case 'folder':
+				return is_file($file=self::$ref.$ndx) &&
+					self::mutex($file,'unlink',array($file));
 		}
-		$stats=&self::$vars['STATS'];
-		if (!isset($stats['CACHE']))
-			$stats['CACHE']=array(
-				'level-1'=>array('hits'=>0,'misses'=>0),
-				'backend'=>array('hits'=>0,'misses'=>0)
+	}
+
+	/**
+		Load and configure backend; Auto-detect if argument is FALSE
+			@return string|void
+			@param $dsn string|FALSE
+	**/
+	static function load($dsn=FALSE) {
+		if (is_bool($dsn)) {
+			// Auto-detect backend
+			$ext=array_map('strtolower',get_loaded_extensions());
+			$grep=preg_grep('/^(apc|xcache|shmop)/',$ext);
+			$dsn=$grep?current($grep):'folder=cache/';
+		}
+		$parts=explode('=',$dsn);
+		if (!preg_match('/apc|xcache|shmop|folder|memcache/',$parts[0]))
+			return;
+		self::$engine=array('type'=>$parts[0],'data'=>NULL);
+		self::$ref=NULL;
+		if ($parts[0]=='shmop') {
+			self::$ref=self::mutex(
+				__FILE__,
+				function() {
+					$ref=@shmop_open(ftok(__FILE__,'C'),'c',0644,
+						Base::instance()->bytes(ini_get('memory_limit')));
+					if ($ref && !unserialize(trim(shmop_read($ref,0,0xFFFF))))
+						shmop_write($ref,serialize(array()).chr(0),0);
+					return $ref;
+				}
 			);
-		// Check level-1 cache first
-		if (isset(self::$buffer) && isset(self::$buffer[$name])) {
-			$stats['CACHE']['level-1']['hits']++;
-			return self::$buffer[$name]['data'];
 		}
-		else
-			$stats['CACHE']['level-1']['misses']++;
-		$key=$_SERVER['SERVER_NAME'].'.'.$name;
-		// Instruct back-end to fetch data
-		switch (self::$backend['type']) {
-			case 'apc':
-				$val=apc_fetch($key);
-				break;
-			case 'memcache':
-				$val=memcache_get(self::$backend['id'],$key);
-				break;
-			case 'xcache':
-				$val=xcache_get($key);
-				break;
-			case 'folder':
-				$val=is_file(self::$backend['id'].$key)?
-					self::getfile(self::$backend['id'].$key):FALSE;
-				break;
+		elseif (isset($parts[1])) {
+			if ($parts[0]=='memcache') {
+				if (extension_loaded('memcache'))
+					foreach (self::split($parts[1]) as $server) {
+						$parts=explode(':',$server);
+						if (count($parts)<2) {
+							$host=$parts[0];
+							$port=11211;
+						}
+						else
+							list($host,$port)=$parts;
+						if (!self::$ref)
+							self::$ref=@memcache_connect($host,$port);
+						else
+							memcache_add_server(self::$ref,$host,$port);
+					}
+				else
+					return self::$engine=NULL;
+			}
+			elseif ($parts[0]=='folder') {
+				if (!is_dir($parts[1]) && !@mkdir($parts[1],0755,TRUE))
+					return self::$engine=NULL;
+				self::$ref=$parts[1];
+			}
 		}
-		if (is_bool($val)) {
-			$stats['CACHE']['backend']['misses']++;
-			// No error display if specified
-			if (!$quiet)
-				trigger_error(sprintf(self::TEXT_Fetch,$name));
-			self::$buffer[$name]=NULL;
-			return FALSE;
-		}
-		// Unserialize timestamp and data
-		list($time,$data)=unserialize($val);
-		$stats['CACHE']['backend']['hits']++;
-		// Free up space for level-1 cache
-		while (count(self::$buffer) && strlen(serialize($data))+
-			strlen(serialize(array_slice(self::$buffer,1)))>
-			ini_get('memory_limit')-memory_get_peak_usage())
-				self::$buffer=array_slice(self::$buffer,1);
-		self::$buffer[$name]=array('data'=>$data,'time'=>$time);
-		return $data;
-	}
-
-	/**
-		Delete variable from framework cache
-			@return bool
-			@param $name string
-			@param $quiet bool
-			@public
-	**/
-	static function clear($name,$quiet=FALSE) {
-		if (!self::$vars['CACHE'])
-			return TRUE;
-		if (is_null(self::$backend)) {
-			// Auto-detect back-end
-			self::detect();
-			if (!self::prep())
-				return FALSE;
-		}
-		$key=$_SERVER['SERVER_NAME'].'.'.$name;
-		// Instruct back-end to clear data
-		switch (self::$backend['type']) {
-			case 'apc':
-				$ok=!apc_exists($key) || apc_delete($key);
-				break;
-			case 'memcache':
-				$ok=memcache_delete(self::$backend['id'],$key);
-				break;
-			case 'xcache':
-				$ok=!xcache_isset($key) || xcache_unset($key);
-				break;
-			case 'folder':
-				$ok=!is_file(self::$backend['id'].$key) ||
-					@unlink(self::$backend['id'].$key);
-				break;
-		}
-		if ($ok===FALSE) {
-			if (!$quiet)
-				trigger_error(sprintf(self::TEXT_Clear,$name));
-			return FALSE;
-		}
-		// Check level-1 cache first
-		if (isset(self::$buffer) && isset(self::$buffer[$name]))
-			unset(self::$buffer[$name]);
-		return TRUE;
-	}
-
-	/**
-		Return FALSE if specified variable is not in cache;
-		otherwise, return Un*x timestamp
-			@return mixed
-			@param $name string
-			@public
-	**/
-	static function cached($name) {
-		return self::get($name,TRUE)?self::$buffer[$name]['time']:FALSE;
+		return $dsn;
 	}
 
 }
