@@ -583,11 +583,11 @@ class Axon extends Base {
 			@public
 	**/
 	function found($cond=NULL) {
-		$this->def('_found','COUNT(*)');
-		list($result)=$this->find($cond);
-		$found=$result->_found;
-		$this->undef('_found');
-		return $found;
+		list($result)=$this->db->exec(
+			'SELECT COUNT(*) AS _found FROM '.$this->table.
+				($cond?(' WHERE '.$cond[0]):'')
+		);
+		return $result['_found'];
 	}
 
 	/**
