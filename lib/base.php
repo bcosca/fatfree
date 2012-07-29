@@ -294,7 +294,7 @@ class Base {
 	static function &ref($key,$set=TRUE) {
 		// Traverse array
 		$matches=preg_split(
-			'/\[\s*[\'"]?|[\'"]?\s*\]|\.|(->)/',self::remix($key),
+			'/\[\s*[\'"]?|[\'"]?\s*\]|\.|(->)/',$key,
 			NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		// Referencing a SESSION variable element auto-starts a session
 		if ($matches[0]=='SESSION' && !session_id()) {
