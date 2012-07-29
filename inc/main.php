@@ -200,6 +200,13 @@ class Main extends F3instance {
 			'Session was not destroyed: '.$this->stringify($_SESSION)
 		);
 
+		$this->set('TZ','America/New_York');
+		$this->expect(
+			date_default_timezone_get()=='America/New_York',
+			'Timezone set properly',
+			'TZ variable incorrect'
+		);
+
 		echo $this->render('basic/results.htm');
 	}
 
@@ -1166,9 +1173,9 @@ class Main extends F3instance {
 				$saved=$cached;
 			if ($saved!=$cached)
 				break;
-			$time=time();
+			$time=microtime(TRUE);
 			$this->expect(TRUE,'Cache age @'.date('G:i:s',$time).': '.
-				($time-$cached).' secs');
+				sprintf('%.1f',$time-$cached).' secs');
 			$i++;
 			if ($i==$ttl)
 				break;
