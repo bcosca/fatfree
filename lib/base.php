@@ -793,6 +793,10 @@ class F3 extends Base {
 		if (preg_match('/LANGUAGE|LOCALES/',$key) && class_exists('ICU'))
 			// Load appropriate dictionaries
 			ICU::load();
+		elseif ($key=='ENCODING')
+			ini_set('default_charset',$val);
+		elseif ($key=='TZ')
+			date_default_timezone_set($val);
 		// Initialize cache if explicitly defined
 		elseif ($key=='CACHE' && $val)
 			self::$vars['CACHE']=Cache::load();
@@ -1720,24 +1724,24 @@ class F3 extends Base {
 			return;
 		// Handle all exceptions/non-fatal errors
 		error_reporting(E_ALL|E_STRICT);
-		ini_set('default_charset','UTF-8');
+		$charset='utf-8';
+		ini_set('default_charset',$charset);
 		ini_set('display_errors',0);
 		ini_set('register_globals',0);
 		// Get PHP settings
 		$ini=ini_get_all(NULL,FALSE);
+		$self=__CLASS__;
 		// Intercept errors and send output to browser
 		set_error_handler(
-			function($errno,$errstr) {
-				if (error_reporting()) {
+			function($errno,$errstr) use($self) {
+				if (error_reporting())
 					// Error suppression (@) is not enabled
-					$self=__CLASS__;
 					$self::error(500,$errstr);
-				}
 			}
 		);
 		// Do the same for PHP exceptions
 		set_exception_handler(
-			function($ex) {
+			function($ex) use($self) {
 				if (!count($trace=$ex->getTrace())) {
 					// Translate exception trace
 					list($trace)=debug_backtrace();
@@ -1751,7 +1755,6 @@ class F3 extends Base {
 						)
 					);
 				}
-				$self=__CLASS__;
 				$self::error(500,$ex->getMessage(),$trace);
 				// PHP aborts at this point
 			}
@@ -1764,7 +1767,7 @@ class F3 extends Base {
 		}
 		// Fix Apache's VirtualDocumentRoot limitation
 		$_SERVER['DOCUMENT_ROOT']=
-			dirname(self::fixslashes($_SERVER['SCRIPT_FILENAME']));
+			self::fixslashes(dirname($_SERVER['SCRIPT_FILENAME']));
 		// Adjust HTTP request time precision
 		$_SERVER['REQUEST_TIME']=microtime(TRUE);
 		if (PHP_SAPI=='cli') {
@@ -1799,7 +1802,7 @@ class F3 extends Base {
 			// DNS black lists
 			'DNSBL'=>NULL,
 			// Document encoding
-			'ENCODING'=>'utf-8',
+			'ENCODING'=>$charset,
 			// Last error
 			'ERROR'=>NULL,
 			// Allow/prohibit framework class extension
@@ -1864,6 +1867,8 @@ class F3 extends Base {
 			'THROTTLE'=>0,
 			// Tidy options
 			'TIDY'=>array(),
+			// Default timezone
+			'TZ'=>'UTC',
 			// Framework version
 			'VERSION'=>self::TEXT_AppName.' '.self::TEXT_Version,
 			// Default whois server
