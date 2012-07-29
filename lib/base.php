@@ -256,21 +256,17 @@ class Base {
 		$out='';
 		$obj=FALSE;
 		foreach (preg_split('/\[\s*[\'"]?|[\'"]?\s*\]|\.|(->)/',
-			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE) as $fix) {
-			if ($out) {
-				if ($fix=='->') {
-					$obj=TRUE;
-					continue;
-				}
-				elseif ($obj) {
-					$obj=FALSE;
-					$fix='->'.$fix;
-				}
-				else
-					$fix='['.var_export($fix,TRUE).']';
+			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE) as $fix)
+			if (!$out)
+				$out=$fix;
+			elseif ($fix=='->')
+				$obj=TRUE;
+			elseif ($obj) {
+				$obj=FALSE;
+				$out.='->'.$fix;
 			}
-			$out.=$fix;
-		}
+			else
+				$out.='['.self::stringify($fix).']';
 		return $out;
 	}
 
