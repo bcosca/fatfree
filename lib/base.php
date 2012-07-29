@@ -296,7 +296,7 @@ class Base {
 		$matches=preg_split(
 			'/\[\s*[\'"]?|[\'"]?\s*\]|\.|(->)/',$key,
 			NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-		// Referencing a SESSION variable element auto-starts a session
+		// Referencing SESSION element auto-starts a session
 		if ($matches[0]=='SESSION' && !session_id()) {
 			// Use cookie jar setup
 			call_user_func_array('session_set_cookie_params',
@@ -1783,16 +1783,6 @@ class F3 extends Base {
 			isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']!='off' ||
 			isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
 			$_SERVER['HTTP_X_FORWARDED_PROTO']=='https'?'https':'http';
-		$jar=array(
-			'expire'=>0,
-			'path'=>$base?:'/',
-			'domain'=>isset($_SERVER['SERVER_NAME']) &&
-				is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
-				!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
-				$_SERVER['SERVER_NAME']:'',
-			'secure'=>($scheme=='https'),
-			'httponly'=>TRUE
-		);
 		self::$vars=array(
 			// Autoload folders
 			'AUTOLOAD'=>'./',
@@ -1822,7 +1812,16 @@ class F3 extends Base {
 			// Include path for procedural code
 			'IMPORTS'=>'./',
 			// Default cookie settings
-			'JAR'=>$jar,
+			'JAR'=>array(
+				'expire'=>0,
+				'path'=>$base?:'/',
+				'domain'=>isset($_SERVER['SERVER_NAME']) &&
+					is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
+					!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
+					$_SERVER['SERVER_NAME']:'',
+				'secure'=>($scheme=='https'),
+				'httponly'=>TRUE
+			),
 			// Default language (auto-detect if null)
 			'LANGUAGE'=>NULL,
 			// Autoloaded classes
