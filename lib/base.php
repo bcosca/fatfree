@@ -122,7 +122,7 @@ class Base {
 		//! Framework-mapped PHP globals
 		PHP_Globals='GET|POST|COOKIE|REQUEST|SESSION|FILES|SERVER|ENV',
 		//! HTTP methods for RESTful interface
-		HTTP_Methods='GET|HEAD|POST|PUT|DELETE|OPTIONS';
+		HTTP_Methods='GET|HEAD|POST|PUT|DELETE|OPTIONS|TRACE|CONNECT';
 
 	//@{ Global variables and references to constants
 	protected static
