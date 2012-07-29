@@ -1685,7 +1685,7 @@ class F3 extends Base {
 		error_log($error['text']);
 		foreach (explode("\n",$out) as $str)
 			if ($str)
-				error_log($str);
+				error_log(strip_tags($str));
 		if ($prior || self::$vars['QUIET'])
 			return;
 		foreach (array('title','text','trace') as $sub)
@@ -1720,6 +1720,7 @@ class F3 extends Base {
 			return;
 		// Handle all exceptions/non-fatal errors
 		error_reporting(E_ALL|E_STRICT);
+		ini_set('default_charset','UTF-8');
 		ini_set('display_errors',0);
 		ini_set('register_globals',0);
 		// Get PHP settings
