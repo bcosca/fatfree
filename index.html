@@ -1410,7 +1410,7 @@ F3::set('REQUEST',F3::scrub($_REQUEST));</pre>
 		<div class="article">
 									<p>OK. That was easy, wasn't it? That's pretty much how you would do the same thing in ordinary PHP. You just need to know the DSN format of the database you're connecting to. What makes handling databases a cinch in F3 is the next command:-</p>
 
-<pre>DB::sql('SELECT brandName FROM mydb WHERE brandID=&#123;&#123;@id&#125;&#125;');</pre>
+<pre>DB::sql('SELECT * FROM mydb');</pre>
 
 <p>Huh, what's going on here? Shouldn't we be setting up things like PDOs, statements, cursors, etc.? The simple answer is: you don't have to.</p>
 
@@ -1475,7 +1475,7 @@ foreach (F3::get('DB->result') as $row) {
 	array(':uID'=>F3::get('POST.userID'))
 );</pre>
 
-<p>If F3 detects that the value of the query parameter/token is a string, F3 escapes the string and adds quotes as necessary. To override this behavior:-</p>
+<p>If F3 detects that the value of the query parameter/token is a string, the underlying data access layer escapes the string and adds quotes as necessary. To override this behavior:-</p>
 
 <pre>DB::sql(
 	'SELECT * FROM users WHERE userID=:uID",
