@@ -1484,8 +1484,8 @@ class F3 extends Base {
 	static function input($fields,$funcs=NULL,
 		$tags=NULL,$filter=FILTER_UNSAFE_RAW,$opt=array(),$assign=TRUE) {
 		$funcs=is_string($funcs)?self::split($funcs):array($funcs);
-		foreach (self::split($fields) as $field) {
-			$found=FALSE;
+		$found=FALSE;
+		foreach (self::split($fields) as $field)
 			// Sanitize relevant globals
 			foreach (explode('|','GET|POST|REQUEST') as $var)
 				if (self::exists($var.'.'.$field)) {
@@ -1498,38 +1498,54 @@ class F3 extends Base {
 					else {
 						$key=self::scrub($key,$tags);
 						$val=filter_var($key,$filter,$opt);
-						foreach ($funcs as $func)
-							if ($func) {
-								if (is_string($func) &&
-									preg_match('/(.+)\s*(?:->|::)\s*(.+)/',
-										$func,$match))
-									// Convert class->method syntax
-									$func=array(new $match[1],$match[2]);
-								if (!is_callable($func)) {
+						$out=NULL;
+						foreach ($funcs as $func) {
+							if (is_string($func)) {
+								$func=self::resolve($func);
+								if (preg_match('/(.+)\s*(->|::)\s*(.+)/s',
+									$func,$match)) {
+									if (!class_exists($match[1]) ||
+										!method_exists($match[1],'__call') &&
+										!method_exists($match[1],$match[3])) {
+										// Invalid handler
+										trigger_error(
+											sprintf(self::TEXT_Form,$field)
+										);
+										return;
+									}
+									$func=array($match[2]=='->'?
+										new $match[1]:$match[1],$match[3]);
+								}
+								elseif (!function_exists($func)) {
 									// Invalid handler
 									trigger_error(
 										sprintf(self::TEXT_Form,$field)
 									);
 									return;
 								}
-								if (!$found) {
-									$out=call_user_func($func,$val,$field);
-									if (!$assign)
-										return $out;
-									if ($out)
-										$key=$out;
-									$found=TRUE;
-								}
-								elseif ($assign && $out)
-									$key=$val;
 							}
+							if (!is_callable($func)) {
+								// Invalid handler
+								trigger_error(
+									sprintf(self::TEXT_Form,$field)
+								);
+								return;
+							}
+							$out=call_user_func($func,$val,$field);
+							$found=TRUE;
+							if (!$assign)
+								return $out;
+							if ($out)
+								$key=$out;
+							elseif ($assign && $out)
+								$key=$val;
+						}
 					}
 				}
-			if (!$found) {
-				// Invalid handler
-				trigger_error(sprintf(self::TEXT_Form,$field));
-				return;
-			}
+		if (!$found) {
+			// Invalid handler
+			trigger_error(sprintf(self::TEXT_Form,$field));
+			return;
 		}
 	}
 
