@@ -1190,6 +1190,15 @@ class Main extends F3instance {
 		echo $this->render('basic/results.htm');
 	}
 
+	function chain1($value) {
+		$this->set('POST.var',2);
+		return TRUE;
+	}
+
+	function chain2($value) {
+		$this->set('POST.var',3);
+	}
+
 	function validator() {
 		$this->set('title','User Input');
 
@@ -1201,7 +1210,9 @@ class Main extends F3instance {
 
 		$this->route('POST /form',
 			function() {
+				echo 'before';
 				F3::input('field1','nonexistent');
+				echo 'after';
 			}
 		);
 		$this->set('QUIET',TRUE);
@@ -1349,6 +1360,14 @@ class Main extends F3instance {
 			'Valid URL: http://www.yahoo.com?http%3A%2F%2Fwww.yahoo.com',
 			'Framework flagged '.
 				'http://www.yahoo.com?http%3A%2F%2Fwww.yahoo.com invalid!'
+		);
+
+		$this->set('POST.var',1);
+		$this->input('var','Main->chain1;Main->chain2');
+		$this->expect(
+			$this->get('POST.var')==3,
+			'Chained input handlers called in succession',
+			'Call to chained input handlers failed: '.$this->stringify($this->get('POST.var'))
 		);
 
 		echo $this->render('basic/results.htm');
