@@ -1963,7 +1963,7 @@ class F3 extends Base {
 			for (;;) {
 				if ($glob=glob($auto.self::fixslashes($ns).'*')) {
 					$grep=preg_grep('/^'.preg_quote($auto,'/').
-						implode('[\/\.]',explode('\\',$ns.$iter)).
+						implode('[\/\._]',explode('\\',$ns.$iter)).
 						'(?:\.class)?\.php/i',$glob);
 					if ($file=current($grep)) {
 						unset($grep);
