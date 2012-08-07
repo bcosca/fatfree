@@ -1907,8 +1907,8 @@ class F3 extends Base {
 				);
 		}
 		// Initialize autoload stack and shutdown sequence
-		spl_autoload_register(__CLASS__.'::autoload',TRUE,TRUE);
-		register_shutdown_function(__CLASS__.'::stop');
+		spl_autoload_register($self.'::autoload',TRUE,TRUE);
+		register_shutdown_function($self.'::stop');
 	}
 
 	/**

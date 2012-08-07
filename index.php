@@ -88,16 +88,16 @@ $app->route('GET /minified/@script',
 $app->run();
 
 class Obj {
-	public function hello() {
+	function hello() {
 		echo 'hello';
 	}
 }
 
 class CustomObj {
-	public function hello() {
+	function hello() {
 		echo 'hello';
 	}
-	public function __toString() {
+	function __toString() {
 		return 'CustomObj';
 	}
 }
