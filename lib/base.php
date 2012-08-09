@@ -1923,8 +1923,7 @@ class F3 extends Base {
 			// Intercept fatal error
 			self::error(500,sprintf(self::TEXT_Fatal,$error['message']),
 				array($error),TRUE);
-		if (isset(self::$vars['UNLOAD']) &&
-			is_callable(self::$vars['UNLOAD']))
+		if (isset(self::$vars['UNLOAD']))
 			self::call(self::$vars['UNLOAD']);
 	}
 
