@@ -481,8 +481,12 @@ class Axon extends Base {
 					($cond?(' WHERE '.$cond[0]):'').
 					($group?(' GROUP BY '.$group):'').
 					($seq?(' ORDER BY '.$seq):'').
-					($limit?(' LIMIT '.$limit):'').
-					($ofs?(' OFFSET '.$ofs):'').';',
+					(preg_match('/^mssql|sqlsrv|sybase|dblib$/',
+						$this->backend)?
+						(($ofs?(' OFFSET '.$ofs):'').
+						($limit?(' FETCH '.$limit.' ONLY'):'')):
+						(($limit?(' LIMIT '.$limit):'').
+						($ofs?(' OFFSET '.$ofs):''))).';',
 				$cond[1]
 			):
 			$this->db->exec(
@@ -490,8 +494,12 @@ class Axon extends Base {
 					($cond?(' WHERE '.$cond):'').
 					($group?(' GROUP BY '.$group):'').
 					($seq?(' ORDER BY '.$seq):'').
-					($limit?(' LIMIT '.$limit):'').
-					($ofs?(' OFFSET '.$ofs):'').';'
+					(preg_match('/^mssql|sqlsrv|sybase|dblib$/',
+						$this->backend)?
+						(($ofs?(' OFFSET '.$ofs):'').
+						($limit?(' FETCH '.$limit.' ONLY'):'')):
+						(($limit?(' LIMIT '.$limit):'').
+						($ofs?(' OFFSET '.$ofs):''))).';'
 			);
 		if ($axon)
 			// Convert array elements to Axon objects
