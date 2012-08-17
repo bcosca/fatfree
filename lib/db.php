@@ -228,7 +228,21 @@ class DB extends Base {
 			'mysql'=>array(
 				'SHOW columns FROM `'.$this->dbname.'`.'.$table.';',
 				'Field','Key','PRI','Type'),
-			'mssql|sqlsrv|sybase|dblib|pgsql|ibm|odbc'=>array(
+			'ibm'=>array(
+                'SELECT DISTINCT c.colname as field,c.typename as type,'.
+                'c.default, c.nulls as null, c.length, tc.type AS key '.
+                'FROM syscat.columns c '.
+                'LEFT JOIN '.
+                    '(syscat.keycoluse k JOIN syscat.tabconst tc '.
+                        'ON (k.tabschema = tc.tabschema '.
+                            'AND k.tabname = tc.tabname '.
+                            'AND tc.type = \'P\')'.
+                    ') ON (c.tabschema = k.tabschema '.
+                        'AND c.tabname = k.tabname '.
+                        'AND c.colname = k.colname) '.
+                'WHERE UPPER(c.tabname) = UPPER(\''.$table.'\');',
+                'field','key','P','type'),
+			'mssql|sqlsrv|sybase|dblib|pgsql|odbc'=>array(
 				'SELECT c.column_name AS field,'.
 				'c.data_type AS type,t.constraint_type AS pkey '.
 				'FROM information_schema.columns AS c '.
