@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Log
-		@version 2.0.10
+		@version 2.0.12
 **/
 
 //! Custom log plugin

@@ -39,7 +39,7 @@ class Main extends F3instance {
 		$this->expect(
 			!is_null($this->get('ERROR')) && $this->get('ERROR.code')===500,
 			$this->get('ERROR.text'),
-			'No error detected: '.var_export($this->get('ERROR'),TRUE)
+			'No error detected: '.$this->stringify($this->get('ERROR'))
 		);
 		$this->set('QUIET',FALSE);
 		$this->clear('ERROR');
@@ -49,7 +49,7 @@ class Main extends F3instance {
 		$this->expect(
 			!is_null($this->get('ERROR')) && $this->get('ERROR.code')===500,
 			$this->get('ERROR.text'),
-			'No error detected: '.var_export($this->get('ERROR'),TRUE)
+			'No error detected: '.$this->stringify($this->get('ERROR'))
 		);
 		$this->set('QUIET',FALSE);
 		$this->clear('ERROR');
@@ -77,7 +77,7 @@ class Main extends F3instance {
 			$this->expect(
 				!is_null($this->get('ERROR')) && $this->get('ERROR.code')===500,
 				$this->get('ERROR.text'),
-				'No error detected: '.var_export($this->get('ERROR'),TRUE)
+				'No error detected: '.$this->stringify($this->get('ERROR'))
 			);
 			if (in_array($class,explode('|',$dynamic))) {
 				try {
@@ -86,7 +86,7 @@ class Main extends F3instance {
 					$this->expect(
 						!is_null($this->get('ERROR')) && $this->get('ERROR.code')===500,
 						$this->get('ERROR.text'),
-						'No error detected: '.var_export($this->get('ERROR'),TRUE)
+						'No error detected: '.$this->stringify($this->get('ERROR'))
 					);
 					// Remove file created by FileDB|Log class (side-effect)
 					@rmdir('abc');
@@ -96,7 +96,7 @@ class Main extends F3instance {
 					$this->expect(
 						!is_null($this->get('ERROR')) && $this->get('ERROR.code')===500,
 						$this->get('ERROR.text'),
-						'No error detected: '.var_export($this->get('ERROR'),TRUE)
+						'No error detected: '.$this->stringify($this->get('ERROR'))
 					);
 				}
 			}
@@ -123,8 +123,8 @@ class Main extends F3instance {
 				$this->get($php)==$GLOBALS['_'.$php],
 				$php.' matches $_'.$php,
 				$php.' does not match $_'.$php.': '.
-					var_export($this->get($php),TRUE).' != '.
-					var_export($GLOBALS['_'.$php],TRUE)
+					$this->stringify($this->get($php)).' != '.
+					$this->stringify($GLOBALS['_'.$php])
 			);
 		}
 
@@ -134,7 +134,7 @@ class Main extends F3instance {
 				$this->get('POST.xyz')===567 && $this->get('POST["xyz"]')===567,
 			'F3-mirrored PHP variable also alters underlying variable',
 			'Underlying variable unchanged: '.
-				var_export($_POST['xyz'],TRUE)
+				$this->stringify($_POST['xyz'])
 		);
 
 		$this->set('POST["xyz"]',567);
@@ -143,7 +143,7 @@ class Main extends F3instance {
 				$this->get('POST.xyz')===567 && $this->get('POST["xyz"]')===567,
 			'$this->set() variant also alters underlying variable',
 			'Underlying variable unchanged: '.
-				var_export($_POST['xyz'],TRUE)
+				$this->stringify($_POST['xyz'])
 		);
 
 		$this->set('POST.abc.def',999);
@@ -153,7 +153,7 @@ class Main extends F3instance {
 				$this->get('POST["abc"]["def"]')===999,
 			'Multi-level array variable mirrored properly',
 			'Variable mirroring issue: '.
-				var_export($_POST['abc']['def'],TRUE)
+				$this->stringify($_POST['abc']['def'])
 		);
 
 		$_POST['xyz']=789;
@@ -161,7 +161,7 @@ class Main extends F3instance {
 			$this->get('POST.xyz')===789 && $this->get('POST["xyz"]')===789,
 			'Changing a PHP global also alters F3 equivalent',
 			'No change in F3-mirrored PHP variable: '.
-				var_export($this->get('POST.xyz'),TRUE)
+				$this->stringify($this->get('POST.xyz'))
 		);
 
 		$_POST['xyz']=234;
@@ -169,7 +169,7 @@ class Main extends F3instance {
 			$this->get('POST.xyz')===234 && $this->get('POST["xyz"]')===234,
 			'PHP global in sync with F3 equivalent',
 			'PHP global not in sync with F3 equivalent: '.
-				var_export($this->get('POST.xyz'),TRUE)
+				$this->stringify($this->get('POST.xyz'))
 		);
 
 		$this->clear('POST');
@@ -177,27 +177,34 @@ class Main extends F3instance {
 			!isset($_POST) && !$this->exists('POST'),
 			'Clearing F3 variable also clears PHP global',
 			'PHP global not cleared: '.
-				var_export($this->get('POST'),TRUE)
+				$this->stringify($this->get('POST'))
 		);
 
 		$this->expect(
 			strlen(session_id()),
 			'Session auto-started',
-			'Session was not auto-started: '.var_export($_SESSION,TRUE)
+			'Session was not auto-started: '.$this->stringify($_SESSION)
 		);
 
 		$this->clear('SESSION.x');
 		$this->expect(
 			!$this->exists('SESSION.x') && !isset($_SESSION['x']),
 			'Session variable cleared',
-			'Session variable not cleared: '.var_export($_SESSION,TRUE)
+			'Session variable not cleared: '.$this->stringify($_SESSION)
 		);
 
 		$this->clear('SESSION');
 		$this->expect(
 			!session_id(),
 			'Session destroyed',
-			'Session was not destroyed: '.var_export($_SESSION,TRUE)
+			'Session was not destroyed: '.$this->stringify($_SESSION)
+		);
+
+		$this->set('TZ','America/New_York');
+		$this->expect(
+			date_default_timezone_get()=='America/New_York',
+			'Timezone set properly',
+			'TZ variable incorrect'
 		);
 
 		echo $this->render('basic/results.htm');
@@ -225,22 +232,22 @@ class Main extends F3instance {
 			$this->get('title')=='F3 Variables',
 			'String assigned to userland variable',
 			'Incorrect value/data type: '.
-				var_export($this->get('title'),TRUE).'/'.
+				$this->stringify($this->get('title')).'/'.
 				gettype($this->get('title'))
 		);
 		$this->expect(
 			$this->get('title')=='F3 Variables' && is_string($this->get('title')),
 			'String value preserved',
 			'Incorrect value/data type: '.
-				var_export($this->get('title'),TRUE).'/'.
+				$this->stringify($this->get('title')).'/'.
 				gettype($this->get('title'))
 		);
 		$this->expect(
 			$this->get('title')==F3::get('title') && is_string(F3::get('title')),
 			'f3::get() and $this->get() return the same value',
 			'f3::get() and $this->get() behave differently! '.
-				var_export($this->get('title'),TRUE).'/'.
-				var_export(F3::get('title'),TRUE)
+				$this->stringify($this->get('title')).'/'.
+				$this->stringify(F3::get('title'))
 		);
 
 		$this->set('i',123);
@@ -248,13 +255,13 @@ class Main extends F3instance {
 			$this->get('i')===123,
 			'Integer assigned',
 			'Incorrect value/data type: '.
-				var_export($this->get('i'),TRUE).'/'.gettype($this->get('i'))
+				$this->stringify($this->get('i')).'/'.gettype($this->get('i'))
 		);
 		$this->expect(
 			$this->get('i')===123,
 			'Integer value preserved',
 			'Incorrect value/data type: '.
-				var_export($this->get('i'),TRUE).'/'.gettype($this->get('i'))
+				$this->stringify($this->get('i')).'/'.gettype($this->get('i'))
 		);
 
 		$this->set('f',345.6);
@@ -262,13 +269,13 @@ class Main extends F3instance {
 			$this->get('f')===345.6,
 			'Float assigned',
 			'Incorrect value/data type: '.
-				var_export($this->get('f'),TRUE).'/'.gettype($this->get('f'))
+				$this->stringify($this->get('f')).'/'.gettype($this->get('f'))
 		);
 		$this->expect(
 			$this->get('f')===345.6,
 			'Float value preserved',
 			'Incorrect value/data type: '.
-				var_export($this->get('f'),TRUE).'/'.gettype($this->get('f'))
+				$this->stringify($this->get('f')).'/'.gettype($this->get('f'))
 		);
 
 		$this->set('e',1.23e-4);
@@ -276,7 +283,7 @@ class Main extends F3instance {
 			$this->get('e')===1.23e-4,
 			'Negative exponential float assigned',
 			'Incorrect value/data type: '.
-				var_export($this->get('e'),TRUE).'/'.gettype($this->get('e'))
+				$this->stringify($this->get('e')).'/'.gettype($this->get('e'))
 		);
 
 		$this->set('e',1.23e+4);
@@ -284,7 +291,7 @@ class Main extends F3instance {
 			$this->get('e')===1.23e+4,
 			'Positive exponential float value preserved',
 			'Incorrect value/data type: '.
-				var_export($this->get('e'),TRUE).'/'.gettype($this->get('e'))
+				$this->stringify($this->get('e')).'/'.gettype($this->get('e'))
 		);
 
 		$this->set('e',1.23e4);
@@ -292,7 +299,7 @@ class Main extends F3instance {
 			$this->get('e')===1.23e4,
 			'Unsigned exponential float value preserved',
 			'Incorrect value/data type: '.
-				var_export($this->get('e'),TRUE).'/'.gettype($this->get('e'))
+				$this->stringify($this->get('e')).'/'.gettype($this->get('e'))
 		);
 
 		$this->set('b',TRUE);
@@ -300,7 +307,7 @@ class Main extends F3instance {
 			$this->get('b')===TRUE,
 			'Boolean value preserved',
 			'Incorrect value/data type: '.
-				var_export($this->get('b'),TRUE).'/'.gettype($this->get('b'))
+				$this->stringify($this->get('b')).'/'.gettype($this->get('b'))
 		);
 
 		$this->set('a',array(1,'inner',3.5));
@@ -308,7 +315,7 @@ class Main extends F3instance {
 			is_array($this->get('a')) && $this->get('a')==array(1,'inner',3.5),
 			'Array preserved',
 			'Incorrect value/data type: '.
-				var_export($this->get('a'),TRUE).'/'.gettype($this->get('a'))
+				$this->stringify($this->get('a')).'/'.gettype($this->get('a'))
 		);
 
 		$this->push('a','after');
@@ -341,13 +348,13 @@ class Main extends F3instance {
 		$this->expect(
 			$this->get('a')==array(1=>0,'inner'=>1,'3.5'=>2),
 			'Array flip() works',
-			'Array flip() failed: '.var_export($this->get('a'),TRUE)
+			'Array flip() failed: '.$this->stringify($this->get('a'))
 		);
 
 		$this->expect(
 			is_null($this->get('hello')),
 			'Non-existent variable returns NULL',
-			'Non-existent variable failure: '.var_export($this->get('hello'),TRUE)
+			'Non-existent variable failure: '.$this->stringify($this->get('hello'))
 		);
 
 		$this->set('obj',new Obj);
@@ -355,45 +362,45 @@ class Main extends F3instance {
 			$this->get('obj')==new Obj && is_object($this->get('obj')),
 			'Object preserved',
 			'Incorrect value/data type: '.
-				var_export($this->get('obj'),TRUE).'/'.gettype($this->get('obj'))
+				$this->stringify($this->get('obj')).'/'.gettype($this->get('obj'))
 		);
 
 		$this->expect(
 			$this->exists('i'),
 			'Existence confirmed',
-			'Variable does not exist: '.var_export($this->get('i'),TRUE)
+			'Variable does not exist: '.$this->stringify($this->get('i'))
 		);
 
 		$this->clear('i');
 		$this->expect(
 			!$this->exists('i'),
 			'Clear confirmed',
-			'Variable not cleared: '.var_export($this->exists('i'),TRUE)
+			'Variable not cleared: '.$this->stringify($this->exists('i'))
 		);
 
 		$this->set('v[0]',123);
 		$this->expect(
 			$this->exists('v'),
 			'Array instantiated when element is assigned a value',
-			'Variable does not exist: '.var_export($this->get('v'),TRUE)
+			'Variable does not exist: '.$this->stringify($this->get('v'))
 		);
 		$this->expect(
 			$this->get('v')==array(123),
 			'Array constructed properly',
-			'Array not constructed properly: '.var_export($this->get('v'),TRUE)
+			'Array not constructed properly: '.$this->stringify($this->get('v'))
 		);
 		$this->set('v.1',456);
 		$this->expect(
 			$this->get('v')==array(123,456),
 			'Value assigned using dot-notation',
-			'Value not assigned: '.var_export($this->get('v'),TRUE)
+			'Value not assigned: '.$this->stringify($this->get('v'))
 		);
 
 		$this->clear('v[1]');
 		$this->expect(
 			$this->get('v')==array(123),
 			'Element cleared using regular notation',
-			'Value not cleared: '.var_export($this->get('v'),TRUE)
+			'Value not cleared: '.$this->stringify($this->get('v'))
 		);
 
 		$this->set('v.2',789);
@@ -401,14 +408,14 @@ class Main extends F3instance {
 		$this->expect(
 			$this->get('v')==array(123),
 			'Element cleared using dot-notation',
-			'Value not cleared: '.var_export($this->get('v'),TRUE)
+			'Value not cleared: '.$this->stringify($this->get('v'))
 		);
 
 		$this->clear('v');
 		$this->expect(
 			!$this->exists('v'),
 			'Clear confirmed',
-			'Array not cleared: '.var_export($this->get('v'),TRUE)
+			'Array not cleared: '.$this->stringify($this->get('v'))
 		);
 
 		$this->set('a',369);
@@ -417,21 +424,21 @@ class Main extends F3instance {
 		$this->expect(
 			$this->get('a')===246,
 			'Variable variable assigned',
-			'Variable variable assignment error: '.var_export($this->get('a'),TRUE)
+			'Variable variable assignment error: '.$this->stringify($this->get('a'))
 		);
 
 		$this->set('a',357);
 		$this->expect(
 			$this->get('{{@b}}')===357,
 			'Variable variable retrieved',
-			'Variable variable retrieval error: '.var_export($this->get('{{@b}}'),TRUE)
+			'Variable variable retrieval error: '.$this->stringify($this->get('{{@b}}'))
 		);
 
 		$this->set('QUIET',TRUE);
 		$this->expect(
 			is_null($this->get('{{@b.1}}')) && !is_null($this->get('ERROR')),
 			'Incorrect variable variable usage',
-			'Variable variable usage error: '.var_export($this->get('{{@b.1}}'),TRUE)
+			'Variable variable usage error: '.$this->stringify($this->get('{{@b.1}}'))
 		);
 		$this->set('QUIET',FALSE);
 
@@ -444,7 +451,7 @@ class Main extends F3instance {
 		$this->expect(
 			$this->get('a')==array(123,234,345) && !is_null($this->get('ERROR')),
 			'Variable references handled properly',
-			'Variable references incorrect: '.var_export($this->get('a'),TRUE)
+			'Variable references incorrect: '.$this->stringify($this->get('a'))
 		);
 		$this->set('QUIET',FALSE);
 
@@ -454,7 +461,7 @@ class Main extends F3instance {
 		$this->expect(
 			$this->get('c')==array(1,array(2)),
 			'Deeply-nested tokens in framework array variable replaced',
-			'Deeply-nested tokens not replaced: '.var_export($this->get('c'),TRUE)
+			'Deeply-nested tokens not replaced: '.$this->stringify($this->get('c'))
 		);
 
 		$this->set('str','hello');
@@ -463,6 +470,30 @@ class Main extends F3instance {
 			$this->get('str')=='hello world',
 			'String concatenation works',
 			'String concatenation failed'
+		);
+
+		$this->set('sites',
+			array(
+				'example.com' => TRUE,
+				'test.eu' => FALSE,
+				'example.org' => TRUE,
+				'test.us' => TRUE
+			)
+		);
+		$this->expect(
+			$this->get('sites')==array(
+				'example.com' => TRUE,
+				'test.eu' => FALSE,
+				'example.org' => TRUE,
+				'test.us' => TRUE
+			) &&
+			$this->get('sites["example.com"]')===TRUE &&
+			$this->get('sites.test.eu')===FALSE &&
+			$this->get('sites[\'example.org\']')===TRUE &&
+			$this->get('sites["test.us"]')===TRUE,
+			'Array keys containing . interpreted correctly',
+			'Array keys containing . misinterpreted: '.
+				$this->stringify($this->get('sites'))
 		);
 
 		echo $this->render('basic/results.htm');
@@ -493,7 +524,7 @@ class Main extends F3instance {
 				array('id'=>456,'name'=>'ringo','sales'=>0.13),
 			),
 			'Sorting a multi-dimensional array by string column works properly',
-			'Incorrect array sort algorithm: '.var_export($z,TRUE)
+			'Incorrect array sort algorithm: '.$this->stringify($z)
 		);
 
 		Matrix::sort($z,'id');
@@ -505,7 +536,7 @@ class Main extends F3instance {
 				array('id'=>456,'name'=>'ringo','sales'=>0.13)
 			),
 			'Sorting a multi-dimensional array by integer column works properly',
-			'Incorrect array sort algorithm: '.var_export($z,TRUE)
+			'Incorrect array sort algorithm: '.$this->stringify($z)
 		);
 
 		Matrix::sort($z,'sales');
@@ -517,7 +548,7 @@ class Main extends F3instance {
 				array('id'=>234,'name'=>'john','sales'=>0.79)
 			),
 			'Sorting a multi-dimensional array by float column works properly',
-			'Incorrect array sort algorithm: '.var_export($z,TRUE)
+			'Incorrect array sort algorithm: '.$this->stringify($z)
 		);
 
 		echo $this->render('basic/results.htm');
@@ -686,7 +717,7 @@ class Main extends F3instance {
 		$this->expect(
 			!is_null($this->get('ERROR')) && $this->get('ERROR.code')===500,
 			'HTTP 500 expected - '.$this->get('ERROR.text'),
-			'No error detected: '.var_export($this->get('ERROR'),TRUE)
+			'No error detected: '.$this->stringify($this->get('ERROR'))
 		);
 		$this->set('QUIET',FALSE);
 		$this->clear('ERROR');
@@ -832,15 +863,6 @@ class Main extends F3instance {
 		);
 
 		$this->set('routed',0);
-		$this->mock('GET /a/');
-		$this->run();
-		$this->expect(
-			$this->get('routed')===1,
-			'Slash-terminated URI routed properly',
-			'Slash-terminated URI routing issue'
-		);
-
-		$this->set('routed',0);
 		$this->mock('GET /a/b/c');
 		$this->run();
 		$this->expect(
@@ -859,15 +881,6 @@ class Main extends F3instance {
 		);
 
 		$this->set('routed',0);
-		$this->mock('GET /a-b/c/');
-		$this->run();
-		$this->expect(
-			$this->get('routed')===3,
-			'Slash-terminated URI (with special characters) routed properly',
-			'Slash-terminated URI (with special characters) routing issue'
-		);
-
-		$this->set('routed',0);
 		$this->mock('GET /a-b/c?x=557&y=355');
 		$this->run();
 		$this->expect(
@@ -879,16 +892,7 @@ class Main extends F3instance {
 		$this->expect(
 			$this->get('GET')==array('x'=>'557','y'=>'355'),
 			'GET variables passed to framework-mirrored PHP variable',
-			'Issue with GET variables in URI: '.var_export($this->get('GET'),TRUE)
-		);
-
-		$this->set('routed',0);
-		$this->mock('GET /a-b/c/?x=557&y=355');
-		$this->run();
-		$this->expect(
-			$this->get('GET')==array('x'=>'557','y'=>'355'),
-			'GET variables in slash-terminated URI passed properly',
-			'Issue with slash-terminated URI: '.var_export($this->get('GET'),TRUE)
+			'Issue with GET variables in URI: '.$this->stringify($this->get('GET'))
 		);
 
 		$this->set('routed',0);
@@ -926,7 +930,7 @@ class Main extends F3instance {
 		$this->expect(
 			$this->get('POST')===array('x'=>'224','y'=>'466'),
 			'POST variables passed to framework-mirrored PHP variable',
-			'Issue with POST variables in URI: '.var_export($this->get('POST'),TRUE)
+			'Issue with POST variables in URI: '.$this->stringify($this->get('POST'))
 		);
 
 		$this->clear('ROUTES');
@@ -968,18 +972,7 @@ class Main extends F3instance {
 			'Incorrect handling of URI tokens'
 		);
 
-		$this->mock('GET /old-adage/a/bird/in/hand/');
-		$this->run();
-		$this->expect(
-			$this->get('routed')===3 &&
-			$this->get('PARAMS.token1')==='bird' &&
-			$this->get('PARAMS.token2')==='in' &&
-			$this->get('PARAMS.token3')==='hand',
-			'URI tokens handled correctly even with a trailing slash',
-			'Incorrect handling of URI tokens'
-		);
-
-		$this->mock('GET /old-adage/a/fool-and/his-money-are/soon-parted/');
+		$this->mock('GET /old-adage/a/fool-and/his-money-are/soon-parted');
 		$this->run();
 		$this->expect(
 			$this->get('routed')===3 &&
@@ -990,7 +983,7 @@ class Main extends F3instance {
 			'Incorrect distribution of URI tokens'
 		);
 
-		$this->mock('GET /old-adage/a/fool and/his money are/soon parted/');
+		$this->mock('GET /old-adage/a/fool and/his money are/soon parted');
 		$this->run();
 		$this->expect(
 			$this->get('PARAMS.token1')==='fool and' &&
@@ -1000,7 +993,7 @@ class Main extends F3instance {
 			'Issue with URL-encoded data containing spaces'
 		);
 
-		$this->mock('GET /%6f%6c%64-adage/a/fool-and/his-money-are/soon-parted/');
+		$this->mock('GET /%6f%6c%64-adage/a/fool-and/his-money-are/soon-parted');
 		$this->run();
 		$this->expect(
 			$this->get('PARAMS.token1')==='fool-and' &&
@@ -1139,20 +1132,20 @@ class Main extends F3instance {
 		$this->expect(
 			$this->cached('x'),
 			'Framework variable cached',
-			'Variable not cached: '.var_export($this->cached('x'),TRUE)
+			'Variable not cached: '.$this->stringify($this->cached('x'))
 		);
 
 		$this->expect(
 			$this->get('x'),
 			'Value retrieved from cache',
-			'Caching issue: '.var_export($this->get('x'),TRUE)
+			'Caching issue: '.$this->stringify($this->get('x'))
 		);
 
 		$this->clear('x');
 		$this->expect(
 			is_bool($this->cached('x')),
 			'Variable removed from cache',
-			'Caching issue: '.var_export($this->cached('x'),TRUE)
+			'Caching issue: '.$this->stringify($this->cached('x'))
 		);
 
 		$this->clear('ROUTES');
@@ -1180,9 +1173,9 @@ class Main extends F3instance {
 				$saved=$cached;
 			if ($saved!=$cached)
 				break;
-			$time=time();
+			$time=microtime(TRUE);
 			$this->expect(TRUE,'Cache age @'.date('G:i:s',$time).': '.
-				($time-$cached).' secs');
+				sprintf('%.1f',$time-$cached).' secs');
 			$i++;
 			if ($i==$ttl)
 				break;
@@ -1197,6 +1190,15 @@ class Main extends F3instance {
 		echo $this->render('basic/results.htm');
 	}
 
+	function chain1($value) {
+		$this->set('POST.var',2);
+		return TRUE;
+	}
+
+	function chain2($value) {
+		$this->set('POST.var',3);
+	}
+
 	function validator() {
 		$this->set('title','User Input');
 
@@ -1208,7 +1210,9 @@ class Main extends F3instance {
 
 		$this->route('POST /form',
 			function() {
+				echo 'before';
 				F3::input('field1','nonexistent');
+				echo 'after';
 			}
 		);
 		$this->set('QUIET',TRUE);
@@ -1358,6 +1362,14 @@ class Main extends F3instance {
 				'http://www.yahoo.com?http%3A%2F%2Fwww.yahoo.com invalid!'
 		);
 
+		$this->set('POST.var',1);
+		$this->input('var','Main->chain1;Main->chain2');
+		$this->expect(
+			$this->get('POST.var')==3,
+			'Chained input handlers called in succession',
+			'Call to chained input handlers failed: '.$this->stringify($this->get('POST.var'))
+		);
+
 		echo $this->render('basic/results.htm');
 	}
 
@@ -1494,7 +1506,7 @@ class Main extends F3instance {
 				$out
 			),
 			'Subtemplate inserted; nested repeat directives rendered correctly',
-			'Template rendering issue: '.var_export($out,TRUE)
+			'Template rendering issue: '.$this->stringify($out)
 		);
 
 		$this->set('sub','sub4.htm');
@@ -1553,7 +1565,7 @@ class Main extends F3instance {
 		$money=63950.25;
 
 		$this->set('sub','sub6.htm');
-		$this->set('LANGUAGE','en');
+		$this->set('LANGUAGE','en-US');
 		$out=$this->render('basic/layout.htm');
 		// PHP 5.3.2 inserts a line feed at end of translation
 		$this->expect(
@@ -1835,16 +1847,25 @@ class Main extends F3instance {
 			'Incorrect evaluation of integer zero: '.Template::resolve('{{@x}}')
 		);
 
-		$this->set('x','{{a@b.com}}');
+		$this->set('p','an old man in');
+		$this->set('q','a new house');
 		$this->expect(
-			Template::resolve('{{@x}}')=='\'a@b.com\'',
-			'E-mail address preserved',
-			'Incorrect interpretation of e-mail address: '.Template::resolve('{{@x}}')
+			($result=Template::resolve('{{@p}} {{@q}}'))=='an old man in a new house',
+			'"new" preserved as string',
+			'"new" interpreted as PHP keyword: '.$result
+		);
+
+		$this->set('d','my email address is');
+		$this->set('e','xyz@example.com');
+		$this->expect(
+			($result=Template::resolve('{{@d}} {{@e}}'))=='my email address is xyz@example.com',
+			'E-mail address preserved as string',
+			'E-mail address should not be quoted: '.$result
 		);
 
 		$this->set('x','{{new CustomObj}}');
 		$this->expect(
-			Template::resolve('{{@x}}')=='\'new CustomObj\'',
+			Template::resolve('{{@x}}')=='CustomObj',
 			'Object instantiation using template engine prohibited',
 			'Object instantiation issue: '.Template::resolve('{{@x}}')
 		);
@@ -2090,7 +2111,7 @@ class Main extends F3instance {
 		$money=63950.25;
 
 		$this->set('sub','sub6.htm');
-		$this->set('LANGUAGE','en');
+		$this->set('LANGUAGE','en-US');
 		$out=trim(Template::serve('template/layout.htm'));
 		// PHP 5.3.2 inserts a line feed at end of translation
 		$this->expect(
@@ -2158,7 +2179,7 @@ class Main extends F3instance {
 		$this->expect(
 			$out=='blueberry',
 			'Array with variable element rendered correctly',
-			'Array variable element failed to render: '.var_export($out,TRUE)
+			'Array variable element failed to render: '.$this->stringify($out)
 		);
 
 		$this->set('sub','sub8.htm');
@@ -2173,7 +2194,7 @@ class Main extends F3instance {
 		$this->expect(
 			$out=='hello, wise guy',
 			'Function with variable arguments rendered correctly',
-			'Array with variable arguments failed to render: '.var_export($out,TRUE)
+			'Array with variable arguments failed to render: '.$this->stringify($out)
 		);
 
 		$this->set('benchmark',
@@ -3343,7 +3364,7 @@ class Main extends F3instance {
 
 			$this->expect(
 				TRUE,
-				'Google map<br/><img src="/google/map" alt="Google Map"/>'
+				'Google map<br/><img src="'.$this->get('BASE').'/google/map" alt="Google Map"/>'
 			);
 
 			$search=Google::search('google');
@@ -3352,7 +3373,7 @@ class Main extends F3instance {
 				is_array($search),
 				'Google search generated the following results:<br/>'.
 					implode('<br/>',$this->pick($search['results'],'url')),
-				'Google search failure: '.var_export($search,TRUE)
+				'Google search failure: '.$this->stringify($search)
 			);
 			$this->set('QUIET',FALSE);
 
@@ -3361,7 +3382,7 @@ class Main extends F3instance {
 			$this->expect(
 				is_array($geocode),
 				'Geocode API call success',
-				'Geocode API call failure: '.var_export($geocode,TRUE)
+				'Geocode API call failure: '.$this->stringify($geocode)
 			);
 			$this->set('QUIET',FALSE);
 
@@ -3395,32 +3416,31 @@ class Main extends F3instance {
 			);
 
 			$this->set('QUIET',TRUE);
-			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].'/minified/reset.css');
+			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/reset.css');
 			$this->expect(
 				$text=='html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block;}body{line-height:1;}ol,ul{list-style:none;}blockquote,q{quotes:none;}blockquote:before,blockquote:after,q:before,q:after{content:\'\';content:none;}table{border-collapse:collapse;border-spacing:0;}',
 				'CSS minified '.round(100*(filesize('gui/reset.css')-strlen($text))/filesize('gui/reset.css'),1).'%: '.strlen($text).' bytes; '.
 					'original size: '.filesize('gui/reset.css').' bytes',
-				'CSS minification issue: '.var_export($text,true)
+				'CSS minification issue: '.$this->stringify($text)
 			);
 			$this->set('QUIET',FALSE);
 
 			$this->set('QUIET',TRUE);
-			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].'/minified/simple.css');
+			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/simple.css');
 			$this->expect(
-				$text=='div *{text-align:center;}#content{border:1px #000 solid;text-shadow:#ccc -1px -1px 0px;}',
+				$text=='div *{text-align:center;}#content{border:1px #000 solid;text-shadow:#ccc -1px -1px 0px;}tr:nth-child(odd) td{line-height:1.2em;}h1[name] span{font-size:12pt;}',
 				'CSS minified properly - necessary (and IE-problematic) spaces preserved',
-				'CSS minified incorrectly: '.var_export($text,true)
+				'CSS minified incorrectly: '.$this->stringify($text)
 			);
 			$this->set('QUIET',FALSE);
 
 			$this->set('QUIET',TRUE);
-			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].'/minified/cookie.js');
+			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/cookie.js');
 			$this->expect(
-				$text=='function getCookie(c_name){if(document.cookie.length>0){c_start=document.cookie.indexOf(c_name+"=");if(c_start!=-1){c_start=c_start+c_name.length+1;c_end=document.cookie.indexOf(";",c_start);if(c_end==-1)c_end=document.cookie.length
-return unescape(document.cookie.substring(c_start,c_end));}}return""}function setCookie(c_name,value,expiredays){var exdate=new Date();exdate.setDate(exdate.getDate()+expiredays);document.cookie=c_name+"="+escape(value)+((expiredays==null)?"":"; expires="+exdate.toUTCString());}function checkCookie(){username=getCookie(\'username\');if(username!=null&&username!=""){alert(\'Welcome again \'+username+\'!\');}else{username=prompt(\'Please enter your name:\',"");if(username!=null&&username!=""){setCookie(\'username\',username,365);}}}',
+				$text=='function getCookie(cname){var out=\'\';if(document.cookie.length>0){var cstart=document.cookie.indexOf(cname+\'=\');if(cstart!=-1){cstart=cstart+cname.length+1;var cend=document.cookie.indexOf(\';\',cstart);if(cend==-1){cend=document.cookie.length;}var s=document.cookie.substring(cstart,cend);out=decodeURIComponent(s);}}return out;}function setCookie(cname,value,expiredays){var exdate=new Date();var d=exdate.getDate();exdate.setDate(d+expiredays);var ed=\'\';if(expiredays>0){ed=\'; expires=\'+exdate.toUTCString();}document.cookie=cname+\'=\'+encodeURIComponent(value)+ed;}function checkCookie(){var un=getCookie(\'username\');if(un.length>0){alert(\'Welcome again \'+un+\'!\');}else{var un2=prompt(\'Please enter your name:\',\'\');var oneyear=365;if(un2.length>0){setCookie(\'username\',un2,oneyear);}}}',
 				'Javascript minified '.round(100*(filesize('gui/cookie.js')-strlen($text))/filesize('gui/cookie.js'),1). '%: '.strlen($text).' bytes; '.
 					'original size: '.filesize('gui/cookie.js').' bytes',
-				'Javascript minification issue: '.var_export($text,true)
+				'Javascript minification issue: '.$this->stringify($text)
 			);
 			$this->set('QUIET',FALSE);
 
@@ -3582,7 +3602,7 @@ return unescape(document.cookie.substring(c_start,c_end));}}return""}function se
 		$openid=new OpenID;
 		$openid->identity='https://www.google.com/accounts/o8/id';
 		$openid->return_to=$this->get('PROTOCOL').'://'.
-			$_SERVER['SERVER_NAME'].'/openid2';
+			$_SERVER['SERVER_NAME'].$this->get('BASE').'/openid2';
 
 		$this->expect(
 			$openid->auth(),

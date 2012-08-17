@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Base
-		@version 2.0.10
+		@version 2.0.12
 **/
 
 //! Base structure
@@ -21,7 +21,7 @@ class Base {
 	//@{ Framework details
 	const
 		TEXT_AppName='Fat-Free Framework',
-		TEXT_Version='2.0.10',
+		TEXT_Version='2.0.12',
 		TEXT_AppURL='http://fatfree.sourceforge.net';
 	//@}
 
@@ -122,7 +122,7 @@ class Base {
 		//! Framework-mapped PHP globals
 		PHP_Globals='GET|POST|COOKIE|REQUEST|SESSION|FILES|SERVER|ENV',
 		//! HTTP methods for RESTful interface
-		HTTP_Methods='GET|HEAD|POST|PUT|DELETE|OPTIONS';
+		HTTP_Methods='GET|HEAD|POST|PUT|DELETE|OPTIONS|TRACE|CONNECT';
 
 	//@{ Global variables and references to constants
 	protected static
@@ -256,21 +256,17 @@ class Base {
 		$out='';
 		$obj=FALSE;
 		foreach (preg_split('/\[\s*[\'"]?|[\'"]?\s*\]|\.|(->)/',
-			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE) as $fix) {
-			if ($out) {
-				if ($fix=='->') {
-					$obj=TRUE;
-					continue;
-				}
-				elseif ($obj) {
-					$obj=FALSE;
-					$fix='->'.$fix;
-				}
-				else
-					$fix='['.var_export($fix,TRUE).']';
+			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE) as $fix)
+			if (!$out)
+				$out=$fix;
+			elseif ($fix=='->')
+				$obj=TRUE;
+			elseif ($obj) {
+				$obj=FALSE;
+				$out.='->'.$fix;
 			}
-			$out.=$fix;
-		}
+			else
+				$out.='['.self::stringify($fix).']';
 		return $out;
 	}
 
@@ -298,9 +294,9 @@ class Base {
 	static function &ref($key,$set=TRUE) {
 		// Traverse array
 		$matches=preg_split(
-			'/\[\s*[\'"]?|[\'"]?\s*\]|\.|(->)/',self::remix($key),
+			'/\[\s*[\'"]?|[\'"]?\s*\]|\.|(->)/',$key,
 			NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-		// Referencing a SESSION variable element auto-starts a session
+		// Referencing SESSION element auto-starts a session
 		if ($matches[0]=='SESSION' && !session_id()) {
 			// Use cookie jar setup
 			call_user_func_array('session_set_cookie_params',
@@ -315,7 +311,8 @@ class Base {
 		else
 			$var=self::$vars;
 		$obj=FALSE;
-		foreach ($matches as $match)
+		$i=0;
+		foreach ($matches as $match) {
 			if ($match=='->')
 				$obj=TRUE;
 			else {
@@ -341,13 +338,27 @@ class Base {
 					$var=$var->$match;
 					$obj=FALSE;
 				}
-				elseif (is_array($var) && isset($var[$match]))
+				elseif (is_array($var)) {
 					// Array element found
-					$var=$var[$match];
+					if (isset($var[$match]))
+						// Normal key
+						$var=$var[$match];
+					elseif (isset(
+						$var[$slice=implode(".",array_slice($matches,$i))])) {
+						// Key contains a dot (.)
+						$var=$var[$slice];
+						break;
+					}
+					else
+						// Property/array element doesn't exist
+						return self::$null;
+				}
 				else
 					// Property/array element doesn't exist
 					return self::$null;
 			}
+			$i++;
+		}
 		if ($set && count($matches)>1 &&
 			preg_match('/GET|POST|COOKIE/',$matches[0],$php)) {
 			// Sync with REQUEST
@@ -606,9 +617,9 @@ class Base {
 						$expr[1]
 					)
 				);
-				return (!preg_match('/@|\bnew\s+/i',$out) &&
-					($eval=eval('return (string)'.$out.';'))!==FALSE?
-						$eval:$out);
+				return preg_match('/(?=\w)@/i',$out) ||
+					($eval=eval('return (string)'.$out.';'))===FALSE?
+						$out:$eval;
 			},
 			$val
 		);
@@ -667,9 +678,10 @@ class Base {
 		permission to create folder in the specified path
 			@param $name string
 			@param $perm int
+			@param $recursive bool
 			@public
 	**/
-	static function mkdir($name,$perm=0775) {
+	static function mkdir($name,$perm=0775,$recursive=TRUE) {
 		$parent=dirname($name);
 		if (!@is_writable($parent) && !chmod($parent,$perm)) {
 			$uid=posix_getpwuid(posix_geteuid());
@@ -678,7 +690,7 @@ class Base {
 			return FALSE;
 		}
 		// Create the folder
-		mkdir($name,$perm);
+		mkdir($name,$perm,$recursive);
 	}
 
 	/**
@@ -708,8 +720,8 @@ class Base {
 			@public
 	**/
 	static function instance() {
-		return eval('return new '.get_called_class().
-			'('.self::csv(func_get_args()).');');
+		$ref=new ReflectionClass(get_called_class());
+		return $ref->newInstanceArgs(func_get_args());
 	}
 
 	/**
@@ -764,23 +776,30 @@ class F3 extends Base {
 			return;
 		}
 		$var=&self::ref($key);
-		if (is_string($val) && $resolve)
-			$val=self::resolve($val);
-		elseif (is_array($val)) {
-			$var=array();
-			// Recursive token substitution
-			foreach ($val as $subk=>$subv)
-				self::set($key.'['.var_export($subk,TRUE).']',
-					$subv,FALSE);
-			return;
+		if ($resolve) {
+			if (is_string($val))
+				$val=self::resolve($val);
+			elseif (is_array($val)) {
+				$var=array();
+				// Recursive token substitution
+				foreach ($val as $subk=>$subv) {
+					$subp=$key.'['.var_export($subk,TRUE).']';
+					self::set($subp,$subv);
+					$val[$subk]=self::ref($subp);
+				}
+			}
 		}
 		$var=$val;
 		if (preg_match('/LANGUAGE|LOCALES/',$key) && class_exists('ICU'))
 			// Load appropriate dictionaries
 			ICU::load();
+		elseif ($key=='ENCODING')
+			ini_set('default_charset',$val);
+		elseif ($key=='TZ')
+			date_default_timezone_set($val);
 		// Initialize cache if explicitly defined
 		elseif ($key=='CACHE' && $val)
-			Cache::prep();
+			self::$vars['CACHE']=Cache::load();
 		if ($persist) {
 			$hash='var.'.self::hash(self::remix($key));
 			Cache::set($hash,$val);
@@ -888,13 +907,7 @@ class F3 extends Base {
 			$key=self::resolve($key);
 		if (!self::valid($key))
 			return FALSE;
-		$id=session_id();
 		$var=&self::ref($key,FALSE);
-		if (!$id && session_id()) {
-			// End the session
-			session_unset();
-			session_destroy();
-		}
 		return isset($var);
 	}
 
@@ -902,16 +915,17 @@ class F3 extends Base {
 		Multi-variable assignment using associative array
 			@param $arg array
 			@param $pfx string
+			@param $resolve bool
 			@public
 	**/
-	static function mset($arg,$pfx='') {
+	static function mset($arg,$pfx='',$resolve=TRUE) {
 		if (!is_array($arg))
 			// Invalid argument
 			trigger_error(self::TEXT_MSet);
 		else
 			// Bind key-value pairs
 			foreach ($arg as $key=>$val)
-				self::set($pfx.$key,$val);
+				self::set($pfx.$key,$val,FALSE,$resolve);
 	}
 
 	/**
@@ -1142,17 +1156,25 @@ class F3 extends Base {
 			@param $ttl int
 			@param $throttle int
 			@param $hotlink bool
+			@param $prefix string
 			@public
 	**/
-	static function map($url,$class,$ttl=0,$throttle=0,$hotlink=TRUE) {
-		foreach (explode('|',self::HTTP_Methods) as $method)
-			if (method_exists($class,$method)) {
-				$ref=new ReflectionMethod($class,$method);
-				self::route($method.' '.$url,$ref->isStatic()?
-					array($class,$method):array(new $class,$method),$ttl,
-					$throttle,$hotlink);
+	static function map(
+		$url,$class,$ttl=0,$throttle=0,$hotlink=TRUE,$prefix='') {
+		foreach (explode('|',self::HTTP_Methods) as $method) {
+			$func=$prefix.$method;
+			if (method_exists($class,$func)) {
+				$ref=new ReflectionMethod($class,$func);
+				self::route(
+					$method.' '.$url,
+					$ref->isStatic()?
+						array($class,$func):
+						array(new $class,$func),
+					$ttl,$throttle,$hotlink
+				);
 				unset($ref);
 			}
+		}
 	}
 
 	/**
@@ -1165,6 +1187,7 @@ class F3 extends Base {
 	static function call($funcs,$listen=FALSE) {
 		$classes=array();
 		$funcs=is_string($funcs)?self::split($funcs):array($funcs);
+		$out=NULL;
 		foreach ($funcs as $func) {
 			if (is_string($func)) {
 				$func=self::resolve($func);
@@ -1179,13 +1202,19 @@ class F3 extends Base {
 						new $match[1]:$match[1],$match[3]);
 				}
 				elseif (!function_exists($func)) {
+					$found=FALSE;
 					if (preg_match('/\.php$/i',$func)) {
+						$found=FALSE;
 						foreach (self::split(self::$vars['IMPORTS'])
 							as $path)
 							if (is_file($file=$path.$func)) {
 								$instance=new F3instance;
-								return $instance->sandbox($file);
+								if ($instance->sandbox($file)===FALSE)
+									return FALSE;
+								$found=TRUE;
 							}
+						if ($found)
+							continue;
 					}
 					self::error(404);
 					return FALSE;
@@ -1248,35 +1277,37 @@ class F3 extends Base {
 			return;
 		}
 		$found=FALSE;
+		$allowed=array();
 		// Detailed routes get matched first
 		krsort(self::$vars['ROUTES']);
 		$time=time();
 		$req=preg_replace('/^'.preg_quote(self::$vars['BASE'],'/').
-			'\b(.+)/','\1',rawurldecode($_SERVER['REQUEST_URI']));
-        $routes = array();
-        foreach (self::$vars['ROUTES'] as $uri=>$route) {
-            if (!preg_match('/^'.
-                preg_replace(
-                    '/(?:{{)?@(\w+\b)(?:}})?/',
-                    // Delimiter-based matching
-                    '(?P<\1>[^\/&]+)',
-                    // Wildcard character in URI
-                    str_replace('\*','(.*)',preg_quote($uri,'/'))
-                ).'\/?(?:\?.*)?$/ium',$req,$args))
-                continue;
-            $routes[$uri] = $route;
-            $routes[$uri]['args'] = $args;
-        }
-        if(empty($routes))
-            // No such Web page
-            self::error(404);
-        foreach ($routes as $uri=>$route) {
+			'\b(.+)/'.(self::$vars['CASELESS']?'i':''),'\1',
+			rawurldecode($_SERVER['REQUEST_URI']));
+		foreach (self::$vars['ROUTES'] as $uri=>$route) {
+			if (!preg_match('/^'.
+				preg_replace(
+					'/(?:\\\{\\\{)?@(\w+\b)(?:\\\}\\\})?/',
+					// Delimiter-based matching
+					'(?P<\1>[^\/&\?]+)',
+					// Wildcard character in URI
+					str_replace('\*','(.*)',preg_quote($uri,'/'))
+				).'\/?(?:\?.*)?$/'.(self::$vars['CASELESS']?'':'i').'um',
+				$req,$args))
+				continue;
 			$wild=is_int(strpos($uri,'/*'));
 			// Inspect each defined route
 			foreach ($route as $method=>$proc) {
 				if (!preg_match('/HEAD|'.$method.'/',
 					$_SERVER['REQUEST_METHOD']))
 					continue;
+				if ($method=='GET' &&
+					strlen($path=parse_url($req,PHP_URL_PATH))>1 &&
+					substr($path,-1)=='/') {
+					$query=parse_url($req,PHP_URL_QUERY);
+					self::reroute(substr($path,0,-1).
+						($query?('?'.$query):''));
+				}
 				$found=TRUE;
 				list($funcs,$ttl,$throttle,$hotlink)=$proc;
 				if (!$hotlink && isset(self::$vars['HOTLINK']) &&
@@ -1287,11 +1318,11 @@ class F3 extends Base {
 					self::reroute(self::$vars['HOTLINK']);
 				if (!$wild)
 					// Save named uri captures
-					foreach (array_keys($route['args']) as $key)
+					foreach (array_keys($args) as $key)
 						// Remove non-zero indexed elements
 						if (is_numeric($key) && $key)
-							unset($route['args'][$key]);
-				self::$vars['PARAMS']=$route['args'];
+							unset($args[$key]);
+				self::$vars['PARAMS']=$args;
 				// Default: Do not cache
 				self::expire(0);
 				if ($_SERVER['REQUEST_METHOD']=='GET' && $ttl) {
@@ -1366,16 +1397,20 @@ class F3 extends Base {
 					// Display response
 					echo self::$vars['RESPONSE'];
 			}
+			if ($found)
+				// Hail the conquering hero
+				return;
+			$allowed=array_keys($route);
 		}
-        if ($found)
-            // Hail the conquering hero
-            return;
-        // Method not allowed
-        if (PHP_SAPI!='cli' && !headers_sent())
-            header(self::HTTP_Allow.': '.
-                implode(',',array_keys($route)));
-        self::error(405);
-        return;
+		if (!$allowed) {
+			// No such Web page
+			self::error(404);
+			return;
+		}
+		// Method not allowed
+		if (PHP_SAPI!='cli' && !headers_sent())
+			header(self::HTTP_Allow.': '.implode(',',$allowed));
+		self::error(405);
 	}
 
 	/**
@@ -1449,21 +1484,46 @@ class F3 extends Base {
 	static function input($fields,$funcs=NULL,
 		$tags=NULL,$filter=FILTER_UNSAFE_RAW,$opt=array(),$assign=TRUE) {
 		$funcs=is_string($funcs)?self::split($funcs):array($funcs);
-		foreach (self::split($fields) as $field) {
-			$found=FALSE;
+		$found=FALSE;
+		foreach (self::split($fields) as $field)
 			// Sanitize relevant globals
 			foreach (explode('|','GET|POST|REQUEST') as $var)
 				if (self::exists($var.'.'.$field)) {
 					$key=&self::ref($var.'.'.$field);
-					$key=self::scrub($key,$tags);
-					$val=filter_var($key,$filter,$opt);
-					foreach ($funcs as $func)
-						if ($func) {
-							if (is_string($func) &&
-								preg_match('/([\w\\\]+)\s*->\s*(\w+)/',
-									$func,$match))
-								// Convert class->method syntax
-								$func=array(new $match[1],$match[2]);
+					if (is_array($key))
+						foreach ($key as $sub)
+							self::input(
+								$sub,$funcs,$tags,$filter,$opt,$assign
+							);
+					else {
+						$key=self::scrub($key,$tags);
+						$val=filter_var($key,$filter,$opt);
+						$out=NULL;
+						foreach ($funcs as $func) {
+							if (is_string($func)) {
+								$func=self::resolve($func);
+								if (preg_match('/(.+)\s*(->|::)\s*(.+)/s',
+									$func,$match)) {
+									if (!class_exists($match[1]) ||
+										!method_exists($match[1],'__call') &&
+										!method_exists($match[1],$match[3])) {
+										// Invalid handler
+										trigger_error(
+											sprintf(self::TEXT_Form,$field)
+										);
+										return;
+									}
+									$func=array($match[2]=='->'?
+										new $match[1]:$match[1],$match[3]);
+								}
+								elseif (!function_exists($func)) {
+									// Invalid handler
+									trigger_error(
+										sprintf(self::TEXT_Form,$field)
+									);
+									return;
+								}
+							}
 							if (!is_callable($func)) {
 								// Invalid handler
 								trigger_error(
@@ -1471,23 +1531,21 @@ class F3 extends Base {
 								);
 								return;
 							}
-							if (!$found) {
-								$out=call_user_func($func,$val,$field);
-								if (!$assign)
-									return $out;
-								if ($out)
-									$key=$out;
-								$found=TRUE;
-							}
+							$out=call_user_func($func,$val,$field);
+							$found=TRUE;
+							if (!$assign)
+								return $out;
+							if ($out)
+								$key=$out;
 							elseif ($assign && $out)
 								$key=$val;
 						}
+					}
 				}
-			if (!$found) {
-				// Invalid handler
-				trigger_error(sprintf(self::TEXT_Form,$field));
-				return;
-			}
+		if (!$found) {
+			// Invalid handler
+			trigger_error(sprintf(self::TEXT_Form,$field));
+			return;
 		}
 	}
 
@@ -1647,7 +1705,7 @@ class F3 extends Base {
 		error_log($error['text']);
 		foreach (explode("\n",$out) as $str)
 			if ($str)
-				error_log($str);
+				error_log(strip_tags($str));
 		if ($prior || self::$vars['QUIET'])
 			return;
 		foreach (array('title','text','trace') as $sub)
@@ -1682,23 +1740,24 @@ class F3 extends Base {
 			return;
 		// Handle all exceptions/non-fatal errors
 		error_reporting(E_ALL|E_STRICT);
+		$charset='utf-8';
+		ini_set('default_charset',$charset);
 		ini_set('display_errors',0);
 		ini_set('register_globals',0);
 		// Get PHP settings
 		$ini=ini_get_all(NULL,FALSE);
+		$self=__CLASS__;
 		// Intercept errors and send output to browser
 		set_error_handler(
-			function($errno,$errstr) {
-				if (error_reporting()) {
+			function($errno,$errstr) use($self) {
+				if (error_reporting())
 					// Error suppression (@) is not enabled
-					$self=__CLASS__;
 					$self::error(500,$errstr);
-				}
 			}
 		);
 		// Do the same for PHP exceptions
 		set_exception_handler(
-			function($ex) {
+			function($ex) use($self) {
 				if (!count($trace=$ex->getTrace())) {
 					// Translate exception trace
 					list($trace)=debug_backtrace();
@@ -1712,7 +1771,6 @@ class F3 extends Base {
 						)
 					);
 				}
-				$self=__CLASS__;
 				$self::error(500,$ex->getMessage(),$trace);
 				// PHP aborts at this point
 			}
@@ -1725,9 +1783,18 @@ class F3 extends Base {
 		}
 		// Fix Apache's VirtualDocumentRoot limitation
 		$_SERVER['DOCUMENT_ROOT']=
-			dirname(self::fixslashes($_SERVER['SCRIPT_FILENAME']));
+			self::fixslashes(dirname($_SERVER['SCRIPT_FILENAME']));
 		// Adjust HTTP request time precision
 		$_SERVER['REQUEST_TIME']=microtime(TRUE);
+		if (PHP_SAPI=='cli') {
+			// Command line: Parse GET variables in URL, if any
+			if (isset($_SERVER['argc']) && $_SERVER['argc']<2)
+				array_push($_SERVER['argv'],'/');
+			// Detect host name from environment
+			$_SERVER['SERVER_NAME']=gethostname();
+			// Convert URI to human-readable string
+			self::mock('GET '.$_SERVER['argv'][1]);
+		}
 		// Hydrate framework variables
 		$base=self::fixslashes(
 			preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME']));
@@ -1736,13 +1803,6 @@ class F3 extends Base {
 			isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']!='off' ||
 			isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
 			$_SERVER['HTTP_X_FORWARDED_PROTO']=='https'?'https':'http';
-		$jar=array(
-			'expire'=>0,
-			'path'=>$base?:'/',
-			'domain'=>'.'.$_SERVER['SERVER_NAME'],
-			'secure'=>($scheme=='https'),
-			'httponly'=>TRUE
-		);
 		self::$vars=array(
 			// Autoload folders
 			'AUTOLOAD'=>'./',
@@ -1750,13 +1810,15 @@ class F3 extends Base {
 			'BASE'=>$base,
 			// Cache backend to use (autodetect if true; disable if false)
 			'CACHE'=>FALSE,
+			// Case-sensitivity of route patterns
+			'CASELESS'=>TRUE,
 			// Stack trace verbosity:
 			// 0-no stack trace, 1-noise removed, 2-normal, 3-verbose
 			'DEBUG'=>1,
 			// DNS black lists
 			'DNSBL'=>NULL,
 			// Document encoding
-			'ENCODING'=>'utf-8',
+			'ENCODING'=>$charset,
 			// Last error
 			'ERROR'=>NULL,
 			// Allow/prohibit framework class extension
@@ -1770,7 +1832,16 @@ class F3 extends Base {
 			// Include path for procedural code
 			'IMPORTS'=>'./',
 			// Default cookie settings
-			'JAR'=>$jar,
+			'JAR'=>array(
+				'expire'=>0,
+				'path'=>$base?:'/',
+				'domain'=>isset($_SERVER['SERVER_NAME']) &&
+					is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
+					!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
+					$_SERVER['SERVER_NAME']:'',
+				'secure'=>($scheme=='https'),
+				'httponly'=>TRUE
+			),
 			// Default language (auto-detect if null)
 			'LANGUAGE'=>NULL,
 			// Autoloaded classes
@@ -1812,6 +1883,8 @@ class F3 extends Base {
 			'THROTTLE'=>0,
 			// Tidy options
 			'TIDY'=>array(),
+			// Default timezone
+			'TZ'=>'UTC',
 			// Framework version
 			'VERSION'=>self::TEXT_AppName.' '.self::TEXT_Version,
 			// Default whois server
@@ -1833,18 +1906,9 @@ class F3 extends Base {
 					}
 				);
 		}
-		if (PHP_SAPI=='cli') {
-			// Command line: Parse GET variables in URL, if any
-			if (isset($_SERVER['argc']) && $_SERVER['argc']<2)
-				array_push($_SERVER['argv'],'/');
-			// Detect host name from environment
-			$_SERVER['SERVER_NAME']=gethostname();
-			// Convert URI to human-readable string
-			self::mock('GET '.$_SERVER['argv'][1]);
-		}
 		// Initialize autoload stack and shutdown sequence
-		spl_autoload_register(__CLASS__.'::autoload');
-		register_shutdown_function(__CLASS__.'::stop');
+		spl_autoload_register($self.'::autoload',TRUE,TRUE);
+		register_shutdown_function($self.'::stop');
 	}
 
 	/**
@@ -1859,8 +1923,7 @@ class F3 extends Base {
 			// Intercept fatal error
 			self::error(500,sprintf(self::TEXT_Fatal,$error['message']),
 				array($error),TRUE);
-		if (isset(self::$vars['UNLOAD']) &&
-			is_callable(self::$vars['UNLOAD']))
+		if (isset(self::$vars['UNLOAD']))
 			self::call(self::$vars['UNLOAD']);
 	}
 
@@ -1931,9 +1994,6 @@ class F3 extends Base {
 				break;
 			}
 		}
-		if (count(spl_autoload_functions())==1)
-			// No other registered autoload functions exist
-			trigger_error(sprintf(self::TEXT_Class,$class));
 	}
 
 	/**
@@ -1981,257 +2041,207 @@ class F3 extends Base {
 //! Cache engine
 class Cache extends Base {
 
-	//@{ Locale-specific error/exception messages
-	const
-		TEXT_Backend='Cache back-end is invalid',
-		TEXT_Store='Unable to save %s to cache',
-		TEXT_Fetch='Unable to retrieve %s from cache',
-		TEXT_Clear='Unable to clear %s from cache';
-	//@}
-
-	static
-		//! Level-1 cached object
-		$buffer,
-		//! Cache back-end
-		$backend;
+	private static
+		//! Cache engine
+		$engine,
+		//! Resource/reference
+		$ref;
 
 	/**
-		Auto-detect extensions usable as cache back-ends; MemCache must be
-		explicitly activated to work properly; Fall back to file system if
-		none declared or detected
-			@public
+		Return timestamp of cache entry or FALSE if not found
+			@return float|FALSE
+			@param $key string
 	**/
-	static function detect() {
-		$ref=array_merge(array_intersect(array('apc','xcache'),
-			array_map('strtolower',get_loaded_extensions())),array());
-		self::$vars['CACHE']=array_shift($ref)?:
-			('folder='.self::$vars['ROOT'].'cache/');
-	}
-
-	/**
-		Initialize cache backend
-			@return bool
-			@public
-	**/
-	static function prep() {
-		if (!self::$vars['CACHE'])
-			return TRUE;
-		if (is_bool(self::$vars['CACHE']))
-			// Auto-detect backend
-			self::detect();
-		if (preg_match(
-			'/^(apc)|(memcache)=(.+)|(xcache)|(folder)=(.+\/)/i',
-			self::$vars['CACHE'],$match)) {
-			if (isset($match[5]) && $match[5]) {
-				if (!is_dir($match[6]))
-					self::mkdir($match[6]);
-				// File system
-				self::$backend=array('type'=>'folder','id'=>$match[6]);
-			}
-			else {
-				$ext=strtolower($match[1]?:($match[2]?:$match[4]));
-				if (!extension_loaded($ext)) {
-					trigger_error(sprintf(self::TEXT_PHPExt,$ext));
-					return FALSE;
+	static function cached($key) {
+		if (!self::$engine)
+			return FALSE;
+		$ndx=self::hash(__DIR__).'.'.$key;
+		switch (self::$engine['type']) {
+			case 'apc':
+				if ($data=apc_fetch($ndx))
+					break;
+				return FALSE;
+			case 'xcache':
+				if ($data=xcache_get($ndx))
+					break;
+				return FALSE;
+			case 'shmop':
+				if ($ref=self::$ref) {
+					$data=self::mutex(
+						__FILE__,
+						function() use($ref,$ndx) {
+							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
+							return isset($dir[$ndx])?
+								shmop_read($ref,$dir[$ndx][0],$dir[$ndx][1]):
+								FALSE;
+						}
+					);
+					if ($data)
+						break;
 				}
-				if (isset($match[2]) && $match[2]) {
-					// Open persistent MemCache connection(s)
-					$mcache=NULL;
-					foreach (self::split($match[3]) as $server) {
-						// Hostname:port
-						list($host,$port)=explode(':',$server);
-						if (is_null($port))
-							// Use default port
-							$port=11211;
-						// Connect to each server
-						if (is_null($mcache))
-							$mcache=memcache_pconnect($host,$port);
-						else
-							memcache_add_server($mcache,$host,$port);
-					}
-					// MemCache
-					self::$backend=array('type'=>$ext,'id'=>$mcache);
-				}
-				else
-					// APC and XCache
-					self::$backend=array('type'=>$ext);
-			}
-			self::$buffer=NULL;
-			return TRUE;
+				return FALSE;
+			case 'memcache':
+				if ($data=memcache_get(self::$ref,$ndx))
+					break;
+				return FALSE;
+			case 'folder':
+				if (is_file($file=self::$ref.$ndx) &&
+					$data=self::getfile($file))
+					break;
+				return FALSE;
 		}
-		// Unknown back-end
-		trigger_error(self::TEXT_Backend);
+		if (isset($data)) {
+			self::$engine['data']=
+				list($time,$ttl,$val)=unserialize($data);
+			if (!$ttl || $time+$ttl>microtime(TRUE))
+				return $time;
+			$this->clear($key);
+		}
 		return FALSE;
 	}
 
 	/**
-		Store data in framework cache; Return TRUE/FALSE on success/failure
-			@return bool
-			@param $name string
-			@param $data mixed
-			@public
+		Store value in cache
+			@return mixed
+			@param $key string
+			@param $val mixed
+			@param $ttl int
 	**/
-	static function set($name,$data) {
-		if (!self::$vars['CACHE'])
+	static function set($key,$val,$ttl=0) {
+		if (!self::$engine)
 			return TRUE;
-		if (is_null(self::$backend)) {
-			// Auto-detect back-end
-			self::detect();
-			if (!self::prep())
-				return FALSE;
-		}
-		$key=$_SERVER['SERVER_NAME'].'.'.$name;
-		// Serialize data for storage
-		$time=time();
-		// Add timestamp
-		$val=serialize(array($time,$data));
-		// Instruct back-end to store data
-		switch (self::$backend['type']) {
+		$ndx=self::hash(__DIR__).'.'.$key;
+		self::$engine['data']=NULL;
+		$data=serialize(array(microtime(TRUE),$ttl,$val));
+		switch (self::$engine['type']) {
 			case 'apc':
-				$ok=apc_store($key,$val);
-				break;
-			case 'memcache':
-				$ok=memcache_set(self::$backend['id'],$key,$val);
-				break;
+				return apc_store($ndx,$data,$ttl);
 			case 'xcache':
-				$ok=xcache_set($key,$val);
-				break;
+				return xcache_set($ndx,$data,$ttl);
+			case 'shmop':
+				return ($ref=self::$ref)?
+					self::mutex(
+						__FILE__,
+						function() use($ref,$ndx,$data) {
+							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
+							$edge=0xFFFF;
+							foreach ($dir as $stub)
+								$edge=$stub[0]+$stub[1];
+							shmop_write($ref,$data,$edge);
+							unset($dir[$ndx]);
+							$dir[$ndx]=array($edge,strlen($data));
+							shmop_write($ref,serialize($dir).chr(0),0);
+						}
+					):
+					FALSE;
+			case 'memcache':
+				return memcache_set(self::$ref,$ndx,$data,0,$ttl);
 			case 'folder':
-				$ok=self::putfile(self::$backend['id'].$key,$val);
-				break;
+				return self::putfile(self::$ref.$ndx,$data);
 		}
-		if (is_bool($ok) && !$ok) {
-			trigger_error(sprintf(self::TEXT_Store,$name));
-			return FALSE;
-		}
-		// Free up space for level-1 cache
-		while (count(self::$buffer) && strlen(serialize($data))+
-			strlen(serialize(array_slice(self::$buffer,1)))>
-			ini_get('memory_limit')-memory_get_peak_usage())
-				self::$buffer=array_slice(self::$buffer,1);
-		self::$buffer[$name]=array('data'=>$data,'time'=>$time);
-		return TRUE;
+		return FALSE;
 	}
 
 	/**
-		Retrieve value from framework cache
+		Retrieve value of cache entry
 			@return mixed
-			@param $name string
-			@param $quiet bool
-			@public
+			@param $key string
 	**/
-	static function get($name,$quiet=FALSE) {
-		if (!self::$vars['CACHE'])
+	static function get($key) {
+		if (!self::$engine || !self::cached($key))
 			return FALSE;
-		if (is_null(self::$backend)) {
-			// Auto-detect back-end
-			self::detect();
-			if (!self::prep())
-				return FALSE;
+		list($time,$ttl,$val)=self::$engine['data'];
+		return $val;
+	}
+
+	/**
+		Delete cache entry
+			@return void
+			@param $key string
+	**/
+	static function clear($key) {
+		if (!self::$engine)
+			return;
+		$ndx=self::hash(__DIR__).'.'.$key;
+		self::$engine['data']=NULL;
+		switch (self::$engine['type']) {
+			case 'apc':
+				return apc_delete($ndx);
+			case 'xcache':
+				return xcache_unset($ndx);
+			case 'shmop':
+				return ($ref=self::$ref) &&
+					self::mutex(
+						__FILE__,
+						function() use($ref,$ndx) {
+							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
+							unset($dir[$ndx]);
+							shmop_write($ref,serialize($dir).chr(0),0);
+						}
+					);
+			case 'memcache':
+				return memcache_delete(self::$ref,$ndx);
+			case 'folder':
+				return is_file($file=self::$ref.$ndx) &&
+					self::mutex($file,'unlink',array($file));
 		}
-		$stats=&self::$vars['STATS'];
-		if (!isset($stats['CACHE']))
-			$stats['CACHE']=array(
-				'level-1'=>array('hits'=>0,'misses'=>0),
-				'backend'=>array('hits'=>0,'misses'=>0)
+	}
+
+	/**
+		Load and configure backend; Auto-detect if argument is FALSE
+			@return string|void
+			@param $dsn string|FALSE
+	**/
+	static function load($dsn=FALSE) {
+		if (is_bool($dsn)) {
+			// Auto-detect backend
+			$ext=array_map('strtolower',get_loaded_extensions());
+			$grep=preg_grep('/^(apc|xcache|shmop)/',$ext);
+			$dsn=$grep?current($grep):'folder=cache/';
+		}
+		$parts=explode('=',$dsn);
+		if (!preg_match('/apc|xcache|shmop|folder|memcache/',$parts[0]))
+			return;
+		self::$engine=array('type'=>$parts[0],'data'=>NULL);
+		self::$ref=NULL;
+		if ($parts[0]=='shmop') {
+			self::$ref=self::mutex(
+				__FILE__,
+				function() {
+					$ref=@shmop_open(ftok(__FILE__,'C'),'c',0644,
+						Base::instance()->bytes(ini_get('memory_limit')));
+					if ($ref && !unserialize(trim(shmop_read($ref,0,0xFFFF))))
+						shmop_write($ref,serialize(array()).chr(0),0);
+					return $ref;
+				}
 			);
-		// Check level-1 cache first
-		if (isset(self::$buffer) && isset(self::$buffer[$name])) {
-			$stats['CACHE']['level-1']['hits']++;
-			return self::$buffer[$name]['data'];
 		}
-		else
-			$stats['CACHE']['level-1']['misses']++;
-		$key=$_SERVER['SERVER_NAME'].'.'.$name;
-		// Instruct back-end to fetch data
-		switch (self::$backend['type']) {
-			case 'apc':
-				$val=apc_fetch($key);
-				break;
-			case 'memcache':
-				$val=memcache_get(self::$backend['id'],$key);
-				break;
-			case 'xcache':
-				$val=xcache_get($key);
-				break;
-			case 'folder':
-				$val=is_file(self::$backend['id'].$key)?
-					self::getfile(self::$backend['id'].$key):FALSE;
-				break;
+		elseif (isset($parts[1])) {
+			if ($parts[0]=='memcache') {
+				if (extension_loaded('memcache'))
+					foreach (self::split($parts[1]) as $server) {
+						$parts=explode(':',$server);
+						if (count($parts)<2) {
+							$host=$parts[0];
+							$port=11211;
+						}
+						else
+							list($host,$port)=$parts;
+						if (!self::$ref)
+							self::$ref=@memcache_connect($host,$port);
+						else
+							memcache_add_server(self::$ref,$host,$port);
+					}
+				else
+					return self::$engine=NULL;
+			}
+			elseif ($parts[0]=='folder') {
+				if (!is_dir($parts[1]) && !@mkdir($parts[1],0755,TRUE))
+					return self::$engine=NULL;
+				self::$ref=$parts[1];
+			}
 		}
-		if (is_bool($val)) {
-			$stats['CACHE']['backend']['misses']++;
-			// No error display if specified
-			if (!$quiet)
-				trigger_error(sprintf(self::TEXT_Fetch,$name));
-			self::$buffer[$name]=NULL;
-			return FALSE;
-		}
-		// Unserialize timestamp and data
-		list($time,$data)=unserialize($val);
-		$stats['CACHE']['backend']['hits']++;
-		// Free up space for level-1 cache
-		while (count(self::$buffer) && strlen(serialize($data))+
-			strlen(serialize(array_slice(self::$buffer,1)))>
-			ini_get('memory_limit')-memory_get_peak_usage())
-				self::$buffer=array_slice(self::$buffer,1);
-		self::$buffer[$name]=array('data'=>$data,'time'=>$time);
-		return $data;
-	}
-
-	/**
-		Delete variable from framework cache
-			@return bool
-			@param $name string
-			@param $quiet bool
-			@public
-	**/
-	static function clear($name,$quiet=FALSE) {
-		if (!self::$vars['CACHE'])
-			return TRUE;
-		if (is_null(self::$backend)) {
-			// Auto-detect back-end
-			self::detect();
-			if (!self::prep())
-				return FALSE;
-		}
-		$key=$_SERVER['SERVER_NAME'].'.'.$name;
-		// Instruct back-end to clear data
-		switch (self::$backend['type']) {
-			case 'apc':
-				$ok=!apc_exists($key) || apc_delete($key);
-				break;
-			case 'memcache':
-				$ok=memcache_delete(self::$backend['id'],$key);
-				break;
-			case 'xcache':
-				$ok=!xcache_isset($key) || xcache_unset($key);
-				break;
-			case 'folder':
-				$ok=!is_file(self::$backend['id'].$key) ||
-					@unlink(self::$backend['id'].$key);
-				break;
-		}
-		if (is_bool($ok) && !$ok) {
-			if (!$quiet)
-				trigger_error(sprintf(self::TEXT_Clear,$name));
-			return FALSE;
-		}
-		// Check level-1 cache first
-		if (isset(self::$buffer) && isset(self::$buffer[$name]))
-			unset(self::$buffer[$name]);
-		return TRUE;
-	}
-
-	/**
-		Return FALSE if specified variable is not in cache;
-		otherwise, return Un*x timestamp
-			@return mixed
-			@param $name string
-			@public
-	**/
-	static function cached($name) {
-		return self::get($name,TRUE)?self::$buffer[$name]['time']:FALSE;
+		return $dsn;
 	}
 
 }
@@ -2239,8 +2249,10 @@ class Cache extends Base {
 //! F3 object mode
 class F3instance {
 
+	//@{ Locale-specific error/exception messages
 	const
 		TEXT_Conflict='%s conflicts with framework method name';
+	//@}
 
 	/**
 		Get framework variable reference; Workaround for PHP's
@@ -2254,12 +2266,14 @@ class F3instance {
 		return F3::ref($key,$set);
 	}
 
-	/*
+	/**
 		Run PHP code in sandbox
 			@param $file string
+			@param $vars array
 			@public
-	*/
-	function sandbox($file) {
+	**/
+	function sandbox($file,$vars=array()) {
+		extract($vars);
 		return require $file;
 	}
 

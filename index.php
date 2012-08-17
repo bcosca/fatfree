@@ -81,23 +81,23 @@ $app->route('GET /google/map',
 );
 $app->route('GET /minified/@script',
 	function() use($app) {
-		Web::minify($app->get('GUI'),array(f3::get('PARAMS.script')));
+		Web::minify($app->get('GUI'),array($app->get('PARAMS.script')));
 	}
 );
 
 $app->run();
 
 class Obj {
-	public function hello() {
+	function hello() {
 		echo 'hello';
 	}
 }
 
 class CustomObj {
-	public function hello() {
+	function hello() {
 		echo 'hello';
 	}
-	public function __toString() {
+	function __toString() {
 		return 'CustomObj';
 	}
 }

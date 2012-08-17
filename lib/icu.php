@@ -12,14 +12,14 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package ICU
-		@version 2.0.10
+		@version 2.0.12
 **/
 
 //! Language support tools
 class ICU extends Base {
 
 	static
-		// Languages indexed by ISO 639-1 codes
+		//! Languages indexed by ISO 639-1 codes
 		$languages=array(
 			'aa'=>'Afar',
 			'ab'=>'Abkhazian',
@@ -223,14 +223,16 @@ class ICU extends Base {
 					Locale::getDefault();
 			else {
 				if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-					$def=preg_replace('/^(\w+-\w+)\b.*/','\1',
+					$def=preg_replace('/^(\w{2}(?:-\w{2})?).*/','\1',
 						$_SERVER['HTTP_ACCEPT_LANGUAGE']);
 				else {
 					$def=setlocale(LC_ALL,NULL);
 					if (strtoupper(substr(PHP_OS,0,3))=='WIN')
 						$def=key(preg_grep('/'.strstr($def,'_',TRUE).'/',
 							self::$languages));
-					elseif (!preg_match('/^\w{2}(?:_\w{2})?\b/',$def))
+					elseif (preg_match('/^\w{2}/',$def,$match))
+						$def=$match[0];
+					else
 						// Environment points to invalid language
 						$def='en';
 				}
@@ -239,11 +241,11 @@ class ICU extends Base {
 		}
 		$def=self::$vars['LANGUAGE'];
 		$list=array($def);
-		if (preg_match('/^\w+\b/',$def,$match)) {
+		if (preg_match('/^\w{2}/',$def,$match)) {
 			array_unshift($list,$match[0]);
 			if (extension_loaded('intl'))
 				Locale::setDefault($match[0]);
-			else {
+			elseif (isset(self::$languages[$match[0]])) {
 				self::$locale=setlocale(LC_ALL,NULL);
 				setlocale(LC_ALL,self::$languages[$match[0]]);
 			}
@@ -252,10 +254,9 @@ class ICU extends Base {
 		array_unshift($list,'en');
 		foreach (array_unique($list) as $language) {
 			$file=self::fixslashes(self::$vars['LOCALES']).$language.'.php';
-			if (is_file($file) && ($trans=require_once $file) &&
-				is_array($trans))
+			if (is_file($file) && ($trans=require $file) && is_array($trans))
 				// Combine dictionaries and assign key/value pairs
-				F3::mset($trans);
+				F3::mset($trans,'',FALSE);
 		}
 		if (!extension_loaded('intl') &&
 			!isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
@@ -278,7 +279,7 @@ class ICU extends Base {
 			if (preg_match('/@\w+\b/',$arg))
 				$arg=self::resolve('{{'.$arg.'}}');
 		self::$locale=setlocale(LC_ALL,NULL);
-		if (preg_match('/\w+\b/',self::$vars['LANGUAGE'],$match))
+		if (preg_match('/^\w{2}/',self::$vars['LANGUAGE'],$match))
 			setlocale(LC_ALL,self::$languages[$match[0]]);
 		$info=localeconv();
 		$out=preg_replace_callback(

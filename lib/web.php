@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Expansion
-		@version 2.0.10
+		@version 2.0.12
 **/
 
 //! Web pack
@@ -68,7 +68,7 @@ class Web extends Base {
 				[basename($file)]=filesize($path.$file);
 			// Rewrite relative URLs in CSS
 			$src.=preg_replace_callback(
-				'/\b(?<=url)\(([\"\'])*([^\1\r\n]+?)\1\)/',
+				'/\b(?=url)\(([\"\'])?(.+?)\1\)/s',
 				function($url) use($path,$file) {
 					// Ignore absolute URLs
 					if (preg_match('/https?:/',$url[2]))
@@ -80,8 +80,7 @@ class Web extends Base {
 					$i=0;
 					while ($i<count($rewrite))
 						// Analyze each URL segment
-						if ($i>0 &&
-							$rewrite[$i]=='..' &&
+						if ($i && $rewrite[$i]=='..' &&
 							$rewrite[$i-1]!='..') {
 							// Simplify URL
 							unset($rewrite[$i],$rewrite[$i-1]);
@@ -102,17 +101,31 @@ class Web extends Base {
 		$dst='';
 		while ($ptr<strlen($src)) {
 			if ($src[$ptr]=='/') {
-				// Presume it's a regex pattern
-				$regex=TRUE;
-				if ($ptr>0) {
+				if (substr($src,$ptr+1,2)=='*@') {
+					// Conditional block
+					$str=strstr(substr($src,$ptr+3),'@*/',TRUE);
+					$dst.='/*@'.$str.$src[$ptr].'@*/';
+					$ptr+=strlen($str)+6;
+				}
+				elseif ($src[$ptr+1]=='*') {
+					// Multiline comment
+					$str=strstr(substr($src,$ptr+2),'*/',TRUE);
+					$ptr+=strlen($str)+4;
+				}
+				elseif ($src[$ptr+1]=='/') {
+					// Single-line comment
+					$str=strstr(substr($src,$ptr+2),"\n",TRUE);
+					$ptr+=strlen($str)+2;
+				}
+				else {
+					// Presume it's a regex pattern
+					$regex=TRUE;
 					// Backtrack and validate
 					$ofs=$ptr;
-					while ($ofs>0) {
+					while ($ofs) {
 						$ofs--;
-					// Pattern should be preceded by parenthesis,
-					// colon or assignment operator
-					if ($src[$ofs]=='(' || $src[$ofs]==':' ||
-						$src[$ofs]=='=') {
+						// Pattern should be preceded by a punctuation
+						if (ctype_punct($src[$ofs])) {
 							while ($ptr<strlen($src)) {
 								$str=strstr(substr($src,$ptr+1),'/',TRUE);
 								if (!strlen($str) && $src[$ptr-1]!='/' ||
@@ -138,35 +151,14 @@ class Web extends Base {
 							break;
 						}
 					}
-					if ($regex && $ofs<1)
-						$regex=FALSE;
-				}
-				if (!$regex || $ptr<1) {
-					if (substr($src,$ptr+1,2)=='*@') {
-						// Conditional block
-						$str=strstr(substr($src,$ptr+3),'@*/',TRUE);
-						$dst.='/*@'.$str.$src[$ptr].'@*/';
-						$ptr+=strlen($str)+6;
-					}
-					elseif ($src[$ptr+1]=='*') {
-						// Multiline comment
-						$str=strstr(substr($src,$ptr+2),'*/',TRUE);
-						$ptr+=strlen($str)+4;
-					}
-					elseif ($src[$ptr+1]=='/') {
-						// Single-line comment
-						$str=strstr(substr($src,$ptr+2),"\n",TRUE);
-						$ptr+=strlen($str)+2;
-					}
-					else {
+					if (!$regex) {
 						// Division operator
 						$dst.=$src[$ptr];
 						$ptr++;
 					}
 				}
-				continue;
 			}
-			if ($src[$ptr]=='\'' || $src[$ptr]=='"') {
+			elseif ($src[$ptr]=='\'' || $src[$ptr]=='"') {
 				$match=$src[$ptr];
 				// String literal
 				while ($ptr<strlen($src)) {
@@ -179,35 +171,13 @@ class Web extends Base {
 						break;
 					}
 				}
-				continue;
-			}			
-			if($ext[1]=='css' && ($src[$ptr]==')' || $src[$ptr]==']')) {
-                $ofs = $ptr+1;
-                $spc = false;
-                // attribute depending and structural pseudo-class selectors
-                // needs a space after closing the selectors argument brackets
-                while($ofs<strlen($src)){
-                    if($src[$ofs]=='{') {
-                        $dst.=$src[$ptr].($spc?' ':'');
-                        $ptr++;
-                        break;
-                    } elseif(!ctype_space($src[$ofs])) $spc = true;
-                    if($src[$ofs]=='}') break;
-                    $ofs++;
-                }
-            }
-			if (ctype_space($src[$ptr])) {
-				$last=substr($dst,-1);
-				$ofs=$ptr+1;
-				if ($ofs+1<strlen($src)) {
-					while (ctype_space($src[$ofs]))
-						$ofs++;
-					if (preg_match('/[\w%][\w'.
-						// IE is sensitive about certain spaces in CSS
-						($ext[1]=='css'?'#\-*\.':'').'$]/',$last.$src[$ofs]))
-							$dst.=$src[$ptr];
-				}
-				$ptr=$ofs;
+			}
+			elseif (ctype_space($src[$ptr])) {
+				if ($ptr+1<strlen($src) && preg_match(
+					'/[\w'.($ext[1]=='css'?'+*#\.\-\)\]':'').']{2}/',
+					substr($dst,-1).$src[$ptr+1]))
+					$dst.=' ';
+				$ptr++;
 			}
 			else {
 				$dst.=$src[$ptr];
@@ -466,7 +436,7 @@ class Web extends Base {
 				// Add new URL
 				$item=$xml->addChild('url');
 				// Add URL elements
-				$item->addChild('loc',$host.$key);
+				$item->addChild('loc',$host.($key[0]=='/'?'':'/').$key);
 				$item->addChild('lastmod',gmdate('c',$ref['mod']));
 				$item->addChild('changefreq',
 					self::frequency($ref['freq']));
@@ -512,11 +482,11 @@ class Web extends Base {
 			'Ì'=>'I','Í'=>'I','Î'=>'I','Ï'=>'I','ì'=>'i','í'=>'i','î'=>'i',
 			'ï'=>'i','Ľ'=>'L','ľ'=>'l','Ñ'=>'N','Ň'=>'N','ñ'=>'n','ň'=>'n',
 			'Ò'=>'O','Ó'=>'O','Ô'=>'O','Õ'=>'O','Ø'=>'O','Ö'=>'O','Œ'=>'OE',
-			'ð'=>'o','ò'=>'o','ó'=>'o','ô'=>'o','õ'=>'o','ö'=>'o','œ'=>'oe',
-			'ø'=>'o','Ŕ'=>'R','Ř'=>'R','ŕ'=>'r','ř'=>'r','Š'=>'S','š'=>'s',
-			'ß'=>'ss','Ť'=>'T','ť'=>'t','Ù'=>'U','Ú'=>'U','Û'=>'U','Ü'=>'U',
-			'Ů'=>'U','ù'=>'u','ú'=>'u','û'=>'u','ü'=>'u','ů'=>'u','Ý'=>'Y',
-			'Ÿ'=>'Y','ý'=>'y','ý'=>'y','ÿ'=>'y','Ž'=>'Z','ž'=>'z'
+			'ò'=>'o','ó'=>'o','ô'=>'o','õ'=>'o','ö'=>'o','œ'=>'oe','ø'=>'o',
+			'Ŕ'=>'R','Ř'=>'R','ŕ'=>'r','ř'=>'r','Š'=>'S','š'=>'s','ß'=>'ss',
+			'Ť'=>'T','ť'=>'t','Ù'=>'U','Ú'=>'U','Û'=>'U','Ü'=>'U','Ů'=>'U',
+			'ù'=>'u','ú'=>'u','û'=>'u','ü'=>'u','ů'=>'u','Ý'=>'Y','Ÿ'=>'Y',
+			'ý'=>'y','ÿ'=>'y','Ž'=>'Z','ž'=>'z'
 		);
 		self::$vars['DIACRITICS']=isset(self::$vars['DIACRITICS'])?
 			$diacritics+self::$vars['DIACRITICS']:$diacritics;
