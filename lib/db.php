@@ -228,12 +228,15 @@ class DB extends Base {
 			'mysql'=>array(
 				'SHOW columns FROM `'.$this->dbname.'`.'.$table.';',
 				'Field','Key','PRI','Type'),
-			'mssql|sqlsrv|sybase|dblib|pgsql|ibm|odbc'=>array(
-				'SELECT c.column_name AS field,'.
-				'c.data_type AS type,t.constraint_type AS pkey '.
+			'mssql|sqlsrv|sybase|dblib|pgsql|odbc'=>array(
+				'SELECT '.
+					'c.column_name AS field,'.
+					'c.data_type AS type,'.
+					't.constraint_type AS pkey '.
 				'FROM information_schema.columns AS c '.
 				'LEFT OUTER JOIN '.
-					'information_schema.key_column_usage AS k ON '.
+					'information_schema.key_column_usage AS k '.
+					'ON '.
 						'c.table_name=k.table_name AND '.
 						'c.column_name=k.column_name '.
 						($this->dbname?
@@ -242,7 +245,8 @@ class DB extends Base {
 								'c.table_catalog=k.table_catalog':
 								'c.table_schema=k.table_schema').' '):'').
 				'LEFT OUTER JOIN '.
-					'information_schema.table_constraints AS t ON '.
+					'information_schema.table_constraints AS t '.
+					'ON '.
 						'k.table_name=t.table_name AND '.
 						'k.constraint_name=t.constraint_name '.
 						($this->dbname?
@@ -253,12 +257,31 @@ class DB extends Base {
 				'WHERE '.
 					'c.table_name=\''.$table.'\''.
 					($this->dbname?
-						('AND '.
+						(' AND '.
 						(preg_match('/pgsql/',$this->backend)?
 							'c.table_catalog':'c.table_schema').
 							'=\''.$this->dbname.'\''):'').
 				';',
-				'field','pkey','PRIMARY KEY','type')
+				'field','pkey','PRIMARY KEY','type'),
+			'ibm'=>array(
+				'SELECT DISTINCT '.
+					'c.colname AS field,'.
+					'c.typename AS type,'.
+					'tc.type AS key '.
+				'FROM syscat.columns AS c '.
+				'LEFT JOIN '.
+					'(syscat.keycoluse AS k '.
+						'JOIN syscat.tabconst AS tc '.
+							'ON '.
+								'k.tabschema=tc.tabschema AND '.
+								'k.tabname=tc.tabname AND '.
+								'tc.type=\'P\') '.
+					'ON '.
+						'c.tabschema=k.tabschema AND '.
+						'c.tabname=k.tabname AND '.
+						'c.colname=k.colname '.
+				'WHERE UPPER(c.tabname)=\''.strtoupper($table).'\';',
+				'field','key','P','type'),
 		);
 		$match=FALSE;
 		foreach ($cmd as $backend=>$val)
