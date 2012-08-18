@@ -166,7 +166,7 @@ class DB extends Base {
 				$stats[$this->dsn]['queries'][$cmd]++;
 			}
 		}
-		if ($batch || $this->trans && $this->auto)
+		if ($this->trans && $this->auto)
 			$this->commit();
 		return $this->result;
 	}
