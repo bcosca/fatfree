@@ -1897,7 +1897,8 @@ class F3 extends Base {
 			// Sync framework and PHP globals
 			self::$vars[$var]=&$GLOBALS['_'.$var];
 			if (isset($ini['magic_quotes_gpc']) &&
-				$ini['magic_quotes_gpc'] && preg_match('/^[GPCR]/',$var))
+				$ini['magic_quotes_gpc'] && preg_match('/^[GPCR]/',$var) &&
+				self::$vars[$var])
 				// Corrective action on PHP magic quotes
 				array_walk_recursive(
 					self::$vars[$var],
