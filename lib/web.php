@@ -35,7 +35,7 @@ class Web extends Base {
 	**/
 	static function slug($text,$maxlen=0) {
 		$out=preg_replace('/([^\w]|-)+/','-',
-			trim(strtr(str_replace('\'','',$text),
+			trim(strtr(str_replace('\'','',strip_tags($text)),
 			self::$vars['DIACRITICS'])));
 		return trim(strtolower($maxlen?substr($out,0,$maxlen):$out),'-');
 	}
