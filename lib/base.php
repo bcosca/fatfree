@@ -2074,7 +2074,7 @@ class Cache extends Base {
 								shmop_read($ref,$dir[$ndx][0],$dir[$ndx][1]):
 								FALSE;
 						},
-						self::$vars['TEMP'].__FILE__
+						self::$vars['TEMP'].$_SERVER['SERVER_NAME']
 					);
 					if ($data)
 						break;
@@ -2131,7 +2131,7 @@ class Cache extends Base {
 							$dir[$ndx]=array($edge,strlen($data));
 							shmop_write($ref,serialize($dir).chr(0),0);
 						},
-						self::$vars['TEMP'].__FILE__
+						self::$vars['TEMP'].$_SERVER['SERVER_NAME']
 					):
 					FALSE;
 			case 'memcache':
@@ -2177,7 +2177,7 @@ class Cache extends Base {
 							unset($dir[$ndx]);
 							shmop_write($ref,serialize($dir).chr(0),0);
 						},
-						self::$vars['TEMP'].__FILE__
+					self::$vars['TEMP'].$_SERVER['SERVER_NAME']
 					);
 			case 'memcache':
 				return memcache_delete(self::$ref,$ndx);
@@ -2208,13 +2208,13 @@ class Cache extends Base {
 			$self=__CLASS__;
 			self::$ref=self::mutex(
 				function() use($self) {
-					$ref=@shmop_open(ftok(__FILE__,'C'),'c',0644,
+					$ref=@shmop_open($ftok=ftok(__FILE__,'C'),'c',0644,
 						$self::bytes(ini_get('memory_limit')));
 					if ($ref && !unserialize(trim(shmop_read($ref,0,0xFFFF))))
 						shmop_write($ref,serialize(array()).chr(0),0);
 					return $ref;
 				},
-				self::$vars['TEMP'].__FILE__
+				self::$vars['TEMP'].$_SERVER['SERVER_NAME']
 			);
 			if (!self::$ref)
 				return self::load('folder=cache/');
