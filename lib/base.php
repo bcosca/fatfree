@@ -243,7 +243,7 @@ class Base {
 	static function bytes($str) {
 		$greek='KMGT';
 		$exp=strpbrk($str,$greek);
-		return pow(1024,strpos($greek,$exp)+1)*(int)$str;
+		return $exp?pow(1024,strpos($greek,$exp)+1)*(int)$str:$str;
 	}
 
 	/**
@@ -2069,13 +2069,13 @@ class Cache extends Base {
 			case 'shmop':
 				if ($ref=self::$ref) {
 					$data=self::mutex(
-						__FILE__,
 						function() use($ref,$ndx) {
 							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
 							return isset($dir[$ndx])?
 								shmop_read($ref,$dir[$ndx][0],$dir[$ndx][1]):
 								FALSE;
-						}
+						},
+						self::$vars['TEMP'].__FILE__
 					);
 					if ($data)
 						break;
@@ -2122,7 +2122,6 @@ class Cache extends Base {
 			case 'shmop':
 				return ($ref=self::$ref)?
 					self::mutex(
-						__FILE__,
 						function() use($ref,$ndx,$data) {
 							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
 							$edge=0xFFFF;
@@ -2132,7 +2131,8 @@ class Cache extends Base {
 							unset($dir[$ndx]);
 							$dir[$ndx]=array($edge,strlen($data));
 							shmop_write($ref,serialize($dir).chr(0),0);
-						}
+						},
+						self::$vars['TEMP'].__FILE__
 					):
 					FALSE;
 			case 'memcache':
@@ -2173,12 +2173,12 @@ class Cache extends Base {
 			case 'shmop':
 				return ($ref=self::$ref) &&
 					self::mutex(
-						__FILE__,
 						function() use($ref,$ndx) {
 							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
 							unset($dir[$ndx]);
 							shmop_write($ref,serialize($dir).chr(0),0);
-						}
+						},
+						self::$vars['TEMP'].__FILE__
 					);
 			case 'memcache':
 				return memcache_delete(self::$ref,$ndx);
@@ -2207,14 +2207,14 @@ class Cache extends Base {
 		self::$ref=NULL;
 		if ($parts[0]=='shmop') {
 			self::$ref=self::mutex(
-				__FILE__,
 				function() {
 					$ref=@shmop_open(ftok(__FILE__,'C'),'c',0644,
-						Base::instance()->bytes(ini_get('memory_limit')));
+						self::bytes(ini_get('memory_limit')));
 					if ($ref && !unserialize(trim(shmop_read($ref,0,0xFFFF))))
 						shmop_write($ref,serialize(array()).chr(0),0);
 					return $ref;
-				}
+				},
+				self::$vars['TEMP'].__FILE__
 			);
 		}
 		elseif (isset($parts[1])) {
