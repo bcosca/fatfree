@@ -359,12 +359,6 @@ class Base {
 			}
 			$i++;
 		}
-		if ($set && count($matches)>1 &&
-			preg_match('/GET|POST|COOKIE/',$matches[0],$php)) {
-			// Sync with REQUEST
-			$req=&self::ref(preg_replace('/^'.$php[0].'\b/','REQUEST',$key));
-			$req=$var;
-		}
 		return $var;
 	}
 
@@ -790,6 +784,11 @@ class F3 extends Base {
 			}
 		}
 		$var=$val;
+		if (preg_match('/^(?:GET|POST|COOKIE)/',$key,$php)) {
+			// Sync with REQUEST
+			$var=&self::ref(preg_replace('/^'.$php[0].'\b/','REQUEST',$key));
+			$var=$val;
+		}
 		if (preg_match('/LANGUAGE|LOCALES/',$key) && class_exists('ICU'))
 			// Load appropriate dictionaries
 			ICU::load();
