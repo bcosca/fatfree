@@ -1166,9 +1166,9 @@ class Main extends F3instance {
 			sleep(1);
 			$this->run();
 			$cached=Cache::cached('url.'.$this->hash('GET /caching'));
+			$this->set('QUIET',FALSE);
 			if (is_bool($cached))
 				break;
-			$this->set('QUIET',FALSE);
 			if (!isset($saved))
 				$saved=$cached;
 			if ($saved!=$cached)
@@ -1247,7 +1247,7 @@ class Main extends F3instance {
 			$_POST['field']=='alert(\'hello\');' &&
 			$_POST['field']=='alert(\'hello\');',
 			'Framework sanitizes underlying $_POST and $_POST variables',
-			'Framework didn\'t sanitize $_POST/$_POST: '.$_POST['field']
+			'Framework didn\'t sanitize $_POST: '.$this->stringify($_POST['field'])
 		);
 
 		$this->set('POST',array('field'=>'<p><b>hello</b> world</p>'));
