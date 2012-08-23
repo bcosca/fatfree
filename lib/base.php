@@ -1472,6 +1472,7 @@ class F3 extends Base {
 
 	/**
 		Call form field handler
+			@return mixed
 			@param $fields string
 			@param $funcs mixed
 			@param $tags string
@@ -1530,18 +1531,15 @@ class F3 extends Base {
 								return;
 							}
 							$out=call_user_func($func,$val,$field);
-							if ($assign)
+							if ($assign && $out)
 								$key=$out;
-							else
-								return $out;
+							return $out;
 						}
 					}
 				}
-		if (!$found) {
-			// Invalid handler
-			trigger_error(sprintf(self::TEXT_Form,$field));
-			return;
-		}
+		// Invalid handler
+		trigger_error(sprintf(self::TEXT_Form,$field));
+		return FALSE;
 	}
 
 	/**
