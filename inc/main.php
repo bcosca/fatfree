@@ -1165,7 +1165,8 @@ class Main extends F3instance {
 			$this->mock('GET /caching');
 			sleep(1);
 			$this->run();
-			$cached=Cache::cached('url.'.$this->hash('GET /caching'));
+			$cached=Cache::cached('url.'.
+				$this->hash('GET '.$this->get('BASE').'/caching'));
 			$this->set('QUIET',FALSE);
 			if (is_bool($cached))
 				break;
