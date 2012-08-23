@@ -1483,10 +1483,9 @@ class F3 extends Base {
 	static function input($fields,$funcs=NULL,
 		$tags=NULL,$filter=FILTER_UNSAFE_RAW,$opt=array(),$assign=TRUE) {
 		$funcs=is_string($funcs)?self::split($funcs):array($funcs);
-		$found=FALSE;
 		foreach (self::split($fields) as $field)
 			// Sanitize relevant globals
-			foreach (explode('|','GET|POST') as $var)
+			foreach (explode('|','GET|POST|REQUEST') as $var)
 				if (self::exists($var.'.'.$field)) {
 					$key=&self::ref($var.'.'.$field);
 					if (is_array($key))
@@ -1531,15 +1530,10 @@ class F3 extends Base {
 								return;
 							}
 							$out=call_user_func($func,$val,$field);
-							$found=TRUE;
-							if (!$assign)
-								return $out;
-							if ($out) {
+							if ($assign)
 								$key=$out;
-								// Sync with REQUEST
-								$req=&self::ref('REQUEST.'.$field);
-								$req=$out;
-							}
+							else
+								return $out;
 						}
 					}
 				}
