@@ -3381,7 +3381,7 @@ class Main extends F3instance {
 			$this->set('QUIET',TRUE);
 			$this->expect(
 				is_array($geocode),
-				'Geocode API call success',
+				'Geocode API call success: '.$this->stringify($geocode),
 				'Geocode API call failure: '.$this->stringify($geocode)
 			);
 			$this->set('QUIET',FALSE);
