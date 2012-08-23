@@ -2175,13 +2175,13 @@ class Cache extends Base {
 							unset($dir[$ndx]);
 							shmop_write($ref,serialize($dir).chr(0),0);
 						},
-					self::$vars['TEMP'].$_SERVER['SERVER_NAME']
+						self::$vars['TEMP'].$_SERVER['SERVER_NAME']
 					);
 			case 'memcache':
 				return memcache_delete(self::$ref,$ndx);
 			case 'folder':
 				return is_file($file=self::$ref.$ndx) &&
-					self::mutex('unlink',array($file));
+					self::mutex('unlink',$file);
 		}
 	}
 
