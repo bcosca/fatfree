@@ -2184,8 +2184,7 @@ class Cache extends Base {
 			case 'memcache':
 				return memcache_delete(self::$ref,$ndx);
 			case 'folder':
-				return is_file($file=self::$ref.$ndx) &&
-					self::mutex('unlink',$file);
+				return is_file($file=self::$ref.$ndx) && unlink($file);
 		}
 	}
 
