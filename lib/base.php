@@ -798,7 +798,7 @@ class F3 extends Base {
 			date_default_timezone_set($val);
 		// Initialize cache if explicitly defined
 		elseif ($key=='CACHE' && $val)
-			self::$vars['CACHE']=Cache::load();
+			self::$vars['CACHE']=Cache::load($val);
 		if ($persist) {
 			$hash='var.'.self::hash(self::remix($key));
 			Cache::set($hash,$val);
