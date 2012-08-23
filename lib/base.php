@@ -1486,7 +1486,7 @@ class F3 extends Base {
 		$found=FALSE;
 		foreach (self::split($fields) as $field)
 			// Sanitize relevant globals
-			foreach (explode('|','GET|POST|REQUEST') as $var)
+			foreach (explode('|','GET|POST') as $var)
 				if (self::exists($var.'.'.$field)) {
 					$key=&self::ref($var.'.'.$field);
 					if (is_array($key))
@@ -1534,8 +1534,12 @@ class F3 extends Base {
 							$found=TRUE;
 							if (!$assign)
 								return $out;
-							if ($out)
+							if ($out) {
 								$key=$out;
+								// Sync with REQUEST
+								$req=&self::ref('REQUEST.'.$field);
+								$req=$out;
+							}
 						}
 					}
 				}
