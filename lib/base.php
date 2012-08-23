@@ -1536,8 +1536,6 @@ class F3 extends Base {
 								return $out;
 							if ($out)
 								$key=$out;
-							elseif ($assign && $out)
-								$key=$val;
 						}
 					}
 				}
