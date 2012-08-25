@@ -136,7 +136,7 @@ class Graphics extends Base {
 			@public
 	**/
 	static function invert($file,$die=TRUE) {
-		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
+		preg_match('/\.(gif|jpe?g|png)$/i',$file,$ext);
 		if ($ext) {
 			$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
 			$file=self::fixslashes(self::resolve($file));
@@ -160,7 +160,7 @@ class Graphics extends Base {
 			@public
 	**/
 	static function grayscale($file,$die=TRUE) {
-		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
+		preg_match('/\.(gif|jpe?g|png)$/i',$file,$ext);
 		if ($ext) {
 			$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
 			$file=self::fixslashes(self::resolve($file));
@@ -186,7 +186,7 @@ class Graphics extends Base {
 			@public
 	**/
 	static function thumb($file,$dimx,$dimy,$die=TRUE) {
-		preg_match('/\.(gif|jp[e]*g|png)$/i',$file,$ext);
+		preg_match('/\.(gif|jpe?g|png)$/i',$file,$ext);
 		if ($ext) {
 			$ext[1]=str_replace('jpg','jpeg',strtolower($ext[1]));
 			$file=self::fixslashes(self::resolve($file));

@@ -243,7 +243,7 @@ class Base {
 	static function bytes($str) {
 		$greek='KMGT';
 		$exp=strpbrk($str,$greek);
-		return pow(1024,strpos($greek,$exp)+1)*(int)$str;
+		return $exp?pow(1024,strpos($greek,$exp)+1)*(int)$str:$str;
 	}
 
 	/**
@@ -358,12 +358,6 @@ class Base {
 					return self::$null;
 			}
 			$i++;
-		}
-		if ($set && count($matches)>1 &&
-			preg_match('/GET|POST|COOKIE/',$matches[0],$php)) {
-			// Sync with REQUEST
-			$req=&self::ref(preg_replace('/^'.$php[0].'\b/','REQUEST',$key));
-			$req=$var;
 		}
 		return $var;
 	}
@@ -790,6 +784,11 @@ class F3 extends Base {
 			}
 		}
 		$var=$val;
+		if (preg_match('/^(?:GET|POST|COOKIE)/',$key,$php)) {
+			// Sync with REQUEST
+			$var=&self::ref(preg_replace('/^'.$php[0].'\b/','REQUEST',$key));
+			$var=$val;
+		}
 		if (preg_match('/LANGUAGE|LOCALES/',$key) && class_exists('ICU'))
 			// Load appropriate dictionaries
 			ICU::load();
@@ -799,7 +798,7 @@ class F3 extends Base {
 			date_default_timezone_set($val);
 		// Initialize cache if explicitly defined
 		elseif ($key=='CACHE' && $val)
-			self::$vars['CACHE']=Cache::load();
+			self::$vars['CACHE']=Cache::load($val);
 		if ($persist) {
 			$hash='var.'.self::hash(self::remix($key));
 			Cache::set($hash,$val);
@@ -1473,6 +1472,7 @@ class F3 extends Base {
 
 	/**
 		Call form field handler
+			@return mixed
 			@param $fields string
 			@param $funcs mixed
 			@param $tags string
@@ -1484,7 +1484,6 @@ class F3 extends Base {
 	static function input($fields,$funcs=NULL,
 		$tags=NULL,$filter=FILTER_UNSAFE_RAW,$opt=array(),$assign=TRUE) {
 		$funcs=is_string($funcs)?self::split($funcs):array($funcs);
-		$found=FALSE;
 		foreach (self::split($fields) as $field)
 			// Sanitize relevant globals
 			foreach (explode('|','GET|POST|REQUEST') as $var)
@@ -1532,21 +1531,15 @@ class F3 extends Base {
 								return;
 							}
 							$out=call_user_func($func,$val,$field);
-							$found=TRUE;
-							if (!$assign)
-								return $out;
-							if ($out)
+							if ($assign && $out)
 								$key=$out;
-							elseif ($assign && $out)
-								$key=$val;
+							return $out;
 						}
 					}
 				}
-		if (!$found) {
-			// Invalid handler
-			trigger_error(sprintf(self::TEXT_Form,$field));
-			return;
-		}
+		// Invalid handler
+		trigger_error(sprintf(self::TEXT_Form,$field));
+		return FALSE;
 	}
 
 	/**
@@ -1897,7 +1890,8 @@ class F3 extends Base {
 			// Sync framework and PHP globals
 			self::$vars[$var]=&$GLOBALS['_'.$var];
 			if (isset($ini['magic_quotes_gpc']) &&
-				$ini['magic_quotes_gpc'] && preg_match('/^[GPCR]/',$var))
+				$ini['magic_quotes_gpc'] && preg_match('/^[GPCR]/',$var) &&
+				self::$vars[$var])
 				// Corrective action on PHP magic quotes
 				array_walk_recursive(
 					self::$vars[$var],
@@ -2068,13 +2062,13 @@ class Cache extends Base {
 			case 'shmop':
 				if ($ref=self::$ref) {
 					$data=self::mutex(
-						__FILE__,
 						function() use($ref,$ndx) {
 							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
 							return isset($dir[$ndx])?
 								shmop_read($ref,$dir[$ndx][0],$dir[$ndx][1]):
 								FALSE;
-						}
+						},
+						self::$vars['TEMP'].$_SERVER['SERVER_NAME']
 					);
 					if ($data)
 						break;
@@ -2121,7 +2115,6 @@ class Cache extends Base {
 			case 'shmop':
 				return ($ref=self::$ref)?
 					self::mutex(
-						__FILE__,
 						function() use($ref,$ndx,$data) {
 							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
 							$edge=0xFFFF;
@@ -2131,7 +2124,8 @@ class Cache extends Base {
 							unset($dir[$ndx]);
 							$dir[$ndx]=array($edge,strlen($data));
 							shmop_write($ref,serialize($dir).chr(0),0);
-						}
+						},
+						self::$vars['TEMP'].$_SERVER['SERVER_NAME']
 					):
 					FALSE;
 			case 'memcache':
@@ -2172,18 +2166,17 @@ class Cache extends Base {
 			case 'shmop':
 				return ($ref=self::$ref) &&
 					self::mutex(
-						__FILE__,
 						function() use($ref,$ndx) {
 							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
 							unset($dir[$ndx]);
 							shmop_write($ref,serialize($dir).chr(0),0);
-						}
+						},
+						self::$vars['TEMP'].$_SERVER['SERVER_NAME']
 					);
 			case 'memcache':
 				return memcache_delete(self::$ref,$ndx);
 			case 'folder':
-				return is_file($file=self::$ref.$ndx) &&
-					self::mutex($file,'unlink',array($file));
+				return is_file($file=self::$ref.$ndx) && unlink($file);
 		}
 	}
 
@@ -2205,16 +2198,19 @@ class Cache extends Base {
 		self::$engine=array('type'=>$parts[0],'data'=>NULL);
 		self::$ref=NULL;
 		if ($parts[0]=='shmop') {
+			$self=__CLASS__;
 			self::$ref=self::mutex(
-				__FILE__,
-				function() {
-					$ref=@shmop_open(ftok(__FILE__,'C'),'c',0644,
-						Base::instance()->bytes(ini_get('memory_limit')));
+				function() use($self) {
+					$ref=@shmop_open($ftok=ftok(__FILE__,'C'),'c',0644,
+						$self::bytes(ini_get('memory_limit')));
 					if ($ref && !unserialize(trim(shmop_read($ref,0,0xFFFF))))
 						shmop_write($ref,serialize(array()).chr(0),0);
 					return $ref;
-				}
+				},
+				self::$vars['TEMP'].$_SERVER['SERVER_NAME']
 			);
+			if (!self::$ref)
+				return self::load('folder=cache/');
 		}
 		elseif (isset($parts[1])) {
 			if ($parts[0]=='memcache') {
