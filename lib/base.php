@@ -1472,7 +1472,6 @@ class F3 extends Base {
 
 	/**
 		Call form field handler
-			@return mixed
 			@param $fields string
 			@param $funcs mixed
 			@param $tags string
@@ -1484,6 +1483,7 @@ class F3 extends Base {
 	static function input($fields,$funcs=NULL,
 		$tags=NULL,$filter=FILTER_UNSAFE_RAW,$opt=array(),$assign=TRUE) {
 		$funcs=is_string($funcs)?self::split($funcs):array($funcs);
+		$found=FALSE;
 		foreach (self::split($fields) as $field)
 			// Sanitize relevant globals
 			foreach (explode('|','GET|POST|REQUEST') as $var)
@@ -1530,16 +1530,17 @@ class F3 extends Base {
 								);
 								return;
 							}
+							$found=TRUE;
 							$out=call_user_func($func,$val,$field);
 							if ($assign && $out)
 								$key=$out;
-							return $out;
 						}
 					}
 				}
-		// Invalid handler
-		trigger_error(sprintf(self::TEXT_Form,$field));
-		return FALSE;
+		if (!$found)
+			// Invalid handler
+			trigger_error(sprintf(self::TEXT_Form,$field));
+		return;
 	}
 
 	/**
