@@ -2090,7 +2090,7 @@ class Cache extends Base {
 				list($time,$ttl,$val)=unserialize($data);
 			if (!$ttl || $time+$ttl>microtime(TRUE))
 				return $time;
-			$this->clear($key);
+			self::clear($key);
 		}
 		return FALSE;
 	}
