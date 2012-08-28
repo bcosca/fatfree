@@ -121,7 +121,8 @@ class F3markup extends Base {
 	const
 		TEXT_AttribMissing='Missing attribute: %s',
 		TEXT_AttribInvalid='Invalid attribute: %s',
-		TEXT_Global='Use of global variable %s is not allowed';
+		TEXT_Global='Use of global variable %s is not allowed',
+		TEXT_CustomTag='Invalid custom tag handler: %s';
 	//@}
 
 	public
@@ -445,6 +446,36 @@ class F3markup extends Base {
 							break;
 						default:
 							// Custom template tag
+							if (is_string($this->tags[$nkey])) {
+								if (preg_match('/(.+)\s*(->|::)\s*(.+)/s',
+									$this->tags[$nkey],$match)) {
+									if (!class_exists($match[1]) ||
+										!method_exists($match[1],'__call') &&
+										!method_exists($match[1],$match[3])) {
+										trigger_error(
+											sprintf($self::TEXT_CustomTag,
+											$match[1])
+										);
+										return FALSE;
+									}
+									$this->tags[$nkey]=array($match[2]=='->'?
+										new $match[1]:$match[1],$match[3]);
+								}
+								elseif (!function_exists($this->tags[$nkey])) {
+									trigger_error(
+										sprintf($self::TEXT_CustomTag,
+										$match[1])
+									);
+									return FALSE;
+								}
+							}
+							if (!is_callable($this->tags[$nkey])) {
+								trigger_error(
+									sprintf($self::TEXT_CustomTag,
+									$this->tags[$nkey])
+								);
+								return FALSE;
+							}
 							$out.=$this->tags[$nkey]($nval);
 							break;
 					}
