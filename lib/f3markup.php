@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Template
-		@version 2.0.12
+		@version 2.0.13
 **/
 
 //! Markup loader/parser/builder

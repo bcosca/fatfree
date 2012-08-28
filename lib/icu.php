@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package ICU
-		@version 2.0.12
+		@version 2.0.13
 **/
 
 //! Language support tools

@@ -1,5 +1,35 @@
 CHANGELOG
 
+2.0.13
+*	NEW: TZ variable; default value: UTC
+*	NEW: Custom markup tags for template engine, e.g. <F3:paginate/> will call
+	Paginate class and pass HTML/XML attributes and inner content to
+	constructor at compile time; Called class must return valid HTML/XML
+	content
+*	Cache engine rewritten; Now supports PHP shmop extension
+*	Add ReST support for TRACE and CONNECT
+*	Set default_charset to UTF-8
+*	UNLOAD variable now accepts function chains
+*	Improved Sybase/SQL Server pagination query support
+*	Apply strip_tags() to Web::slug()
+*	DB::found() optimized
+*	Bug fix: Faulty shmop cache backend (Issue #74)
+*	Bug fix: Probe for existence of PHP global array when magic_quotes_gpc is
+	active (Issue #70)
+*	Bug fix: Some multiline comments not stripped by minify()
+*	Bug fix: Dynamic route handler ignored if no matching method in static
+	route
+*	Bug fix: set() doesn't cache arrays properly
+*	Bug fix: Aggressive minification of CSS selectors
+*	Bug fix: ICU class fails to recognize some Accept-Language headers
+*	Bug fix: ICU dictionary reloading
+*	Bug fix: Array messed up when keys contain dots (Issue #18)
+*	Bug fix: input() calls only the first validation function (Issue #62)
+*	Bug fix: Table schema query for IBM DB2
+*	Bug fix: Unexpected array behavior in templates (Issue #65)
+*	Bug fix: $_REQUEST synchronization (Issue #75)
+*	Minor code optimization
+
 2.0.12
 *	Bug fix: Static/dynamic input() handlers
 *	Bug fix: Jig error messages

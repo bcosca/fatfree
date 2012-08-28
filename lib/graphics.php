@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Graphics
-		@version 2.0.12
+		@version 2.0.13
 **/
 
 //! Graphics plugin
