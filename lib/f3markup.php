@@ -344,7 +344,8 @@ class F3markup extends Base {
 							break;
 						default:
 							// Custom template tag
-							$out.=new $nkey($nval);
+							$ns=new self::$vars['XMLNS'];
+							$out.=$ns->$nkey($nval);
 							break;
 					}
 					// Reset scope
@@ -381,9 +382,10 @@ class F3markup extends Base {
 		$ptr=0;
 		$temp='';
 		while ($ptr<$len)
-			if (preg_match('/^<(\/?)'.
-				'(?:F3:)?(include|exclude|loop|repeat|check|true|false'.
-				(isset(self::$vars['TAGS'])?
+			if (preg_match('/^<(\/?)(?:(?:F3|'.
+				(isset(self::$vars['XMLNS'])?self::$vars['XMLNS']:'').'):)?'.
+				'(include|exclude|loop|repeat|check|true|false'.
+				(isset(self::$vars['XMLNS']) && isset(self::$vars['TAGS'])?
 					('|'.implode('|',self::split(self::$vars['TAGS']))):'').
 				')\b((?:\s+\w+s*=\s*(?:"(?:.+?)"|\'(?:.+?)\'))*)\s*(\/?)>/is',
 				substr($text,$ptr),$match)) {
