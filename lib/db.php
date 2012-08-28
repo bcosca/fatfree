@@ -781,10 +781,9 @@ class Axon extends Base {
 	/**
 		Delete record/s
 			@param $cond mixed
-			@param $force bool
 			@public
 	**/
-	function erase($cond=NULL,$force=FALSE) {
+	function erase($cond=NULL) {
 		if (method_exists($this,'beforeErase') &&
 			$this->beforeErase()===FALSE)
 			return;
