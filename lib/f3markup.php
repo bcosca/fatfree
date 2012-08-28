@@ -382,8 +382,9 @@ class F3markup extends Base {
 		$ptr=0;
 		$temp='';
 		while ($ptr<$len)
-			if (preg_match('/^<(\/?)(?:(?:F3|'.
-				(isset(self::$vars['XMLNS'])?self::$vars['XMLNS']:'').'):)?'.
+			if (preg_match('/^<(\/?)(?:(?:F3'.
+				(isset(self::$vars['XMLNS'])?
+					('|'.self::$vars['XMLNS']):'').'):)?'.
 				'(include|exclude|loop|repeat|check|true|false'.
 				(isset(self::$vars['XMLNS']) && isset(self::$vars['TAGS'])?
 					('|'.implode('|',self::split(self::$vars['TAGS']))):'').
