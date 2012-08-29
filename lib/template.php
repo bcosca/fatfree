@@ -515,8 +515,8 @@ class F3markup extends Base {
 		while ($ptr<$len)
 			if (preg_match('/^<(\/?)'.
 				'(?:F3:)?(include|exclude|loop|repeat|check|true|false'.
-				($this->tags?('|'.implode('|',$this->tags)):'').')\b'.
-				'((?:\s+\w+s*=\s*(?:"(?:.+?)"|\'(?:.+?)\'))*)\s*(\/?)>/is',
+				($this->tags?('|'.implode('|',array_keys($this->tags))):'').
+				')\b((?:\s+\w+s*=\s*(?:"(?:.+?)"|\'(?:.+?)\'))*)\s*(\/?)>/is',
 				substr($text,$ptr),$match)) {
 				if (strlen($temp))
 					$node[]=$temp;
