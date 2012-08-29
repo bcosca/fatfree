@@ -578,7 +578,7 @@ class F3markup extends Base {
 			@param $func mixed
 			@public
 	**/
-	static function extend($tag,$func) {
+	function extend($tag,$func) {
 		$this->tags[$tag]=$func;
 	}
 
