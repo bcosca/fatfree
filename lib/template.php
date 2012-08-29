@@ -476,7 +476,7 @@ class F3markup extends Base {
 								);
 								return FALSE;
 							}
-							$out.=$this->tags[$nkey]($nval);
+							$out.=call_user_func($this->tags[$nkey],$nval);
 							break;
 					}
 					// Reset scope
