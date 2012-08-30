@@ -616,7 +616,7 @@ class Axon extends Base {
 	function found($cond=NULL) {
 		list($result)=$this->db->exec(
 			'SELECT COUNT(*) AS _found FROM '.$this->table.
-				($cond?(' WHERE '.is_array($cond)?$cond[0]:$cond):''),
+				($cond?(' WHERE '.(is_array($cond)?$cond[0]:$cond)):''),
 				($cond && is_array($cond)?$cond[1]:NULL)
 		);
 		return $result['_found'];
