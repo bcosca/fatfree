@@ -70,7 +70,6 @@ class Web extends Base {
 			$src.=preg_replace_callback(
 				'/\b(?<=url)\((?:([\"\'])?(.+?)\1|([^\)]+))\)/s',
 				function($url) use($path,$file) {
-					var_dump($url);
 					// Ignore absolute URLs
 					if (preg_match('/https?:/',$url[2]))
 						return $url[0];
