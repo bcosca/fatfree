@@ -1020,9 +1020,10 @@ class F3 extends Base {
 			@public
 	**/
 	static function htmlencode($str,$all=FALSE) {
-		return call_user_func(
-			$all?'htmlentities':'htmlspecialchars',
-			$str,ENT_COMPAT,self::$vars['ENCODING'],TRUE);
+		return is_string($str)?
+			call_user_func($all?'htmlentities':'htmlspecialchars',
+				$str,ENT_COMPAT,self::$vars['ENCODING'],FALSE):
+			$str;
 	}
 
 	/**
@@ -1033,9 +1034,11 @@ class F3 extends Base {
 			@public
 	**/
 	static function htmldecode($str,$all=FALSE) {
-		return $all?
-			html_entity_decode($str,ENT_COMPAT,self::$vars['ENCODING']):
-			htmlspecialchars_decode($str,ENT_COMPAT);
+		return is_string($str)?
+			($all?
+				html_entity_decode($str,ENT_COMPAT,self::$vars['ENCODING']):
+				htmlspecialchars_decode($str,ENT_COMPAT)):
+			$str;
 	}
 
 	/**
@@ -1815,6 +1818,8 @@ class F3 extends Base {
 			'ENCODING'=>$charset,
 			// Last error
 			'ERROR'=>NULL,
+			// Auto-escape feature
+			'ESCAPE'=>FALSE,
 			// Allow/prohibit framework class extension
 			'EXTEND'=>TRUE,
 			// IP addresses exempt from spam detection

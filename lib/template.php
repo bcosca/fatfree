@@ -174,6 +174,8 @@ class F3markup extends Base {
 							return '$_'.$self::remix($var[1]).
 								($isfunc?$self->expr('{{'.$var[2].'}}'):'');
 						$str='$this->get('.$self::stringify($var[1]).')';
+						$str='$this->get(\'ESCAPE\')?'.
+							'$this->htmlencode('.$str.'):'.$str;
 						if ($isfunc) {
 							preg_match_all($regex,$var[2],$parts,
 								PREG_SET_ORDER);
@@ -513,8 +515,8 @@ class F3markup extends Base {
 		$ptr=0;
 		$temp='';
 		while ($ptr<$len)
-			if (preg_match('/^<(\/?)'.
-				'(?:F3:)?(include|exclude|loop|repeat|check|true|false'.
+			if (preg_match('/^<(\/?)(?:F3:)?'.
+				'(include|exclude|loop|repeat|check|true|false'.
 				($this->tags?('|'.implode('|',array_keys($this->tags))):'').
 				')\b((?:\s+\w+s*=\s*(?:"(?:.+?)"|\'(?:.+?)\'))*)\s*(\/?)>/is',
 				substr($text,$ptr),$match)) {
