@@ -75,7 +75,8 @@ class Web extends Base {
 						return $url[0];
 					$fdir=dirname($file);
 					$rewrite=explode(
-						'/',$path.($fdir!='.'?$fdir.'/':'').$url[2]
+						'/',$path.($fdir!='.'?$fdir.'/':'').
+						isset($url[3])?$url[3]:$url[2]
 					);
 					$i=0;
 					while ($i<count($rewrite))
