@@ -38,7 +38,7 @@ body {
 h1,h2,h3,h4,h5 {
 	color:#333;
 	font-family:qlassik;
-	text-shadow:0 0.1em 0.1em #999;
+	text-shadow:0 0.1em 0.1em #ccc;
 	clear:both;
 }
 h1 {
@@ -48,10 +48,10 @@ h2 {
 	font-size:36px;
 }
 h3 {
-	font-size:24px;
+	font-size:28px;
 }
 h4 {
-	font-size:21px;
+	font-size:24px;
 }
 h5 {
 	font-size:18px;
@@ -394,7 +394,7 @@ div.main {
 		float:left;
 	}
 		div.main h2 {
-			color:#666;
+			color:#000;
 		}
 		div.content h2 {
 			margin:45px 0 15px 0;
