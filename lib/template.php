@@ -192,8 +192,8 @@ class F3markup extends Base {
 								method_exists(F3::get($match[1]),
 								$temp=str_replace('->','',$match[2])))
 								$str='array($this->get('.
-									self::stringify($match[1]).'),'.
-									self::stringify($temp).')';
+									$self::stringify($match[1]).'),'.
+									$self::stringify($temp).')';
 							$str='call_user_func_array('.
 								'$_'.$match[1].'='.$str.',array'.$args.')';
 						}
