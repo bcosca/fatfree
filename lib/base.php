@@ -1310,6 +1310,7 @@ class F3 extends Base {
 					self::reroute(substr($path,0,-1).
 						($query?('?'.$query):''));
 				}
+				self::$vars['PATTERN']=$uri;
 				$found=TRUE;
 				list($funcs,$ttl,$throttle,$hotlink)=$proc;
 				if (!$hotlink && isset(self::$vars['HOTLINK']) &&
