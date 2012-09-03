@@ -12,6 +12,7 @@ $app->set('GUI','gui/');
 $app->set('LOCALES','dict/');
 $app->set('PROXY',TRUE);
 $app->set('TEMP','temp/');
+$app->set('TZ','America/New_York');
 
 $app->set('timer',microtime(TRUE));
 $app->set('menu',
