@@ -1278,7 +1278,6 @@ class F3 extends Base {
 			trigger_error(self::TEXT_NoRoutes);
 			return;
 		}
-		$found=FALSE;
 		$allowed=array();
 		// Detailed routes get matched first
 		krsort(self::$vars['ROUTES']);
@@ -1311,7 +1310,6 @@ class F3 extends Base {
 						($query?('?'.$query):''));
 				}
 				self::$vars['PATTERN']=$uri;
-				$found=TRUE;
 				list($funcs,$ttl,$throttle,$hotlink)=$proc;
 				if (!$hotlink && isset(self::$vars['HOTLINK']) &&
 					isset($_SERVER['HTTP_REFERER']) &&
@@ -1399,10 +1397,9 @@ class F3 extends Base {
 				if (strlen(self::$vars['RESPONSE']) && !self::$vars['QUIET'])
 					// Display response
 					echo self::$vars['RESPONSE'];
-			}
-			if ($found)
 				// Hail the conquering hero
 				return;
+			}
 			$allowed=array_keys($route);
 		}
 		if (!$allowed) {
