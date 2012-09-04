@@ -374,6 +374,7 @@ RewriteRule .* index.php [L,QSA]</pre>
 
 <pre>$HTTP["host"] =~ "www\.example\.com$" {
 	url.rewrite-once = ( "^/(.*)$"=>"/index.php/$1" )
+	server.error-handler-404 = "/index.php"
 }</pre>
 					</div>
 			<h3>Multiple Route Handlers/Function Chains</h3>
