@@ -2205,7 +2205,7 @@ class Cache extends Base {
 			$self=__CLASS__;
 			self::$ref=self::mutex(
 				function() use($self) {
-					$ref=@shmop_open($ftok=ftok(__FILE__,'C'),'c',0644,
+					$ref=@shmop_open($inode=fileinode(__FILE__),'c',0644,
 						$self::bytes(ini_get('memory_limit')));
 					if ($ref && !unserialize(trim(shmop_read($ref,0,0xFFFF))))
 						shmop_write($ref,serialize(array()).chr(0),0);
