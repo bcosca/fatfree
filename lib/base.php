@@ -979,8 +979,7 @@ class F3 extends Base {
 						$csv=array_map(
 							function($val) {
 								$val=trim($val);
-								return is_numeric($val) ||
-									preg_match('/^\w+$/i',$val) &&
+								return preg_match('/^\w+$/i',$val) &&
 									defined($val)?
 									eval('return '.$val.';'):$val;
 							},
