@@ -975,13 +975,21 @@ class F3 extends Base {
 						// Section
 						$sec=strtolower($parts[2]);
 					elseif (isset($parts[3]) && $parts[3]) {
+						$parts[4]=preg_replace('/(?<=")(.+?)(?=")/',
+							"\x00\\1",$parts[4]);
 						// Key-value pair
 						$csv=array_map(
 							function($val) {
+								$q='';
+								if (preg_match('/^\x00(.+)/',$val,$match)) {
+									$q='"';
+									$val=$match[1];
+								}
 								$val=trim($val);
-								return preg_match('/^\w+$/i',$val) &&
+								return is_numeric($val) ||
+									preg_match('/^\w+$/i',$val) &&
 									defined($val)?
-									eval('return '.$val.';'):$val;
+									eval('return '.$q.$val.$q.';'):$val;
 							},
 							str_getcsv($parts[4])
 						);
