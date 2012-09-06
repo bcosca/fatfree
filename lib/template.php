@@ -173,8 +173,8 @@ class F3markup extends Base {
 						if (array_key_exists('_'.$match[1],$syms))
 							return '$_'.$self::remix($var[1]).
 								($isfunc?$self->expr('{{'.$var[2].'}}'):'');
-						$str='$this->get('.$self::stringify($var[1]).')';
-						$str='$this->get(\'ESCAPE\')?'.
+						$str='F3::get('.$self::stringify($var[1]).')';
+						$str='F3::get(\'ESCAPE\')?'.
 							'$this->htmlencode('.$str.'):'.$str;
 						if ($isfunc) {
 							preg_match_all($regex,$var[2],$parts,
@@ -191,7 +191,7 @@ class F3markup extends Base {
 							if (isset($match[2]) &&
 								method_exists(F3::get($match[1]),
 								$temp=str_replace('->','',$match[2])))
-								$str='array($this->get('.
+								$str='array(F3::get('.
 									$self::stringify($match[1]).'),'.
 									$self::stringify($temp).')';
 							$str='call_user_func_array('.
