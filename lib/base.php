@@ -981,10 +981,8 @@ class F3 extends Base {
 						$csv=array_map(
 							function($val) {
 								$q='';
-								if (preg_match('/^\x00(.+)/',$val,$match)) {
+								if ($val[0]=="\x00")
 									$q='"';
-									$val=$match[1];
-								}
 								$val=trim($val);
 								return is_numeric($val) ||
 									preg_match('/^\w+$/i',$val) &&
