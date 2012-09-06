@@ -2010,7 +2010,7 @@ class F3 extends Base {
 	static function __callStatic($func,array $args) {
 		if (self::$vars['PROXY'] &&
 			$glob=glob(self::fixslashes(
-				self::$vars['PLUGINS'].'/*.php',GLOB_NOSORT)))
+				self::$vars['PLUGINS'].'/*.php'),GLOB_NOSORT))
 			foreach ($glob as $file) {
 				$class=strstr(basename($file),'.php',TRUE);
 				// Prevent recursive calls
