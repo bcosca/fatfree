@@ -157,7 +157,7 @@ class Base {
 		switch (gettype($arg)) {
 			case 'object':
 				return method_exists($arg,'__tostring')?
-					(string)stripslashes($arg):
+					stripslashes($arg):
 					get_class($arg).'::__set_state()';
 			case 'array':
 				$str='';
