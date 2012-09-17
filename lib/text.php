@@ -87,11 +87,11 @@ class Text extends Base {
 				$pos2=$key+$ofs2;
 				$ctrd=count($val['d']);
 				$ctra=count($val['a']);
+				$d = $d + $ctrd;
+				$a = $a + $ctra;
 				if ($val['d'])
-					$d = $d + count($val['d']);
 					$html.='<del>'.implode($delim,$val['d']).'</del>'.$delim;
 				if ($val['a'])
-					$a = $a + +count($val['a']);
 					$html.='<ins>'.implode($delim,$val['a']).'</ins>'.$delim;
 				// Build patch
 				if ($val['d'] && $val['a']) {
@@ -121,13 +121,17 @@ class Text extends Base {
 			}
 			else
 				$html.=$val.$delim;
+
+
+		$old = F3::scrub($old);
+		$new = F3::scrub($new);
 		$stats=array(
 			"removed"=>$d,
 			"added"=>$a,
 			"old"=> count($delim ? explode($delim, $old) : str_split($old)),
 			"new"=> count($delim ? explode($delim, $new) : str_split($new)),
 		);
-		$stats['percent']= ($d / $stats['old'])*100;
+		$stats['percent']= Number_format(((($d+$a) *100)/ $stats['old'])/2,2);
 		return array('patch'=>$patch,'html'=>$html,"stats"=>$stats);
 	}
 
