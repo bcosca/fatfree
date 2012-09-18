@@ -1422,13 +1422,15 @@ class F3 extends Base {
 		Transmit a file for downloading by HTTP client; If kilobytes per
 		second is specified, output is throttled (bandwidth will not be
 		controlled by default); Return TRUE if successful, FALSE otherwise;
-		Support for partial downloads is indicated by third argument
+		Support for partial downloads is indicated by third argument;
+		Download as attachment if fourth argument is TRUE
 			@param $file string
 			@param $kbps int
-			@param $partial
+			@param $partial bool
+			@param $attach bool
 			@public
 	**/
-	static function send($file,$kbps=0,$partial=TRUE) {
+	static function send($file,$kbps=0,$partial=TRUE,$attach=FALSE) {
 		$file=self::resolve($file);
 		if (!is_file($file)) {
 			self::error(404);
@@ -1438,6 +1440,9 @@ class F3 extends Base {
 			header(self::HTTP_Content.': application/octet-stream');
 			header(self::HTTP_Partial.': '.($partial?'bytes':'none'));
 			header(self::HTTP_Length.': '.filesize($file));
+			if ($attach)
+				header(self::HTTP_Disposition.': attachment; '.
+					'filename="'.$file.'"');
 		}
 		$ctr=1;
 		$handle=fopen($file,'r');
