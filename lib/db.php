@@ -504,7 +504,7 @@ class Axon extends Base {
 					($group?(' GROUP BY '.$group):'').
 					($seq?(' ORDER BY '.$seq):'').
 					(preg_match('/^mssql|sqlsrv|sybase|dblib$/',
-						$this->backend)?
+						$this->db->backend)?
 						(($ofs?(' OFFSET '.$ofs):'').
 						($limit?(' FETCH '.$limit.' ONLY'):'')):
 						(($limit?(' LIMIT '.$limit):'').
@@ -517,7 +517,7 @@ class Axon extends Base {
 					($group?(' GROUP BY '.$group):'').
 					($seq?(' ORDER BY '.$seq):'').
 					(preg_match('/^mssql|sqlsrv|sybase|dblib$/',
-						$this->backend)?
+						$this->db->backend)?
 						(($ofs?(' OFFSET '.$ofs):'').
 						($limit?(' FETCH '.$limit.' ONLY'):'')):
 						(($limit?(' LIMIT '.$limit):'').
@@ -734,7 +734,7 @@ class Axon extends Base {
 			foreach ($this->fields as $field=>$val)
 				if (isset($this->mod[$field])) {
 					$fields.=($fields?',':'').
-						(preg_match('/^mysql$/',$this->backend)?
+						(preg_match('/^mysql$/',$this->db->backend)?
 							('`'.$field.'`'):$field);
 					$values.=($values?',':'').':'.$field;
 					$bind[':'.$field]=array($val,$this->types[$field]);
@@ -753,7 +753,7 @@ class Axon extends Base {
 			foreach ($this->fields as $field=>$val)
 				if (isset($this->mod[$field])) {
 					$set.=($set?',':'').
-						(preg_match('/^mysql$/',$this->backend)?
+						(preg_match('/^mysql$/',$this->db->backend)?
 							('`'.$field.'`'):$field).'=:'.$field;
 					$bind[':'.$field]=array($val,$this->types[$field]);
 				}
