@@ -1443,6 +1443,7 @@ class F3 extends Base {
 			if ($attach)
 				header(self::HTTP_Disposition.': attachment; '.
 					'filename="'.basename($file).'"');
+			flush();
 		}
 		$ctr=1;
 		$handle=fopen($file,'r');
@@ -1456,6 +1457,7 @@ class F3 extends Base {
 			}
 			// Send 1KiB and reset timer
 			echo fread($handle,1024);
+			flush();
 		}
 		fclose($handle);
 		die;
