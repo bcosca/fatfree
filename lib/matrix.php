@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Matrix
-		@version 2.0.12
+		@version 2.0.13
 **/
 
 //! Generic array utilities

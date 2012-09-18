@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Geo
-		@version 2.0.12
+		@version 2.0.13
 **/
 
 //! Geo plugin

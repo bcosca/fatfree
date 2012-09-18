@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Base
-		@version 2.0.12
+		@version 2.0.13
 **/
 
 //! Base structure
@@ -21,7 +21,7 @@ class Base {
 	//@{ Framework details
 	const
 		TEXT_AppName='Fat-Free Framework',
-		TEXT_Version='2.0.12',
+		TEXT_Version='2.0.13',
 		TEXT_AppURL='http://fatfree.sourceforge.net';
 	//@}
 
@@ -157,7 +157,7 @@ class Base {
 		switch (gettype($arg)) {
 			case 'object':
 				return method_exists($arg,'__tostring')?
-					(string)stripslashes($arg):
+					stripslashes($arg):
 					get_class($arg).'::__set_state()';
 			case 'array':
 				$str='';
@@ -318,7 +318,7 @@ class Base {
 			else {
 				if (preg_match('/@(\w+)/',$match,$token))
 					// Token found
-					$match=&self::ref($token[1]);
+					$match=self::ref($token[1]);
 				if ($set) {
 					// Create property/array element if not found
 					if ($obj) {
@@ -975,14 +975,19 @@ class F3 extends Base {
 						// Section
 						$sec=strtolower($parts[2]);
 					elseif (isset($parts[3]) && $parts[3]) {
+						$parts[4]=preg_replace('/(?<=")(.+?)(?=")/',
+							"\x00\\1",$parts[4]);
 						// Key-value pair
 						$csv=array_map(
 							function($val) {
+								$q='';
+								if ($val[0]=="\x00")
+									$q='"';
 								$val=trim($val);
 								return is_numeric($val) ||
 									preg_match('/^\w+$/i',$val) &&
 									defined($val)?
-									eval('return '.$val.';'):$val;
+									eval('return '.$q.$val.$q.';'):$val;
 							},
 							str_getcsv($parts[4])
 						);
@@ -1020,9 +1025,10 @@ class F3 extends Base {
 			@public
 	**/
 	static function htmlencode($str,$all=FALSE) {
-		return call_user_func(
-			$all?'htmlentities':'htmlspecialchars',
-			$str,ENT_COMPAT,self::$vars['ENCODING'],TRUE);
+		return is_string($str)?
+			call_user_func($all?'htmlentities':'htmlspecialchars',
+				$str,ENT_COMPAT,self::$vars['ENCODING'],FALSE):
+			$str;
 	}
 
 	/**
@@ -1033,9 +1039,11 @@ class F3 extends Base {
 			@public
 	**/
 	static function htmldecode($str,$all=FALSE) {
-		return $all?
-			html_entity_decode($str,ENT_COMPAT,self::$vars['ENCODING']):
-			htmlspecialchars_decode($str,ENT_COMPAT);
+		return is_string($str)?
+			($all?
+				html_entity_decode($str,ENT_COMPAT,self::$vars['ENCODING']):
+				htmlspecialchars_decode($str,ENT_COMPAT)):
+			$str;
 	}
 
 	/**
@@ -1275,7 +1283,6 @@ class F3 extends Base {
 			trigger_error(self::TEXT_NoRoutes);
 			return;
 		}
-		$found=FALSE;
 		$allowed=array();
 		// Detailed routes get matched first
 		krsort(self::$vars['ROUTES']);
@@ -1307,7 +1314,7 @@ class F3 extends Base {
 					self::reroute(substr($path,0,-1).
 						($query?('?'.$query):''));
 				}
-				$found=TRUE;
+				self::$vars['PATTERN']=$uri;
 				list($funcs,$ttl,$throttle,$hotlink)=$proc;
 				if (!$hotlink && isset(self::$vars['HOTLINK']) &&
 					isset($_SERVER['HTTP_REFERER']) &&
@@ -1395,10 +1402,9 @@ class F3 extends Base {
 				if (strlen(self::$vars['RESPONSE']) && !self::$vars['QUIET'])
 					// Display response
 					echo self::$vars['RESPONSE'];
-			}
-			if ($found)
 				// Hail the conquering hero
 				return;
+			}
 			$allowed=array_keys($route);
 		}
 		if (!$allowed) {
@@ -1472,7 +1478,6 @@ class F3 extends Base {
 
 	/**
 		Call form field handler
-			@return mixed
 			@param $fields string
 			@param $funcs mixed
 			@param $tags string
@@ -1484,6 +1489,7 @@ class F3 extends Base {
 	static function input($fields,$funcs=NULL,
 		$tags=NULL,$filter=FILTER_UNSAFE_RAW,$opt=array(),$assign=TRUE) {
 		$funcs=is_string($funcs)?self::split($funcs):array($funcs);
+		$found=FALSE;
 		foreach (self::split($fields) as $field)
 			// Sanitize relevant globals
 			foreach (explode('|','GET|POST|REQUEST') as $var)
@@ -1530,16 +1536,17 @@ class F3 extends Base {
 								);
 								return;
 							}
+							$found=TRUE;
 							$out=call_user_func($func,$val,$field);
 							if ($assign && $out)
 								$key=$out;
-							return $out;
 						}
 					}
 				}
-		// Invalid handler
-		trigger_error(sprintf(self::TEXT_Form,$field));
-		return FALSE;
+		if (!$found)
+			// Invalid handler
+			trigger_error(sprintf(self::TEXT_Form,$field));
+		return;
 	}
 
 	/**
@@ -1814,6 +1821,8 @@ class F3 extends Base {
 			'ENCODING'=>$charset,
 			// Last error
 			'ERROR'=>NULL,
+			// Auto-escape feature
+			'ESCAPE'=>FALSE,
 			// Allow/prohibit framework class extension
 			'EXTEND'=>TRUE,
 			// IP addresses exempt from spam detection
@@ -2001,7 +2010,7 @@ class F3 extends Base {
 	static function __callStatic($func,array $args) {
 		if (self::$vars['PROXY'] &&
 			$glob=glob(self::fixslashes(
-				self::$vars['PLUGINS'].'/*.php',GLOB_NOSORT)))
+				self::$vars['PLUGINS'].'/*.php'),GLOB_NOSORT))
 			foreach ($glob as $file) {
 				$class=strstr(basename($file),'.php',TRUE);
 				// Prevent recursive calls
@@ -2089,7 +2098,7 @@ class Cache extends Base {
 				list($time,$ttl,$val)=unserialize($data);
 			if (!$ttl || $time+$ttl>microtime(TRUE))
 				return $time;
-			$this->clear($key);
+			self::clear($key);
 		}
 		return FALSE;
 	}
@@ -2201,7 +2210,7 @@ class Cache extends Base {
 			$self=__CLASS__;
 			self::$ref=self::mutex(
 				function() use($self) {
-					$ref=@shmop_open($ftok=ftok(__FILE__,'C'),'c',0644,
+					$ref=@shmop_open($inode=fileinode(__FILE__),'c',0644,
 						$self::bytes(ini_get('memory_limit')));
 					if ($ref && !unserialize(trim(shmop_read($ref,0,0xFFFF))))
 						shmop_write($ref,serialize(array()).chr(0),0);

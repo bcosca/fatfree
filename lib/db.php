@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package DB
-		@version 2.0.12
+		@version 2.0.13
 **/
 
 //! SQL data access layer
@@ -616,8 +616,8 @@ class Axon extends Base {
 	function found($cond=NULL) {
 		list($result)=$this->db->exec(
 			'SELECT COUNT(*) AS _found FROM '.$this->table.
-				($cond?(' WHERE '.$cond[0]):''),
-				($cond?$cond[1]:NULL)
+				($cond?(' WHERE '.(is_array($cond)?$cond[0]:$cond)):''),
+				($cond && is_array($cond)?$cond[1]:NULL)
 		);
 		return $result['_found'];
 	}
@@ -781,10 +781,9 @@ class Axon extends Base {
 	/**
 		Delete record/s
 			@param $cond mixed
-			@param $force bool
 			@public
 	**/
-	function erase($cond=NULL,$force=FALSE) {
+	function erase($cond=NULL) {
 		if (method_exists($this,'beforeErase') &&
 			$this->beforeErase()===FALSE)
 			return;

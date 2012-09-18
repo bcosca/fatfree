@@ -2953,7 +2953,7 @@ class Main extends F3instance {
 
 				$this->expect(
 					(is_object($product->_id)) && $product->_id==$id,
-					'M2 MongoID is intact after object update: {{@product->_id}}',
+					'M2 MongoID is intact after object update: '.$product->_id,
 					'M2 MongoID sync issue'
 				);
 

@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package FileDB
-		@version 2.0.12
+		@version 2.0.13
 **/
 
 //! Flat-file data access layer

@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package ICU
-		@version 2.0.12
+		@version 2.0.13
 **/
 
 //! Language support tools
@@ -285,6 +285,9 @@ class ICU extends Base {
 		$out=preg_replace_callback(
 			'/{(\d+)(?:,(\w+)(?:,(\w+))?)?}/',
 			function($expr) use($args,$info) {
+				foreach ($info as &$val)
+					if (is_string($val))
+						$val=utf8_decode($val);
 				extract($info);
 				$arg=$args[$expr[1]];
 				if (!isset($expr[2]))
