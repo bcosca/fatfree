@@ -3744,8 +3744,8 @@ class Main extends F3instance {
 
 
 
-		$old = "this brown fox went to the market\nand this piggy went home";
-		$new = "That brown Fox went to the Markets\nand this piggy went home";
+		$old = nl2br("this brown fox went to the market \n and this piggy went home");
+		$new =  nl2br("That brown Fox went to the Markets \n and this piggy went home");
 
 		$i=0;
 
@@ -3764,7 +3764,7 @@ class Main extends F3instance {
 			$desc.'- Removed failed: '. $str['removed']
 		);
 		$this->expect(
-			$str['percent']=='9.48',
+			$str['percent']=='9.17',
 			$desc.'- Percent: '. $str['percent'],
 			$desc.'- Percent failed: '. $str['percent']
 		);
@@ -3785,7 +3785,7 @@ class Main extends F3instance {
 			$desc.'- Removed failed: '. $str['removed']
 		);
 		$this->expect(
-			$str['percent']=='27.27',
+			$str['percent']=='23.08',
 			$desc.'- Percent: '. $str['percent'],
 			$desc.'- Percent failed: '. $str['percent']
 		);
