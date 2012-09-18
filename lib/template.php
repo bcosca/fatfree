@@ -171,7 +171,6 @@ class F3markup extends Base {
 						}
 						$isfunc=isset($var[2]) && $var[2];
 						if (array_key_exists('_'.$match[1],$syms))
-							return '$_'.$self::remix($var[1]).
 							return '$_'.(strstr($var[1],'@')?
 								$self->expr('{{'.$var[1].'}}'):
 								$self->remix($var[1])).
