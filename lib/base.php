@@ -1442,7 +1442,7 @@ class F3 extends Base {
 			header(self::HTTP_Length.': '.filesize($file));
 			if ($attach)
 				header(self::HTTP_Disposition.': attachment; '.
-					'filename="'.$file.'"');
+					'filename="'.basename($file).'"');
 		}
 		$ctr=1;
 		$handle=fopen($file,'r');
