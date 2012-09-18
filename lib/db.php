@@ -404,14 +404,12 @@ class DB extends Base {
 		if (!isset(self::$vars['MYSQL']))
 			// Default MySQL character set
 			self::$vars['MYSQL']='utf8';
-		if (!$opt)
-			// Append other default options
-			$opt=array(PDO::ATTR_EMULATE_PREPARES=>FALSE)+(
-				extension_loaded('pdo_mysql') &&
-				preg_match('/^mysql:/',$dsn)?
-					array(PDO::MYSQL_ATTR_INIT_COMMAND=>
-						'SET NAMES '.self::$vars['MYSQL']):array()
-			);
+				if (!$opt) $opt = array();
+		// Append other default options
+		if (!isset($opt[PDO::ATTR_EMULATE_PREPARES]))
+			$opt[PDO::ATTR_EMULATE_PREPARES] = FALSE;
+		if (extension_loaded('pdo_mysql') && preg_match('/^mysql:/',$dsn) && !isset($opt[PDO::MYSQL_ATTR_INIT_COMMAND]))
+			$opt[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES '.self::$vars['MYSQL'];
 		list($this->dsn,$this->user,$this->pw,$this->opt)=
 			array($this->resolve($dsn),$user,$pw,$opt);
 		$this->backend=strstr($this->dsn,':',TRUE);
