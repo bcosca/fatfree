@@ -457,8 +457,8 @@ class Axon extends Base {
 			@public
 	**/
 	function factory($row) {
-		$self=get_class($this);
-		$axon=new $self($this->table,$this->db,FALSE);
+		$axon=clone $this;
+		$axon->reset();
 		foreach ($row as $field=>$val) {
 			if (array_key_exists($field,$this->fields)) {
 				$axon->fields[$field]=$val;
