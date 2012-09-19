@@ -1290,6 +1290,8 @@ class F3 extends Base {
 		$req=preg_replace('/^'.preg_quote(self::$vars['BASE'],'/').
 			'\b(.+)/'.(self::$vars['CASELESS']?'i':''),'\1',
 			rawurldecode($_SERVER['REQUEST_URI']));
+		// store uri segments in f3 vars array for easy use in nav menus
+		self::$vars['URI_SEGMENTS'] = explode("/",$req);
 		foreach (self::$vars['ROUTES'] as $uri=>$route) {
 			if (!preg_match('/^'.
 				preg_replace(
