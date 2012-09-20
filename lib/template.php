@@ -347,7 +347,8 @@ class F3markup extends Base {
 								}
 							}
 							unset($nval['@attrib']);
-							$this->syms['_'.$cvar]=eval('return '.$fstr.';');
+							if(!array_key_exists('_'.$cvar,$this->syms))
+								$this->syms['_'.$cvar]=eval('return '.$fstr.';');
 							$out.='<?php for ('.
 								'$_'.$cvar.'='.$fstr.';'.
 								'$_'.$cvar.'<='.$tstr.';'.
