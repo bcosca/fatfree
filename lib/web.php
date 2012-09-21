@@ -55,44 +55,29 @@ class Web extends Base {
 			'css'=>'text/css'
 		);
 		$path=self::fixslashes($base);
-		foreach ($files as $file)
+		$src='';
+		foreach ($files as $file) {
 			if (!is_file($path.$file) || is_int(strpos($file,'../')) ||
 				!preg_match('/\.(js|css)$/',$file,$ext) || !$ext[1]) {
 				trigger_error(sprintf(self::TEXT_Minify,$file));
 				return $echo?NULL:FALSE;
 			}
-		$src='';
-		foreach ($files as $file) {
 			$stats=&self::ref('STATS');
 			$stats['FILES']['minified']
 				[basename($file)]=filesize($path.$file);
 			// Rewrite relative URLs in CSS
 			$src.=preg_replace_callback(
-				'/\b(?<=url)\((?:([\"\'])?(.+?)\1|([^\)]+))\)/s',
+				'/\b(?<=url)\((?:([\"\']?)(.+?)\1)\)/s',
 				function($url) use($path,$file) {
 					// Ignore absolute URLs
-					if (preg_match('/https?:/',$url[2]))
+					if (preg_match('/https?:/',$url[2]) ||
+						!is_file($path.$url[2]))
 						return $url[0];
-					$fdir=dirname($file);
-					$rewrite=explode(
-						'/',$path.($fdir!='.'?$fdir:'').'/'.
-						(isset($url[3])?$url[3]:$url[2])
-					);
-					$i=0;
-					while ($i<count($rewrite))
-						// Analyze each URL segment
-						if ($i && $rewrite[$i]=='..' &&
-							$rewrite[$i-1]!='..') {
-							// Simplify URL
-							unset($rewrite[$i],$rewrite[$i-1]);
-							$rewrite=array_values($rewrite);
-							$i--;
-						}
-						else
-							$i++;
-					// Reconstruct simplified URL
-					return
-						'('.implode('/',array_merge($rewrite,array())).')';
+					return '('.$url[1].preg_replace(
+						'/'.preg_quote($_SERVER['DOCUMENT_ROOT'].'/','/').
+						'(.+)/',
+						'\1',self::fixslashes(realpath($path.$url[2]))
+					).$url[1].')';
 				},
 				// Retrieve CSS/Javascript file
 				self::getfile($path.$file)

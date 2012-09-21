@@ -11,3 +11,6 @@ tr:nth-child(odd) td {
 h1[name] span {
 	font-size:12pt;
 }
+.sprite {
+	background:url(./test.jpg) no-repeat;
+}
