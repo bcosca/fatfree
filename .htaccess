@@ -1,6 +1,5 @@
 # Enable rewrite engine and route requests to framework
 RewriteEngine On
-RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-l
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

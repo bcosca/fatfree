@@ -65,23 +65,8 @@ class Web extends Base {
 			$stats=&self::ref('STATS');
 			$stats['FILES']['minified']
 				[basename($file)]=filesize($path.$file);
-			// Rewrite relative URLs in CSS
-			$src.=preg_replace_callback(
-				'/\b(?<=url)\((?:([\"\']?)(.+?)\1)\)/s',
-				function($url) use($path,$file) {
-					// Ignore absolute URLs
-					if (preg_match('/https?:/',$url[2]) ||
-						!is_file($path.$url[2]))
-						return $url[0];
-					return '('.$url[1].preg_replace(
-						'/'.preg_quote($_SERVER['DOCUMENT_ROOT'].'/','/').
-						'(.+)/',
-						'\1',self::fixslashes(realpath($path.$url[2]))
-					).$url[1].')';
-				},
-				// Retrieve CSS/Javascript file
-				self::getfile($path.$file)
-			);
+			// Retrieve CSS/Javascript file
+			$src.=self::getfile($path.$file);
 		}
 		$ptr=0;
 		$dst='';

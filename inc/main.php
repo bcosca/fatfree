@@ -458,7 +458,6 @@ class Main extends F3instance {
 		$this->set('a',1);
 		$this->set('b',2);
 		$this->set('c',array('{{@a}}',array('{{@b}}')),FALSE,TRUE);
-		var_dump($this->get('c'));
 		$this->expect(
 			$this->get('c')==array(1,array(2)),
 			'Deeply-nested tokens in framework array variable replaced',
@@ -3436,7 +3435,7 @@ class Main extends F3instance {
 			$this->set('QUIET',TRUE);
 			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/simple.css');
 			$this->expect(
-				$text=='div *{text-align:center;}#content{border:1px #000 solid;text-shadow:#ccc -1px -1px 0px;}tr:nth-child(odd) td{line-height:1.2em;}h1[name] span{font-size:12pt;}.sprite{background:url(gui/test.jpg) no-repeat;}',
+				$text=='div *{text-align:center;}#content{border:1px #000 solid;text-shadow:#ccc -1px -1px 0px;}tr:nth-child(odd) td{line-height:1.2em;}h1[name] span{font-size:12pt;}.sprite{background:url(./test.jpg) no-repeat;}',
 				'CSS minified properly - necessary (and IE-problematic) spaces preserved',
 				'CSS minified incorrectly: '.$this->stringify($text)
 			);
