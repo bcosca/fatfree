@@ -318,7 +318,7 @@ class Base {
 			else {
 				if (preg_match('/@(\w+)/',$match,$token))
 					// Token found
-					$match=self::ref($token[1]);
+					$match=self::resolve('{{'.$token[1].'}}');
 				if ($set) {
 					// Create property/array element if not found
 					if ($obj) {
@@ -740,7 +740,10 @@ class F3 extends Base {
 			@param $resolve bool
 			@public
 	**/
-	static function set($key,$val,$persist=FALSE,$resolve=TRUE) {
+	static function set($key,$val,$persist=FALSE,$resolve=NULL) {
+		$all=($resolve===TRUE);
+		if (is_null($resolve))
+			$resolve=TRUE;
 		if (preg_match('/{{.+}}/',$key))
 			// Variable variable
 			$key=self::resolve($key);
@@ -773,12 +776,12 @@ class F3 extends Base {
 		if ($resolve) {
 			if (is_string($val))
 				$val=self::resolve($val);
-			elseif (is_array($val)) {
+			elseif (is_array($val) && $all) {
 				$var=array();
 				// Recursive token substitution
 				foreach ($val as $subk=>$subv) {
 					$subp=$key.'['.var_export($subk,TRUE).']';
-					self::set($subp,$subv);
+					self::set($subp,$subv,FALSE,$all);
 					$val[$subk]=self::ref($subp);
 				}
 			}
