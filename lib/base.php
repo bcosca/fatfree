@@ -551,13 +551,17 @@ class Base {
 		Lock-aware file writer
 			@param $file string
 			@param $data string
+			@param $append bool
 			@public
 	**/
-	static function putfile($file,$data) {
+	static function putfile($file,$data,$append=FALSE) {
 		if (!function_exists('flock'))
 			$out=self::mutex(
 				function() use($file,$data) {
-					return file_put_contents($file,$data,LOCK_EX);
+					$flag=LOCK_EX;
+					if ($append)
+						$flag=$flag|FILE_APPEND;
+					return file_put_contents($file,$data,$arg);
 				},
 				$file
 			);
