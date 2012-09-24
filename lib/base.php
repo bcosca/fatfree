@@ -318,7 +318,7 @@ class Base {
 			else {
 				if (preg_match('/@(\w+)/',$match,$token))
 					// Token found
-					$match=self::resolve('{{'.$token[0].'}}');
+					$match=self::resolve('{{'.$match.'}}');
 				if ($set) {
 					// Create property/array element if not found
 					if ($obj) {
