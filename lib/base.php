@@ -1810,8 +1810,9 @@ class F3 extends Base {
 			self::mock('GET '.$_SERVER['argv'][1]);
 		}
 		// Hydrate framework variables
-		$base=self::fixslashes(
-			preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME']));
+		$base=implode('/',array_map('urlencode',
+			explode('/',self::fixslashes(
+			preg_replace('/\/[^\/]+/','',$_SERVER['SCRIPT_NAME'])))));
 		$scheme=PHP_SAPI=='cli'?
 			NULL:
 			isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']!='off' ||
