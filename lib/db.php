@@ -224,15 +224,16 @@ class DB extends Base {
 		$cmd=array(
 			'sqlite2?'=>array(
 				'PRAGMA table_info('.$table.');',
-				'name','pk',1,'type','notnull',0),
+				'name','pk',1,'type','notnull',0,'dflt_value'),
 			'mysql'=>array(
 				'SHOW columns FROM `'.$this->dbname.'`.'.$table.';',
-				'Field','Key','PRI','Type','Null','YES'),
+				'Field','Key','PRI','Type','Null','YES','Default'),
 			'mssql|sqlsrv|sybase|dblib|pgsql|odbc'=>array(
 				'SELECT '.
 					'c.column_name AS field,'.
 					'c.data_type AS type,'.
 					'c.is_nullable AS null,'.
+                    'c.column_default AS default,'.
 					't.constraint_type AS pkey '.
 				'FROM information_schema.columns AS c '.
 				'LEFT OUTER JOIN '.
@@ -263,13 +264,14 @@ class DB extends Base {
 							'c.table_catalog':'c.table_schema').
 							'=\''.$this->dbname.'\''):'').
 				';',
-				'field','pkey','PRIMARY KEY','type','null','YES'),
+				'field','pkey','PRIMARY KEY','type','null','YES','default'),
 			'ibm'=>array(
 				'SELECT DISTINCT '.
 					'c.colname AS field,'.
 					'c.typename AS type,'.
 					'c.nulls AS null,'.
 					'tc.type AS key'.
+                    'c.default AS default'.
 				'FROM syscat.columns AS c '.
 				'LEFT JOIN '.
 					'(syscat.keycoluse AS k '.
@@ -283,7 +285,7 @@ class DB extends Base {
 						'c.tabname=k.tabname AND '.
 						'c.colname=k.colname '.
 				'WHERE UPPER(c.tabname)=\''.strtoupper($table).'\';',
-				'field','key','P','type','null','Y'),
+				'field','key','P','type','null','Y','default'),
 		);
 		$match=FALSE;
 		foreach ($cmd as $backend=>$val)
@@ -306,8 +308,9 @@ class DB extends Base {
 			'pkname'=>$val[2],
 			'pkval'=>$val[3],
 			'type'=>$val[4],
-			'nullname'=>$val[5],
-			'nullval'=>$val[6]
+            'nullname'=>$val[5],
+            'nullval'=>$val[6],
+            'default'=>$val[7]
 		);
 	}
 
