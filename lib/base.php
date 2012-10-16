@@ -1305,7 +1305,7 @@ class F3 extends Base {
 					'(?P<\1>[^\/&\?]+)',
 					// Wildcard character in URI
 					str_replace('\*','(.*)',preg_quote($uri,'/'))
-				).'\/?(?:\?.*)?$/'.(self::$vars['CASELESS']?'':'i').'um',
+				).'\/?(?:\?.*)?$/'.(self::$vars['CASELESS']?'i':'').'um',
 				$req,$args))
 				continue;
 			$wild=is_int(strpos($uri,'/*'));
@@ -1812,7 +1812,7 @@ class F3 extends Base {
 		// Hydrate framework variables
 		$base=implode('/',array_map('urlencode',
 			explode('/',self::fixslashes(
-			preg_replace('/\/[^\/]+/','',$_SERVER['SCRIPT_NAME'])))));
+			preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME'])))));
 		$scheme=PHP_SAPI=='cli'?
 			NULL:
 			isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']!='off' ||
