@@ -581,6 +581,12 @@ class Main extends F3instance {
 		);
 
 		$this->expect(
+			$this->get('mlstr')=='this'.PHP_EOL.'is'.PHP_EOL.'multiline',
+			'Multiline String variable found',
+			'Missing multiline string variable'
+		);
+
+		$this->expect(
 			$this->get('hash')===array('x'=>1,'y'=>2,'z'=>3),
 			'Hash variable found',
 			'Missing hash variable'
