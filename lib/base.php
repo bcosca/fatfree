@@ -1294,8 +1294,9 @@ class F3 extends Base {
 		// Detailed routes get matched first
 		krsort(self::$vars['ROUTES']);
 		$time=time();
+		$case=self::$vars['CASELESS']?'i':'';
 		$req=preg_replace('/^'.preg_quote(self::$vars['BASE'],'/').
-			'\b(.+)/'.(self::$vars['CASELESS']?'i':''),'\1',
+			'\b(.+)/'.$case,'\1',
 			rawurldecode($_SERVER['REQUEST_URI']));
 		foreach (self::$vars['ROUTES'] as $uri=>$route) {
 			if (!preg_match('/^'.
@@ -1305,7 +1306,7 @@ class F3 extends Base {
 					'(?P<\1>[^\/&\?]+)',
 					// Wildcard character in URI
 					str_replace('\*','(.*)',preg_quote($uri,'/'))
-				).'\/?(?:\?.*)?$/'.(self::$vars['CASELESS']?'':'i').'um',
+				).'\/?(?:\?.*)?$/'.$case.'um',
 				$req,$args))
 				continue;
 			$wild=is_int(strpos($uri,'/*'));
