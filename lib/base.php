@@ -972,7 +972,9 @@ class F3 extends Base {
 			$cfg=array();
 			$sec='';
 			if ($ini=file($file))
-				foreach ($ini as $line) {
+				for ($i=0,$c=count($ini);$i<$c;$i++) {
+					// cut off CR / LF
+					$line = rtrim($ini[$i],"\r\n");
 					preg_match('/^\s*(?:(;)|\[(.+)\]|(.+?)\s*=\s*(.+))/',
 						$line,$parts);
 					if (isset($parts[1]) && $parts[1])
@@ -982,6 +984,17 @@ class F3 extends Base {
 						// Section
 						$sec=strtolower($parts[2]);
 					elseif (isset($parts[3]) && $parts[3]) {
+						if (substr($line, -1) == "\\") {
+							// multiline string
+							$lines = rtrim($parts[4],"\\");
+							while (++$i < $c) {
+								$line = rtrim($ini[$i],"\r\n");
+								$lines.= PHP_EOL .rtrim($line,"\\");
+								if (substr($line,-1) !== "\\")
+									break;
+							}
+							$parts[4] = $lines;
+						}
 						$parts[4]=preg_replace('/(?<=")(.+?)(?=")/',
 							"\x00\\1",$parts[4]);
 						// Key-value pair
