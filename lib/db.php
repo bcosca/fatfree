@@ -459,6 +459,9 @@ class Axon extends Base {
 		$self=get_class($this);
 		$axon=new $self($this->table,$this->db,FALSE);
 		foreach ($row as $field=>$val) {
+			if (method_exists($axon,'beforeLoad') &&
+				$axon->beforeLoad()===FALSE)
+				continue;
 			if (array_key_exists($field,$this->fields)) {
 				$axon->fields[$field]=$val;
 				if ($this->pkeys &&
@@ -469,6 +472,8 @@ class Axon extends Base {
 				$axon->adhoc[$field]=array($this->adhoc[$field][0],$val);
 			if ($axon->empty && $val)
 				$axon->empty=FALSE;
+			if (method_exists($axon,'afterLoad'))
+				$axon->afterLoad();
 		}
 		return $axon;
 	}
@@ -973,7 +978,7 @@ class Axon extends Base {
 			@public
 	**/
 	function __unset($field) {
-		trigger_error(str_replace('@FIELD',$field,self::TEXT_AxonCantUnset));
+		trigger_error(self::TEXT_AxonCantUnset);
 	}
 
 	/**
