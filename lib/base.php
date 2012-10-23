@@ -127,6 +127,7 @@ class Base {
 	//@{ Global variables and references to constants
 	protected static
 		$vars,
+		$classes,
 		$null=NULL,
 		$true=TRUE,
 		$false=FALSE;
@@ -1212,7 +1213,6 @@ class F3 extends Base {
 			@public
 	**/
 	static function call($funcs,$listen=FALSE) {
-		$classes=array();
 		$funcs=is_string($funcs)?self::split($funcs):array($funcs);
 		$out=NULL;
 		foreach ($funcs as $func) {
@@ -1254,21 +1254,27 @@ class F3 extends Base {
 			$oop=is_array($func) &&
 				(is_object($func[0]) || is_string($func[0]));
 			if ($listen && $oop &&
-				method_exists($func[0],$before='beforeRoute') &&
-				!in_array($func[0],$classes)) {
+				method_exists($func[0],$before='beforeRoute')) {
 				// Execute beforeRoute() once per class
-				if (call_user_func(array($func[0],$before))===FALSE)
-					return FALSE;
-				$classes[]=is_object($func[0])?get_class($func[0]):$func[0];
+				$key=is_object($func[0])?get_class($func[0]):$func[0];
+				if (!isset(self::$classes[$key]) ||
+					!self::$classes[$key][0]) {
+					self::$classes[$key][0]=TRUE;
+					if (call_user_func(array($func[0],$before))===FALSE)
+						return FALSE;
+				}
 			}
 			$out=call_user_func($func);
 			if ($listen && $oop &&
-				method_exists($func[0],$after='afterRoute') &&
-				!in_array($func[0],$classes)) {
+				method_exists($func[0],$after='afterRoute')) {
 				// Execute afterRoute() once per class
-				if (call_user_func(array($func[0],$after))===FALSE)
-					return FALSE;
-				$classes[]=is_object($func[0])?get_class($func[0]):$func[0];
+				$key=is_object($func[0])?get_class($func[0]):$func[0];
+				if (!isset(self::$classes[$key]) ||
+					!self::$classes[$key][1]) {
+					self::$classes[$key][1]=TRUE;
+					if (call_user_func(array($func[0],$after))===FALSE)
+						return FALSE;
+				}
 			}
 		}
 		return $out;
