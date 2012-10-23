@@ -1258,6 +1258,7 @@ class F3 extends Base {
 				// Execute beforeRoute() once per class
 				$key=is_object($func[0])?get_class($func[0]):$func[0];
 				if (!isset(self::$classes[$key]) ||
+					!isset(self::$classes[$key][0]) ||
 					!self::$classes[$key][0]) {
 					self::$classes[$key][0]=TRUE;
 					if (call_user_func(array($func[0],$before))===FALSE)
@@ -1270,6 +1271,7 @@ class F3 extends Base {
 				// Execute afterRoute() once per class
 				$key=is_object($func[0])?get_class($func[0]):$func[0];
 				if (!isset(self::$classes[$key]) ||
+					!isset(self::$classes[$key][1]) ||
 					!self::$classes[$key][1]) {
 					self::$classes[$key][1]=TRUE;
 					if (call_user_func(array($func[0],$after))===FALSE)
