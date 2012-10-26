@@ -743,21 +743,24 @@ class Axon extends Base {
 			// Insert record
 			$fields=$values='';
 			$bind=array();
-			foreach ($this->fields as $field=>$val)
+			foreach ($this->fields as $field=>$val) {
+				$fields.=($fields?',':'').
+					(preg_match('/^mysql$/',$this->db->backend)?
+						('`'.$field.'`'):$field);
 				if (isset($this->mod[$field])) {
-					$fields.=($fields?',':'').
-						(preg_match('/^mysql$/',$this->db->backend)?
-							('`'.$field.'`'):$field);
 					$values.=($values?',':'').':'.$field;
 					$bind[':'.$field]=array($val,$this->types[$field]);
 				}
+			}
 			if ($bind)
 				$this->db->exec(
 					'INSERT INTO '.$this->table.' ('.$fields.') '.
 						'VALUES ('.$values.');',$bind);
-			if(preg_match('/pgsql/',$this->db->backend))
-					$this->_id=$this->db->pdo->lastinsertid($this->table.'_'.end($this->pkeys).'_seq');
-			else    $this->_id=$this->db->pdo->lastinsertid();
+			$this->_id=$this->db->pdo->lastinsertid(
+				preg_match('/pgsql/',$this->db->backend)?
+					($this->table.'_'.end($this->pkeys).'_seq'):
+					NULL
+			);
 			if ($id)
 				$this->pkeys[$id]=$this->_id;
 		}
