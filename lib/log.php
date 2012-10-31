@@ -60,7 +60,7 @@ class Log extends Base {
 		$trace=debug_backtrace(FALSE);
 		fwrite(
 			$this->handle,
-			date('r').' ['.$_SERVER['REMOTE_ADDR'].'] '.
+			date('r').(isset($_SERVER['REMOTE_ADDR']) ? ' ['.$_SERVER['REMOTE_ADDR'].'] ' : '').
 				self::fixslashes($trace[0]['file']).':'.
 				$trace[0]['line'].' '.
 				preg_replace('/\s+/',' ',$text)."\n"
