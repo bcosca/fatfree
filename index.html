@@ -1742,6 +1742,17 @@ $list=$place->afind('state="New York"');
 foreach ($list as $obj)
 	echo $obj['city'].', '.$obj['country'];</pre>
 
+<p>If you need to convert an Axon to an associative array, use Axon's <code>cast()</code> method:-</p>
+
+<pre>$place=new Axon('places');
+$place->find('id=1');
+$place->view_count++;
+$place->save();
+$place_array = $place->cast();
+foreach ($place_array as $key=>$val)
+	echo $key ."=". $val ."<br>";
+</pre>
+
 <p>To retrieve the number of records in a table that match a certain condition, use the <code>found()</code> method.</p>
 
 <pre>if (!$user->found('visits&gt;10'))
