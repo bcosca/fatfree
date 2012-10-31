@@ -1197,7 +1197,7 @@ class F3 extends Base {
 					$method.' '.$url,
 					$ref->isStatic()?
 						array($class,$func):
-						array(new $class,$func),
+						$class.'->'.$func,
 					$ttl,$throttle,$hotlink
 				);
 				unset($ref);
