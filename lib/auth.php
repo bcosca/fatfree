@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Auth
-		@version 2.0.13
+		@version 2.1.0
 **/
 
 //! Plugin for various user authentication methods

@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Base
-		@version 2.0.13
+		@version 2.1.0
 **/
 
 //! Base structure
@@ -21,7 +21,7 @@ class Base {
 	//@{ Framework details
 	const
 		TEXT_AppName='Fat-Free Framework',
-		TEXT_Version='2.0.13',
+		TEXT_Version='2.1.0',
 		TEXT_AppURL='http://fatfree.sourceforge.net';
 	//@}
 
@@ -1195,9 +1195,7 @@ class F3 extends Base {
 				$ref=new ReflectionMethod($class,$func);
 				self::route(
 					$method.' '.$url,
-					$ref->isStatic()?
-						array($class,$func):
-						$class.'->'.$func,
+					$class.($ref->isStatic()?'::':'->').$func,
 					$ttl,$throttle,$hotlink
 				);
 				unset($ref);

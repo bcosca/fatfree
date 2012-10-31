@@ -1,11 +1,22 @@
 CHANGELOG
 
+2.1.0
+*	NEW: Template::extend() feature
+*	NEW: ESCAPE variable for auto-escaping template tokens; disabled by
+	default for backwards-compatibility
+*	NEW: PATTERN variable for capturing raw route pattern
+*	NEW: Custom markup tags for template engine
+*	NEW: Multiline config() strings
+*	NEW: Optional FILE_APPEND flag for putfile()
+*	Bug fix: Incorrect lastInsertId() for PostgreSQL
+*	Bug fix: Missing pipe in custom tag regex
+*	Bug fix: Context error in cached()
+*	Bug fix: Multiple e-mail attachments (Issue #143)
+*	Bug fix: map() class instantiation (Issue #136)
+*	Lots of code optimizations
+
 2.0.13
 *	NEW: TZ variable; default value: UTC
-*	NEW: Custom markup tags for template engine, e.g. <F3:paginate/> will call
-	Paginate class and pass HTML/XML attributes and inner content to
-	constructor at compile time; Called class must return valid HTML/XML
-	content
 *	Cache engine rewritten; Now supports PHP shmop extension
 *	Add ReST support for TRACE and CONNECT
 *	Set default_charset to UTF-8

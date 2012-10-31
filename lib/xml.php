@@ -12,7 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package Network
-		@version 2.0.13
+		@version 2.1.0
 **/
 
 //! XML data conversion tools

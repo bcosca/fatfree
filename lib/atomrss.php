@@ -12,8 +12,7 @@
 	Bong Cosca <bong.cosca@yahoo.com>
 
 		@package AtomRSS
-		@version 2.0.13
-**/
+		@version 2.1.0
 
 //! Atom/RSS feed reader
 class AtomRSS extends Base {
