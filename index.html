@@ -23,7 +23,7 @@
 					<div style="text-align:center; margin:15px 0;">
 						<h3 style="color:#000; font-size:30px; text-shadow:0 1px 1px #fff;"><a href="http://github.com/bcosca/fatfree/downloads">Download</a></h4>
 						<h4 style="color:#000; font-size:22px; text-shadow:0 1px 1px #fff;">Stable Version</h4>
-						<h2 style="color:#f33; font-size:72px; line-height:72px; font-weight:bold; text-shadow:0 2px 1px #fff; margin:-10px 0 0 0; -moz-border-radius:10px;"><a href="http://github.com/bcosca/fatfree/downloads">2.0.13</a></h2>
+						<h2 style="color:#f33; font-size:72px; line-height:72px; font-weight:bold; text-shadow:0 2px 1px #fff; margin:-10px 0 0 0; -moz-border-radius:10px;"><a href="http://github.com/bcosca/fatfree/downloads">2.1.0</a></h2>
 					</div>
 					<div class="submenu">
 						<p style="margin:10px 0 20px 0; height:90px;"><script id="_waubwk">var _wau = _wau || []; _wau.push(["map", "gews6wwlk4rw", "bwk", "180", "90", "night" , "default-red"]);(function() { var s=document.createElement("script");s.src="http://widgets.amung.us/map.js"; s.async=true; document.getElementsByTagName("head")[0].appendChild(s); })();</script></p>
@@ -91,9 +91,9 @@
 						<p>The philosophy behind the framework and its approach to the Model-View-Controller design pattern is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.</p>
 						</blockquote>
 					<div class="articles">
-			<h3>Version 2.0 Has Arrived</h3>
+			<h3>Version 2.1 Has Arrived</h3>
 		<div class="article">
-									<p>The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that took several months to develop and refine, version 2.0 is finally available for download. Still as user-friendly as before. Same lightweight footprint. Yet sturdier and more powerful than ever!</p>
+									<p>The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that took several months to develop and refine, version 2.1 is finally available for download. Still as user-friendly as before. Same lightweight footprint. Yet sturdier and more powerful than ever!</p>
 
 <p>It is highly recommended that users upgrade to this new version to take advantage of the latest features and significant performance improvements. Check out the <a href="#migration-guide">Migration Guide</a>.</p>
 					</div>
@@ -132,13 +132,13 @@
 
 <h5>Got an Existing 1.x-Based Application?</h5>
 
-<p>Upgrading to 2.0 isn't as painful as you might imagine. To find out how easy it is to transition from the old version of the framework to the latest release, read the <a href="#migration-guide">Migration Guide</a>.</p>
+<p>Upgrading to 2.1 isn't as painful as you might imagine. To find out how easy it is to transition from the old version of the framework to the latest release, read the <a href="#migration-guide">Migration Guide</a>.</p>
 
 </blockquote>
 					<div class="articles">
 			<h3>Enough Said - See For Yourself</h3>
 		<div class="article">
-									<p>Unpack the contents of <code>fatfree-2.0.x.zip</code> anywhere in your hard drive. By default, the framework file and optional plug-ins are located in the <code>lib/</code> path. Organize your directory structures any way you want. You may move the default folders to a path that's not Web-accessible for better security. Delete the plug-ins that you don't need. You can always restore them later and F3 will detect their presence automatically.</p>
+									<p>Unpack the contents of <code>fatfree-2.1.x.zip</code> anywhere in your hard drive. By default, the framework file and optional plug-ins are located in the <code>lib/</code> path. Organize your directory structures any way you want. You may move the default folders to a path that's not Web-accessible for better security. Delete the plug-ins that you don't need. You can always restore them later and F3 will detect their presence automatically.</p>
 
 <blockquote>
 
@@ -584,7 +584,7 @@ class ipad {
 
 <blockquote>
 
-<h5>New in 2.0</h5>
+<h5>New in 2.1</h5>
 
 <p>The latest release provides an alternative namespacing scheme for those who prefer to store all autoloaded classes in a single folder. Instead of a directory-based hierarchy like <code>autoload/gadgets/android.php</code>, and <code>autoload/gadgets/ipad.php</code>, you can use a flat structure like <code>autoload/gadgets.android.php</code> and <code>autoload/gadgets.ipad.php</code>.</p>
 					</div>
@@ -1046,7 +1046,7 @@ F3::set('content','wiki.htm');</pre>
 
 <blockquote>
 
-<h5>New in 2.0</h5>
+<h5>New in 2.1</h5>
 <p>If your template has no <code>&lt;F3:false&gt;</code> content, the <code>&lt;F3:true&gt;</code> opening and closing tags are optional.</p>
 
 </blockquote>
@@ -1188,7 +1188,7 @@ mail(F3::get('to'),F3::get('subject'),F3::serve('email.txt','text/html'));</pre>
 
 <blockquote>
 
-<h5>New in 2.0</h5>
+<h5>New in 2.1</h5>
 
 <p>Here's an alternative solution using the new SMTP plug-in:-</p>
 
@@ -2425,7 +2425,7 @@ Refer to the PHP manual for the appropriate DSN.</li>
 
 <h5><small>string</small> E404, E500</h5>
 
-<p>Deprecated in 2.0. <code>ONERROR</code> provides greater error handling control and better integration with HTML layouts, than the more restrictive <code>E404</code> and <code>E500</code> variables which are limited to templates (and can go out of sync with a site's main layout).</p>
+<p>Deprecated in 2.1. <code>ONERROR</code> provides greater error handling control and better integration with HTML layouts, than the more restrictive <code>E404</code> and <code>E500</code> variables which are limited to templates (and can go out of sync with a site's main layout).</p>
 
 <h5><small>string</small> ENCODING</h5>
 
@@ -2608,11 +2608,11 @@ Refer to the PHP manual for the appropriate DSN.</li>
 					</div>
 		</div>
 					<a name="migration-guide"><h2>Migration Guide</h2></a>
-										<p>This guide is intended to ease the transition from version 1.x of the framework to the new 2.0 platform. While some 1.x applications will still run without any change, there exist incompatibilities and behavioral differences between the versions as described below.</p> 
+										<p>This guide is intended to ease the transition from version 1.x of the framework to the new 2.1 platform. While some 1.x applications will still run without any change, there exist incompatibilities and behavioral differences between the versions as described below.</p> 
  
 <h4>autoload/ Folder, AUTOLOAD and PLUGINS</h4> 
  
-<p>Prior to 2.0, the default location of F3 1.x plugins was the <code>autoload/</code> folder. The plugins in the 2.0 distribution package are now situated in the <code>lib/</code> folder, sharing the same location with the framework core, now <code>base.php</code> (<code>F3.php</code> previously).</p> 
+<p>Prior to 2.1, the default location of F3 1.x plugins was the <code>autoload/</code> folder. The plugins in the 2.1 distribution package are now situated in the <code>lib/</code> folder, sharing the same location with the framework core, now <code>base.php</code> (<code>F3.php</code> previously).</p> 
  
 <p>The relocation of the plugins is intended to help separate the framework's auto-loaded classes (i.e., the plugins) from the application's. As such, the <code>AUTOLOAD</code> variable can now be used to define the search path for auto-loaded classes belonging to the application, while the new <code>PLUGINS</code> variable instructs F3 to look for framework plugins in a specified folder (same path as <code>base.php</code> by default).</p> 
  
@@ -2626,11 +2626,11 @@ Refer to the PHP manual for the appropriate DSN.</li>
  
 <pre>F3::route('GET /','home.php');</code></pre> 
  
-<p>The <code>IMPORTS</code> variable in 2.0 allows multiple paths, e.g. <code>F3::set('IMPORTS','app/controllers/;app/models/');</code></p> 
+<p>The <code>IMPORTS</code> variable in 2.1 allows multiple paths, e.g. <code>F3::set('IMPORTS','app/controllers/;app/models/');</code></p> 
  
 <h4>Template Engine</h4> 
  
-<p>The F3 template engine has been rewritten from scratch to improve overall performance, add new features and fix various issues present in 1.x templates. What used to be a 1.x expression like <code>{@greeting}</code> should be rewritten as <code>&#123;&#123;@greeting&#125;&#125;</code> in 2.0.</p> 
+<p>The F3 template engine has been rewritten from scratch to improve overall performance, add new features and fix various issues present in 1.x templates. What used to be a 1.x expression like <code>{@greeting}</code> should be rewritten as <code>&#123;&#123;@greeting&#125;&#125;</code> in 2.1.</p> 
  
 <p>The new F3 template engine now allows access to properties of framework variables containing objects:<p> 
  
@@ -2650,17 +2650,17 @@ F3::set('myvar',$foo);</pre>
  
 <pre>F3::route('GET /about',array(new myClass,'about'));</pre> 
  
-<p>2.0 allows this too:-</p> 
+<p>2.1 allows this too:-</p> 
  
 <pre>F3::route('GET /about','myClass->about');</pre> 
  
 <h4>RELEASE and DEBUG</h4> 
  
-<p>The <code>RELEASE</code> global variable has been deprecated. It was formerly used to suppress the stack trace in error pages. 2.0 unites this feature with the <code>DEBUG</code> variable, so assigning <code>DEBUG</code> a value of zero will now achieve the same effect. Stack trace verbosity level can now be adjusted from 1 to 3.</p> 
+<p>The <code>RELEASE</code> global variable has been deprecated. It was formerly used to suppress the stack trace in error pages. 2.1 unites this feature with the <code>DEBUG</code> variable, so assigning <code>DEBUG</code> a value of zero will now achieve the same effect. Stack trace verbosity level can now be adjusted from 1 to 3.</p> 
  
 <h4>DB</h4> 
  
-<p>A significant difference in 1.x and 2.0 is the way <code>DB</code> is defined and how it interacts with the SQL plugin. The structure of the <code>DB</code> variable has changed - from an associative array to a SQL <code>DB</code> object, to eliminate a vulnerability in some 1.x-based applications. A <code>DB</code> definition in 1.x that looks like:-</p> 
+<p>A significant difference in 1.x and 2.1 is the way <code>DB</code> is defined and how it interacts with the SQL plugin. The structure of the <code>DB</code> variable has changed - from an associative array to a SQL <code>DB</code> object, to eliminate a vulnerability in some 1.x-based applications. A <code>DB</code> definition in 1.x that looks like:-</p> 
  
 <pre>F3::set('DB',
 	array(
@@ -2688,20 +2688,20 @@ F3::set('myvar',$foo);</pre>
  
 <h4>Axon</h4> 
  
-<p>One thing you might notice is the absence of a separate <code>axon.php</code> file containing the pre-2.0 Axon ORM. For performance reasons, the <code>Axon</code> class is now defined in the <code>db.php</code> file that contains the SQL handler (Axon's dependency). Since it's not appropriate to instantiate an <code>Axon</code> object without instantiating a <code>DB</code> object necessary to connect to a SQL back-end, both classes have been merged in a single file.</p> 
+<p>One thing you might notice is the absence of a separate <code>axon.php</code> file containing the pre-2.1 Axon ORM. For performance reasons, the <code>Axon</code> class is now defined in the <code>db.php</code> file that contains the SQL handler (Axon's dependency). Since it's not appropriate to instantiate an <code>Axon</code> object without instantiating a <code>DB</code> object necessary to connect to a SQL back-end, both classes have been merged in a single file.</p> 
  
-<p>Axon 2.0 advocates the use of parameterized queries for increased security. For example:-</p> 
+<p>Axon 2.1 advocates the use of parameterized queries for increased security. For example:-</p> 
  
 <pre>$axon->load('id="'.$_POST['id'].'"');</pre> 
  
-<p>Above line is vulnerable to a SQL attack, hence version 2.0 recommends the following revision:-</p> 
+<p>Above line is vulnerable to a SQL attack, hence version 2.1 recommends the following revision:-</p> 
  
 <pre>$axon->load(array('id=:id',array(':id'=>$_POST['id'])));
 // or $axon->load(array('id=?',array(1=>$_POST['id'])));</pre> 
  
 <p>Axon methods <code>load()</code>, <code>erase()</code>, <code>find()</code>, <code>afind()</code>, <code>findone()</code>, and <code>afindone()</code> are aware of this structural variant in the SQL search criteria.</p> 
  
-<p>Another difference in 2.0 is Axon's <code>find()</code> behavior. The result of a <code>find()</code> is now an array of <code>Axon</code> objects, instead of an array of records (where each record is represented as an associative array of field name-value pairs). The new <code>afind()</code> method mimics 1.x <code>find()</code> behavior.</p> 
+<p>Another difference in 2.1 is Axon's <code>find()</code> behavior. The result of a <code>find()</code> is now an array of <code>Axon</code> objects, instead of an array of records (where each record is represented as an associative array of field name-value pairs). The new <code>afind()</code> method mimics 1.x <code>find()</code> behavior.</p> 
  
 <p>Getting the <code>lastInsertId()</code> in 1.x involved:-</p> 
  
@@ -2710,7 +2710,7 @@ $item->description=$_POST['desc'];
 $item->save();
 echo F3::get('DB')->pdo->lastInsertId();</pre> 
  
-<p>which is not as elegant as the 2.0 equivalent:-</p> 
+<p>which is not as elegant as the 2.1 equivalent:-</p> 
  
 <pre>$item=new Axon('items');
 $item->description=$_POST['desc'];
@@ -2719,19 +2719,19 @@ echo $item->_id;</pre>
  
 <h4>M2</h4> 
  
-<p>M2's behavior closely follows the change in Axon's <code>find()</code> and <code>afind()</code>. You can expect the former to generate an array of M2 objects, while the latter produces an array of arrays. 2.0 also introduces <code>afindone()</code></p> 
+<p>M2's behavior closely follows the change in Axon's <code>find()</code> and <code>afind()</code>. You can expect the former to generate an array of M2 objects, while the latter produces an array of arrays. 2.1 also introduces <code>afindone()</code></p> 
  
 <h4>E404 and E500</h4> 
  
-<p>The special 1.x global variables <code>E404</code> and <code>E500</code> which point to user-defined error templates have been deprecated. 2.0 has a more powerful <code>ONERROR</code> variable. It can be used to define a callback function or method that will be invoked by the framework in the event of an error.</p> 
+<p>The special 1.x global variables <code>E404</code> and <code>E500</code> which point to user-defined error templates have been deprecated. 2.1 has a more powerful <code>ONERROR</code> variable. It can be used to define a callback function or method that will be invoked by the framework in the event of an error.</p> 
  
 <h4>PROXY</h4> 
  
-<p>Using the framework's <code>F3</code> prefix as a proxy for another class is now discouraged. A method call like <code>F3::sql()</code> instead of the more appropriate <code>DB::sql()</code>, or <code>F3::captcha()</code> instead of <code>Graphics::captcha()</code> is not advised. The <code>PROXY</code> variable in 2.0 can be used to maintain backward-compatibility. Assigning <code>TRUE</code> to <code>PROXY</code> allows the use of the <code>F3</code> prefix as a substitute for the plugin or auto-loaded class name. This variable is set to <code>FALSE</code> by default. <code>PROXY</code> will be deprecated in a future framework release.</p> 
+<p>Using the framework's <code>F3</code> prefix as a proxy for another class is now discouraged. A method call like <code>F3::sql()</code> instead of the more appropriate <code>DB::sql()</code>, or <code>F3::captcha()</code> instead of <code>Graphics::captcha()</code> is not advised. The <code>PROXY</code> variable in 2.1 can be used to maintain backward-compatibility. Assigning <code>TRUE</code> to <code>PROXY</code> allows the use of the <code>F3</code> prefix as a substitute for the plugin or auto-loaded class name. This variable is set to <code>FALSE</code> by default. <code>PROXY</code> will be deprecated in a future framework release.</p> 
  
 <h4>GUI and UI</h4> 
  
-<p>2.0 introduces the <code>UI</code> variable, which can be used as an alias of <code>GUI</code>.</p> 
+<p>2.1 introduces the <code>UI</code> variable, which can be used as an alias of <code>GUI</code>.</p> 
  
 <p><code>Web::minify()</code> and <code>Graphics::thumb()</code> dependence on <code>GUI</code> variable have been removed. Path can now be any valid filesystem location.</p> 
  
@@ -2741,7 +2741,7 @@ echo $item->_id;</pre>
  
 <h4>PHP intl module</h4> 
  
-<p>2.0 does not require PHP's <code>intl</code> module anymore to localize strings. If not present in your server, F3 will use a lightweight i18n implementation of ICU formatting rules.</p> 
+<p>2.1 does not require PHP's <code>intl</code> module anymore to localize strings. If not present in your server, F3 will use a lightweight i18n implementation of ICU formatting rules.</p> 
  
 <h4>DIACRITICS</h4> 
  
@@ -2753,7 +2753,7 @@ echo $item->_id;</pre>
  
 <h4>Namespaced Classes</h4> 
  
-<p>2.0 supports both <code>namespace/class.php</code> and <code>namespace.class.php</code> file organization.</p>
+<p>2.1 supports both <code>namespace/class.php</code> and <code>namespace.class.php</code> file organization.</p>
 					<a name="in-retrospect"><h2>In Retrospect</h2></a>
 										<p>Too often we see code hyped up as "frameworks". But when it comes to applying them to real-world situations, they fall short and sloppy or at the other end of the scale - are huge beasts that behave like control freaks - which make them unusable or hostile to average programmers.</p>
 
