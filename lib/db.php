@@ -232,8 +232,8 @@ class DB extends Base {
 				'SELECT '.
 					'c.column_name AS field,'.
 					'c.data_type AS type,'.
-					'c.is_nullable AS null,'.
-                    'c.column_default AS default,'.
+					'c.is_nullable AS nullable,'.
+					'c.column_default AS defaultval,'.
 					't.constraint_type AS pkey '.
 				'FROM information_schema.columns AS c '.
 				'LEFT OUTER JOIN '.
@@ -264,14 +264,14 @@ class DB extends Base {
 							'c.table_catalog':'c.table_schema').
 							'=\''.$this->dbname.'\''):'').
 				';',
-				'field','pkey','PRIMARY KEY','type','null','YES','default'),
+				'field','pkey','PRIMARY KEY','type','nullable','YES','defaultval'),
 			'ibm'=>array(
 				'SELECT DISTINCT '.
 					'c.colname AS field,'.
 					'c.typename AS type,'.
 					'c.nulls AS null,'.
 					'tc.type AS key'.
-                    'c.default AS default'.
+					'c.default AS default'.
 				'FROM syscat.columns AS c '.
 				'LEFT JOIN '.
 					'(syscat.keycoluse AS k '.
@@ -308,9 +308,9 @@ class DB extends Base {
 			'pkname'=>$val[2],
 			'pkval'=>$val[3],
 			'type'=>$val[4],
-            'nullname'=>$val[5],
-            'nullval'=>$val[6],
-            'default'=>$val[7]
+			'nullname'=>$val[5],
+			'nullval'=>$val[6],
+			'default'=>$val[7]
 		);
 	}
 
