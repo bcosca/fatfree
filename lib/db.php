@@ -264,7 +264,8 @@ class DB extends Base {
 							'c.table_catalog':'c.table_schema').
 							'=\''.$this->dbname.'\''):'').
 				';',
-				'field','pkey','PRIMARY KEY','type','nullable','YES','defaultval'),
+				'field','pkey','PRIMARY KEY',
+				'type','nullable','YES','defaultval'),
 			'ibm'=>array(
 				'SELECT DISTINCT '.
 					'c.colname AS field,'.
