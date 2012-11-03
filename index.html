@@ -1163,7 +1163,7 @@ F3::set('content','wiki.htm');</pre>
 <pre>MIME-Version: 1.0
 Content-type: text/html; charset=&#123;&#123;@ENCODING&#125;&#125;
 From: &lt;&#123;&#123;@from&#125;&#125;&gt;
-To: "&lt;&#123;&#123;@to&#125;&#125;&gt;
+To: ''&lt;&#123;&#123;@to&#125;&#125;&gt;
 Subject: &#123;&#123;@subject&#125;&#125;
 
 &lt;p&gt;Welcome, and thanks for joining &#123;&#123;@site&#125;&#125;!&lt;/p&gt;</pre>
@@ -1467,14 +1467,14 @@ foreach (F3::get('DB->result') as $row) {
 <p>Parameterized queries help you mitigate these risks:-</p>
 
 <pre>DB::sql(
-	'SELECT * FROM users WHERE userID=:uID",
+	'SELECT * FROM users WHERE userID=:uID',
 	array(':uID'=>F3::get('POST.userID'))
 );</pre>
 
 <p>If F3 detects that the value of the query parameter/token is a string, the underlying data access layer escapes the string and adds quotes as necessary. To override this behavior:-</p>
 
 <pre>DB::sql(
-	'SELECT * FROM users WHERE userID=:uID",
+	'SELECT * FROM users WHERE userID=:uID',
 	array(':uid'=>array(F3::get('POST.userID'),PDO::PARAM_INT))
 );</pre>
 
@@ -1750,7 +1750,7 @@ $place->view_count++;
 $place->save();
 $place_array = $place->cast();
 foreach ($place_array as $key=>$val)
-	echo $key ."=". $val ."<br>";
+	echo $key ."=". $val ."&lt;br&gt;";
 </pre>
 
 <p>To retrieve the number of records in a table that match a certain condition, use the <code>found()</code> method.</p>
@@ -1943,7 +1943,7 @@ http://submissions.ask.com/ping?sitemap=http://www.example.com/sitemap</pre>
 		),
 		array(
 			"id"=>"jane",
-			"email"=>""jane@example.com"
+			"email"=>"jane@example.com"
 		)
 	)
 );
@@ -2374,7 +2374,7 @@ echo F3::get('TEST[1].text'));</pre>
 
 <pre>&lt;ul&gt;
 	&lt;F3:repeat group="&#123;&#123;@TEST&#125;&#125;" value="&#123;&#123;@case&#125;&#125;"&gt;
-		&lt;li class="&#123;&#123;@case.result?'pass':'fail'&#125;&#125;&gt;&#123;&#123;@case.text&#125;&#125;&lt;/li&gt;
+		&lt;li class="&#123;&#123;@case.result?'pass':'fail'&#125;&#125;"&gt;&#123;&#123;@case.text&#125;&#125;&lt;/li&gt;
 	&lt;/F3:repeat&gt;
 &lt;/ul&gt;</pre>
 
