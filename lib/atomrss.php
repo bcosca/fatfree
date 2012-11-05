@@ -13,6 +13,7 @@
 
 		@package AtomRSS
 		@version 2.1.0
+**/
 
 //! Atom/RSS feed reader
 class AtomRSS extends Base {
