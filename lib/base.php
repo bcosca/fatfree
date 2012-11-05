@@ -2107,6 +2107,10 @@ class Cache extends Base {
 				if ($data=memcache_get(self::$ref,$ndx))
 					break;
 				return FALSE;
+			case 'wincache':
+				if ($data=wincache_ucache_get($ndx))
+					break;
+				return FALSE;
 			case 'folder':
 				if (is_file($file=self::$ref.$ndx) &&
 					$data=self::getfile($file))
@@ -2143,6 +2147,8 @@ class Cache extends Base {
 				return xcache_set($ndx,$data,$ttl);
 			case 'memcache':
 				return memcache_set(self::$ref,$ndx,$data,0,$ttl);
+			case 'wincache':
+				return wincache_ucache_set($ndx,$data,$ttl);
 			case 'folder':
 				return self::putfile(self::$ref.$ndx,$data);
 		}
@@ -2178,6 +2184,8 @@ class Cache extends Base {
 				return xcache_unset($ndx);
 			case 'memcache':
 				return memcache_delete(self::$ref,$ndx);
+			case 'wincache':
+				return wincache_ucache_delete($ndx);
 			case 'folder':
 				return is_file($file=self::$ref.$ndx) && unlink($file);
 		}
@@ -2192,11 +2200,11 @@ class Cache extends Base {
 		if (is_bool($dsn)) {
 			// Auto-detect backend
 			$ext=array_map('strtolower',get_loaded_extensions());
-			$grep=preg_grep('/^(apc|xcache)/',$ext);
+			$grep=preg_grep('/^(apc|wincache|xcache)/',$ext);
 			$dsn=$grep?current($grep):'folder=cache/';
 		}
 		$parts=explode('=',$dsn);
-		if (!preg_match('/apc|xcache|folder|memcache/',$parts[0]))
+		if (!preg_match('/apc|wincache|xcache|folder|memcache/',$parts[0]))
 			return;
 		self::$engine=array('type'=>$parts[0],'data'=>NULL);
 		self::$ref=NULL;
