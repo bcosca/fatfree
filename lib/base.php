@@ -2103,21 +2103,6 @@ class Cache extends Base {
 				if ($data=xcache_get($ndx))
 					break;
 				return FALSE;
-			case 'shmop':
-				if ($ref=self::$ref) {
-					$data=self::mutex(
-						function() use($ref,$ndx) {
-							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
-							return isset($dir[$ndx])?
-								shmop_read($ref,$dir[$ndx][0],$dir[$ndx][1]):
-								FALSE;
-						},
-						self::$vars['TEMP'].$_SERVER['SERVER_NAME']
-					);
-					if ($data)
-						break;
-				}
-				return FALSE;
 			case 'memcache':
 				if ($data=memcache_get(self::$ref,$ndx))
 					break;
@@ -2156,22 +2141,6 @@ class Cache extends Base {
 				return apc_store($ndx,$data,$ttl);
 			case 'xcache':
 				return xcache_set($ndx,$data,$ttl);
-			case 'shmop':
-				return ($ref=self::$ref)?
-					self::mutex(
-						function() use($ref,$ndx,$data) {
-							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
-							$edge=0xFFFF;
-							foreach ($dir as $stub)
-								$edge=$stub[0]+$stub[1];
-							shmop_write($ref,$data,$edge);
-							unset($dir[$ndx]);
-							$dir[$ndx]=array($edge,strlen($data));
-							shmop_write($ref,serialize($dir).chr(0),0);
-						},
-						self::$vars['TEMP'].$_SERVER['SERVER_NAME']
-					):
-					FALSE;
 			case 'memcache':
 				return memcache_set(self::$ref,$ndx,$data,0,$ttl);
 			case 'folder':
@@ -2207,16 +2176,6 @@ class Cache extends Base {
 				return apc_delete($ndx);
 			case 'xcache':
 				return xcache_unset($ndx);
-			case 'shmop':
-				return ($ref=self::$ref) &&
-					self::mutex(
-						function() use($ref,$ndx) {
-							$dir=unserialize(trim(shmop_read($ref,0,0xFFFF)));
-							unset($dir[$ndx]);
-							shmop_write($ref,serialize($dir).chr(0),0);
-						},
-						self::$vars['TEMP'].$_SERVER['SERVER_NAME']
-					);
 			case 'memcache':
 				return memcache_delete(self::$ref,$ndx);
 			case 'folder':
@@ -2233,30 +2192,15 @@ class Cache extends Base {
 		if (is_bool($dsn)) {
 			// Auto-detect backend
 			$ext=array_map('strtolower',get_loaded_extensions());
-			$grep=preg_grep('/^(apc|xcache|shmop)/',$ext);
+			$grep=preg_grep('/^(apc|xcache)/',$ext);
 			$dsn=$grep?current($grep):'folder=cache/';
 		}
 		$parts=explode('=',$dsn);
-		if (!preg_match('/apc|xcache|shmop|folder|memcache/',$parts[0]))
+		if (!preg_match('/apc|xcache|folder|memcache/',$parts[0]))
 			return;
 		self::$engine=array('type'=>$parts[0],'data'=>NULL);
 		self::$ref=NULL;
-		if ($parts[0]=='shmop') {
-			$self=__CLASS__;
-			self::$ref=self::mutex(
-				function() use($self) {
-					$ref=@shmop_open(fileinode(__FILE__),'c',0644,
-						$self::bytes(ini_get('memory_limit')));
-					if ($ref && !unserialize(trim(shmop_read($ref,0,0xFFFF))))
-						shmop_write($ref,serialize(array()).chr(0),0);
-					return $ref;
-				},
-				self::$vars['TEMP'].$_SERVER['SERVER_NAME']
-			);
-			if (!self::$ref)
-				return self::load('folder=cache/');
-		}
-		elseif (isset($parts[1])) {
+		if (isset($parts[1])) {
 			if ($parts[0]=='memcache') {
 				if (extension_loaded('memcache'))
 					foreach (self::split($parts[1]) as $server) {
