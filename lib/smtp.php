@@ -34,7 +34,7 @@ class SMTP extends Base {
 		SMTP_Content='Content-Type',
 		SMTP_Disposition='Content-Disposition',
 		SMTP_Encoding='Content-Transfer-Encoding',
-		SMTP_MIME='MIME-Type';
+		SMTP_MIME='MIME-Version';
 	//@}
 
 	const
@@ -187,7 +187,7 @@ class SMTP extends Base {
 				$this->dialog(chunk_split(base64_encode(
 					self::getfile($attachment))),FALSE);
 			}
-			$this->dialog('--'.$hash,FALSE);
+			$this->dialog('--'.$hash.'--',FALSE);
 		}
 		else {
 			// Send mail headers
@@ -254,7 +254,8 @@ class SMTP extends Base {
 	**/
 	function __destruct() {
 		$this->dialog('QUIT');
-		fclose($this->socket);
+		if ($this->socket)
+			fclose($this->socket);
 	}
 
 }
