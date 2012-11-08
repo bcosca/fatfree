@@ -1912,7 +1912,10 @@ class F3 extends Base {
 			// Profiler statistics
 			'STATS'=>array(
 				'MEMORY'=>array('start'=>memory_get_usage()),
-				'TIME'=>array('start'=>microtime(TRUE))
+				'TIME'=>array('start'=>microtime(TRUE)),
+                                'DB'=>array(),
+                                'FILES'=>array(),
+                                'CACHE'=>array()
 			),
 			// Temporary folder
 			'TEMP'=>'temp/',
