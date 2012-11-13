@@ -2342,12 +2342,14 @@ class Main extends F3instance {
 				'find return type is incorrect'
 			);
 
-			$product->quantity++;
-			$product->save();
+			$result[0]->description='Dr. Pepper';
+			$result[0]->quantity++;
+			$result[0]->save();
+
 			$product->load(array('item=:item',array(':item'=>111)));
 			$this->expect(
 				$product->item==111 &&
-				$product->description=='Coca Cola' &&
+				$product->description=='Dr. Pepper' &&
 				$product->quantity==4,
 				'Axon saved - database update succeeded',
 				'Database update failed'
@@ -2356,7 +2358,7 @@ class Main extends F3instance {
 			$product->copyTo('POST');
 			$this->expect(
 				$this->get('POST.item')==111 &&
-				$this->get('POST.description')=='Coca Cola' &&
+				$this->get('POST.description')=='Dr. Pepper' &&
 				$this->get('POST.quantity')==4,
 				'Axon properties copied to framework variable',
 				'Unable to copy Axon properties to framework variable'
@@ -2411,7 +2413,7 @@ class Main extends F3instance {
 			$product->load('item=111');
 			$this->expect(
 				$product->item==111 &&
-				$product->description=='Coca Cola' &&
+				$product->description=='Dr. Pepper' &&
 				$product->quantity==4,
 				'First record still there',
 				'First record is missing'
