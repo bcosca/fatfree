@@ -1929,6 +1929,8 @@ class F3 extends Base {
 		);
 		// Alias the GUI variable (2.0+)
 		self::$vars['UI']=&self::$vars['GUI'];
+		// Override auto_globals_jit
+		$GLOBALS['_REQUEST']=$_REQUEST;
 		// Create convenience containers for PHP globals
 		foreach (explode('|',self::PHP_Globals) as $var) {
 			// Sync framework and PHP globals
