@@ -758,11 +758,12 @@ class Axon extends Base {
 				$this->db->exec(
 					'INSERT INTO '.$this->table.' ('.$fields.') '.
 						'VALUES ('.$values.');',$bind);
-			$this->_id=$this->db->pdo->lastinsertid(
-				preg_match('/pgsql/',$this->db->backend)?
-					($this->table.'_'.end($this->pkeys).'_seq'):
-					NULL
-			);
+			if (preg_match('/pgsql/', $this->db->backend)) {
+				$pklist = array_keys($this->pkeys);
+				$this->_id=$this->db->pdo->lastinsertid(
+					$this->table.'_'.end($pklist).'_seq');
+			} else
+				$this->_id=$this->db->pdo->lastinsertid();
 			if ($id)
 				$this->pkeys[$id]=$this->_id;
 		}
