@@ -558,11 +558,11 @@ class Base {
 	static function putfile($file,$data,$append=FALSE) {
 		if (!function_exists('flock'))
 			$out=self::mutex(
-				function() use($file,$data) {
+				function() use($file,$data,$append) {
 					$flag=LOCK_EX;
 					if ($append)
 						$flag=$flag|FILE_APPEND;
-					return file_put_contents($file,$data,$arg);
+					return file_put_contents($file,$data,$flag);
 				},
 				$file
 			);
