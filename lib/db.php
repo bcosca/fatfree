@@ -272,7 +272,7 @@ class DB extends Base {
 					'c.typename AS type,'.
 					'c.nulls AS null,'.
 					'tc.type AS key,'.
-					'c.default AS default'.
+					'c.default AS default '.
 				'FROM syscat.columns AS c '.
 				'LEFT JOIN '.
 					'(syscat.keycoluse AS k '.
