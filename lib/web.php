@@ -148,6 +148,15 @@ class Web extends Base {
 					'/[\w'.($ext[1]=='css'?'+*#\.\-\)\]':'').']{2}/',
 					substr($dst,-1).$src[$ptr+1]))
 					$dst.=' ';
+				else {
+					$skip=($ext[1]=='js')?array('return'):array('and');
+					foreach ($skip as $w)
+						if ($ptr+1<strlen($src) &&
+							is_int(strpos($w,substr($dst,-strlen($w))))) {
+							$dst.=' ';
+							break;
+						}
+				}
 				$ptr++;
 			}
 			else {
