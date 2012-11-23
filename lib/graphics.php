@@ -212,10 +212,14 @@ class Graphics extends Base {
 			list($r,$g,$b)=self::rgb(self::$vars['BGCOLOR']);
 			$bg=imagecolorallocate($tmp,$r,$g,$b);
 			imagefill($tmp,0,0,$bg);
-			// Resize
-			imagecopyresampled($tmp,$img,0,0,0,0,$dimx,$dimy,$oldx,$oldy);
 			// Make the background transparent
 			imagecolortransparent($tmp,$bg);
+			if ($ext[1]=='png') {
+				imagealphablending($tmp, false);
+				imagesavealpha($tmp, true);
+			}
+			// Resize
+			imagecopyresampled($tmp,$img,0,0,0,0,$dimx,$dimy,$oldx,$oldy);
 			if (PHP_SAPI!='cli' && !headers_sent()) {
 				header(self::HTTP_Content.': image/'.$ext[1]);
 				header(self::HTTP_Powered.': '.self::TEXT_AppName.' '.
