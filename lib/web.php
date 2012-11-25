@@ -145,7 +145,7 @@ class Web extends Base {
 			}
 			elseif (ctype_space($src[$ptr])) {
 				if ($ptr+1<strlen($src) && preg_match(
-					'/[\w'.($ext[1]=='css'?'+*#\.\-\)\]':'').']{2}/',
+					'/[\w'.($ext[1]=='css'?'+*#\.\-\(\)\]':'\$').']{2}/',
 					substr($dst,-1).$src[$ptr+1]))
 					$dst.=' ';
 				$ptr++;
@@ -440,9 +440,6 @@ class Web extends Base {
 			@public
 	**/
 	static function onload() {
-		if (!extension_loaded('sockets'))
-			// Sockets extension required
-			trigger_error(sprintf(self::TEXT_PHPExt,'sockets'));
 		// Default translations
 		$diacritics=array(
 			'À'=>'A','Á'=>'A','Â'=>'A','Ã'=>'A','Å'=>'A','Ä'=>'A','Æ'=>'AE',

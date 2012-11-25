@@ -48,7 +48,7 @@ class Twitter extends Base {
 			),
 			TRUE
 		);
-		if ($response['error']) {
+		if (isset($response['error'])) {
 			trigger_error($response['error']);
 			return FALSE;
 		}
@@ -69,7 +69,7 @@ class Twitter extends Base {
 			),
 			TRUE
 		);
-		if ($response['error']) {
+		if (isset($response['error'])) {
 			trigger_error($response['error']);
 			return FALSE;
 		}
@@ -90,7 +90,7 @@ class Twitter extends Base {
 			),
 			TRUE
 		);
-		if ($response['error']) {
+		if (isset($response['error'])) {
 			trigger_error($response['error']);
 			return FALSE;
 		}
@@ -111,7 +111,7 @@ class Twitter extends Base {
 			),
 			TRUE
 		);
-		if ($response['error']) {
+		if (isset($response['error'])) {
 			trigger_error($response['error']);
 			return FALSE;
 		}

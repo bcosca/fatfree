@@ -3412,7 +3412,7 @@ class Main extends F3instance {
 			$this->set('QUIET',TRUE);
 			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/simple.css');
 			$this->expect(
-				$text=='div *{text-align:center;}#content{border:1px #000 solid;text-shadow:#ccc -1px -1px 0px;}tr:nth-child(odd) td{line-height:1.2em;}h1[name] span{font-size:12pt;}.sprite{background:url(./test.jpg) no-repeat;}',
+				$text=='div *{text-align:center;}#content{border:1px #000 solid;text-shadow:#ccc -1px -1px 0px;}tr:nth-child(odd) td{line-height:1.2em;}h1[name] span{font-size:12pt;}.sprite{background:url(./test.jpg) no-repeat;}@media(min-width:768px) and (max-width:979px){body{background:green;}}',
 				'CSS minified properly - necessary (and IE-problematic) spaces preserved',
 				'CSS minified incorrectly: '.$this->stringify($text)
 			);
