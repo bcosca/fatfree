@@ -3384,52 +3384,43 @@ class Main extends F3instance {
 			'ERROR variable is set: '.$this->get('ERROR.text')
 		);
 
+		$text='Ñõw is the tîme~for all good mên. to cóme! to the aid 0f-thëir_côuntry';
 		$this->expect(
-			extension_loaded('sockets'),
-			'Sockets extension available',
-			'Sockets extension is not active - unable to continue'
+			Web::slug($text)=='now-is-the-time-for-all-good-men-to-come-to-the-aid-0f-their_country',
+			'Framework generates correct URL-friendly version of string',
+			'Incorrect URL-friendly string conversion: '.Web::slug($text)
 		);
 
-		if (extension_loaded('sockets')) {
+		$this->set('QUIET',TRUE);
+		$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/reset.css');
+		$this->expect(
+			$text=='html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block;}body{line-height:1;}ol,ul{list-style:none;}blockquote,q{quotes:none;}blockquote:before,blockquote:after,q:before,q:after{content:\'\';content:none;}table{border-collapse:collapse;border-spacing:0;}',
+			'CSS minified '.round(100*(filesize('gui/reset.css')-strlen($text))/filesize('gui/reset.css'),1).'%: '.strlen($text).' bytes; '.
+				'original size: '.filesize('gui/reset.css').' bytes',
+			'CSS minification issue: '.$this->stringify($text)
+		);
+		$this->set('QUIET',FALSE);
 
-			$text='Ñõw is the tîme~for all good mên. to cóme! to the aid 0f-thëir_côuntry';
-			$this->expect(
-				Web::slug($text)=='now-is-the-time-for-all-good-men-to-come-to-the-aid-0f-their_country',
-				'Framework generates correct URL-friendly version of string',
-				'Incorrect URL-friendly string conversion: '.Web::slug($text)
-			);
+		$this->set('QUIET',TRUE);
+		$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/simple.css');
+		$this->expect(
+			$text=='div *{text-align:center;}#content{border:1px #000 solid;text-shadow:#ccc -1px -1px 0px;}tr:nth-child(odd) td{line-height:1.2em;}h1[name] span{font-size:12pt;}.sprite{background:url(./test.jpg) no-repeat;}@media(min-width:768px) and (max-width:979px){body{background:green;}}',
+			'CSS minified properly - necessary (and IE-problematic) spaces preserved',
+			'CSS minified incorrectly: '.$this->stringify($text)
+		);
+		$this->set('QUIET',FALSE);
 
-			$this->set('QUIET',TRUE);
-			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/reset.css');
-			$this->expect(
-				$text=='html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block;}body{line-height:1;}ol,ul{list-style:none;}blockquote,q{quotes:none;}blockquote:before,blockquote:after,q:before,q:after{content:\'\';content:none;}table{border-collapse:collapse;border-spacing:0;}',
-				'CSS minified '.round(100*(filesize('gui/reset.css')-strlen($text))/filesize('gui/reset.css'),1).'%: '.strlen($text).' bytes; '.
-					'original size: '.filesize('gui/reset.css').' bytes',
-				'CSS minification issue: '.$this->stringify($text)
-			);
-			$this->set('QUIET',FALSE);
+		$this->set('QUIET',TRUE);
+		$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/cookie.js');
+		$this->expect(
+			$text=='function getCookie(cname){var out=\'\';if(document.cookie.length>0){var cstart=document.cookie.indexOf(cname+\'=\');if(cstart!=-1){cstart=cstart+cname.length+1;var cend=document.cookie.indexOf(\';\',cstart);if(cend==-1){cend=document.cookie.length;}var s=document.cookie.substring(cstart,cend);out=decodeURIComponent(s);}}return out;}function setCookie(cname,value,expiredays){var exdate=new Date();var d=exdate.getDate();exdate.setDate(d+expiredays);var ed=\'\';if(expiredays>0){ed=\'; expires=\'+exdate.toUTCString();}document.cookie=cname+\'=\'+encodeURIComponent(value)+ed;}function checkCookie(){var un=getCookie(\'username\');if(un.length>0){alert(\'Welcome again \'+un+\'!\');}else{var un2=prompt(\'Please enter your name:\',\'\');var oneyear=365;if(un2.length>0){setCookie(\'username\',un2,oneyear);}}}',
+			'Javascript minified '.round(100*(filesize('gui/cookie.js')-strlen($text))/filesize('gui/cookie.js'),1). '%: '.strlen($text).' bytes; '.
+				'original size: '.filesize('gui/cookie.js').' bytes',
+			'Javascript minification issue: '.$this->stringify($text)
+		);
+		$this->set('QUIET',FALSE);
 
-			$this->set('QUIET',TRUE);
-			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/simple.css');
-			$this->expect(
-				$text=='div *{text-align:center;}#content{border:1px #000 solid;text-shadow:#ccc -1px -1px 0px;}tr:nth-child(odd) td{line-height:1.2em;}h1[name] span{font-size:12pt;}.sprite{background:url(./test.jpg) no-repeat;}@media(min-width:768px) and (max-width:979px){body{background:green;}}',
-				'CSS minified properly - necessary (and IE-problematic) spaces preserved',
-				'CSS minified incorrectly: '.$this->stringify($text)
-			);
-			$this->set('QUIET',FALSE);
-
-			$this->set('QUIET',TRUE);
-			$text=Web::http('GET http://'.$_SERVER['HTTP_HOST'].$this->get('BASE').'/minified/cookie.js');
-			$this->expect(
-				$text=='function getCookie(cname){var out=\'\';if(document.cookie.length>0){var cstart=document.cookie.indexOf(cname+\'=\');if(cstart!=-1){cstart=cstart+cname.length+1;var cend=document.cookie.indexOf(\';\',cstart);if(cend==-1){cend=document.cookie.length;}var s=document.cookie.substring(cstart,cend);out=decodeURIComponent(s);}}return out;}function setCookie(cname,value,expiredays){var exdate=new Date();var d=exdate.getDate();exdate.setDate(d+expiredays);var ed=\'\';if(expiredays>0){ed=\'; expires=\'+exdate.toUTCString();}document.cookie=cname+\'=\'+encodeURIComponent(value)+ed;}function checkCookie(){var un=getCookie(\'username\');if(un.length>0){alert(\'Welcome again \'+un+\'!\');}else{var un2=prompt(\'Please enter your name:\',\'\');var oneyear=365;if(un2.length>0){setCookie(\'username\',un2,oneyear);}}}',
-				'Javascript minified '.round(100*(filesize('gui/cookie.js')-strlen($text))/filesize('gui/cookie.js'),1). '%: '.strlen($text).' bytes; '.
-					'original size: '.filesize('gui/cookie.js').' bytes',
-				'Javascript minification issue: '.$this->stringify($text)
-			);
-			$this->set('QUIET',FALSE);
-
-			echo $this->render('basic/results.htm');
-		}
+		echo $this->render('basic/results.htm');
 	}
 
 	function network() {
