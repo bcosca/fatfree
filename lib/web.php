@@ -440,9 +440,6 @@ class Web extends Base {
 			@public
 	**/
 	static function onload() {
-		if (!extension_loaded('sockets'))
-			// Sockets extension required
-			trigger_error(sprintf(self::TEXT_PHPExt,'sockets'));
 		// Default translations
 		$diacritics=array(
 			'À'=>'A','Á'=>'A','Â'=>'A','Ã'=>'A','Å'=>'A','Ä'=>'A','Æ'=>'AE',
