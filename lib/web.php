@@ -136,7 +136,7 @@ class Web extends Base {
 					$str=strstr(substr($src,$ptr+1),$src[$ptr],TRUE);
 					$dst.=$match.$str;
 					$ptr+=strlen($str)+1;
-					if ($src[$ptr-1]!='\\' || $src[$ptr-2]=='\\') {
+					if ($src[$ptr-1]!='\\' || $src[$ptr-2]!='\\') {
 						$dst.=$match;
 						$ptr++;
 						break;
