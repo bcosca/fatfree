@@ -29,7 +29,6 @@ class Data extends Base {
 	static function validEmail($text,$mx=FALSE) {
 		return is_string(filter_var($text,FILTER_VALIDATE_EMAIL)) &&
 			(!$mx ||
-				extension_loaded('sockets') &&
 				@fsockopen(substr($text,
 					strpos($text,'@')+1),25,$errno,$errstr,5) ||
 				getmxrr(substr($text,strrpos($text,'@')+1),$hosts));
