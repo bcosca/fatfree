@@ -1,5 +1,10 @@
 CHANGELOG
 
+2.1.1
+*	NEW: WinCache backend support
+*	Override auto_globals_jit setting
+*	Bug fix: IBM DB2 schema query syntax
+
 2.1.0
 *	NEW: Template::extend() feature
 *	NEW: ESCAPE variable for auto-escaping template tokens; disabled by

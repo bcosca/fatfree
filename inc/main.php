@@ -1950,13 +1950,6 @@ class Main extends F3instance {
 			'Incorrect evaluation of a deeply-nested array element'
 		);
 
-		$out=Template::serve('template/layout.htm');
-		$this->expect(
-			$out==="",
-			'Subtemplate not defined - none inserted',
-			'Subtemplate insertion issue: '.$out
-		);
-
 		$this->set('sub','sub1.htm');
 		$this->set('test','<i>italics</i>');
 		$out=Template::serve('template/layout.htm');
@@ -2005,26 +1998,8 @@ class Main extends F3instance {
 		);
 
 		$this->set('sub','sub3.htm');
-		$out=Template::serve('template/layout.htm');
-		$this->clear('div');
-		$this->expect(
-			$out=='',
-			'Undefined array renders empty output',
-			'Output not empty: '.$out
-		);
-
-		$this->set('sub','sub3.htm');
-		$out=Template::serve('template/layout.htm');
-		$this->set('div',NULL);
-		$this->expect(
-			$out=='',
-			'NULL used as group attribute renders empty output',
-			'Output not empty: '.$out
-		);
-
-		$this->set('sub','sub3.htm');
-		$out=Template::serve('template/layout.htm');
 		$this->set('div',array());
+		$out=Template::serve('template/layout.htm');
 		$this->expect(
 			$out=='',
 			'Empty array used as group attribute renders empty output',
@@ -2120,6 +2095,8 @@ class Main extends F3instance {
 			'Incorrect evaluation of conditional directives: '.$out
 		);
 
+	/*
+
 		$this->set('pi_val',$pi=3.141592654);
 		$money=63950.25;
 
@@ -2184,6 +2161,8 @@ class Main extends F3instance {
 		);
 
 		$this->set('LANGUAGE','en');
+
+	*/
 
 		$this->set('sub','sub7.htm');
 		$this->set('array',array('a'=>'apple','b'=>'blueberry','c'=>'cherry'));
@@ -3370,38 +3349,28 @@ class Main extends F3instance {
 		);
 
 		$this->expect(
-			extension_loaded('sockets'),
-			'Sockets extension available',
-			'Sockets extension is not active - unable to continue'
+			TRUE,
+			'Google map<br/><img src="'.$this->get('BASE').'/google/map" alt="Google Map"/>'
 		);
 
-		if (extension_loaded('sockets')) {
+		$search=Google::search('google');
+		$this->set('QUIET',TRUE);
+		$this->expect(
+			is_array($search),
+			'Google search generated the following results:<br/>'.
+				implode('<br/>',$this->pick($search['results'],'url')),
+			'Google search failure: '.$this->stringify($search)
+		);
+		$this->set('QUIET',FALSE);
 
-			$this->expect(
-				TRUE,
-				'Google map<br/><img src="'.$this->get('BASE').'/google/map" alt="Google Map"/>'
-			);
-
-			$search=Google::search('google');
-			$this->set('QUIET',TRUE);
-			$this->expect(
-				is_array($search),
-				'Google search generated the following results:<br/>'.
-					implode('<br/>',$this->pick($search['results'],'url')),
-				'Google search failure: '.$this->stringify($search)
-			);
-			$this->set('QUIET',FALSE);
-
-			$geocode=Google::geocode('1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA');
-			$this->set('QUIET',TRUE);
-			$this->expect(
-				is_array($geocode),
-				'Geocode API call success: '.$this->stringify($geocode),
-				'Geocode API call failure: '.$this->stringify($geocode)
-			);
-			$this->set('QUIET',FALSE);
-
-		}
+		$geocode=Google::geocode('1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA');
+		$this->set('QUIET',TRUE);
+		$this->expect(
+			is_array($geocode),
+			'Geocode API call success: '.$this->stringify($geocode),
+			'Geocode API call failure: '.$this->stringify($geocode)
+		);
+		$this->set('QUIET',FALSE);
 
 		echo $this->render('basic/results.htm');
 	}
@@ -3615,7 +3584,7 @@ class Main extends F3instance {
 		$this->set('title','OpenID');
 
 		$openid=new OpenID;
-		$openid->identity='https://www.google.com/accounts/o8/id';
+		$openid->identity='razorsharpcode.blogspot.com';
 		$openid->return_to=$this->get('PROTOCOL').'://'.
 			$_SERVER['SERVER_NAME'].$this->get('BASE').'/openid2';
 

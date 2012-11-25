@@ -24,17 +24,175 @@ class Template extends Base {
 	//@}
 
 	private static
-		//! Custom tags
-		$tags=array();
+		//! Compiled template file
+		$view,
+		//! Local variables
+		$hive,
+		//! MIME format
+		$mime,
+		//! Template tags
+		$tags='set|include|exclude|loop|repeat|check|true|false';
 
 	/**
-		Extend template engine with custom tags
-			@param $tag string
-			@param $func mixed
-			@public
+		Convert token to variable
+			@return string
+			@param $str string
 	**/
-	static function extend($tag,$func) {
-		self::$tags[$tag]=$func;
+	static function token($str) {
+		return preg_replace('/(?<!\w)@(\w+)/','$\1',$str);
+	}
+
+	/**
+		Template -set- tag handler
+			@return string
+			@param $node array
+	**/
+	static function _set(array $node) {
+		$out='';
+		foreach ($node['@attrib'] as $key=>$val)
+			$out.='$'.$key.'='.
+				(preg_match('/(?<!\w)@(\w+)/',$val,$parts)?
+					self::token($val):
+					self::stringify($val)).'; ';
+		return '<?php '.$out.'?>';
+	}
+
+	/**
+		Template -include- tag handler
+			@return string
+			@param $node array
+	**/
+	static function _include(array $node) {
+		$attrib=$node['@attrib'];
+		return
+			'<?php '.(isset($attrib['if'])?
+				('if ('.self::token($attrib['if']).') '):'').
+				('echo self::serve('.
+					(preg_match('/(?<!\w)@(\w+)/',
+						$attrib['href'],$parts)?
+						self::token($attrib['href']):
+						self::stringify($attrib['href'])).','.
+					'self::$mime,get_defined_vars()); ?>');
+	}
+
+	/**
+		Template -exclude- tag handler
+			@return string
+			@param $node array
+	**/
+	static function _exclude(array $node) {
+		return '';
+	}
+
+	/**
+		Template -loop- tag handler
+			@return string
+			@param $node array
+	**/
+	static function _loop(array $node) {
+		$attrib=$node['@attrib'];
+		unset($node['@attrib']);
+		return
+			'<?php for ('.
+				self::token($attrib['from']).';'.
+				self::token($attrib['to']).';'.
+				self::token($attrib['step']).'): ?>'.
+				self::build($node).
+			'<?php endfor; ?>';
+	}
+
+	/**
+		Template -repeat- tag handler
+			@return string
+			@param $node array
+	**/
+	static function _repeat(array $node) {
+		$attrib=$node['@attrib'];
+		unset($node['@attrib']);
+		return
+			'<?php foreach (('.
+				self::token($attrib['group']).'?:array()) as '.
+				(isset($attrib['key'])?
+					(self::token($attrib['key']).'=>'):'').
+				self::token($attrib['value']).'): ?>'.
+				self::build($node).
+			'<?php endforeach; ?>';
+	}
+
+	/**
+		Template -check- tag handler
+			@return string
+			@param $node array
+	**/
+	static function _check(array $node) {
+		$attrib=$node['@attrib'];
+		unset($node['@attrib']);
+		// Grab <true> and <false> blocks
+		foreach ($node as $pos=>$block)
+			if (isset($block['true']))
+				$true=array($pos,$block);
+			elseif (isset($block['false']))
+				$false=array($pos,$block);
+		if (isset($true) && isset($false) && $true[0]>$false[0])
+			// Reverse <true> and <false> blocks
+			list($node[$true[0]],$node[$false[0]])=array($false[1],$true[1]);
+		return
+			'<?php if ('.self::token($attrib['if']).'): ?>'.
+				self::build($node).
+			'<?php endif; ?>';
+	}
+
+	/**
+		Template -true- tag handler
+			@return string
+			@param $node array
+	**/
+	static function _true(array $node) {
+		return self::build($node);
+	}
+
+	/**
+		Template -false- tag handler
+			@return string
+			@param $node array
+	**/
+	static function _false(array $node) {
+		return '<?php else: ?>'.self::build($node);
+	}
+
+	/**
+		Assemble markup
+			@return string
+			@param $node array|string
+	**/
+	static function build($node) {
+		if (is_string($node)) {
+			$self=__CLASS__;
+			return preg_replace_callback(
+				'/{{(.+?)}}/s',
+				function($expr) use($self) {
+					return '<?php echo '.trim($self::token($expr[1])).'; ?>';
+				},
+				$node
+			);
+		}
+		$out='';
+		foreach ($node as $key=>$val)
+			$out.=is_int($key)?
+				self::build($val):
+				call_user_func(array(__CLASS__,'_'.$key),$val);
+		return $out;
+	}
+
+	/**
+		Create sandbox for template execution
+		@return string
+	**/
+	static function sandbox() {
+		extract(self::$hive);
+		ob_start();
+		require self::$view;
+		return ob_get_clean();
 	}
 
 	/**
@@ -42,561 +200,94 @@ class Template extends Base {
 			@return string
 			@param $file string
 			@param $mime string
-			@param $globals boolean
-			@param $syms array
-			@public
+			@param $hive array
 	**/
-	static function serve($file,
-		$mime='text/html',$globals=TRUE,$syms=array()) {
-		$file=self::resolve($file);
-		$found=FALSE;
-		foreach (preg_split('/[\|;,]/',self::$vars['GUI'],0,
-			PREG_SPLIT_NO_EMPTY) as $gui) {
-			if (is_file($view=self::fixslashes($gui.$file))) {
-				$found=TRUE;
-				break;
-			}
-		}
-		if (!$found) {
-			trigger_error(sprintf(self::TEXT_Render,$file));
-			return '';
-		}
-		if (PHP_SAPI!='cli' && !headers_sent())
-			// Send HTTP header with appropriate character set
-			header(self::HTTP_Content.': '.$mime.'; '.
-				'charset='.self::$vars['ENCODING']);
-		$hash='tpl.'.self::hash($view);
-		$cached=Cache::cached($hash);
-		if ($cached && filemtime($view)<$cached) {
-			if (self::$vars['CACHE'])
-				// Retrieve PHP-compiled template from cache
-				$text=Cache::get($hash);
-		}
-		else {
-			// Parse raw template
-			$doc=new F3markup($mime,$globals);
-			foreach (self::$tags as $tag=>$func)
-				$doc->extend($tag,$func);
-			$text=$doc->load(self::getfile($view),$syms);
-			if (self::$vars['CACHE'] && $doc::$cache)
-				// Save PHP-compiled template to cache
-				Cache::set($hash,$text);
-		}
-		// Render in a sandbox
-		$instance=new F3instance;
-		ob_start();
-		if (ini_get('allow_url_fopen') && ini_get('allow_url_include'))
-			// Stream wrap
-			$instance->sandbox('data:text/plain,'.urlencode($text),$syms);
-		else {
-			// Save PHP-equivalent file in temporary folder
-			if (!is_dir(self::$vars['TEMP']))
-				self::mkdir(self::$vars['TEMP']);
-			$temp=self::$vars['TEMP'].$_SERVER['SERVER_NAME'].'.'.$hash;
-			if (!$cached || !is_file($temp) ||
-				filemtime($temp)<Cache::cached($view)) {
-				// Create semaphore
-				$hash='sem.'.self::hash($view);
-				while ($cached=Cache::cached($hash))
-					// Locked by another process
-					usleep(mt_rand(0,100));
-				Cache::set($hash,TRUE);
-				self::putfile($temp,$text);
-				// Remove semaphore
-				Cache::clear($hash);
-			}
-			$instance->sandbox($temp,$syms);
-		}
-		$out=ob_get_clean();
-		unset($instance);
-		return self::$vars['TIDY']?self::tidy($out):$out;
-	}
-
-}
-
-//! Markup loader/parser/builder
-class F3markup extends Base {
-
-	//@{ Locale-specific error/exception messages
-	const
-		TEXT_AttribMissing='Missing attribute: %s',
-		TEXT_AttribInvalid='Invalid attribute: %s',
-		TEXT_Global='Use of global variable %s is not allowed',
-		TEXT_CustomTag='Invalid custom tag handler: %s';
-	//@}
-
-	public
-		//! MIME type
-		$mime,
-		//! Enable/disable PHP globals
-		$globals=TRUE;
-	static
-		//! Enable/disable template caching
-		$cache=TRUE;
-
-	private
-		//! Parsed markup string
-		$tree=array(),
-		//! Symbol table for repeat/loop blocks
-		$syms=array(),
-		//! Custom tags
-		$tags=array();
-
-	/**
-		Convert template expression to PHP code
-			@return string
-			@param $str string
-			@param $echo boolean
-			@public
-	**/
-	function expr($str,$echo=FALSE) {
-		$self=$this;
-		$syms=&$this->syms;
-		$regex='/(?!\w)@(\w+(?:\[[^\]]+\]|\.\w+(?![\w\(]))*'.
-			'(?:\s*->\s*\w+)?)(\s*\([^\)]*\))?(?:\s*\\\(.+))?/';
-		return preg_replace_callback(
-			'/{{(.+?)}}/s',
-			function($expr) use(&$syms,$self,$echo,$regex) {
-				$out=preg_replace_callback($regex,
-					function($var) use(&$syms,$self,$regex) {
-						//Return stringified framework variable
-						preg_match('/^(\w+)\b(.*)/',$var[1],$match);
-						if (!$self->globals &&
-							preg_match('/'.$self::PHP_Globals.'/',
-							$match[1])) {
-							trigger_error(
-								sprintf($self::TEXT_Global,$match[1])
-							);
-							return FALSE;
+	static function serve($file,$mime='text/html',array $hive=NULL) {
+		if (!$hive)
+			$hive=self::$vars;
+		self::$hive=$hive;
+		foreach (F3::split(self::$vars['GUI']) as $path)
+			if (is_file($view=self::fixslashes($path.$file))) {
+				if (!is_dir($dir=self::$vars['TEMP']))
+					self::mkdir($dir);
+				if (!is_file(self::$view=($dir.'/'.
+					$_SERVER['SERVER_NAME'].'.tpl.'.self::hash($view))) ||
+					filemtime(self::$view)<filemtime($view)) {
+					// Remove PHP code and comments
+					$text=preg_replace('/<\?(?:php)?.+?\?>|{{\*.+?\*}}/is','',
+						self::getfile($view));
+					// Build tree structure
+					for ($ptr=0,$len=strlen($text),$tree=array(),$node=&$tree,
+						$stack=array(),$depth=0,$temp='';$ptr<$len;)
+						if (preg_match('/^<(\/?)(?:F3:)?('.self::$tags.')\b'.
+							'((?:\s+\w+s*=\s*(?:"(?:.+?)"|\'(?:.+?)\'))*)\s*'.
+							'(\/?)>/is',substr($text,$ptr),$match)) {
+							if (strlen($temp))
+								$node[]=$temp;
+							// Element node
+							if ($match[1]) {
+								// Find matching start tag
+								$save=$depth;
+								$found=FALSE;
+								while ($depth>0) {
+									$depth--;
+									foreach ($stack[$depth] as $item)
+										if (is_array($item) &&
+											isset($item[$match[2]])) {
+											// Start tag found
+											$found=TRUE;
+											break 2;
+										}
+								}
+								if (!$found)
+									// Unbalanced tag
+									$depth=$save;
+								$node=&$stack[$depth];
+							}
+							else {
+								// Start tag
+								$stack[$depth]=&$node;
+								$node=&$node[][$match[2]];
+								if ($match[3]) {
+									// Process attributes
+									preg_match_all(
+										'/\s+(\w+)\s*='.
+										'\s*(?:"(.+?)"|\'(.+?)\')/s',
+										$match[3],$attr,PREG_SET_ORDER);
+									foreach ($attr as $kv)
+										$node['@attrib'][$kv[1]]=
+											$kv[2]?:$kv[3];
+								}
+								if ($match[4])
+									// Empty tag
+									$node=&$stack[$depth];
+								else
+									$depth++;
+							}
+							$temp='';
+							$ptr+=strlen($match[0]);
 						}
-						$isfunc=isset($var[2]) && $var[2];
-						if (array_key_exists('_'.$match[1],$syms))
-							return '$_'.(is_int(strpos($var[1],'@'))?
-								$self->expr('{{'.$var[1].'}}'):
-								$self->remix($var[1])).
-								($isfunc?$self->expr('{{'.$var[2].'}}'):'');
-						$str='F3::get('.$self::stringify($var[1]).')';
-						if ($isfunc) {
-							preg_match_all($regex,$var[2],$parts,
-								PREG_SET_ORDER);
-							$args='';
-							if ($parts) {
-								foreach ($parts as $part)
-									$args.=($args?',':'').
-										$self->expr('{{'.$part[0].'}}');
-								$args='('.$args.')';
-							}
-							else
-								$args=$var[2];
-							if (isset($match[2]) &&
-								method_exists(F3::get($match[1]),
-								$temp=str_replace('->','',$match[2])))
-								$str='array(F3::get('.
-									$self::stringify($match[1]).'),'.
-									$self::stringify($temp).')';
-							$str='call_user_func_array('.
-								'$_'.$match[1].'='.$str.',array'.$args.')';
+						else {
+							// Text node
+							$temp.=$text[$ptr];
+							$ptr++;
 						}
-						elseif (isset($var[3]))
-							$str=str_replace(')',',array('.
-								$self->expr('{{'.$var[3].'}}').'))',$str);
-						if (!$match[2] &&
-							!preg_match('/('.$self::PHP_Globals.')\b/',
-								$match[1])) {
-							if (!$isfunc)
-								$str='($_'.$match[1].
-									(array_key_exists('_'.$match[1],$syms)?
-										'':('='.$str)).')';
-							$syms['_'.$match[1]]=NULL;
-						}
-						$str='(F3::get(\'ESCAPE\')?'.
-							'F3::htmlencode('.$str.'):'.$str.')';
-						return $str;
-					},
-					$expr[1]
-				);
-				return $echo?('<?php echo '.$out.'; ?>'):$out;
-			},
-			$str
-		);
-	}
-
-	/**
-		Return TRUE if all mandatory attributes are present
-			@return boolean
-			@param $key string
-			@param $tags array
-			@param $attrs array
-			@public
-	**/
-	function isdef($key,array $tags,array $attrs) {
-		$ok=TRUE;
-		foreach ($attrs as $attr)
-			if (!isset($tags['@attrib'][$attr])) {
-				$ok=FALSE;
-				break;
-			}
-		if ($ok)
-			return TRUE;
-		$out='<'.$key;
-		if (isset($tags['@attrib']))
-			foreach ($tags['@attrib'] as $akey=>$aval)
-				$out.=' '.$akey.'="'.$aval.'"';
-		$out.='>';
-		trigger_error(sprintf(self::TEXT_AttribMissing,$out));
-		return FALSE;
-
-	}
-
-	/**
-		Reassemble markup string and insert appropriate PHP code
-			@return string
-			@param $node mixed
-			@public
-	**/
-	function build($node) {
-		$out='';
-		if (is_array($node)) {
-			foreach ($node as $nkey=>$nval)
-				if (is_int($nkey))
-					$out.=$this->build($nval);
-				else {
-					$count=count($this->syms);
-					switch ($nkey) {
-						case '@attrib':
-						case 'exclude':
-							break;
-						case 'include':
-							// <include> directive
-							if (!$this->isdef($nkey,$nval,array('href')))
-								return;
-							$hvar=$nval['@attrib']['href'];
-							if (isset($nval['@attrib']['if'])) {
-								$ival=$nval['@attrib']['if'];
-								$cond=$this->expr($ival);
-								// Syntax check
-								if ($cond==$ival) {
-									trigger_error(sprintf(
-										self::TEXT_AttribInvalid,
-										'if="'.addcslashes($ival,'"').'"'));
-									return;
-								}
-							}
-							$doc=new F3markup($this->mime,$this->globals);
-							$file=self::resolve($hvar);
-							if ($hvar!=$file)
-								self::$cache=FALSE;
-							$nested=FALSE;
-							foreach (array_keys($this->syms) as $pvar)
-								if (strstr($hvar,$pvar))
-									$nested=TRUE;
-							if ($nested) {
-								$inc_var=preg_split("/[\s]*[}}{{][\s]*/i",
-									$hvar,-1,PREG_SPLIT_NO_EMPTY);
-								foreach ($inc_var as &$pval)
-									if ($pval[0]=='@')
-										$pval=preg_replace(
-											array(
-												'/<\?php echo /',
-												'/; \?>/'
-											),'',
-											self::expr('{{'.$pval.'}}')
-										);
-									else
-										$pval=self::stringify($pval);
-								$text='<?php echo Template::serve('.
-									implode('.',$inc_var).',\'text/html\','.
-									'TRUE,'.self::stringify($this->syms).
-									'); ?>';
-								$out.= isset($ival)?
-									('<?php if ('.trim($cond).'): ?>'.$text.
-									'<?php endif; ?>'):$text;
-							}
-							else
-								foreach (self::split(self::$vars['GUI'])
-									as $gui)
-									if (is_file($view=$gui.$file)) {
-										$text=$doc->load(
-											self::getfile($view),
-											$this->syms
-										);
-										$out.=isset($ival)?
-											('<?php if ('.trim($cond).'): ?>'.
-												$text.'<?php endif; ?>'):
-											$text;
-										break;
-									}
-							break;
-						case 'loop':
-							// <loop> directive
-							if (!$this->isdef($nkey,$nval,
-								array('counter','from','to')))
-								return;
-							$cvar=self::remix(
-								preg_replace('/{{\s*@(.+?)\s*}}/','\1',
-									$nval['@attrib']['counter']));
-							foreach ($nval['@attrib'] as $akey=>$aval) {
-								${$akey[0].'att'}=$aval;
-								${$akey[0].'str'}=$this->expr($aval);
-								// Syntax check
-								if (${$akey[0].'str'}==$aval) {
-									trigger_error(sprintf(
-										self::TEXT_AttribInvalid,$akey.'="'.
-											addcslashes($aval,'"').'"'));
-									return;
-								}
-							}
-							unset($nval['@attrib']);
-							if (!array_key_exists('_'.$cvar,$this->syms))
-								$this->syms['_'.$cvar]=
-									eval('return '.$fstr.';');
-							$out.='<?php for ('.
-								'$_'.$cvar.'='.$fstr.';'.
-								'$_'.$cvar.'<='.$tstr.';'.
-								'$_'.$cvar.'+='.
-									// step attribute
-									(isset($satt)?$sstr:'1').'): ?>'.
-								$this->build($nval).
-								'<?php endfor; ?>';
-							break;
-						case 'repeat':
-							// <repeat> directive
-							if (!$this->isdef($nkey,$nval,array('group')) &&
-								(!$this->isdef($nkey,$nval,array('key')) ||
-								!$this->isdef($nkey,$nval,array('value'))))
-								return;
-							$gval=$nval['@attrib']['group'];
-							$gstr=trim($this->expr($gval));
-							// Syntax check
-							if ($gstr==$gval) {
-								trigger_error(sprintf(
-									self::TEXT_AttribInvalid,
-									'group="'.addcslashes($gval,'"').'"'));
-								return;
-							}
-							foreach ($nval['@attrib'] as $akey=>$aval) {
-								${$akey[0].'var'}=self::remix(
-									preg_replace('/{{\s*@(.+?)\s*}}/',
-										'\1',$aval));
-								// Syntax check
-								if (${$akey[0].'var'}==$aval) {
-									trigger_error(sprintf(
-										self::TEXT_AttribInvalid,
-										$akey.'='.
-											'"'.addcslashes($aval,'"').'"'));
-									return;
-								}
-							}
-							unset($nval['@attrib']);
-							if (isset($vvar))
-								$this->syms['_'.$vvar]=NULL;
-							else
-								$vvar=self::hash($gvar);
-							if (isset($kvar))
-								$this->syms['_'.$kvar]=NULL;
-							if (isset($cvar))
-								$this->syms['_'.$cvar]=NULL;
-							$out.='<?php '.
-								(isset($cvar)?('$_'.$cvar.'=0; '):'').
-								'if (is_array('.$gstr.')):'.
-								'foreach (('.$gstr.'?:array()) as '.
-								(isset($kvar)?('$_'.$kvar.'=>'):'').
-									'$_'.$vvar.'):'.
-								(isset($cvar)?('$_'.$cvar.'++; '):'').
-								'?>'.
-								$this->build($nval).
-								'<?php '.
-									'endforeach;'.
-									'endif;'.
-								'?>';
-							break;
-						case 'check':
-							// <check> directive
-							if (!$this->isdef($nkey,$nval,array('if')))
-								return;
-							$ival=$nval['@attrib']['if'];
-							$cond=$this->expr($ival);
-							// Syntax check
-							if ($cond==$ival) {
-								trigger_error(sprintf(
-									self::TEXT_AttribInvalid,
-									'if="'.addcslashes($ival,'"').'"'));
-								return;
-							}
-							// Is <true> is defined ahead of <false>?
-							foreach ($nval as $pos=>$blk)
-								if (is_array($blk))
-									foreach ($blk as $ckey=>$cval)
-										if (preg_match('/(?:F3:)?'.
-											'(?:true|false)/i',$ckey))
-											${$ckey[0].'block'}=
-												array($pos,$blk);
-							if (isset($tblock) && isset($fblock) &&
-								$tblock[0]>$fblock[0])
-								// Swap <true> and <false> blocks
-								// <false> is defined ahead of <true>
-								list($nval[$tblock[0]],$nval[$fblock[0]])=
-									array($fblock[1],$tblock[1]);
-							$out.='<?php if ('.trim($cond).'): ?>'.
-								$this->build($nval).
-								'<?php endif; ?>';
-							break;
-						case 'true':
-							// <true> block of <check> directive
-							$out.=$this->build($nval);
-							break;
-						case 'false':
-							// <false> block of <check> directive
-							$out.='<?php else: ?>'.
-								$this->build($nval);
-							break;
-						default:
-							// Custom template tag
-							if (is_string($this->tags[$nkey])) {
-								if (preg_match('/(.+)\s*(->|::)\s*(.+)/s',
-									$this->tags[$nkey],$match)) {
-									if (!class_exists($match[1]) ||
-										!method_exists($match[1],'__call') &&
-										!method_exists($match[1],$match[3])) {
-										trigger_error(
-											sprintf($self::TEXT_CustomTag,
-											$match[1])
-										);
-										return FALSE;
-									}
-									$this->tags[$nkey]=array($match[2]=='->'?
-										new $match[1]:$match[1],$match[3]);
-								}
-								elseif (!function_exists($this->tags[$nkey])) {
-									trigger_error(
-										sprintf($self::TEXT_CustomTag,
-										$match[1])
-									);
-									return FALSE;
-								}
-							}
-							if (!is_callable($this->tags[$nkey])) {
-								trigger_error(
-									sprintf($self::TEXT_CustomTag,
-									$this->tags[$nkey])
-								);
-								return FALSE;
-							}
-							$out.=call_user_func($this->tags[$nkey],$nval);
-							break;
-					}
-					// Reset scope
-					while (count($this->syms)>$count) {
-						end($this->syms);
-						unset($this->syms[key($this->syms)]);
-					}
+					if (strlen($temp))
+						// Append trailing text
+						$node[]=$temp;
+					// Break references
+					unset($node);
+					unset($stack);
+					self::putfile(self::$view,self::build($tree));
 				}
-		}
-		else
-			$out.=preg_match('/<\?php/',$node)?$node:$this->expr($node,TRUE);
-		return $out;
-	}
-
-	/**
-		Load markup from string
-			@return string
-			@param $text string
-			@param $syms array
-			@public
-	**/
-	function load($text,array $syms=array()) {
-		$this->syms=$syms;
-		// Remove PHP code and alternative exclude-tokens
-		$text=preg_replace(
-			'/<\?(?:php)?.+?\?>|{{\*.+?\*}}/is','',$text);
-		// Define root node
-		$node=&$this->tree;
-		// Define stack and depth variables
-		$stack=array();
-		$depth=0;
-		// Define string parser variables
-		$len=strlen($text);
-		$ptr=0;
-		$temp='';
-		while ($ptr<$len)
-			if (preg_match('/^<(\/?)(?:F3:)?'.
-				'(include|exclude|loop|repeat|check|true|false'.
-				($this->tags?('|'.implode('|',array_keys($this->tags))):'').
-				')\b((?:\s+\w+s*=\s*(?:"(?:.+?)"|\'(?:.+?)\'))*)\s*(\/?)>/is',
-				substr($text,$ptr),$match)) {
-				if (strlen($temp))
-					$node[]=$temp;
-				// Element node
-				if ($match[1]) {
-					// Find matching start tag
-					$save=$depth;
-					$found=FALSE;
-					while ($depth>0) {
-						$depth--;
-						foreach ($stack[$depth] as $item)
-							if (is_array($item) && isset($item[$match[2]])) {
-								// Start tag found
-								$found=TRUE;
-								break 2;
-							}
-					}
-					if (!$found)
-						// Unbalanced tag
-						$depth=$save;
-					$node=&$stack[$depth];
-				}
-				else {
-					// Start tag
-					$stack[$depth]=&$node;
-					$node=&$node[][$match[2]];
-					if ($match[3]) {
-						// Process attributes
-						preg_match_all('/\s+(\w+)\s*=\s*'.
-							'(?:"(.+?)"|\'(.+?)\')/s',$match[3],$attr,
-							PREG_SET_ORDER);
-						foreach ($attr as $kv)
-							$node['@attrib'][$kv[1]]=$kv[2]?:$kv[3];
-					}
-					if ($match[4] || $match[1]=='include')
-						// Empty tag
-						$node=&$stack[$depth];
-					else
-						$depth++;
-				}
-				$temp='';
-				$ptr+=strlen($match[0]);
+				if (PHP_SAPI!='cli' && !headers_sent())
+					header('Content-Type: '.(self::$mime=$mime).'; '.
+						'charset='.self::$vars['ENCODING']);
+				ob_start();
+				echo self::sandbox();
+				return ob_get_clean();
 			}
-			else {
-				// Text node
-				$temp.=$text[$ptr];
-				$ptr++;
-			}
-		if (strlen($temp))
-			$node[]=$temp;
-		unset($node);
-		unset($stack);
-		return $this->build($this->tree);
-	}
-
-	/**
-		Extend template engine with custom tags
-			@param $tag string
-			@param $func mixed
-			@public
-	**/
-	function extend($tag,$func) {
-		$this->tags[$tag]=$func;
-	}
-
-	/**
-		Override base constructor
-			@param $mime string
-			@param $globals boolean
-			@public
-	**/
-	function __construct($mime,$globals) {
-		$this->mime=$mime;
-		$this->globals=$globals;
+		trigger_error(sprintf(self::TEXT_Render,$file));
 	}
 
 }

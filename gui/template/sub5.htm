@@ -1,7 +1,7 @@
-<F3:check if="{{@cond1}}">
+<F3:check if="@cond1">
 	<F3:false>{{@cond3?'c1:F,c3:T':'c1:F,c3:F'}}</F3:false>
 	<F3:true>
-	<F3:check if="{{@cond2}}">
+	<F3:check if="@cond2">
 		<F3:false>c1:T,c2:F</F3:false>
 		<F3:true>c1:T,c2:T</F3:true>
 	</F3:check>
