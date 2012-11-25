@@ -14,3 +14,8 @@ h1[name] span {
 .sprite {
 	background:url(./test.jpg) no-repeat;
 }
+@media(min-width:768px) and (max-width:979px){
+    body{
+        background:green;
+    }
+}
