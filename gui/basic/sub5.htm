@@ -1,9 +1,0 @@
-<? if ($this->get('cond1')): ?>
-	<? if ($this->get('cond2')): ?>
-		c1:T,c2:T
-	<? else: ?>
-		c1:T,c2:F
-	<? endif; ?>
-<? else: ?>
-	<?= $this->get('cond3')?'c1:F,c3:T':'c1:F,c3:F'; ?>
-<? endif; ?>
