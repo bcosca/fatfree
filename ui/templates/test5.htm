@@ -1,0 +1,9 @@
+<check if="@cond1">
+	<false>{{ @cond2?'c1:F,c2:T':'c1:F,c2:F' }}</false>
+	<true>
+	<check if="@cond2">
+		<false>c1:T,c2:F</false>
+		<true>c1:T,c2:T</true>
+	</check>
+	</true>
+</check>

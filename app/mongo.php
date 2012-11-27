@@ -1,0 +1,116 @@
+<?php
+
+namespace App;
+
+class Mongo extends Controller {
+
+	function get() {
+		$f3=\Base::instance();
+		$test=new \Test;
+		$test->expect(
+			is_null($f3->get('ERROR')),
+			'No errors expected at this point'
+		);
+		$test->expect(
+			$loaded=extension_loaded('mongo'),
+			'MongoDB extension enabled'
+		);
+		if ($loaded) {
+			$test->expect(
+				is_object($db=new \DB\Mongo(
+					'mongodb://localhost:27017','test')),
+				'DB wrapper initialized'
+			);
+			$db->drop();
+			$movie=new \DB\Mongo\Mapper($db,'movies');
+			$test->expect(
+				is_object($movie),
+				'Mapper instantiated'
+			);
+			$movie->set('title','Donnie Brasco');
+			$movie->set('director','Mike Newell');
+			$movie->set('year',1997);
+			$movie->save();
+			$movie->load(array('title'=>'Donnie Brasco'));
+			$test->expect(
+				$movie->count()==1 &&
+				$movie->get('title')=='Donnie Brasco' &&
+				$movie->get('director')=='Mike Newell' &&
+				$movie->get('year')==1997,
+				'Record loaded'
+			);
+			$movie->reset();
+			$test->expect(
+				$movie->dry(),
+				'Mapper reset'
+			);
+			$movie->set('title','The River Murders');
+			$movie->set('director','Rich Cowan');
+			$movie->set('year',2011);
+			$movie->save();
+			$movie->load();
+			$test->expect(
+				$movie->count()==2,
+				'Record count: '.$movie->count()
+			);
+			$movie->skip();
+			$test->expect(
+				$movie->get('title')=='The River Murders' &&
+				$movie->get('director')=='Rich Cowan' &&
+				$movie->get('year')==2011,
+				'New record saved'
+			);
+			$movie->skip(-1);
+			$test->expect(
+				$movie->get('title')=='Donnie Brasco' &&
+				$movie->get('director')=='Mike Newell' &&
+				$movie->get('year')==1997,
+				'Backward navigation'
+			);
+			$movie->skip();
+			$test->expect(
+				$movie->get('title')=='The River Murders' &&
+				$movie->get('director')=='Rich Cowan' &&
+				$movie->get('year')==2011,
+				'Forward navigation'
+			);
+			$movie->set('title','Zodiac');
+			$movie->set('director','David Fincher');
+			$movie->set('year',2007);
+			$movie->save();
+			$movie->load();
+			$movie->skip();
+			$test->expect(
+				$movie->get('title')=='Zodiac' &&
+				$movie->get('director')=='David Fincher' &&
+				$movie->get('year')==2007,
+				'Record updated'
+			);
+			$movie->skip(-1);
+			$movie->erase();
+			$movie->load();
+			$test->expect(
+				$movie->count()==1 &&
+				$movie->get('title')=='Zodiac' &&
+				$movie->get('director')=='David Fincher' &&
+				$movie->get('year')==2007,
+				'Record erased'
+			);
+			$test->expect(
+				!$movie->skip(),
+				'Navigation beyond cursor limit'
+			);
+			$obj=$movie->findone(array('title'=>'Zodiac'));
+			$class=get_class($obj);
+			$test->expect(
+				$class=='DB\Mongo\Mapper' &&
+				$obj->get('title')=='Zodiac' &&
+				$obj->get('director')=='David Fincher' &&
+				$obj->get('year')==2007,
+				'Object returned by findone: '.$class
+			);
+		}
+		$f3->set('results',$test->results());
+	}
+
+}

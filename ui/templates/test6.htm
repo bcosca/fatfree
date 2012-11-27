@@ -1,0 +1,7 @@
+<div>
+<loop from="@i=0" to="@i<3" step="@i++">
+	<include href="templates/test7.htm" />
+</loop>
+</div>
+{{ 'Temporary variable preserved across includes' }}
+{{* Use of <include> within <repeat> or <loop> is not recommended for performance reasons, but works *}}
