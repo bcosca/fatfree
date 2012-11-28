@@ -18,7 +18,7 @@ class Template {
 		@return string
 		@param $str string
 	**/
-	protected function token($str) {
+	function token($str) {
 		return preg_replace('/(?<!\w)@(\w+)/','$\1',$str);
 	}
 
