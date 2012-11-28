@@ -43,7 +43,6 @@ class Matrix {
 		uasort(
 			$var,
 			function($val1,$val2) use($col,$order) {
-				$self=__CLASS__;
 				list($v1,$v2)=array($val1[$col],$val2[$col]);
 				$out=is_numeric($v1) && is_numeric($v2)?
 					Base::instance()->sign($v1-$v2):strcmp($v1,$v2);

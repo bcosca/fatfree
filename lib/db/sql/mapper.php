@@ -169,7 +169,6 @@ class Mapper extends \DB\Cursor {
 		if ($options['limit'])
 			$sql.=' LIMIT '.$options['limit'];
 		$result=$this->db->exec($sql.';',$args);
-		$fw=\Base::instance();
 		$out=array();
 		foreach ($result as &$row) {
 			foreach ($row as $field=>&$val) {
