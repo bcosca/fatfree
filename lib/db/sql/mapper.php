@@ -360,25 +360,27 @@ class Mapper extends \DB\Cursor {
 	/**
 		Hydrate mapper object using hive array variable
 		@return NULL
-		@param $var array
+		@param $key string
 	**/
-	function copyfrom(array $var) {
-		foreach ($var as $key=>$val)
+	function copyfrom($key) {
+		foreach (\Base::instance()->get($key) as $key=>$val)
 			if (in_array($key,array_keys($this->fields))) {
 				$field=&$this->fields[$key];
 				if ($field['value']!=$val) {
 					$field['value']=$val;
 					$field['changed']=TRUE;
 				}
+				unset($field);
 			}
 	}
 
 	/**
 		Populate hive array variable with mapper fields
 		@return NULL
-		@param $var array
+		@param $var string
 	**/
-	function copyto(array $var) {
+	function copyto($key) {
+		$var=&\Base::instance()->ref($key);
 		foreach ($this->fields as $key=>$field)
 			$var[$key]=$field['value'];
 	}

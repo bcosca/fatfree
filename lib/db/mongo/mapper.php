@@ -206,21 +206,22 @@ class Mapper extends \DB\Cursor {
 	/**
 		Hydrate mapper object using hive array variable
 		@return NULL
-		@param $var array
+		@param $key string
 	**/
-	function copyfrom(array $var) {
-		foreach ($var as $key=>$val)
+	function copyfrom($key) {
+		foreach (\Base::instance()->get($key) as $key=>$val)
 			$this->document[$key]=$val;
 	}
 
 	/**
 		Populate hive array variable with mapper fields
 		@return NULL
-		@param $var array
+		@param $key string
 	**/
-	function copyto(array $var) {
+	function copyto($key) {
+		$var=&\Base::instance()->ref($key);
 		foreach ($this->document as $key=>$field)
-			$var[$key]=$field['value'];
+			$var[$key]=$field;
 	}
 
 	/**

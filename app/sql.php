@@ -223,6 +223,21 @@ class SQL extends Controller {
 				$movie->get('year')==2007,
 				'Record erased'
 			);
+			$movie->copyto('GET');
+			$test->expect(
+				$_GET['title']=='Zodiac' &&
+				$_GET['director']=='David Fincher' &&
+				$_GET['year']==2007,
+				'Copy fields to hive key'
+			);
+			$_GET['year']=2008;
+			$movie->copyfrom('GET');
+			$test->expect(
+				$movie->get('title')=='Zodiac' &&
+				$movie->get('director')=='David Fincher' &&
+				$movie->get('year')==2008,
+				'Hydrate mapper from hive key'
+			);
 			$test->expect(
 				!$movie->skip(),
 				'Navigation beyond cursor limit'
