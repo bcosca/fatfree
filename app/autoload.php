@@ -12,6 +12,11 @@ class Autoload extends Controller {
 			'No errors expected at this point'
 		);
 		$test->expect(
+			TRUE,
+			'Namespace search path: '.
+				$f3->get('PLUGINS').';'.$f3->get('AUTOLOAD')
+		);
+		$test->expect(
 			class_exists('NS\C'),
 			'NS\C: ns/c.php'
 		);
