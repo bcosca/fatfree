@@ -1023,7 +1023,7 @@ class Base {
 		@return NULL
 		@param $class string
 	**/
-	private function autoload($class) {
+	protected function autoload($class) {
 		$class=$this->fixslashes(ltrim($class,'\\'));
 		foreach ($this->split($this->hive['PLUGINS'].';'.
 			$this->hive['AUTOLOAD']) as $auto)
