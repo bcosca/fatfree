@@ -1027,7 +1027,7 @@ class Base {
 		$class=$this->fixslashes(ltrim($class,'\\'));
 		foreach ($this->split($this->hive['PLUGINS'].';'.
 			$this->hive['AUTOLOAD']) as $auto)
-			if (is_file($file=strtolower($auto.$class).'.php')) {
+			if (is_file($file=$auto.strtolower($class).'.php')) {
 				require($file);
 				return;
 			}
