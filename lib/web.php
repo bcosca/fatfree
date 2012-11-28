@@ -364,7 +364,6 @@ class Web {
 						$fw->hash($min).'.'.$ext[0])) ||
 						filemtime($save)<filemtime($min)) {
 						$src=$fw->read($min);
-						$ptr=0;
 						for ($ptr=0,$len=strlen($src);$ptr<$len;) {
 							if ($src[$ptr]=='/') {
 								if (substr($src,$ptr+1,2)=='*@') {
