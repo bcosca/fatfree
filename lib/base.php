@@ -1738,7 +1738,7 @@ class ISO {
 	function languages() {
 		$ref=new ReflectionClass($this);
 		$out=array();
-		foreach (preg_grep('/LC_/',array_keys($ref->getconstants())) as $val)
+		foreach (preg_grep('/LC_/',array_keys($ref->getconstants())) as $key=>$val)
 			$out[$key=substr(strstr($val,'_'),1)]=constant('self::LC_'.$key);
 		return $out;
 	}
@@ -1750,7 +1750,7 @@ class ISO {
 	function countries() {
 		$ref=new ReflectionClass($this);
 		$out=array();
-		foreach (preg_grep('/CC_/',array_keys($ref->getconstants())) as $val)
+		foreach (preg_grep('/CC_/',array_keys($ref->getconstants())) as $key=>$val)
 			$out[$key=substr(strstr($val,'_'),1)]=constant('self::CC_'.$key);
 		return $out;
 	}
@@ -2061,7 +2061,7 @@ abstract class Magic {
 	**/
 	function __isset($key) {
 		$ref=new \ReflectionProperty(get_class($this),$key);
-		return $ref->ispublic()?isset($this->$key):$this->exists($key,$val);
+		return $ref->ispublic()?isset($this->$key):$this->exists($key);
 	}
 
 	/**
@@ -2095,7 +2095,7 @@ abstract class Magic {
 		if ($ref->ispublic())
 			unset($this->$key);
 		else
-			$this->clear($key,$val);
+			$this->clear($key);
 	}
 
 }
