@@ -73,7 +73,7 @@ class Router extends Controller {
 		$f3->set('ROUTES',array());
 		$f3->route('GET /food/@id',
 			function() use($f3) {
-				$f3->set('id',$f3->get('PARAMS')['id']);
+				$f3->set('id',$f3->get('PARAMS["id"]'));
 			}
 		);
 		$f3->mock('GET /food/fish');
@@ -88,8 +88,8 @@ class Router extends Controller {
 		);
 		$f3->route('GET /food/@id/@quantity',
 			function() use($f3) {
-				$f3->set('id',$f3->get('PARAMS')['id']);
-				$f3->set('quantity',$f3->get('PARAMS')['quantity']);
+				$f3->set('id',$f3->get('PARAMS["id"]'));
+				$f3->set('quantity',$f3->get('PARAMS["quantity"]'));
 			}
 		);
 		$f3->mock('GET /food/beef/789');
