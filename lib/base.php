@@ -862,8 +862,7 @@ class Base {
 				!method_exists($parts[1],$parts[3]))
 				// Handler not found
 				$this->error(404);
-			$func=array($parts[2]=='->'?
-				new $parts[1]:$parts[1],$parts[3]);
+			$func=(array($parts[2]=='->')?new $parts[1]:$parts[1],$parts[3]);
 		}
 		if (!is_callable($func))
 			$this->error(404);
@@ -1143,7 +1142,7 @@ class Base {
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>array(),
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'default',
-			'TEMP'=>'temp/',
+			'TEMP'=>'tmp/',
 			'TIME'=>microtime(TRUE),
 			'TZ'=>date_default_timezone_get(),
 			'UI'=>'./',
@@ -1288,15 +1287,16 @@ class Cache {
 	**/
 	function load($dsn) {
 		if ($dsn) {
+			$fw=Base::instance();
 			if (!preg_match('/folder=/',$dsn)) {
 				// Auto-detect
 				$ext=array_map('strtolower',get_loaded_extensions());
 				$grep=preg_grep('/^(apc|wincache|xcache)/',$ext);
 				// Use filesystem as fallback
-				$dsn=$grep?current($grep):'folder=temp/cache/';
+				$dsn=$grep?current($grep):'folder='.$f3->get('TEMP').'cache/';
 			}
 			if (preg_match('/folder=(.+)/',$dsn,$parts) && !is_dir($parts[1]))
-				Base::instance()->mkdir($parts[1]);
+				$f3->mkdir($parts[1]);
 		}
 		return $this->dsn=$dsn;
 	}

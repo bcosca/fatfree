@@ -36,7 +36,7 @@ class Web extends Controller {
 			'@'.$kbps.' KBps (MIME type auto-detected): '.
 				round($elapsed,2).' secs'
 		);
-		$f3->set('UPLOADS','temp/uploads');
+		$f3->set('UPLOADS',$f3->get('TEMP').'uploads');
 		$f3->route('PUT /upload/@filename',
 			function() use($web) { $web->receive(); }
 		);
