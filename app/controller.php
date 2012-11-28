@@ -6,7 +6,9 @@ class Controller {
 
 	function beforeroute() {
 		$f3=\Base::instance();
-		$uri=$f3->get('URI');
+		$base=$f3->get('BASE');
+		$uri=preg_replace('/^'.preg_quote($base,'/').'\b/','',
+			$f3->get('URI'));
 		if ($uri=='/router')
 			$uri='/redir';
 		elseif (preg_match('/\/openid2\b/',$uri))
