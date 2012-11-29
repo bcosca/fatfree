@@ -19,8 +19,8 @@ class Template {
 		@param $str string
 	**/
 	function token($str) {
-		return preg_replace(array('/{{(.+?)}}/','/(?<!\w)@(\w+)/'),
-			array('\1','$\1'),$str);
+		return trim(preg_replace(array('/{{(.+?)}}/','/(?<!\w)@(\w+)/'),
+			array(trim('\1'),'$\1'),$str));
 	}
 
 	/**
