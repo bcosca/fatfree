@@ -1,11 +1,11 @@
-<set foo="1+2 | expr" bar="@foo+3 | expr" baz="xyz" />
+<set foo="{{ 1+2 }}" bar="{{ @foo+3 }}" baz="xyz" />
 <span>{{ @foo }}</span>
 <span>{{ @bar }}</span>
 <span>{{ @baz }}</span>
 <set foo="array(1,3,5)" />
 <span>{{ @foo }}</span>
-<set bar="array('a','b','c') | expr" />
-<loop from="@i=0" to="@i<count(@bar)" step="@i++">
+<set bar="{{ array('a','b','c') }}" />
+<loop from="{{ @i=0 }}" to="{{ @i<count(@bar) }}" step="{{ @i++ }}">
 	<span>{{ @bar[@i] }}</span>
 </loop>
 {{ 'email@address.com' }}

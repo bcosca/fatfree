@@ -19,6 +19,8 @@ class Template {
 		@param $str string
 	**/
 	function token($str) {
+		if (preg_match('/{{(.+?)}}/',$str,$parts))
+			$str=$parts[1];
 		return preg_replace('/(?<!\w)@(\w+)/','$\1',$str);
 	}
 
@@ -31,8 +33,8 @@ class Template {
 		$out='';
 		foreach ($node['@attrib'] as $key=>$val)
 			$out.='$'.$key.'='.
-				(preg_match('/^(.+?)\s*\|\s*(expr)$/',$val,$parts)?
-					$this->token($parts[1]):
+				(preg_match('/{{(.+?)}}/',$val,$parts)?
+					$this->token($val):
 					Base::instance()->stringify($val)).'; ';
 		return '<?php '.$out.'?>';
 	}
@@ -48,8 +50,7 @@ class Template {
 			'<?php '.(isset($attrib['if'])?
 				('if ('.$this->token($attrib['if']).') '):'').
 				('echo $this->serve('.
-					(preg_match('/^(.+?)\s*\|\s*expr$/',
-						$attrib['href'],$parts)?
+					(preg_match('/{{(.+?)}}/',$attrib['href'],$parts)?
 						$this->token($parts[1]):
 						Base::instance()->stringify($attrib['href'])).','.
 					'$this->mime,get_defined_vars()); ?>');
