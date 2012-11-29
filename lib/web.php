@@ -168,8 +168,9 @@ class Web {
 		if (!is_array($options))
 			$options=array();
 		$parts=parse_url($url);
-		if (isset($parts['scheme']) &&
-			!preg_match('/https?/',$parts['scheme']))
+		if (!isset($parts['scheme']))
+			$parts['scheme']='http';
+		elseif !preg_match('/https?/',$parts['scheme']))
 			return FALSE;
 		$options+=array(
 			'method'=>'GET',
