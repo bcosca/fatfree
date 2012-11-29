@@ -675,9 +675,9 @@ class Base {
 		@param $pattern string
 		@param $handler string|callback
 		@param $ttl int
-		@param $throttle int
+		@param $kbps int
 	**/
-	function route($pattern,$handler,$ttl=0,$throttle=0) {
+	function route($pattern,$handler,$ttl=0,$kbps=0) {
 		$parts=preg_split('/\s+/',$pattern,2,PREG_SPLIT_NO_EMPTY);
 		if (count($parts)<2)
 			trigger_error(sprintf(self::E_Pattern,$pattern));
@@ -686,7 +686,7 @@ class Base {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
 			$this->hive['ROUTES'][$url]
-				[strtoupper($verb)]=array($handler,$ttl,$throttle);
+				[strtoupper($verb)]=array($handler,$ttl,$kbps);
 		}
 	}
 
@@ -712,14 +712,14 @@ class Base {
 		@param $url string
 		@param $class string
 		@param $ttl int
-		@param $throttle int
+		@param $kbps int
 		@param $prefix string
 	**/
-	function map($url,$class,$ttl=0,$throttle=0,$prefix='') {
+	function map($url,$class,$ttl=0,$kbps=0,$prefix='') {
 		foreach (explode('|',self::VERBS) as $method)
 			$this->route(
 				$method.' '.$url,$class.'->'.strtolower($prefix.$method),
-				$ttl,$throttle);
+				$ttl,$kbps);
 	}
 
 	/**
@@ -758,7 +758,7 @@ class Base {
 					$this->reroute(substr($path,0,-1).
 						($query?('?'.$query):''));
 				}
-				list($handler,$ttl,$throttle)=$route[$this->hive['VERB']];
+				list($handler,$ttl,$kbps)=$route[$this->hive['VERB']];
 				if (is_bool(strpos($url,'/*')))
 					foreach (array_keys($args) as $key)
 						if (is_numeric($key) && $key)
@@ -830,11 +830,11 @@ class Base {
 				if ($this->hive['RESPONSE']=$body) {
 					$ctr=0;
 					foreach (str_split($body,1024) as $part) {
-						if ($throttle) {
+						if ($kbps) {
 							// Throttle output
 							$ctr++;
-							if ($ctr/$throttle>$elapsed=microtime(TRUE)-$now)
-								usleep(1e6*($ctr/$throttle-$elapsed));
+							if ($ctr/$kbps>$elapsed=microtime(TRUE)-$now)
+								usleep(1e6*($ctr/$kbps-$elapsed));
 						}
 						if (!$this->hive['QUIET'])
 							echo $part;
