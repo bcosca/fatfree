@@ -629,9 +629,10 @@ class Base {
 				'<head><title>'.$code.' '.$header.'</title></head>'.
 				'<body>'.
 					'<h1>'.$header.'</h1>'."\n".
-					'<p><big><i>'.($text?:$req).'</i></big></p>'.
+					'<p><big><i>'.$this->encode($text?:$req).'</i></big></p>'.
 					($out && $this->hive['DEBUG']?
-						('<p>'."\n".nl2br($out).'</p>'."\n"):'').
+						('<p>'."\n".
+							nl2br($this->encode($out)).'</p>'."\n"):'').
 				'</body>'.
 				'</html>';
 		}
