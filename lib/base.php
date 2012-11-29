@@ -136,7 +136,12 @@ class Base {
 	**/
 	function exists($key) {
 		$ref=&$this->ref($key,FALSE);
-		return isset($ref);
+		if (!isset($ref)) {
+			// Remove from cache
+			$cache=Cache::instance();
+			return $cache->exists($hash=$this->hash($key));
+		}
+		return TRUE;
 	}
 
 	/**
