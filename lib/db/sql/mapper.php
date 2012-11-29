@@ -397,7 +397,7 @@ class Mapper extends \DB\Cursor {
 	/**
 		Populate hive array variable with mapper fields
 		@return NULL
-		@param $var string
+		@param $key string
 	**/
 	function copyto($key) {
 		$var=&\Base::instance()->ref($key);

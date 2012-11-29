@@ -1,5 +1,6 @@
 <?php
 
+//! Custom logger
 class Log {
 
 	private
