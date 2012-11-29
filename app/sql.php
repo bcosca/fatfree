@@ -126,8 +126,9 @@ class SQL extends Controller {
 				'Flag primary key violation'
 			);
 			$test->expect(
-				$db->exec('SELECT * FROM movies WHERE director=?;',
-					array(1=>'Mike Newell'))==
+				$db->exec(
+					'SELECT * FROM movies WHERE director=?;',
+					'Mike Newell')==
 				array(
 					array(
 						'title'=>'Donnie Brasco',

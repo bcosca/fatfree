@@ -67,13 +67,15 @@ class SQL extends \PDO {
 		Execute SQL statement(s)
 		@return array|int|FALSE
 		@param $cmds string|array
-		@param $args array
+		@param $args string|array
 		@param $ttl int
 	**/
-	function exec($cmds,array $args=NULL,$ttl=0) {
+	function exec($cmds,$args=NULL,$ttl=0) {
 		$auto=FALSE;
 		if (!$args)
 			$args=array();
+		elseif (!is_array($args))
+			$args=array(1=>$args);
 		if (is_array($cmds)) {
 			// Apply arguments to SQL commands
 			$args+=array_fill($i=count($args),count($cmds)-$i,array());
