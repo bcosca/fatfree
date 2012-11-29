@@ -38,9 +38,10 @@ abstract class Cursor extends \Magic {
 
 	/**
 		Delete current record
-		@return int
+		@return int|bool
+		@param $filter string|array
 	**/
-	abstract function erase();
+	abstract function erase($filter=NULL);
 
 	/**
 		Return TRUE if current cursor position is not mapped to any record

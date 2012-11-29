@@ -338,8 +338,12 @@ class Mapper extends \DB\Cursor {
 	/**
 		Delete current record
 		@return int
+		@param $filter string|array
 	**/
-	function erase() {
+	function erase($filter=NULL) {
+		if ($filter)
+			return $this->db->
+				exec('DELETE FROM '.$this->table.' WHERE '.$filter.';');
 		$args=array();
 		$ctr=0;
 		$filter='';

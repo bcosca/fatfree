@@ -81,7 +81,7 @@ class Mapper extends \DB\Cursor {
 		Build query and execute
 		@return array
 		@param $fields string
-		@param $filter string|array
+		@param $filter array
 		@param $options array
 	**/
 	function select($fields,$filter=NULL,array $options=NULL) {
@@ -142,7 +142,7 @@ class Mapper extends \DB\Cursor {
 	/**
 		Return records that match criteria
 		@return array
-		@param $filter string|array
+		@param $filter array
 		@param $options array
 	**/
 	function find($filter=NULL,array $options=NULL) {
@@ -160,7 +160,7 @@ class Mapper extends \DB\Cursor {
 	/**
 		Count records that match criteria
 		@return int
-		@param $filter string|array
+		@param $filter array
 	**/
 	function count($filter=NULL) {
 		return $this->collection->count($filter);
@@ -199,10 +199,16 @@ class Mapper extends \DB\Cursor {
 
 	/**
 		Delete current record
-		@return int
+		@return bool
+		@param $filter array
 	**/
-	function erase() {
-		$this->collection->remove(array('_id'=>$this->document['_id']));
+	function erase($filter=NULL) {
+		if ($filter)
+			return $this->collection->remove($filter);
+		$result=$this->collection->
+			remove(array('_id'=>$this->document['_id']));
+		parent::reset();
+		return $result;
 	}
 
 	/**
