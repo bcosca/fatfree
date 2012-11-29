@@ -104,7 +104,7 @@ class Hive extends Controller {
 			'Closure assigned'
 		);
 		$f3->set('a',new \stdClass);
-		$f3->get('a')->hello='world';
+		$f3->set('a->hello','world');
 		$test->expect(
 			is_object($f3->get('a')) && $f3->get('a')->hello=='world' &&
 			$f3->get('a->hello')=='world',
@@ -113,6 +113,34 @@ class Hive extends Controller {
 		$test->expect(
 			$f3->exists('a') && $f3->exists('a->hello'),
 			'Existence confirmed'
+		);
+		$f3->set('a->z.x','foo');
+		$test->expect(
+			is_array($f3->get('a->z')) && $f3->get('a->z.x')=='foo',
+			'Object property containing array'
+		);
+		$f3->set('a->z.qux',function() {
+			return 'hello';
+		});
+		$test->expect(
+			is_callable($f3->get('a->z.qux')),
+			'Object property containing lambda function'
+		);
+		$f3->set('domains',
+			array(
+				'google.com'=>'Google',
+				'yahoo.com'=>'Yahoo'
+			)
+		);
+		$test->expect(
+			$f3->get('domains')==
+			array(
+				'google.com'=>'Google',
+				'yahoo.com'=>'Yahoo'
+			) &&
+			$f3->get('domains[google.com]')=='Google' &&
+			$f3->get('domains[yahoo.com]')=='Yahoo',
+			'Array keys containing dot symbol'
 		);
 		$test->expect(
 			!$f3->exists('j'),
