@@ -229,6 +229,10 @@ class Base {
 		if (preg_match('/^(?:GET|POST|COOKIE)\b(.+)/',$key,$parts))
 			// Sync GET, POST, or COOKIE with REQUEST
 			$this->clear('REQUEST'.$parts[1]);
+		// Remove from cache
+		$cache=Cache::instance();
+		if ($cache->exists($hash=$this->hash($key)))
+			$cache->clear($hash);
 		// PHP can't unset a referenced array/object directly
 		eval('unset($this->hive'.$out.');');
 	}
