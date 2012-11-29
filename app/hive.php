@@ -43,30 +43,33 @@ class Hive extends Controller {
 			'Array value'
 		);
 		$test->expect(
+			$f3->get('array.w')===FALSE &&
 			$f3->get('array[w]')===FALSE &&
 			$f3->get('array[\'w\']')===FALSE &&
 			$f3->get('array["w"]')===FALSE,
 			'Boolean element'
 		);
 		$test->expect(
+			$f3->get('array.x')=='abc' &&
 			$f3->get('array[x]')=='abc' &&
 			$f3->get('array[\'x\']')=='abc' &&
 			$f3->get('array["x"]')=='abc',
 			'String element'
 		);
 		$test->expect(
+			$f3->get('array.y')===123 &&
 			$f3->get('array[y]')===123 &&
 			$f3->get('array[\'y\']')===123 &&
 			$f3->get('array["y"]')===123,
 			'Integer element'
 		);
 		$test->expect(
+			$f3->get('array.z')===4.56 &&
 			$f3->get('array[z]')===4.56 &&
 			$f3->get('array[\'z\']')===4.56 &&
 			$f3->get('array["z"]')===4.56,
 			'Float element'
 		);
-		$f3->set('array.x','tuv');
 		$f3->set('array',array('w'=>FALSE,'x'=>'qrs','y'=>123,'z'=>4.56));
 		$test->expect(
 			$f3->get('array')===
@@ -79,8 +82,12 @@ class Hive extends Controller {
 			'Value replaced; now a multidimensional array'
 		);
 		$test->expect(
+			$f3->get('array.a')===array('b'=>array('c'=>'hello')) &&
 			$f3->get('array[a]')===array('b'=>array('c'=>'hello')) &&
+			$f3->get('array.a[b]')===array('c'=>'hello') &&
+			$f3->get('array[a].b')===array('c'=>'hello') &&
 			$f3->get('array[a][\'b\']')===array('c'=>'hello') &&
+			$f3->get('array.a.b.c')==='hello' &&
 			$f3->get('array[a][b][c]')==='hello' &&
 			$f3->get('array["a"]')===array('b'=>array('c'=>'hello')) &&
 			$f3->get('array["a"]["b"]')===array('c'=>'hello') &&

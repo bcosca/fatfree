@@ -14,13 +14,36 @@ class Template {
 		$tags='set|include|exclude|loop|repeat|check|true|false';
 
 	/**
+		Convert from JS dot notation to PHP array notation
+			@return string
+			@param $key string
+			@public
+	**/
+	function remix($key) {
+		$self=$this;
+		return preg_replace_callback(
+			'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
+			function($expr) use($self) {
+				$fw=Base::instance();
+				return '['.
+					($expr[1]?
+						$fw->stringify(substr($expr[1],1)):
+						(preg_match('/^\w+/',$mix=$self->remix($expr[2]))?
+							$fw->stringify($mix):
+							$mix)).']';
+			},
+			$key
+		);
+	}
+
+	/**
 		Convert token to variable
 		@return string
 		@param $str string
 	**/
 	function token($str) {
 		return trim(preg_replace(array('/{{(.+?)}}/','/(?<!\w)@(\w+)/'),
-			array(trim('\1'),'$\1'),$str));
+			array(trim('\1'),'$'.$this->remix('\1')),$str));
 	}
 
 	/**

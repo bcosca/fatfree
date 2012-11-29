@@ -89,7 +89,7 @@ class Base {
 		else
 			$var=$this->hive;
 		$obj=FALSE;
-		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)/',
+		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)|\./',
 			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		if ($parts[0]=='SESSION' && !session_id()) {
 			call_user_func_array('session_set_cookie_params',
