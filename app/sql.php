@@ -181,6 +181,13 @@ class SQL extends Controller {
 				'Record count: '.$movie->count()
 			);
 			$movie->skip();
+			$cast=$movie->cast();
+			$test->expect(
+				$cast['title']=='The River Murders' &&
+				$cast['director']=='Rich Cowan' &&
+				$cast['year']==2011,
+				'Cast mapper to ordinary array'
+			);
 			$test->expect(
 				$movie->get('title')=='The River Murders' &&
 				$movie->get('director')=='Rich Cowan' &&

@@ -79,7 +79,7 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Convert PDO type to ordinary PHP type
+		Get PHP type equivalent of PDO constant
 		@return string
 		@param $pdo string
 	**/
@@ -97,12 +97,12 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Cast value to PDO type
+		Cast value to PHP type
 		@return scalar
 		@param $type string
 		@param $val scalar
 	**/
-	function cast($type,$val) {
+	function value($type,$val) {
 		switch ($type) {
 			case \PDO::PARAM_NULL:
 				return (unset)$val;
@@ -130,6 +130,22 @@ class Mapper extends \DB\Cursor {
 				$mapper->adhoc[$field]['value']=$val;
 		}
 		return $mapper;
+	}
+
+	/**
+		Return fields of mapper object as an associative array
+		@return array
+		@param $obj Mapper
+	**/
+	function cast(Mapper $obj=NULL) {
+		if (!$obj)
+			$obj=$this;
+		return array_map(
+			function($row) {
+				return $row['value' ];
+			},
+			$obj->fields+$obj->adhoc
+		);
 	}
 
 	/**
@@ -173,7 +189,7 @@ class Mapper extends \DB\Cursor {
 		foreach ($result as &$row) {
 			foreach ($row as $field=>&$val) {
 				if (array_key_exists($field,$this->fields))
-					$val=$this->cast($this->fields[$field]['type'],$val);
+					$val=$this->value($this->fields[$field]['type'],$val);
 				elseif (array_key_exists($field,$this->adhoc))
 					$this->adhoc[$field]['value']=$val;
 				unset($val);
@@ -283,7 +299,7 @@ class Mapper extends \DB\Cursor {
 				$seq=$this->table.'_'.end($pkeys).'_seq';
 			}
 			return $this->load(
-				array($inc[0].'=?',$this->cast(
+				array($inc[0].'=?',$this->value(
 					$this->fields[$inc[0]]['type'],
 					$this->id=$this->db->lastinsertid($seq))));
 		}

@@ -67,6 +67,17 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
+		Return fields of mapper object as an associative array
+		@return array
+		@param $obj Mapper
+	**/
+	function cast(Mapper $obj=NULL) {
+		if (!$obj)
+			$obj=$this;
+		return $obj->document;
+	}
+
+	/**
 		Build query and execute
 		@return array
 		@param $fields string
