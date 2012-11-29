@@ -19,7 +19,7 @@ class Template {
 			@param $key string
 			@public
 	**/
-	function remix($key) {
+	protected function remix($key) {
 		$self=$this;
 		return preg_replace_callback(
 			'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
@@ -42,8 +42,15 @@ class Template {
 		@param $str string
 	**/
 	function token($str) {
-		return trim(preg_replace(array('/{{(.+?)}}/','/(?<!\w)@(\w+)/'),
-			array(trim('\1'),'$'.$this->remix('\1')),$str));
+		$self=$this;
+		$str=preg_replace_callback(
+			'/(?<!\w)@(\w[\w\.\[\]\->:]*)/',
+			function($var) use($self) {
+				return '$'.$self->remix($var[1]);
+			},
+			$str
+		);
+		return preg_replace('/{{(.+?)}}/',trim('\1'),$str);
 	}
 
 	/**
