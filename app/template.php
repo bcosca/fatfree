@@ -11,22 +11,49 @@ class Template extends Controller {
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
+		$tpl=\Template::instance();
 		$f3->set('foo','bar->baz');
 		$test->expect(
-			\Template::instance()->serve('templates/test1.htm')=='bar-&gt;baz',
+			$tpl->serve('templates/test1.htm')=='bar-&gt;baz',
 			'Auto-escaping enabled'
+		);
+		$test->expect(
+			$tpl->token('@foo.bar')=='$foo[\'bar\']' &&
+			$tpl->token('@foo[bar]')=='$foo[\'bar\']' &&
+			$tpl->token('@foo[\'bar\']')=='$foo[\'bar\']' &&
+			$tpl->token('@foo["bar"]')=='$foo["bar"]' &&
+			$tpl->token('@foo.@bar')=='$foo.$bar' &&
+			$tpl->token('@foo[@bar]')=='$foo[$bar]' &&
+			$tpl->token('@foo->bar.baz')=='$foo->bar[\'baz\']' &&
+			$tpl->token('@foo->bar[baz]')=='$foo->bar[\'baz\']' &&
+			$tpl->token('@foo->bar.@baz')=='$foo->bar.$baz' &&
+			$tpl->token('@foo->bar[@baz]')=='$foo->bar[$baz]' &&
+			$tpl->token('@foo::bar.baz')=='$foo::bar[\'baz\']' &&
+			$tpl->token('@foo::bar[baz]')=='$foo::bar[\'baz\']' &&
+			$tpl->token('@foo::bar.@baz')=='$foo::bar.$baz' &&
+			$tpl->token('@foo::bar[@baz]')=='$foo::bar[$baz]' &&
+			$tpl->token('@foo->bar[@qux.baz]')=='$foo->bar[$qux[\'baz\']]' &&
+			$tpl->token('@foo->bar[@qux.@baz]')=='$foo->bar[$qux.$baz]' &&
+			$tpl->token('@foo()')=='$foo()' &&
+			$tpl->token('@foo()->bar')=='$foo()->bar' &&
+			$tpl->token('@foo.zip()')=='$foo[\'zip\']()' &&
+			$tpl->token('@foo.zip(@bar)')=='$foo[\'zip\']($bar)' &&
+			$tpl->token('@foo.zip(@bar,@baz)')=='$foo[\'zip\']($bar,$baz)' &&
+			$tpl->token('@foo.zip(@bar,\'qux\')')=='$foo[\'zip\']($bar,\'qux\')' &&
+			$tpl->token('@foo->zip(@bar,\'qux\')')=='$foo->zip($bar,\'qux\')',
+			'Parse template tokens'
 		);
 		$f3->set('foo','bar');
 		$f3->set('cond',TRUE);
 		$f3->set('file','templates/test1.htm');
 		$test->expect(
-			\Template::instance()->serve('templates/test2.htm')=='bar',
+			$tpl->serve('templates/test2.htm')=='bar',
 			'<include>'
 		);
 		$f3->clear('cond');
 		$f3->set('foo','baz');
 		$test->expect(
-			\Template::instance()->serve('templates/test3.htm')=='baz',
+			$tpl->serve('templates/test3.htm')=='baz',
 			'<exclude> and {{* comment *}}'
 		);
 		$f3->clear('foo');
@@ -38,7 +65,7 @@ class Template extends Controller {
 		);
 		$test->expect(
 			preg_replace('/[\t\n]/','',
-				\Template::instance()->serve('templates/test4.htm'))==
+				$tpl->serve('templates/test4.htm'))==
 				'<div>'.
 					'<p><span><b>coffee</b></span></p>'.
 					'<p>'.
@@ -62,28 +89,28 @@ class Template extends Controller {
 		$f3->set('cond1',TRUE);
 		$f3->set('cond2',TRUE);
 		$test->expect(
-			trim(\Template::instance()->serve('templates/test5.htm'))==
+			trim($tpl->serve('templates/test5.htm'))==
 				'c1:T,c2:T',
 			'<check>, <true>, <true>'
 		);
 		$f3->set('cond1',TRUE);
 		$f3->set('cond2',FALSE);
 		$test->expect(
-			trim(\Template::instance()->serve('templates/test5.htm'))==
+			trim($tpl->serve('templates/test5.htm'))==
 				'c1:T,c2:F',
 			'<check>, <true>, <false>'
 		);
 		$f3->set('cond1',FALSE);
 		$f3->set('cond2',TRUE);
 		$test->expect(
-			trim(\Template::instance()->serve('templates/test5.htm'))==
+			trim($tpl->serve('templates/test5.htm'))==
 				'c1:F,c2:T',
 			'<check>, <false>, <true>'
 		);
 		$f3->set('cond1',FALSE);
 		$f3->set('cond2',FALSE);
 		$test->expect(
-			trim(\Template::instance()->serve('templates/test5.htm'))==
+			trim($tpl->serve('templates/test5.htm'))==
 				'c1:F,c2:F',
 			'<check>, <false>, <false>'
 		);
@@ -91,7 +118,7 @@ class Template extends Controller {
 		$f3->clear('cond2');
 		$test->expect(
 			preg_replace('/[\t\n]/','',
-				\Template::instance()->serve('templates/test6.htm'))==
+				$tpl->serve('templates/test6.htm'))==
 					'<div>'.
 						'<p class="odd">1</p>'.
 						'<p class="even">2</p>'.
@@ -102,7 +129,7 @@ class Template extends Controller {
 		);
 		$test->expect(
 			preg_replace('/[\t\n]/','',
-				\Template::instance()->serve('templates/test8.htm'))==
+				$tpl->serve('templates/test8.htm'))==
 					'<span>3</span>'.
 					'<span>6</span>'.
 					'<span>xyz</span>'.
