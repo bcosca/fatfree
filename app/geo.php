@@ -22,7 +22,7 @@ class Geo extends Controller {
 		$test->expect(
 			is_array($loc=$geo->location()),
 			'Detect geolocation: '.(isset($loc['city'])?$loc['city']:'').
-				(isset($loc['countryName'])?(', '.$loc['countryName']):'').
+				(isset($loc['country_name'])?(', '.$loc['country_name']):'').
 				(isset($loc['request'])?
 					(' (IP address '.$loc['request'].')'):'')
 		);
