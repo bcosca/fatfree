@@ -2017,7 +2017,7 @@ class Test {
 		@param $cond bool
 		@param $text string
 	**/
-	function expect($cond,$text) {
+	function expect($cond,$text=NULL) {
 		$out=(bool)$cond;
 		$source=NULL;
 		foreach (debug_backtrace() as $frame)
