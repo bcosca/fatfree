@@ -114,7 +114,7 @@ class Template extends Controller {
 			$expr.': '.$eval
 		);
 		$test->expect(
-			$tpl->token($expr='@foo->zip(@bar,\'qux\')')==($eval='$foo->zip($bar,\'qux\')'),
+			$tpl->token($expr='@foo->zip(@bar,\'qux\',123,array(\'a\'=>\'hello\'))')==($eval='$foo->zip($bar,\'qux\',123,array(\'a\'=>\'hello\'))'),
 			$expr.': '.$eval
 		);
 		$test->expect(
