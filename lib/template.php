@@ -19,7 +19,7 @@ class Template {
 			@param $key string
 			@public
 	**/
-	protected function remix($key) {
+	function remix($key) {
 		$self=$this;
 		return preg_replace_callback(
 			'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
@@ -28,7 +28,7 @@ class Template {
 				return '['.
 					($expr[1]?
 						$fw->stringify(substr($expr[1],1)):
-						(preg_match('/^\w+/',$mix=$self->remix($expr[2]))?
+						(preg_match('/^\w+/',$mix=$self->token($expr[2]))?
 							$fw->stringify($mix):
 							$mix)).']';
 			},
