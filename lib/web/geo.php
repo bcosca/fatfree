@@ -30,32 +30,33 @@ class Geo {
 		@param $ip string
 	**/
 	function location($ip=NULL) {
-		($ip===NULL && $_SERVER['REMOTE_ADDR'])?$ip=$_SERVER['REMOTE_ADDR']
-			:$ip='127.0.0.1';
-		if ($ip!='127.0.0.1' && function_exists('geoip_db_avail')
-			&& geoip_db_avail(GEOIP_CITY_EDITION_REV1)
-			&& geoip_db_avail(GEOIP_COUNTRY_EDITION))
-			if ($out=@geoip_record_by_name($ip)) {
-				$out['request']=$ip;
-				$out['region_code']=$out['region'];
-				$out['region_name']=geoip_region_name_by_code(
-					$out['country_code'],$out['region']);
-				unset($out['country_code3'],$out['postal_code'],$out['region']);
-				return $out;
-			}
-
-		if ($req=\Web::instance()->request(
-			'http://www.geoplugin.net/json.gp'
-			.(($ip!='127.0.0.1')?('?ip='.$ip):''))) {
-			if ($data=@json_decode($req['body'],TRUE)) {
-				$out=array();
-				foreach ($data as $key=>$val)
-					if (!strpos($key,'currency') && $key!=='geoplugin_status'
-						&& $key!=='geoplugin_region')
-						$out[strtolower(preg_replace('/[[:upper:]]/','_\0',
-							substr($key, 10)))]=$val;
-				return $out;
-			}
+		$web=\Web::instance();
+		if (!$ip)
+			$ip=$web->realip();
+		$public=filter_var($ip,FILTER_VALIDATE_IP,
+			FILTER_FLAG_IPV4|FILTER_FLAG_IPV6|
+			FILTER_FLAG_NO_RES_RANGE|FILTER_FLAG_NO_PRIV_RANGE);
+		if ($public && function_exists('geoip_db_avail') &&
+			geoip_db_avail(GEOIP_CITY_EDITION_REV1) &&
+			geoip_db_avail(GEOIP_COUNTRY_EDITION) &&
+			$out=@geoip_record_by_name($ip)) {
+			$out['request']=$ip;
+			$out['region_code']=$out['region'];
+			$out['region_name']=geoip_region_name_by_code(
+				$out['country_code'],$out['region']);
+			unset($out['country_code3'],$out['postal_code'],$out['region']);
+			return $out;
+		}
+		if (($req=$web->request('http://www.geoplugin.net/json.gp'.
+			($public?('?ip='.$ip):''))) &&
+			$data=@json_decode($req['body'],TRUE)) {
+			$out=array();
+			foreach ($data as $key=>$val)
+				if (!strpos($key,'currency') && $key!=='geoplugin_status'
+					&& $key!=='geoplugin_region')
+					$out[strtolower(preg_replace('/[[:upper:]]/','_\0',
+						substr($key, 10)))]=$val;
+			return $out;
 		}
 		return FALSE;
 	}

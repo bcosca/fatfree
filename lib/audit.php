@@ -39,7 +39,7 @@ class Audit {
 		@param $addr string
 	**/
 	function ipv6($addr) {
-		return filter_var($addr,FILTER_VALIDATE_IP,FILTER_FLAG_IPV6);
+		return (bool)filter_var($addr,FILTER_VALIDATE_IP,FILTER_FLAG_IPV6);
 	}
 
 	/**
@@ -48,7 +48,7 @@ class Audit {
 		@param $addr string
 	**/
 	function local($addr) {
-		return !filter_var($addr,FILTER_VALIDATE_IP,
+		return !(bool)filter_var($addr,FILTER_VALIDATE_IP,
 			FILTER_FLAG_IPV4|FILTER_FLAG_IPV6|FILTER_FLAG_NO_PRIV_RANGE);
 	}
 
@@ -58,7 +58,7 @@ class Audit {
 		@param $addr string
 	**/
 	function reserved($addr) {
-		return !filter_var($addr,FILTER_VALIDATE_IP,
+		return !(bool)filter_var($addr,FILTER_VALIDATE_IP,
 			FILTER_FLAG_IPV4|FILTER_FLAG_IPV6|FILTER_FLAG_NO_RES_RANGE);
 	}
 
