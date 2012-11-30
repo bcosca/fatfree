@@ -36,10 +36,11 @@ class Geo {
 			&& geoip_db_avail(GEOIP_CITY_EDITION_REV1)
 			&& geoip_db_avail(GEOIP_COUNTRY_EDITION))
 			if ($out=@geoip_record_by_name($ip)) {
-				unset($out['country_code3']);
 				$out['request']=$ip;
+				$out['region_code']=$out['region'];
 				$out['region_name']=geoip_region_name_by_code(
 					$out['country_code'],$out['region']);
+				unset($out['country_code3'],$out['postal_code'],$out['region']);
 				return $out;
 			}
 
@@ -49,7 +50,8 @@ class Geo {
 			if ($data=@json_decode($req['body'],TRUE)) {
 				$out=array();
 				foreach ($data as $key=>$val)
-					if (!strpos($key,'currency') && !strpos($key,'status'))
+					if (!strpos($key,'currency') && $key!=='geoplugin_status'
+						&& $key!=='geoplugin_region')
 						$out[strtolower(preg_replace('/[[:upper:]]/','_\0',
 							substr($key, 10)))]=$val;
 				return $out;
