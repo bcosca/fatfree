@@ -18,30 +18,104 @@ class Template extends Controller {
 			'Auto-escaping enabled'
 		);
 		$test->expect(
-			$tpl->token('@foo.bar')=='$foo[\'bar\']' &&
-			$tpl->token('@foo[bar]')=='$foo[\'bar\']' &&
-			$tpl->token('@foo[\'bar\']')=='$foo[\'bar\']' &&
-			$tpl->token('@foo["bar"]')=='$foo["bar"]' &&
-			$tpl->token('@foo.@bar')=='$foo.$bar' &&
-			$tpl->token('@foo[@bar]')=='$foo[$bar]' &&
-			$tpl->token('@foo->bar.baz')=='$foo->bar[\'baz\']' &&
-			$tpl->token('@foo->bar[baz]')=='$foo->bar[\'baz\']' &&
-			$tpl->token('@foo->bar.@baz')=='$foo->bar.$baz' &&
-			$tpl->token('@foo->bar[@baz]')=='$foo->bar[$baz]' &&
-			$tpl->token('@foo::bar.baz')=='$foo::bar[\'baz\']' &&
-			$tpl->token('@foo::bar[baz]')=='$foo::bar[\'baz\']' &&
-			$tpl->token('@foo::bar.@baz')=='$foo::bar.$baz' &&
-			$tpl->token('@foo::bar[@baz]')=='$foo::bar[$baz]' &&
-			$tpl->token('@foo->bar[@qux.baz]')=='$foo->bar[$qux[\'baz\']]' &&
-			$tpl->token('@foo->bar[@qux.@baz]')=='$foo->bar[$qux.$baz]' &&
-			$tpl->token('@foo()')=='$foo()' &&
-			$tpl->token('@foo()->bar')=='$foo()->bar' &&
-			$tpl->token('@foo.zip()')=='$foo[\'zip\']()' &&
-			$tpl->token('@foo.zip(@bar)')=='$foo[\'zip\']($bar)' &&
-			$tpl->token('@foo.zip(@bar,@baz)')=='$foo[\'zip\']($bar,$baz)' &&
-			$tpl->token('@foo.zip(@bar,\'qux\')')=='$foo[\'zip\']($bar,\'qux\')' &&
-			$tpl->token('@foo->zip(@bar,\'qux\')')=='$foo->zip($bar,\'qux\')',
-			'Parse template tokens'
+			$tpl->token($expr='@foo.bar')==($eval='$foo[\'bar\']'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo[bar]')==($eval='$foo[\'bar\']'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo[\'bar\']')==($eval='$foo[\'bar\']'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo["bar"]')==($eval='$foo["bar"]'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo.@bar')==($eval='$foo.$bar'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo[@bar]')==($eval='$foo[$bar]'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo->bar.baz')==($eval='$foo->bar[\'baz\']'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo->bar[baz]')==($eval='$foo->bar[\'baz\']'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo->bar.@baz')==($eval='$foo->bar.$baz'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo->bar[@baz]')==($eval='$foo->bar[$baz]'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo->@baz')==($eval='$foo->$baz'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo::bar.baz')==($eval='$foo::bar[\'baz\']'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo::bar[baz]')==($eval='$foo::bar[\'baz\']'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo::bar.@baz')==($eval='$foo::bar.$baz'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo::@baz')==($eval='$foo::$baz'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo::bar[@baz]')==($eval='$foo::bar[$baz]'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo->bar[@qux.baz]')==($eval='$foo->bar[$qux[\'baz\']]'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo->bar[@qux.@baz]')==($eval='$foo->bar[$qux.$baz]'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo()')==($eval='$foo()'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo()->bar')==($eval='$foo()->bar'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo.zip()')==($eval='$foo[\'zip\']()'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo.zip(@bar)')==($eval='$foo[\'zip\']($bar)'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo.zip(@bar,@baz)')==($eval='$foo[\'zip\']($bar,$baz)'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo.zip(@bar,\'qux\')')==($eval='$foo[\'zip\']($bar,\'qux\')'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo->zip(@bar,\'qux\')')==($eval='$foo->zip($bar,\'qux\')'),
+			$expr.': '.$eval
 		);
 		$f3->set('foo','bar');
 		$f3->set('cond',TRUE);
