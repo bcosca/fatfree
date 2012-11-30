@@ -117,6 +117,14 @@ class Template extends Controller {
 			$tpl->token($expr='@foo->zip(@bar,\'qux\')')==($eval='$foo->zip($bar,\'qux\')'),
 			$expr.': '.$eval
 		);
+		$test->expect(
+			$tpl->token($expr='@foo[google.com]')==($eval='$foo[\'google.com\']'),
+			$expr.': '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo.\'hello, world\'')==($eval='$foo.\'hello, world\''),
+			$expr.': '.$eval
+		);
 		$f3->set('foo','bar');
 		$f3->set('cond',TRUE);
 		$f3->set('file','templates/test1.htm');
