@@ -44,7 +44,7 @@ class Template {
 	function token($str) {
 		$self=$this;
 		$str=preg_replace_callback(
-			'/(?<!\w)@(\w[\w\.\[\]\->:]*)/',
+			'/(?<!\w)@(\w(?:[\w\.\[\]]|\->|::)*)/',
 			function($var) use($self) {
 				return '$'.$self->remix($var[1]);
 			},
