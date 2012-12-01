@@ -36,7 +36,7 @@ The philosophy behind the framework and its approach to the Model-View-Controlle
 * [Optimization](#optimization)
 * [Unit Testing](#unit-testing)
 * [Quick Reference](#quick-reference)
-* [Support/Licensing](#support-and-licensing)
+* [Support and Licensing](#support-and-licensing)
 
 ### Version 3.0 Is Finally Here! ###
 
