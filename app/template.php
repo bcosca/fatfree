@@ -145,24 +145,25 @@ class Template extends Controller {
 				'tea'=>array('darjeeling','pekoe','samovar')
 			)
 		);
+		var_dump($tpl->serve('templates/test4.htm'));
 		$test->expect(
 			preg_replace('/[\t\n]/','',
 				$tpl->serve('templates/test4.htm'))==
 				'<div>'.
 					'<p><span><b>coffee</b></span></p>'.
 					'<p>'.
-						'<span>arabica</span>'.
-						'<span>barako</span>'.
-						'<span>liberica</span>'.
-						'<span>kopiluwak</span>'.
+						'<span class="odd">arabica</span>'.
+						'<span class="even">barako</span>'.
+						'<span class="odd">liberica</span>'.
+						'<span class="even">kopiluwak</span>'.
 					'</p>'.
 				'</div>'.
 				'<div>'.
 					'<p><span><b>tea</b></span></p>'.
 					'<p>'.
-						'<span>darjeeling</span>'.
-						'<span>pekoe</span>'.
-						'<span>samovar</span>'.
+						'<span class="odd">darjeeling</span>'.
+						'<span class="even">pekoe</span>'.
+						'<span class="odd">samovar</span>'.
 					'</p>'.
 				'</div>',
 			'<repeat>'

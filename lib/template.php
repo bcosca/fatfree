@@ -43,7 +43,7 @@ class Template {
 			},
 			$str
 		);
-		return preg_replace('/{{(.+?)}}/',trim('\1'),$str);
+		return trim(preg_replace('/{{(.+?)}}/',trim('\1'),$str));
 	}
 
 	/**
@@ -113,11 +113,15 @@ class Template {
 		$attrib=$node['@attrib'];
 		unset($node['@attrib']);
 		return
-			'<?php foreach (('.
+			'<?php '.
+				(isset($attrib['counter'])?
+					(($ctr=$this->token($attrib['counter'])).'=0; '):'').
+				'foreach (('.
 				$this->token($attrib['group']).'?:array()) as '.
 				(isset($attrib['key'])?
 					($this->token($attrib['key']).'=>'):'').
-				$this->token($attrib['value']).'): ?>'.
+				$this->token($attrib['value']).'):'.
+				(isset($ctr)?(' '.$ctr.'++;'):'').' ?>'.
 				$this->build($node).
 			'<?php endforeach; ?>';
 	}
