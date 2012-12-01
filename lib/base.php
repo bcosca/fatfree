@@ -623,8 +623,7 @@ class Base {
 		if ($this->hive['ONERROR'] && is_callable($this->hive['ONERROR']))
 			// Execute custom error handler
 			$this->hive['ONERROR']();
-		elseif (!$prior)
-			// Display default error page
+		elseif (!$prior && PHP_SAPI!='cli')
 			echo
 				'<!DOCTYPE html>'.
 				'<html>'.$eol.
