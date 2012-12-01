@@ -727,19 +727,19 @@ As a result, you get the following HTML fragment:-
     <div>
         <p><span><b>coffee</b></span></p>
         <p>
-        <span>arabica</span>
-        <span>barako</span>
-        <span>liberica</span>
-        <span>kopiluwak</span>
-        </p>
+			<span>arabica</span>
+			<span>barako</span>
+			<span>liberica</span>
+			<span>kopiluwak</span>
+			</p>
     </div>
     <div>
         <p><span><b>tea</b></span></p>
         <p>
-        <span>darjeeling</span>
-        <span>pekoe</span>
-        <span>samovar</span>
-        </p>
+			<span>darjeeling</span>
+			<span>pekoe</span>
+			<span>samovar</span>
+			</p>
     </div>
 
 Amazing, isn't it? And the only thing you had to do in PHP was to define the contents of a single F3 variable `div` to replace the `@div` token. Fat-Free makes both programming and Web template design really easy.
@@ -760,7 +760,7 @@ If you have to insert F3 tokens inside a `<script>` or `<style>` section of your
 
     <script type="text/javascript">
         function notify() {
-        alert('You are logged in as: {{ @userID }}');
+            alert('You are logged in as: {{ @userID }}');
         }
     </script>
 
@@ -859,9 +859,9 @@ And the longer version that utilizes PHP as a template engine:-
     <?php $f3=Base::instance(); ?>
     <h1><?php echo $f3->get('love'); ?></h1>
     <p>
-    <?php echo $f3->get('today',time()); ?>.<br />
-    <?php echo $f3->get('money',365.25); ?>
-    <?php echo $f3->get('pi'); ?>
+        <?php echo $f3->get('today',time()); ?>.<br />
+        <?php echo $f3->get('money',365.25); ?>
+        <?php echo $f3->get('pi'); ?>
     </p>
 
 Next, we instruct F3 to look for dictionaries in the `dict/` folder:-
