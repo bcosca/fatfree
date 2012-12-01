@@ -415,12 +415,12 @@ Unlike other frameworks that have rigid folder structures, F3 gives you a lot of
     app/ (application files)
         dict/ (LOCALES, optional)
         controllers/
+        logs/ (LOGS, optional)
         models/
         views/ (UI)
     css/
     js/
     lib/ (you can store base.php here)
-    logs/ (LOGS, optional)
     tmp/ (TEMP, used by the framework)
         cache/ (CACHE)
 
