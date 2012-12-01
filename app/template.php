@@ -145,7 +145,6 @@ class Template extends Controller {
 				'tea'=>array('darjeeling','pekoe','samovar')
 			)
 		);
-		var_dump($tpl->serve('templates/test4.htm'));
 		$test->expect(
 			preg_replace('/[\t\n]/','',
 				$tpl->serve('templates/test4.htm'))==
