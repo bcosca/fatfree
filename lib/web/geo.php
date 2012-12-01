@@ -44,12 +44,13 @@ class Geo {
 			$out['region_code']=$out['region'];
 			$out['region_name']=geoip_region_name_by_code(
 				$out['country_code'],$out['region']);
-			unset($out['country_code3'],$out['postal_code'],$out['region']);
+			unset($out['country_code3'],$out['postal_code']);
 			return $out;
 		}
 		if (($req=$web->request('http://www.geoplugin.net/json.gp'.
 			($public?('?ip='.$ip):''))) &&
 			$data=@json_decode($req['body'],TRUE)) {
+			var_dump($data);
 			$out=array();
 			foreach ($data as $key=>$val)
 				if (!strpos($key,'currency') && $key!=='geoplugin_status'
