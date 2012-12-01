@@ -345,8 +345,8 @@ To set several variables at once:
 
     $f3->mset(
         array(
-        'var1'=>value1,
-        'var2'=>value2,
+            'var1'=>value1,
+            'var2'=>value2,
         ...
         )
     )
@@ -413,12 +413,14 @@ Unlike other frameworks that have rigid folder structures, F3 gives you a lot of
 
     / (your Web root, where index.php is located)
     app/ (application files)
+        dict/ (LOCALES, optional)
         controllers/
         models/
         views/ (UI)
     css/
     js/
     lib/ (you can store base.php here)
+    logs/ (LOGS, optional)
     tmp/ (TEMP, used by the framework)
         cache/ (CACHE)
 
@@ -1528,11 +1530,17 @@ Once you get the hang of testing the smallest units of your application, you can
 `bool/string CACHE`
 >Cache backend. F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a FALSE value.
 
+`bool CASELESS`
+>Pattern matching of routes against incoming URIs is case-insensitive by default. Set to `FALSE` to make it case-sensitive.
+
 `array COOKIE, GET, POST, REQUEST, SESSION, FILES, SERVER, ENV`
 >Framework equivalents of PHP globals. Variables may be used throughout an application. However, direct use in templates is not advised due to security risks.
 
 `integer DEBUG`
 >Stack trace verbosity. Assign values 1 to 2 for increasing verbosity levels. Zero (0) suppresses the stack trace. This is the default value and it should be the assigned setting on a production server.
+
+`array DIACRITICS`
+>Key-value pairs for foreign-to-ASCII character translations.
 
 `string ENCODING`
 >Character set used for document encoding. Default value is `UTF-8`.
@@ -1540,26 +1548,35 @@ Once you get the hang of testing the smallest units of your application, you can
 `array ERROR`
 >Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.title` contains a brief description of the error. `ERROR.text` provides greater detail. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
 
+`bool ESCAPE`
+>Used to enable/disable auto-escaping.
+
+`array JAR`
+>Default cookie parameters.
+
 `string LANGUAGE`
 >Current active language. Value is used to load the appropriate language translation file in the folder pointed to by LOCALES. If set to NULL, language is auto-detected from the HTTP Accept-Language request header.
 
 `string LOCALES`
 >Location of the language dictionaries.
 
+`string LOGS`
+>Location of custom logs.
+
 `mixed ONERROR`
 >Callback function to use as custom error handler.
 
 `string PACKAGE`
->The framework version.
+>Framework name.
 
 `array PARAMS`
 >Captured values of tokens defined in a `route()` pattern. `PARAMS.0` contains the captured URL relative to the Web root.
 
+`string PATTERN`
+>Contains the routing pattern that matches the current request URI.
+
 `string PLUGINS`
 >Location of F3 plugins. Default value is the folder where the framework code resides, i.e. the path to `base.php`.
-
-`string SCHEME`
->Server protocol, i.e. `http` or `https`.
 
 `bool QUIET`
 >Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
@@ -1573,11 +1590,32 @@ Once you get the hang of testing the smallest units of your application, you can
 `array ROUTES`
 >Contains the defined application routes. This is a read-only variable.
 
+`string SCHEME`
+>Server protocol, i.e. `http` or `https`.
+
+`string SERIALIZER`
+>Default serializer. Normally set to `default`, unless PHP `igbinary` extension is auto-detected.
+
 `string TEMP`
 >Temporary folder for cache, filesystem locks, compiled F3 templates, etc. Default is the `tmp/` folder inside the Web root. Adjust accordingly to conform to your site's security policies.
 
 `string UI`
-Search path for user interface files used by the `View` class' `render()` `Template` class' `serve()`. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+>Search path for user interface files used by the `View` class' `render()` `Template` class' `serve()`. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+
+`callback UNLOAD`
+>Executed by framework on script shutdown.
+
+`string UPLOADS`
+>Directory where file uploads are saved.
+
+`string URI`
+>Current HTTP request URI.
+
+`string VERB`
+>Current HTTP request method.
+
+`string VERSION`
+>Framework version.
 
 ### Template Directives ###
 
