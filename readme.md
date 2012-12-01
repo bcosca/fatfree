@@ -79,7 +79,7 @@ Time to start writing our first application:-
     $f3=require('path/to/base.php');
     $f3->route('GET /',
         function() {
-        echo 'Hello, world!';
+            echo 'Hello, world!';
         }
     );
     $f3->run();
@@ -102,14 +102,14 @@ Our first example wasn't too hard to swallow, was it? If you like a little more 
 
     $f3->route('GET /about','about');
         function about() {
-        echo 'Donations go to a local charity... us!';
+            echo 'Donations go to a local charity... us!';
         }
 
 You don't want to clutter the global namespace with function names? Fat-Free recognizes different ways of mapping route handlers to OOP classes and methods:-
 
     class webpage {
         function display() {
-        echo 'I cannot object to an object';
+            echo 'I cannot object to an object';
         }
     }
 
@@ -121,7 +121,7 @@ As a demonstration of Fat-Free's powerful domain-specific language (DSL), you ca
 
     $f3->route('GET /brew/@count',
         function() use($f3) {
-        echo $f3->get('PARAMS.count').' bottles of beer on the wall.';
+            echo $f3->get('PARAMS.count').' bottles of beer on the wall.';
         }
     );
 
@@ -133,7 +133,7 @@ You can use the asterisk (`*`) to accept any URL after the `/brew` route - if yo
 
     $f3->route('GET /brew/*',
         function() {
-        echo 'Enough beer! We always end up here.';
+            echo 'Enough beer! We always end up here.';
         }
     );
 
@@ -230,7 +230,7 @@ So let's get back to coding. You can declare a page obsolete and redirect your v
 
     $f3->route('GET /obsoletepage',
         function() use($f3) {
-        $f3->reroute('/newpage');
+            $f3->reroute('/newpage');
         }
     );
 
@@ -543,11 +543,11 @@ To display this template, you can have PHP code that looks like this (saved in a
     $f3=require('lib/base.php');
     $f3->route('GET /',
         function() use($f3) {
-        $f3->set('name','world');
-        $view=new View;
-        echo $view->render('template.htm');
-        // Previous two lines can be shortened to:-
-        // echo View::instance()->render('template.htm');
+            $f3->set('name','world');
+            $view=new View;
+            echo $view->render('template.htm');
+            // Previous two lines can be shortened to:-
+            // echo View::instance()->render('template.htm');
         }
     );
     $f3->run();
@@ -565,13 +565,13 @@ and the code needed to view this template:-
     $f3=require('lib/base.php');
     $f3->route('GET /',
         function() use($f3) {
-        $f3->set('name','world');
-        $template=new Template;
-        echo $template->serve('template.htm');
-        // Above lines can be writtern as:-
-        echo Template::instance()->serve('template.htm');
+            $f3->set('name','world');
+            $template=new Template;
+            echo $template->serve('template.htm');
+            // Above lines can be writtern as:-
+            echo Template::instance()->serve('template.htm');
         }
-		);
+    );
     $f3->run();
 
 Like routing tokens used for catching variables in URLs (still remember the `GET /brew/@count` example in the previous section?), F3 template tokens begin with the `@` symbol followed by a series of letters and digits enclosed in curly braces. The first character must be alpha. Template tokens have a one-to-one correspondence with framework variables. The framework automatically replaces a token with the value stored in a variable of the same name.
@@ -609,7 +609,7 @@ Framework variables may also contain anonymous functions:
 
     $f3->set('func',	
         function($a,$b) {
-        return $a.', '.$b;
+            return $a.', '.$b;
         }
     );
 
@@ -1400,8 +1400,8 @@ Of course we need to set up a route so your application can handle the necessary
 
     $f3->route('GET /minify/@type',
         function() use($f3) {
-        $f3->set('UI',$f3->get('PARAMS.type').'/');
-        echo Web::instance()->minify($_GET['files']);
+            $f3->set('UI',$f3->get('PARAMS.type').'/');
+            echo Web::instance()->minify($_GET['files']);
         },
         3600
     );
@@ -1436,10 +1436,10 @@ F3 has a utility for sending files to an HTTP client, i.e. fulfilling download r
 
     $f3->route('GET /downloads/@filename',
         function() {
-        // send() method returns FALSE if file doesn't exist
-        if (!Web::instance()->send('/real/path/'.$f3->get('PARAMS.filename')))
-            // Generate an HTTP 404
-            $f3->error(404);
+            // send() method returns FALSE if file doesn't exist
+            if (!Web::instance()->send('/real/path/'.$f3->get('PARAMS.filename')))
+                // Generate an HTTP 404
+                $f3->error(404);
         }
     );
 
