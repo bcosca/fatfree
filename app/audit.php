@@ -63,23 +63,23 @@ class Audit extends Controller {
 			'IPv6 address'
 		);
 		$test->expect(
-			!$valid->local('0.1.2.3') &&
-			!$valid->local('201.176.14.4') &&
-			$valid->local('fc00::') &&
-			$valid->local('10.10.10.10') &&
-			$valid->local('172.16.93.7') &&
-			$valid->local('192.168.3.5'),
+			!$valid->isprivate('0.1.2.3') &&
+			!$valid->isprivate('201.176.14.4') &&
+			$valid->isprivate('fc00::') &&
+			$valid->isprivate('10.10.10.10') &&
+			$valid->isprivate('172.16.93.7') &&
+			$valid->isprivate('192.168.3.5'),
 			'Local IP range'
 		);
 		$test->expect(
-			!$valid->reserved('193.194.195.196') &&
-			$valid->reserved('::1') &&
-			$valid->reserved('127.0.0.1') &&
-			$valid->reserved('0.1.2.3') &&
-			$valid->reserved('169.254.1.2') &&
-			$valid->reserved('192.0.2.1') &&
-			$valid->reserved('224.225.226.227') &&
-			$valid->reserved('240.241.242.243'),
+			!$valid->isreserved('193.194.195.196') &&
+			$valid->isreserved('::1') &&
+			$valid->isreserved('127.0.0.1') &&
+			$valid->isreserved('0.1.2.3') &&
+			$valid->isreserved('169.254.1.2') &&
+			$valid->isreserved('192.0.2.1') &&
+			$valid->isreserved('224.225.226.227') &&
+			$valid->isreserved('240.241.242.243'),
 			'Reserved IP range'
 		);
 		$f3->set('results',$test->results());

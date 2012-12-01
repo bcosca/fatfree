@@ -47,7 +47,7 @@ class Audit {
 		@return bool
 		@param $addr string
 	**/
-	function local($addr) {
+	function isprivate($addr) {
 		return !(bool)filter_var($addr,FILTER_VALIDATE_IP,
 			FILTER_FLAG_IPV4|FILTER_FLAG_IPV6|FILTER_FLAG_NO_PRIV_RANGE);
 	}
@@ -57,9 +57,20 @@ class Audit {
 		@return bool
 		@param $addr string
 	**/
-	function reserved($addr) {
+	function isreserved($addr) {
 		return !(bool)filter_var($addr,FILTER_VALIDATE_IP,
 			FILTER_FLAG_IPV4|FILTER_FLAG_IPV6|FILTER_FLAG_NO_RES_RANGE);
+	}
+
+	/**
+		Return TRUE if IP address is neither private nor reserved
+		@return bool
+		@param $addr string
+	**/
+	function ispublic($addr) {
+		return (bool)filter_var($addr,FILTER_VALIDATE_IP,
+			FILTER_FLAG_IPV4|FILTER_FLAG_IPV6|
+			FILTER_FLAG_NO_PRIV_RANGE|FILTER_FLAG_NO_RES_RANGE);
 	}
 
 }
