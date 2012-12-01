@@ -27,16 +27,16 @@ The philosophy behind the framework and its approach to the Model-View-Controlle
 
 ## Table of Contents ##
 
-* [Getting Started](#intro)
-* [Routing Engine](#routing)
-* [Framework Variables](#variables)
-* [Views/Templates](#views)
-* [Databases](#db)
-* [Plug-Ins](#plugins)
-* [Optimization](#optimize)
-* [Unit Testing](#testing)
-* [Quick Reference](#quickref)
-* [Support/Licensing](#support)
+* [Getting Started](#getting-started)
+* [Routing Engine](#routing-engine)
+* [Framework Variables](#framework-variables)
+* [Views and Templates](#views-and-templates)
+* [Databases](#databases)
+* [Plug-Ins](#plug-ins)
+* [Optimization](#optimization)
+* [Unit Testing](#unit-testing)
+* [Quick Reference](#quick-reference)
+* [Support/Licensing](#support-and-licensing)
 
 ### Version 3.0 Is Finally Here! ###
 
@@ -44,7 +44,7 @@ The latest official release marks a major milestone in the development of the Fa
 
 It is highly recommended that users develop new applications using this version to take advantage of the latest features and significant performance improvements.
 
-## <a name="intro">Getting Started</a> ##
+## Getting Started ##
 
 *A designer knows he has achieved perfection not when there is nothing left to add, but when there is nothing left to take away. - Antoine de Saint-Exupéry*
 
@@ -94,7 +94,7 @@ If the framework sees an incoming request for your Web page located at the root 
 
 So we've established our first route. But that won't do much, except to let F3 know that there's a process that will handle it and there's some text to display on the user's Web browser. If you have a lot more pages on your site, you need to set up different routes for each group. For now, let's keep it simple. To instruct the framework to start waiting for requests, we issue the `$f3->run()` command.
 
-## <a name="routing">Routing Engine</a> ##
+## Routing Engine ##
 
 ### Overview ###
 
@@ -329,7 +329,7 @@ Dynamic route handlers may have various forms:-
 
 F3 triggers an `HTTP 404 Not Found` error at runtime if it cannot transfer control to the class or method associated with the current route, i.e. an undefined class or method.
 
-## <a name="variables">Framework Variables</a> ##
+## Framework Variables ##
 
 ### Basic Use ###
 
@@ -518,7 +518,7 @@ String values need not be quoted, unless you want leading or trailing spaces inc
     very long \
     string"
 
-## <a name="views">Views/Templates</a> ##
+## Views and Templates ##
 
 ### Separation of Concerns ###
 
@@ -899,7 +899,7 @@ As an addition to auto-escaping of F3 variables, the framework also gives you a 
 
 This command will strip all tags (except those specified in the second argument) and unsafe characters from the specified variable. If the variable contains an array, each element in the array is sanitized recursively. If an asterisk (*) is passed as the second argument, `$f3->scrub()` permits all HTML tags to pass through untouched and simply remove unsafe control characters.
 
-## <a name="db">Databases</a> ##
+## Databases ##
 
 ### Connecting to a Database Engine ###
 
@@ -1282,7 +1282,7 @@ Your application code becomes simple because it does not have to maintain two ma
 
 Tip:Use the tools as they're designed for. Fat-Free already has an easy-to-use SQL helper. Use it if you need a bigger hammer :) Try to seek a balance between convenience and performance. SQL will always be your fallback if you're working on complex and legacy data structures.
 
-## <a name="plugins">Plug-Ins</a> ##
+## Plug-Ins ##
 
 ### About F3 Plug-ins ###
 
@@ -1332,7 +1332,7 @@ Fat-Free will use whatever means are available on your Web server for the `reque
 
 The `request()` method can also be used in complex SOAP or XML-RPC applications, if you find the need for another Web server to process data on your computer's behalf - thus harnessing the power of distributing computing. W3Schools.com has an excellent tutorial on SOAP. On the other hand, TutorialsPoint.com gives a nice overview of XML-RPC.
 
-## <a name="optimize">Optimization</a> ##
+## Optimization ##
 
 ### Cache Engine ###
 
@@ -1441,7 +1441,7 @@ F3 has a utility for sending files to an HTTP client, i.e. fulfilling download r
         }
     );
 
-## <a name="testing">Unit Testing</a> ##
+## Unit Testing ##
 
 ### Bullet-Proof Code ###
 
@@ -1512,7 +1512,7 @@ Fat-Free gives you the freedom to display test results in any way you want. You 
 
 Once you get the hang of testing the smallest units of your application, you can then move on to the bigger components, modules, and subsystems - checking along the way if the parts are correctly communicating with each other. Testing manageable chunks of code leads to more reliable programs that work as you expect, and weaves the testing process into the fabric of your development cycle. The question to ask yourself is:- Have I tested all possible scenarios? More often than not, those situations that have not been taken into consideration are the likely causes of bugs. Unit testing helps a lot in minimizing these occurrences. Even a few tests on each fixture can greatly reduce headaches. On the other hand, writing applications without unit testing at all invites trouble.
 
-## <a name="quickref">Quick Reference</a> ##
+## Quick Reference ##
 
 ### System Variables ###
 
@@ -1625,7 +1625,7 @@ text-block
 
 The framework API documentation is contained in `lib/api.chm` of the distribution package. F3 uses [Doxygen](http://www.stack.nl/~dimitri/doxygen/) to generate output in compiled HTML format. You need a CHM reader to view its tree-structured contents. For Mac users, there's [Chmox](http://chmox.sourceforge.net/) and [iChm](http://code.google.com/p/ichm/). Linux users have more choices: [xCHM](http://xchm.sourceforge.net/), [GnoCHM](http://gnochm.sourceforge.net/), [ChmSee](http://code.google.com/p/chmsee/), and [Kchmviewer](http://www.ulduzsoft.com/linux/kchmviewer/). Windows supports `.chm` files right out of the box.
 
-## <a name="support">Support/Licensing</a> ##
+## Support and Licensing ##
 
 Technical support is available at: [https://groups.google.com/forum/#!forum/f3-framework](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit ][http://webchat.freenode.net/](http://webchat.freenode.net/) to join the conversation. You can also download the Firefox Chatzilla add-on if you don't have an IRC client so you can participate in the live chat.
 
