@@ -608,9 +608,10 @@ class Base {
 						$line.=')';
 					}
 				}
+				$str='- '.$addr.' '.$line;
 				if (!$this->hive['QUIET'])
-					error_log('- '.$addr.' '.$line);
-				$out.='&bull; '.$addr.' '.$line."\n";
+					error_log($str);
+				$out.=$str."\n";
 			}
 		}
 		$this->hive['ERROR']=array(
