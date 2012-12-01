@@ -174,20 +174,20 @@ If you're developing several applications simultaneously, a virtual host configu
         ServerName site1.com
         DocumentRoot "/var/www/site1"
         <Directory "/var/www/site1">
-        Options -Indexes FollowSymLinks Includes
-        AllowOverride All
-        Order allow,deny
-        Allow from All
+            Options -Indexes FollowSymLinks Includes
+            AllowOverride All
+            Order allow,deny
+            Allow from All
         </Directory>
     </VirtualHost>
     <VirtualHost *>
         ServerName site2.com
         DocumentRoot "/var/www/site2"
         <Directory "/var/www/site2">
-        Options -Indexes FollowSymLinks Includes
-        AllowOverride All
-        Order allow,deny
-        Allow from All
+            Options -Indexes FollowSymLinks Includes
+            AllowOverride All
+            Order allow,deny
+            Allow from All
         </Directory>
     </VirtualHost>
 
@@ -200,14 +200,14 @@ For Nginx servers, here's the recommended configuration (replace ip_address:port
     server {
         root /var/www/html;
         location / {
-        index index.php index.html index.htm;
-        try_files $uri /index.php;
+            index index.php index.html index.htm;
+            try_files $uri /index.php;
         }
-    location ~ \.php$ {
-        fastcgi_pass ip_address:port;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
-        include fastcgi_params;
+        location ~ \.php$ {
+            fastcgi_pass ip_address:port;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
+            include fastcgi_params;
         }
     }
 
@@ -258,6 +258,8 @@ Fat-Free's architecture is based on the concept that HTTP URIs represent abstrac
         function put() {}
         function delete() {}
     }
+
+    $f3=require('lib/base.php');
     $f3->map('/cart/@item','item');
     $f3->run();
 
@@ -282,21 +284,25 @@ Important: Except for the .php extension, the class name and file name must be i
 `AUTOLOAD` allows class hierarchies to reside in similarly-named subfolders, so if you want the framework to autoload a PHP 5.3 namespaced class that's invoked in the following manner:-
 
     $f3->set('AUTOLOAD','autoload/');
-    $obj=new gadgets\ipad;
+    $obj=new Gadgets\iPad;
 
 You can create a folder hierarchy that follows the same structure. Assuming `/var/www/html/` is your Web root, then F3 will look for the class in `/var/www/html/autoload/gadgets/ipad.php`. The file `ipad.php` should have the following minimum code:-
 
     namespace Gadgets;
     class iPad {}
 
+Remember: All directory names in Fat-Free must end with a slash. You can assign a search path for the autoloader as follows:-
+
+    $f3->set('AUTOLOAD','main/;aux/');
+
 ### Routing to a Namespaced Class ###
 
 F3, being a namespace-aware framework, allows you to use a method in namespaced class as a route handler, and there are several ways of doing it. To call a static method:-
 
     $f3->set('AUTOLOAD','classes/');
-    $f3->route('GET /','main\home::show');
+    $f3->route('GET /','Main\Home::show');
 
-The above code will invoke the `show()` method of the class `home` within the current namespace.
+The above code will invoke the `show()` method of the class `Home` within the `Main` namespace. The `Home` class must be saved in the folder `classes/main/home.php` for it to be loaded automatically.
 
 If you prefer to work with objects:-
 
@@ -347,7 +353,7 @@ To set several variables at once:
         array(
             'var1'=>value1,
             'var2'=>value2,
-        ...
+            ...
         )
     )
 
@@ -1187,10 +1193,10 @@ The find() method has the following syntax:-
     find(
         criteria,
         array(
-        'group'=>...,
-        'order'=>...,
-        'limit'=>...,
-        'offset'=>...
+            'group'=>...,
+            'order'=>...,
+            'limit'=>...,
+            'offset'=>...
         )
     );
 
@@ -1217,10 +1223,10 @@ There's also a `select()` method that's similar to `find()` but provides more fi
         fields,
         criteria,
         array(
-        'group'=>...,
-        'order'=>...,
-        'limit'=>...,
-        'offset'=>...
+            'group'=>...,
+            'order'=>...,
+            'limit'=>...,
+            'offset'=>...
         )
     );
 
@@ -1234,18 +1240,18 @@ In most cases, you can live by the comforts given by the data mapper methods we'
 
         // Instantiate mapper
         function __construct(DB\SQL $db) {
-        // This is where the mapper and DB structure synchronization occurs
-        parent::__construct($db,'vendors');
+            // This is where the mapper and DB structure synchronization occurs
+            parent::__construct($db,'vendors');
         }
 
         // Some plain vanilla SQL query
         function listByCity() {
-        return $this->db->exec(
-            'SELECT vendorID,name,city FROM vendors '.
-            'ORDER BY city;'
-        );
-        // We could have done the the same thing without SQL:-
-        // return $this->select('vendorID,name,city',array('order'=>'city'));
+            return $this->db->exec(
+                'SELECT vendorID,name,city FROM vendors '.
+                'ORDER BY city DESC;'
+            );
+            // We could have done the the same thing without SQL:-
+            // return $this->select('vendorID,name,city',array('order'=>'city DESC'));
         }
 
     }
