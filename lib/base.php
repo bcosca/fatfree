@@ -1128,8 +1128,8 @@ class Base {
 			'DEBUG'=>0,
 			'DIACRITICS'=>array(),
 			'ENCODING'=>$charset,
-			'ESCAPE'=>TRUE,
 			'ERROR'=>NULL,
+			'ESCAPE'=>TRUE,
 			'JAR'=>array(
 				'expire'=>0,
 				'path'=>$base?:'/',
@@ -1149,6 +1149,7 @@ class Base {
 			'PATTERN'=>NULL,
 			'PLUGINS'=>$this->fixslashes(__DIR__).'/',
 			'QUIET'=>FALSE,
+			'RESPONSE'=>'',
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>array(),
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'default',
