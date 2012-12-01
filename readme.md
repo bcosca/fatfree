@@ -1651,10 +1651,10 @@ text-block
 </loop>`
 >Evaluate `from` statement once. Check if the expression in the `to` attribute is `TRUE`, render `text-block` and evaluate `step` statement. Repeat iteration until `to` expression is `FALSE`.
 
-`<repeat group="{{ array @group|expr }}" [ key="{{ scalar @key }}" ] value="{{ mixed @value }}">  
+`<repeat group="{{ array @group|expr }}" [ key="{{ scalar @key }}" ] value="{{ mixed @value }} [ counter="{{ scalar @key }}" ]>  
 text-block  
 </repeat>`
->Repeat `text-block` as many times as there are elements in the array variable `@group` or the expression `expr`. `@key` and `@value` function in the same manner as the key-value pair in the equivalent PHP `foreach()` statement.
+>Repeat `text-block` as many times as there are elements in the array variable `@group` or the expression `expr`. `@key` and `@value` function in the same manner as the key-value pair in the equivalent PHP `foreach()` statement. Variable represented by `key` in `counter` attribute increments by `1` with every iteration.
 
 `{{* text-block *}}`
 >Alias for `<exclude>`.
