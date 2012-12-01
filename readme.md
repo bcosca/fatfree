@@ -25,13 +25,26 @@ Unlike other frameworks, F3 aims to be usable - not usual.
 
 The philosophy behind the framework and its approach to the Model-View-Controller design pattern is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.
 
+## Table of Contents ##
+
+* [Getting Started](#intro)
+* [Routing Engine](#routing)
+* [Framework Variables](#variables)
+* [Views/Templates](#views)
+* [Databases](#db)
+* [Plug-Ins](#plugins)
+* [Optimization](#optimize)
+* [Unit Testing](#testing)
+* [Quick Reference](#quickref)
+* [Support/Licensing](#support)
+
 ### Version 3.0 Is Finally Here! ###
 
 The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that took several months to develop and refine, version 3.0 is finally available for download. Enterprise-grade but still as user-friendly as before. Same lightweight footprint. Yet sturdier and more powerful than ever!
 
 It is highly recommended that users develop new applications using this version to take advantage of the latest features and significant performance improvements.
 
-## Getting Started ##
+## <a id="intro">Getting Started</a> ##
 
 *A designer knows he has achieved perfection not when there is nothing left to add, but when there is nothing left to take away. - Antoine de Saint-Exupéry*
 
@@ -81,7 +94,7 @@ If the framework sees an incoming request for your Web page located at the root 
 
 So we've established our first route. But that won't do much, except to let F3 know that there's a process that will handle it and there's some text to display on the user's Web browser. If you have a lot more pages on your site, you need to set up different routes for each group. For now, let's keep it simple. To instruct the framework to start waiting for requests, we issue the `$f3->run()` command.
 
-## Routing Engine ##
+## <a id="routing">Routing Engine</a> ##
 
 ### Overview ###
 
@@ -113,6 +126,8 @@ As a demonstration of Fat-Free's powerful domain-specific language (DSL), you ca
         );
 
 This example shows how we can specify a token `@count` to represent part of a URL. The framework will serve any request URL that matches the `/brew/` prefix, like `/brew/99`, `/brew/98`, etc. This will display `'99 bottles of beer on the wall'` and `'98 bottles of beer on the wall'`, respectively. Fat-Free will also accept a page request for `/brew/unbreakable`. (Expect this to display `'unbreakable bottles of beer on the wall'`.) When such a dynamic route is specified, Fat-Free automagically populates the global `PARAMS` array variable with the value of the captured strings in the URL. The `$f3->get()` call inside the callback function retrieves the value of a framework variable. You can certainly apply this method in your code as part of the presentation or business logic. But we'll discuss that in greater detail later.
+
+Notice that Fat-Free understands array dot-notation. You can certainly use `@PARAMS['count']` regular notation, which is prone to typo errors and unbalanced braces. The framework also permits `@PARAMS.count` which is somehow similar to Javascript. This feature is limited to arrays in F3 templates. Take note that `@foo.@bar` is a string concatenation, whereas `@foo.bar` translates to `@foo['bar']`.
 
 You can use the asterisk (`*`) to accept any URL after the `/brew` route - if you don't really care about the rest of the path:-
 
@@ -209,7 +224,7 @@ Lighttpd servers are configured in a similar manner:-
 
 Fat-Free has a way of loading classes only at the time you need them, so they don't gobble up more memory than a particular segment of your application needs. Auto-loading classes are described in a later section.
 
-## Rerouting ###
+### Rerouting ###
 
 So let's get back to coding. You can declare a page obsolete and redirect your visitors to another site:-
 
@@ -314,7 +329,7 @@ Dynamic route handlers may have various forms:-
 
 F3 triggers an `HTTP 404 Not Found` error at runtime if it cannot transfer control to the class or method associated with the current route, i.e. an undefined class or method.
 
-## Framework Variables ##
+## <a id="variables">Framework Variables</a> ##
 
 ### Basic Use ###
 
@@ -503,7 +518,7 @@ String values need not be quoted, unless you want leading or trailing spaces inc
         very long \
         string"
 
-## Views/Templates ##
+## <a id="views">Views/Templates</a> ##
 
 ### Separation of Concerns ###
 
@@ -884,7 +899,7 @@ As an addition to auto-escaping of F3 variables, the framework also gives you a 
 
 This command will strip all tags (except those specified in the second argument) and unsafe characters from the specified variable. If the variable contains an array, each element in the array is sanitized recursively. If an asterisk (*) is passed as the second argument, `$f3->scrub()` permits all HTML tags to pass through untouched and simply remove unsafe control characters.
 
-## SQL Handler ##
+## <a id="db">Databases</a> ##
 
 ### Connecting to a Database Engine ###
 
@@ -968,8 +983,6 @@ F3 accepts both positional and named parameters in query strings. The following 
             'SELECT * FROM users WHERE userID=:uID',
             array(':uid'=>array($f3->get('POST.userID'),PDO::PARAM_INT))
         );
-
-## Data Mappers ##
 
 ### CRUD (But With a Lot of Style) ###
 
@@ -1269,7 +1282,7 @@ Your application code becomes simple because it does not have to maintain two ma
 
 Tip:Use the tools as they're designed for. Fat-Free already has an easy-to-use SQL helper. Use it if you need a bigger hammer :) Try to seek a balance between convenience and performance. SQL will always be your fallback if you're working on complex and legacy data structures.
 
-## Plug-Ins ##
+## <a id="plugins">Plug-Ins</a> ##
 
 ### About F3 Plug-ins ###
 
@@ -1319,9 +1332,9 @@ Fat-Free will use whatever means are available on your Web server for the `reque
 
 The `request()` method can also be used in complex SOAP or XML-RPC applications, if you find the need for another Web server to process data on your computer's behalf - thus harnessing the power of distributing computing. W3Schools.com has an excellent tutorial on SOAP. On the other hand, TutorialsPoint.com gives a nice overview of XML-RPC.
 
-### Optimization ###
+## <a id="optimize">Optimization</a> ##
 
-Cache Engine
+### Cache Engine ###
 
 Caching static Web pages - so the code in some route handlers can be skipped and templates don't have to be reprocessed - is one way of reducing your Web server's work load so it can focus on other tasks. You can activate the framework's cache engine by providing a third argument to the `$f3->route()` method. Just specify the number of seconds before a cached Web page expires:-
 
@@ -1428,7 +1441,7 @@ F3 has a utility for sending files to an HTTP client, i.e. fulfilling download r
             }
         );
 
-## Unit Testing ##
+## <a id="testing">Unit Testing</a> ##
 
 ### Bullet-Proof Code ###
 
@@ -1501,7 +1514,7 @@ Fat-Free gives you the freedom to display test results in any way you want. You 
 
 Once you get the hang of testing the smallest units of your application, you can then move on to the bigger components, modules, and subsystems - checking along the way if the parts are correctly communicating with each other. Testing manageable chunks of code leads to more reliable programs that work as you expect, and weaves the testing process into the fabric of your development cycle. The question to ask yourself is:- Have I tested all possible scenarios? More often than not, those situations that have not been taken into consideration are the likely causes of bugs. Unit testing helps a lot in minimizing these occurrences. Even a few tests on each fixture can greatly reduce headaches. On the other hand, writing applications without unit testing at all invites trouble.
 
-## Quick Reference ##
+## <a id="quickref">Quick Reference</a> ##
 
 ### System Variables ###
 
@@ -1610,9 +1623,13 @@ text-block
 `{{* text-block *}}`
 >Alias for `<exclude>`.
 
-### Support/Licensing ###
+### API Documentation ###
 
-Technical support is available at: https://groups.google.com/forum/#!forum/f3-framework. If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit http://webchat.freenode.net/ to join the conversation. You can also download the Firefox Chatzilla add-on if you don't have an IRC client so you can participate in the live chat.
+The framework API documentation is contained in `lib/api.chm` of the distribution package. F3 uses [Doxygen](http://www.stack.nl/~dimitri/doxygen/) to generate output in compiled HTML format. You need a CHM reader to view its tree-structured contents. For Mac users, there's [Chmox](http://chmox.sourceforge.net/) and [iChm](http://code.google.com/p/ichm/). Linux users have more choices: [xCHM](http://xchm.sourceforge.net/), [GnoCHM](http://gnochm.sourceforge.net/), [ChmSee](http://code.google.com/p/chmsee/), and [Kchmviewer](http://www.ulduzsoft.com/linux/kchmviewer/). Windows supports `.chm` files right out of the box.
+
+## <a id="support">Support/Licensing</a> ##
+
+Technical support is available at: [https://groups.google.com/forum/#!forum/f3-framework](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit ][http://webchat.freenode.net/](http://webchat.freenode.net/) to join the conversation. You can also download the Firefox Chatzilla add-on if you don't have an IRC client so you can participate in the live chat.
 
 ### Fair Licensing ###
 
@@ -1696,6 +1713,4 @@ F3 uses Git for version control. To clone the Git code repository:-
 
 If you just want a zipball instead, grab it here.
 
-To file a bug report, visit this link:-
-
-    https://github.com/bcosca/fatfree/issues
+To file a bug report, visit [https://github.com/bcosca/fatfree/issues](https://github.com/bcosca/fatfree/issues).
