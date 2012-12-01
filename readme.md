@@ -375,7 +375,7 @@ There are several predefined global variables used internally by Fat-Free, and y
 
 The framework has several variables to help you keep your files and directory structures organized. We've seen how we can automate class loading by using the `AUTOLOAD`. There's a `UI` global variable, which contains the path pointing to the location of your HTML views/templates. `DEBUG` is another variable you'll be using quite often during application development and it's used for setting the verbosity of error traces.
 
-Refer the the Quick Reference if you need a comprehensive list of F3 framework variables.
+Refer to the [Quick Reference](#quick-reference) if you need a comprehensive list of F3 framework variables.
 
 ### Naming Rules ###
 
