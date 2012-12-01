@@ -585,6 +585,7 @@ class Base {
 		if (!$this->hive['QUIET'])
 			error_log($text?:$header.' ('.$req.')');
 		$out='';
+		$eol="\n";
 		if (!$trace)
 			$trace=array_slice(debug_backtrace(),1);
 		// Analyze stack trace
@@ -608,10 +609,10 @@ class Base {
 						$line.=')';
 					}
 				}
-				$str='- '.$addr.' '.$line;
+				$str=$addr.' '.$line;
 				if (!$this->hive['QUIET'])
-					error_log($str);
-				$out.=$str."\n";
+					error_log('- '.$str);
+				$out.='&bull; '.nl2br($this->encode($str)).'<br />'.$eol;
 			}
 		}
 		$this->hive['ERROR']=array(
@@ -622,21 +623,21 @@ class Base {
 		if ($this->hive['ONERROR'] && is_callable($this->hive['ONERROR']))
 			// Execute custom error handler
 			$this->hive['ONERROR']();
-		elseif (!$prior) {
+		elseif (!$prior)
 			// Display default error page
 			echo
 				'<!DOCTYPE html>'.
-				'<html>'.
-				'<head><title>'.$code.' '.$header.'</title></head>'.
-				'<body>'.
-					'<h1>'.$header.'</h1>'."\n".
-					'<p><big><i>'.$this->encode($text?:$req).'</i></big></p>'.
+				'<html>'.$eol.
+				'<head><title>'.$code.' '.$header.'</title></head>'.$eol.
+				'<body>'.$eol.
+					'<h1>'.$header.'</h1>'.$eol.
+					'<p><big><i>'.
+						$this->encode($text?:$req).
+					'</i></big></p>'.$eol.
 					($out && $this->hive['DEBUG']?
-						('<p>'."\n".
-							nl2br($this->encode($out)).'</p>'."\n"):'').
-				'</body>'.
+						('<p>'.$eol.$out.'</p>'.$eol):'').
+				'</body>'.$eol.
 				'</html>';
-		}
 		die;
 	}
 
