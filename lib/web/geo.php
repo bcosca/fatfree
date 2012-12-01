@@ -50,7 +50,6 @@ class Geo {
 		if (($req=$web->request('http://www.geoplugin.net/json.gp'.
 			($public?('?ip='.$ip):''))) &&
 			$data=@json_decode($req['body'],TRUE)) {
-			var_dump($data);
 			$out=array();
 			foreach ($data as $key=>$val)
 				if (!strpos($key,'currency') && $key!=='geoplugin_status'
