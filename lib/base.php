@@ -780,7 +780,6 @@ class Base {
 				// Save matching route
 				$this->hive['PATTERN']=$url;
 				// Process request
-				$out=NULL;
 				$now=microtime(TRUE);
 				if ($this->hive['CACHE'] &&
 					preg_match('/GET|HEAD/',$this->hive['VERB']) &&
@@ -794,7 +793,7 @@ class Base {
 						if (!isset($req['If-Modified-Since']) ||
 							$cached>strtotime($req['If-Modified-Since'])) {
 							// Retrieve from cache backend
-							list($out,$headers,$body)=$cache->get($hash);
+							list($headers,$body)=$cache->get($hash);
 							if (PHP_SAPI!='cli' && !headers_sent())
 								array_walk($headers,'header');
 							// Override headers
@@ -811,20 +810,20 @@ class Base {
 						$this->expire($ttl);
 						// Call route handler
 						ob_start();
-						$out=$this->call($handler,
+						$this->call($handler,
 							array(),'beforeroute,afterroute');
 						$body=ob_get_clean();
 						if (!error_get_last())
 							// Save to cache backend
 							$cache->set($hash,
-								array($out,headers_list(),$body),$ttl);
+								array(headers_list(),$body),$ttl);
 					}
 				}
 				else {
 					$this->expire(0);
 					// Call route handler
 					ob_start();
-					$out=$this->call($handler,
+					$this->call($handler,
 						array(),'beforeroute,afterroute');
 					$body=ob_get_clean();
 				}
@@ -841,7 +840,7 @@ class Base {
 							echo $part;
 					}
 				}
-				return $out;
+				return;
 			}
 			$allowed=array_keys($route);
 			break;
@@ -1155,7 +1154,8 @@ class Base {
 			'ROUTES'=>array(),
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'default',
 			'TEMP'=>'tmp/',
-			'TIME'=>microtime(TRUE),
+			'TIME'=>microtime(TRUE)-
+				(function_exists('xdebug_time_index')?xdebug_time_index():0),
 			'TZ'=>date_default_timezone_get(),
 			'UI'=>'./',
 			'UNLOAD'=>NULL,
