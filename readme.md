@@ -437,9 +437,10 @@ Feel free to organize your files and directories any way you want. Just set the 
 
 Fat-Free generates its own HTML error pages, with stack traces to help you with debugging. Here's an example:-
 
-    Internal Server Error
-    The configuration file test.cfg was not found
-    #0 var/html/dev/index.php:16 Base::config('test.cfg')
+><big>Internal Server Error</big>  
+><i>The configuration file test.cfg was not found</i>  
+
+>&bull; var/html/dev/index.php:16 Base::config('test.cfg')
 
 If you feel it's a bit too plain or wish to do other things when the error occurs, you may create your own custom error handler:-
 
