@@ -159,7 +159,7 @@ class Template extends View {
 		@return string
 		@param $node array
 	**/
-	function _false(array $node) {
+	protected function _false(array $node) {
 		return '<?php else: ?>'.$this->build($node);
 	}
 
