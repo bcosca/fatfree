@@ -138,10 +138,6 @@ class Mongo extends Controller {
 			);
 			$_SESSION['foo']='hello world';
 			session_commit();
-			$test->expect(
-				$session->get('data'),
-				'Data exists in mapper'
-			);
 			session_unset();
 			$_SESSION=array();
 			$test->expect(

@@ -323,16 +323,14 @@ class SQL extends Controller {
 			);
 			$_SESSION['foo']='hello world';
 			session_commit();
-			$test->expect(
-				$session->get('data'),
-				'Data exists in mapper'
-			);
 			session_unset();
 			$_SESSION=array();
 			$test->expect(
 				!isset($_SESSION['foo']),
 				'Session cleared'
 			);
+			session_commit();
+			var_dump($session->get('data'));
 			session_start();
 			$test->expect(
 				isset($_SESSION['foo']) && $_SESSION['foo']=='hello world',
