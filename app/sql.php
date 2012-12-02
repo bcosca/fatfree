@@ -16,7 +16,7 @@ class SQL extends Controller {
 			'PDO extension enabled'
 		);
 		if ($loaded) {
-			$db=new \DB\SQL('sqlite::memory:');
+			$db=new \DB\SQL('sqlite:tmp/sqlite.db');
 			//$db=new \DB\SQL('mysql:host=localhost');
 			$engine=$db->driver();
 			$test->expect(
@@ -315,6 +315,36 @@ class SQL extends Controller {
 				!$ticket->exists('adhoc'),
 				'Ad hoc field destroyed'
 			);
+			$db->exec('DROP TABLE IF EXISTS sessions;');
+			$session=new \DB\SQL\Session($db);
+			$test->expect(
+				session_start(),
+				'Database-managed session started'
+			);
+			$_SESSION['foo']='hello world';
+			session_commit();
+			$test->expect(
+				$session->get('data'),
+				'Data exists in mapper'
+			);
+			session_unset();
+			$_SESSION=array();
+			$test->expect(
+				!isset($_SESSION['foo']),
+				'Session cleared'
+			);
+			session_start();
+			$test->expect(
+				isset($_SESSION['foo']) && $_SESSION['foo']=='hello world',
+				'Session variable retrieved from database'
+			);
+			session_unset();
+			session_destroy();
+			$test->expect(
+				!isset($_SESSION['foo']),
+				'Session destroyed'
+			);
+			session_commit();
 		}
 		$f3->set('results',$test->results());
 	}

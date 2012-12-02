@@ -131,6 +131,35 @@ class Mongo extends Controller {
 				$obj->get('year')==2007,
 				'Object returned by findone: '.$class
 			);
+			$session=new \DB\Mongo\Session($db);
+			$test->expect(
+				session_start(),
+				'Database-managed session started'
+			);
+			$_SESSION['foo']='hello world';
+			session_commit();
+			$test->expect(
+				$session->get('data'),
+				'Data exists in mapper'
+			);
+			session_unset();
+			$_SESSION=array();
+			$test->expect(
+				!isset($_SESSION['foo']),
+				'Session cleared'
+			);
+			session_start();
+			$test->expect(
+				isset($_SESSION['foo']) && $_SESSION['foo']=='hello world',
+				'Session variable retrieved from database'
+			);
+			session_unset();
+			session_destroy();
+			$test->expect(
+				!isset($_SESSION['foo']),
+				'Session destroyed'
+			);
+			session_commit();
 		}
 		$f3->set('results',$test->results());
 	}
