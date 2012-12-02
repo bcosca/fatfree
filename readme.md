@@ -12,6 +12,7 @@ That's not all. F3 is packaged with other optional plug-ins that extend its capa
 
 * Fast and clean template engine,
 * Unit testing toolkit,
+* Database-managed sessions,
 * Atom/RSS feed reader,
 * Image handler,
 * On-the-fly Javascript/CSS compressor,
