@@ -637,7 +637,6 @@ class Base {
 						('<p>'.$eol.$out.'</p>'.$eol):'').
 				'</body>'.$eol.
 				'</html>';
-		die;
 	}
 
 	/**
@@ -1085,15 +1084,15 @@ class Base {
 		// Intercept errors/exceptions
 		error_reporting(E_ALL|E_STRICT);
 		$fw=$this;
-		set_error_handler(
-			function($code,$text) use($fw) {
-				if (error_reporting())
-					$fw->error(500,$text,debug_backtrace());
-			}
-		);
 		set_exception_handler(
 			function($obj) use($fw) {
 				$fw->error(500,$obj->getmessage(),$obj->gettrace());
+			}
+		);
+		set_error_handler(
+			function($code,$text) use($fw) {
+				if (error_reporting())
+					throw new ErrorException($text);
 			}
 		);
 		if (function_exists('apache_get_modules') &&
