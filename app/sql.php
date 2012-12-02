@@ -330,7 +330,6 @@ class SQL extends Controller {
 				'Session cleared'
 			);
 			session_commit();
-			var_dump($session->get('data'));
 			session_start();
 			$test->expect(
 				isset($_SESSION['foo']) && $_SESSION['foo']=='hello world',
