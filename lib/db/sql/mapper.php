@@ -10,7 +10,7 @@ class Mapper extends \DB\Cursor {
 		E_Adhoc='Unable to process ad hoc field %s';
 	//@}
 
-	private
+	protected
 		//! PDO wrapper
 		$db,
 		//! Database engine

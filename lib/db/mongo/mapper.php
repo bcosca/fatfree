@@ -5,7 +5,7 @@ namespace DB\Mongo;
 //! MongoDB mapper
 class Mapper extends \DB\Cursor {
 
-	private
+	protected
 		//! MongoDB wrapper
 		$db,
 		//! Mongo collection
