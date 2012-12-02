@@ -1674,6 +1674,16 @@ The framework API documentation is contained in `lib/api.chm` of the distributio
 
 Technical support is available at: [https://groups.google.com/forum/#!forum/f3-framework](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit ][http://webchat.freenode.net/](http://webchat.freenode.net/) to join the conversation. You can also download the Firefox Chatzilla add-on if you don't have an IRC client so you can participate in the live chat.
 
+### Nightly Builds ###
+
+F3 uses Git for version control. To clone the Git code repository:-
+
+    git clone git://git@github.com:bcosca/Fat-Free-Framework.git
+
+If you just want a zipball instead, grab it here.
+
+To file a bug report, visit [https://github.com/bcosca/fatfree/issues](https://github.com/bcosca/fatfree/issues).
+
 ### Fair Licensing ###
 
 Fat-Free Framework is free and released as open source software covered by the terms of the GNU Public License (GPL v3). You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a fee.
@@ -1748,13 +1758,3 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Aurélien Botermans
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
-
-### Nightly Builds ###
-
-F3 uses Git for version control. To clone the Git code repository:-
-
-    git clone git://git@github.com:bcosca/Fat-Free-Framework.git
-
-If you just want a zipball instead, grab it here.
-
-To file a bug report, visit [https://github.com/bcosca/fatfree/issues](https://github.com/bcosca/fatfree/issues).
