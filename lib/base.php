@@ -63,7 +63,7 @@ class Base {
 	const
 		E_Apache='Apache rewrite_module is disabled',
 		E_Pattern='Invalid routing pattern: %s',
-		E_PCRE='PCRE library version is outdated',
+		E_PCRE='Outdated PCRE library version',
 		E_Fatal='Fatal error: %s',
 		E_Open='Unable to open %s',
 		E_Routes='No routes specified',
@@ -1094,17 +1094,6 @@ class Base {
 					throw new ErrorException($text);
 			}
 		);
-		if ((float)strstr(PCRE_VERSION,' ',TRUE)<7.9)
-			// Outdated PCRE version
-			trigger_error(self::E_PCRE);
-		if (function_exists('apache_get_modules') &&
-			!in_array('mod_rewrite',apache_get_modules()))
-			// Apache mod_rewrite disabled
-			trigger_error(self::E_Apache);
-		// Register framework autoloader
-		spl_autoload_register(array($this,'autoload'));
-		// Register shutdown handler
-		register_shutdown_function(array($this,'unload'));
 		if (PHP_SAPI=='cli') {
 			// Emulate HTTP request
 			if (isset($_SERVER['argc']) && $_SERVER['argc']<2) {
@@ -1155,6 +1144,7 @@ class Base {
 			'RESPONSE'=>'',
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>array(),
+			'SCHEME'=>$scheme,
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'default',
 			'TEMP'=>'tmp/',
 			'TIME'=>microtime(TRUE),
@@ -1162,19 +1152,27 @@ class Base {
 			'UI'=>'./',
 			'UNLOAD'=>NULL,
 			'UPLOADS'=>'./',
+			'URI'=>&$_SERVER['REQUEST_URI'],
+			'VERB'=>&$_SERVER['REQUEST_METHOD'],
 			'VERSION'=>self::VERSION
 		);
-		$this->hive+=array(
-			'VERB'=>&$_SERVER['REQUEST_METHOD'],
-			'URI'=>&$_SERVER['REQUEST_URI'],
-			'SCHEME'=>$scheme
-		);
+		if ((float)strstr(PCRE_VERSION,' ',TRUE)<7.9)
+			// Outdated PCRE version
+			trigger_error(self::E_PCRE);
+		if (function_exists('apache_get_modules') &&
+			!in_array('mod_rewrite',apache_get_modules()))
+			// Apache mod_rewrite disabled
+			trigger_error(self::E_Apache);
 		if (ini_get('auto_globals_jit'))
 			// Override setting
 			$GLOBALS+=array('_ENV'=>$_ENV,'_REQUEST'=>$_REQUEST);
 		// Sync PHP globals with corresponding hive keys
 		foreach (explode('|',self::GLOBALS) as $global)
 			$this->hive[$global]=&$GLOBALS['_'.$global];
+		// Register framework autoloader
+		spl_autoload_register(array($this,'autoload'));
+		// Register shutdown handler
+		register_shutdown_function(array($this,'unload'));
 	}
 
 	//! Wrap-up
