@@ -2,6 +2,7 @@
 <html lang="en">
 	<head>
 		<base href="<?php echo $BASE.'/'.$UI; ?>" />
+		<meta charset="<?php echo $ENCODING; ?>" />
 		<title><?php echo $PACKAGE; ?>: <?php echo $active; ?></title>
 		<link href="http://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" type="text/css" />
 		<style>
@@ -102,7 +103,7 @@
 				<span class="status <?php echo $result['status']?'pass':'fail'; ?>"><?php echo $i+1; ?></span> <span class="text"><?php echo $result['text']; ?> <?php if (!$result['status'] && $result['source']) echo '('.$result['source'].')'; ?></span><br/>
 				<?php endforeach; ?>
 			</p>
-			<p class="stats">Page rendered in <?php echo round(1e3*(microtime(TRUE)-$TIME),2); ?> msecs / Memory usage <?php echo round(memory_get_usage(TRUE)/1e3,1); ?> Kibytes</p>
+			<p class="stats">Page rendered in <?php echo round(1e3*(microtime(TRUE)-$TIME),2); ?> msecs / Memory usage <?php echo round(xdebug_memory_usage(TRUE)/1e3,1); ?> Kibytes</p>
 		</div>
 	</body>
 </html>
