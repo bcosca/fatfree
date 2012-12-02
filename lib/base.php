@@ -1390,14 +1390,6 @@ class View {
 		return Registry::get($class);
 	}
 
-	//! Prohibit cloning
-	private function __clone() {
-	}
-
-	//! Prohibit instantiation
-	private function __construct() {
-	}
-
 	//! Wrap-up
 	function __destruct() {
 		Registry::clear(get_called_class());
