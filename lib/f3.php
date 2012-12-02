@@ -4,12 +4,20 @@
 class F3 {
 
 	static
+		//! Framework instance
 		$fw;
 
-	static function __callstatic($func,$args) {
+	/**
+		Forward function calls to framework
+		@return mixed
+		@param $func callback
+		@param $args array
+		@internal
+	**/
+	static function __callstatic($func,array $args) {
 		if (!self::$fw)
-			$fw=Base::instance();
-		return call_user_func_array(array($fw,$func),$args);
+			self::$fw=Base::instance();
+		return call_user_func_array(array(self::$fw,$func),$args);
 	}
 
 }
