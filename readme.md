@@ -889,6 +889,15 @@ Dictionary key-value pairs become F3 variables once referenced. Make sure the ke
 
 Did you notice the peculiar `'Today is {0,date}'` pattern in our previous example? F3's multilingual capability hinges on string/message formatting rules of the ICU project. The framework uses its own subset of the ICU string formatting implementation. There is no need for PHP's `intl` extension to be activated on the server.
 
+One more thing: F3 can also load .ini-style formatted files as dictionaries:-
+
+    love="I love F3"
+    today="Today is {0,date}"
+    pi="{0,number}"
+    money="Amount remaining: {0,number,currency}"
+
+Save it as `dict/en.ini` so the framework can load it automatically.
+
 ### Data Sanitation
 
 By default, both view handler and template engine escapes all rendered variables, i.e. converted to HTML entities to protect you from possible XSS and code injection attacks. On the other hand, if you wish to pass valid HTML fragments from your application code to your template:-
