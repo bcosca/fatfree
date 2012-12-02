@@ -109,8 +109,9 @@ class Web {
 		@return int|FALSE
 		@param $func callback
 		@param $overwrite bool
+		@param $slug bool
 	**/
-	function receive($func=NULL,$overwrite=FALSE) {
+	function receive($func=NULL,$overwrite=FALSE,$slug=TRUE) {
 		$fw=Base::instance();
 		$dir=$fw->get('UPLOADS');
 		if (!is_dir($dir))
@@ -132,7 +133,8 @@ class Web {
 				else
 					$item=array($item);
 				foreach ($item as $file) {
-					$dest=$dir.basename($file['name']);
+					$base=basename($file['name']);
+					$dest=$dir.($slug?$this->slug($base):$base);
 					if ($file['error'] ||
 						$file['type']!=$this->mime($file['name']) ||
 						$overwrite && file_exists($dest) ||
