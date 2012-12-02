@@ -62,8 +62,8 @@ class Base {
 	//@{ Error messages
 	const
 		E_Apache='Apache rewrite_module is disabled',
-		E_Extension='PHP extension %s is required',
 		E_Pattern='Invalid routing pattern: %s',
+		E_PCRE='PCRE library version is outdated',
 		E_Fatal='Fatal error: %s',
 		E_Open='Unable to open %s',
 		E_Routes='No routes specified',
@@ -1094,6 +1094,9 @@ class Base {
 					throw new ErrorException($text);
 			}
 		);
+		if ((float)strstr(PCRE_VERSION,' ',TRUE)<7.9)
+			// Outdated PCRE version
+			trigger_error(self::E_PCRE);
 		if (function_exists('apache_get_modules') &&
 			!in_array('mod_rewrite',apache_get_modules()))
 			// Apache mod_rewrite disabled
@@ -1304,10 +1307,10 @@ class Cache {
 				$ext=array_map('strtolower',get_loaded_extensions());
 				$grep=preg_grep('/^(apc|wincache|xcache)/',$ext);
 				// Use filesystem as fallback
-				$dsn=$grep?current($grep):'folder='.$f3->get('TEMP').'cache/';
+				$dsn=$grep?current($grep):'folder='.$fw->get('TEMP').'cache/';
 			}
 			if (preg_match('/folder=(.+)/',$dsn,$parts) && !is_dir($parts[1]))
-				$f3->mkdir($parts[1]);
+				$fw->mkdir($parts[1]);
 		}
 		return $this->dsn=$dsn;
 	}
