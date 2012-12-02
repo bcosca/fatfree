@@ -288,8 +288,6 @@ class Image {
 		@param $file string
 	**/
 	function __construct($file=NULL) {
-		if (!extension_loaded('gd'))
-			trigger_error(sprintf(Base::E_Extension,'gd'));
 		if ($file) {
 			$fw=Base::instance();
 			// Create image from file
