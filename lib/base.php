@@ -1342,7 +1342,7 @@ class Cache {
 class View {
 
 	protected
-		// Template file
+		//! Template file
 		$view,
 		//! Local hive
 		$hive;
