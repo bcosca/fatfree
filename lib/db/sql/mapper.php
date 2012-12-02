@@ -341,9 +341,13 @@ class Mapper extends \DB\Cursor {
 		@param $filter string|array
 	**/
 	function erase($filter=NULL) {
-		if ($filter)
+		if ($filter) {
+			if (is_array($filter))
+				list($filter,$params)=$filter;
+			$args=is_array($params)?$params:array(1=>$params);
 			return $this->db->
-				exec('DELETE FROM '.$this->table.' WHERE '.$filter.';');
+				exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
+		}
 		$args=array();
 		$ctr=0;
 		$filter='';
