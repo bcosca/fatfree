@@ -1341,7 +1341,7 @@ class Cache {
 //! View handler
 class View {
 
-	private
+	protected
 		// Template file
 		$view,
 		//! Local hive
@@ -1385,7 +1385,7 @@ class View {
 		@return object
 	**/
 	static function instance() {
-		if (!Registry::exists($class=__CLASS__))
+		if (!Registry::exists($class=get_called_class()))
 			Registry::set($class,$self=new $class);
 		return Registry::get($class);
 	}
@@ -1400,7 +1400,7 @@ class View {
 
 	//! Wrap-up
 	function __destruct() {
-		Registry::clear(__CLASS__);
+		Registry::clear(get_called_class());
 	}
 
 }
@@ -1774,14 +1774,14 @@ class ISO {
 		@return object
 	**/
 	static function instance() {
-		if (!Registry::exists($class=__CLASS__))
+		if (!Registry::exists($class=get_called_class()))
 			Registry::set($class,$self=new $class);
 		return Registry::get($class);
 	}
 
 	//! Wrap-up
 	function __destruct() {
-		Registry::clear(__CLASS__);
+		Registry::clear(get_called_class());
 	}
 
 }

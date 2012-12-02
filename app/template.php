@@ -14,7 +14,7 @@ class Template extends Controller {
 		$tpl=\Template::instance();
 		$f3->set('foo','bar->baz');
 		$test->expect(
-			$tpl->serve('templates/test1.htm')=='bar-&gt;baz',
+			$tpl->render('templates/test1.htm')=='bar-&gt;baz',
 			'Auto-escaping enabled'
 		);
 		$test->expect(
@@ -129,13 +129,13 @@ class Template extends Controller {
 		$f3->set('cond',TRUE);
 		$f3->set('file','templates/test1.htm');
 		$test->expect(
-			$tpl->serve('templates/test2.htm')=='bar',
+			$tpl->render('templates/test2.htm')=='bar',
 			'<include>'
 		);
 		$f3->clear('cond');
 		$f3->set('foo','baz');
 		$test->expect(
-			$tpl->serve('templates/test3.htm')=='baz',
+			$tpl->render('templates/test3.htm')=='baz',
 			'<exclude> and {{* comment *}}'
 		);
 		$f3->clear('foo');
@@ -147,7 +147,7 @@ class Template extends Controller {
 		);
 		$test->expect(
 			preg_replace('/[\t\n]/','',
-				$tpl->serve('templates/test4.htm'))==
+				$tpl->render('templates/test4.htm'))==
 				'<div>'.
 					'<p><span><b>coffee</b></span></p>'.
 					'<p>'.
@@ -171,28 +171,28 @@ class Template extends Controller {
 		$f3->set('cond1',TRUE);
 		$f3->set('cond2',TRUE);
 		$test->expect(
-			trim($tpl->serve('templates/test5.htm'))==
+			trim($tpl->render('templates/test5.htm'))==
 				'c1:T,c2:T',
 			'<check>, <true>, <true>'
 		);
 		$f3->set('cond1',TRUE);
 		$f3->set('cond2',FALSE);
 		$test->expect(
-			trim($tpl->serve('templates/test5.htm'))==
+			trim($tpl->render('templates/test5.htm'))==
 				'c1:T,c2:F',
 			'<check>, <true>, <false>'
 		);
 		$f3->set('cond1',FALSE);
 		$f3->set('cond2',TRUE);
 		$test->expect(
-			trim($tpl->serve('templates/test5.htm'))==
+			trim($tpl->render('templates/test5.htm'))==
 				'c1:F,c2:T',
 			'<check>, <false>, <true>'
 		);
 		$f3->set('cond1',FALSE);
 		$f3->set('cond2',FALSE);
 		$test->expect(
-			trim($tpl->serve('templates/test5.htm'))==
+			trim($tpl->render('templates/test5.htm'))==
 				'c1:F,c2:F',
 			'<check>, <false>, <false>'
 		);
@@ -200,7 +200,7 @@ class Template extends Controller {
 		$f3->clear('cond2');
 		$test->expect(
 			preg_replace('/[\t\n]/','',
-				$tpl->serve('templates/test6.htm'))==
+				$tpl->render('templates/test6.htm'))==
 					'<div>'.
 						'<p class="odd">1</p>'.
 						'<p class="even">2</p>'.
@@ -211,7 +211,7 @@ class Template extends Controller {
 		);
 		$test->expect(
 			preg_replace('/[\t\n]/','',
-				$tpl->serve('templates/test8.htm'))==
+				$tpl->render('templates/test8.htm'))==
 					'<span>3</span>'.
 					'<span>6</span>'.
 					'<span>xyz</span>'.

@@ -18,22 +18,22 @@ class Lexicon extends Controller {
 		$template=\Template::instance();
 		$f3->set('LANGUAGE','fr_FR');
 		$test->expect(
-			$template->serve('templates/lexicon.htm'),
+			$template->render('templates/lexicon.htm'),
 			'fr_FR'
 		);
 		$f3->set('LANGUAGE','en_US');
 		$test->expect(
-			$template->serve('templates/lexicon.htm'),
+			$template->render('templates/lexicon.htm'),
 			'en_US'
 		);
 		$f3->set('LANGUAGE','es_CL');
 		$test->expect(
-			$template->serve('templates/lexicon.htm'),
+			$template->render('templates/lexicon.htm'),
 			'es_AR'
 		);
 		$f3->set('LANGUAGE','en');
 		$test->expect(
-			$template->serve('templates/lexicon.htm'),
+			$template->render('templates/lexicon.htm'),
 			'en (fallback)'
 		);
 		$f3->set('results',$test->results());

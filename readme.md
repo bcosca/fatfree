@@ -89,9 +89,9 @@ Prepend `base.php` on the first line with the appropriate path. Save the above c
 
 The first command tells the PHP interpreter that you want the framework's functions and features available to your application. The `$f3->route()` method informs Fat-Free that a Web page is available at the relative URL indicated by the slash (`/`). Anyone visiting your site located at `http://www.example.com/` will see the `'Hello, world!'` message because the URL `/` is equivalent to the root page. To create a route that branches out from the root page, like `http://www.example.com/inside/`, you can define another route with a simple `GET /inside` string.
 
-The route described above tells the framework to serve the page only when it receives a URL request using the HTTP `GET` method. More complex Web sites containing forms use other HTTP methods like `POST`, and you can also implement that as part of a `$f3->route()` specification.
+The route described above tells the framework to render the page only when it receives a URL request using the HTTP `GET` method. More complex Web sites containing forms use other HTTP methods like `POST`, and you can also implement that as part of a `$f3->route()` specification.
 
-If the framework sees an incoming request for your Web page located at the root URL `/`, it will automatically route the request to the callback function, which contains the code necessary to process the request and serve the appropriate HTML stuff. In this example, we just send the string `'Hello, world!'` to the user's Web browser.
+If the framework sees an incoming request for your Web page located at the root URL `/`, it will automatically route the request to the callback function, which contains the code necessary to process the request and render the appropriate HTML stuff. In this example, we just send the string `'Hello, world!'` to the user's Web browser.
 
 So we've established our first route. But that won't do much, except to let F3 know that there's a process that will handle it and there's some text to display on the user's Web browser. If you have a lot more pages on your site, you need to set up different routes for each group. For now, let's keep it simple. To instruct the framework to start waiting for requests, we issue the `$f3->run()` command.
 
@@ -574,9 +574,9 @@ and the code needed to view this template:-
         function() use($f3) {
             $f3->set('name','world');
             $template=new Template;
-            echo $template->serve('template.htm');
+            echo $template->render('template.htm');
             // Above lines can be writtern as:-
-            echo Template::instance()->serve('template.htm');
+            echo Template::instance()->render('template.htm');
         }
     );
     $f3->run();
@@ -587,7 +587,7 @@ In our example, F3 replaces the `@name` token in our template with the value we 
 
     <p>Hello, world</p>
 
-Worried about performance of F3 templates?At runtime, the framework parses and compiles/converts an F3 template to PHP code the first time it's displayed via `Template::instance()->serve()`. The framework then uses this compiled code in all subsequent calls. Hence, performance should be the same as PHP templates, if not better due to code optimization done by the template compiler.
+Worried about performance of F3 templates?At runtime, the framework parses and compiles/converts an F3 template to PHP code the first time it's displayed via `Template::instance()->render()`. The framework then uses this compiled code in all subsequent calls. Hence, performance should be the same as PHP templates, if not better due to code optimization done by the template compiler.
 
 Whether you use PHP's template engine or F3's own, template rendering can be significantly faster if you have APC, WinCache or XCache available on your server.
 
@@ -645,7 +645,7 @@ A practical use for such template directive is when you have several pages with 
 
 A sub-template may in turn contain any number of <include> directives. F3 allows unlimited nested templates.
 
-You can specify filenames with something other than .htm or .html file extensions, but it's easier to preview them in your Web browser during the development and debugging phase. The template engine is not limited to rendering HTML files. In fact you can use the template engine to serve other kinds of files.
+You can specify filenames with something other than .htm or .html file extensions, but it's easier to preview them in your Web browser during the development and debugging phase. The template engine is not limited to rendering HTML files. In fact you can use the template engine to render other kinds of files.
 
 The `<include>` directive also has an optional `if` attribute so you can specify a condition that needs to be satisfied before the sub-template is inserted:-
 
@@ -791,7 +791,7 @@ Once you inform the framework of the desired character set, F3 will use it in al
 
 As mentioned earlier in this section, the framework isn't limited to HTML templates. You can process XML templates just as well. The mechanics are pretty much similar. You still have the same `{{ @variable }}` and `{{ expression }}` tokens, `<repeat>`, `<check>`, `<include>`, and `<exclude>` directives at your disposal. Just tell F3 that you're passing an XML file instead of HTML:-
 
-    echo Template::instance()->serve('template.xml','application/xml');
+    echo Template::instance()->render('template.xml','application/xml');
 
 The second argument represents the MIME type of the document being rendered.
 
@@ -814,7 +814,7 @@ Save the above e-mail template as welcome.txt. The associated F3 code would be:-
     mail(
         $f3->get('to'),
         $f3->get('subject'),
-        Template::instance()->serve('email.txt','text/html')
+        Template::instance()->render('email.txt','text/html')
     );
 
 Tip: Replace the SMTP mail() function with imap_mail() if your script communicates with an IMAP server.
@@ -827,7 +827,7 @@ Here's an alternative solution using the F3's SMTP plug-in:-
     $mail->set('from','<no-reply@mysite.com>');
     $mail->set('to','"Slasher" <slasher@throats.com>');
     $mail->set('subject','Welcome');
-    $mail->send(Template::instance()->serve('email.txt'));
+    $mail->send(Template::instance()->render('email.txt'));
 
 ### Multilingual Support ###
 
@@ -933,7 +933,7 @@ OK. That was easy, wasn't it? That's pretty much how you would do the same thing
 Let's continue our PHP code:-
 
     $f3->set('result',$db->exec('SELECT brandName FROM wherever'));
-    echo Template::instance()->serve('abc.htm');
+    echo Template::instance()->render('abc.htm');
 
 Huh, what's going on here? Shouldn't we be setting up things like PDOs, statements, cursors, etc.? The simple answer is: you don't have to. F3 simplifies everything by taking care of all the hard work in the backend.
 
@@ -1607,7 +1607,7 @@ Once you get the hang of testing the smallest units of your application, you can
 >Temporary folder for cache, filesystem locks, compiled F3 templates, etc. Default is the `tmp/` folder inside the Web root. Adjust accordingly to conform to your site's security policies.
 
 `string UI`
->Search path for user interface files used by the `View` class' `render()` `Template` class' `serve()`. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+>Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
 
 `callback UNLOAD`
 >Executed by framework on script shutdown.

@@ -1,15 +1,11 @@
 <?php
 
 //! Template engine
-class Template {
+class Template extends View {
 
-	private
-		//! Compiled template file
-		$view,
+	protected
 		//! MIME type
 		$mime,
-		//! Escaped copy of framework hive
-		$hive,
 		//! Template tags
 		$tags='set|include|exclude|loop|repeat|check|true|false';
 
@@ -71,7 +67,7 @@ class Template {
 		return
 			'<?php '.(isset($attrib['if'])?
 				('if ('.$this->token($attrib['if']).') '):'').
-				('echo $this->serve('.
+				('echo $this->render('.
 					(preg_match('/{{(.+?)}}/',$attrib['href'])?
 						$this->token($attrib['href']):
 						Base::instance()->stringify($attrib['href'])).','.
@@ -194,24 +190,13 @@ class Template {
 	}
 
 	/**
-		Create sandbox for template execution
-		@return string
-	**/
-	protected function sandbox() {
-		extract($this->hive);
-		ob_start();
-		require $this->view;
-		return ob_get_clean();
-	}
-
-	/**
 		Render template
 		@return string
 		@param $file string
 		@param $mime string
 		@param $hive array
 	**/
-	function serve($file,$mime='text/html',array $hive=NULL) {
+	function render($file,$mime='text/html',array $hive=NULL) {
 		$fw=Base::instance();
 		if (!is_dir($dir=$fw->get('TEMP').'views'))
 			$fw->mkdir($dir);
@@ -297,29 +282,6 @@ class Template {
 				return $this->sandbox();
 			}
 		trigger_error(sprintf(Base::E_Open,$file));
-	}
-
-	/**
-		Return class instance
-		@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=__CLASS__))
-			Registry::set($class,$self=new $class);
-		return Registry::get($class);
-	}
-
-	//! Prohibit cloning
-	private function __clone() {
-	}
-
-	//! Prohibit instantiation
-	private function __construct() {
-	}
-
-	//! Wrap-up
-	function __destruct() {
-		Registry::clear(__CLASS__);
 	}
 
 }
