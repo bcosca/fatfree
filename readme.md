@@ -1,4 +1,4 @@
-# Fat-Free Framework #
+# Fat-Free Framework
 
 *A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!*
 
@@ -26,7 +26,7 @@ Unlike other frameworks, F3 aims to be usable - not usual.
 
 The philosophy behind the framework and its approach to the Model-View-Controller design pattern is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.
 
-## Table of Contents ##
+## Table of Contents
 
 * [Getting Started](#getting-started)
 * [Routing Engine](#routing-engine)
@@ -39,13 +39,13 @@ The philosophy behind the framework and its approach to the Model-View-Controlle
 * [Quick Reference](#quick-reference)
 * [Support and Licensing](#support-and-licensing)
 
-### Version 3.0 Is Finally Here! ###
+### Version 3.0 Is Finally Here!
 
 The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that took several months to develop and refine, version 3.0 is finally available for download. Enterprise-grade but still as user-friendly as before. Same lightweight footprint. Yet sturdier and more powerful than ever!
 
 It is highly recommended that users develop new applications using this version to take advantage of the latest features and significant performance improvements.
 
-## Getting Started ##
+## Getting Started
 
 *A designer knows he has achieved perfection not when there is nothing left to add, but when there is nothing left to take away. - Antoine de Saint-Exupéry*
 
@@ -55,7 +55,7 @@ F3 is one of the best documented frameworks around. Learning it costs next to no
 
 F3's declarative approach to programming makes it easy for novices and experts alike to understand PHP code. If you're familiar with the programming language Ruby, you'll notice the resemblance between Fat-Free and Sinatra micro-framework because they both employ a simple Domain-Specific Language for ReSTful Web services. But unlike Sinatra and its PHP incarnations (Fitzgerald, Limonade, Glue - to name a few), Fat-Free goes beyond just handling routes and controllers (in Model-View-Controller parlance). Views can be in any form, such as plain text, HTML, XML or an e-mail message. The framework comes with a fast and easy-to-use template engine. F3 also works seamlessly with other template engines, including Twig, Smarty, and PHP itself. Models communicate with F3's data mappers and the SQL helper for more complex interactions with various database engines. Other plug-ins extend the base functionality even more. It's a total Web development framework - with a lot of muscle!
 
-### Enough Said - See For Yourself ###
+### Enough Said - See For Yourself
 
 Unpack the contents of `fatfree-3.x.x.zip` anywhere in your hard drive. By default, the framework file and optional plug-ins are located in the `lib/` path. Organize your directory structures any way you want. You may move the default folders to a path that's not Web-accessible for better security. Delete the plug-ins that you don't need. You can always restore them later and F3 will detect their presence automatically.
 
@@ -73,7 +73,7 @@ PHP will let you know which particular version you're running and you should get
 
 Upgrade if necessary and come back here if you've made the jump to PHP 5.3 or a later release.
 
-### Hello, World: The Less-Than-A-Minute Fat-Free Recipe ###
+### Hello, World: The Less-Than-A-Minute Fat-Free Recipe
 
 Time to start writing our first application:-
 
@@ -95,9 +95,9 @@ If the framework sees an incoming request for your Web page located at the root 
 
 So we've established our first route. But that won't do much, except to let F3 know that there's a process that will handle it and there's some text to display on the user's Web browser. If you have a lot more pages on your site, you need to set up different routes for each group. For now, let's keep it simple. To instruct the framework to start waiting for requests, we issue the `$f3->run()` command.
 
-## Routing Engine ##
+## Routing Engine
 
-### Overview ###
+### Overview
 
 Our first example wasn't too hard to swallow, was it? If you like a little more flavor in your Fat-Free soup, insert another route before the `$f3->run()` command:-
 
@@ -116,7 +116,7 @@ You don't want to clutter the global namespace with function names? Fat-Free rec
 
     $f3->route('GET /about','webpage->display');
 
-### Routes and Tokens ###
+### Routes and Tokens
 
 As a demonstration of Fat-Free's powerful domain-specific language (DSL), you can specify a single route to handle different possibilities:-
 
@@ -140,11 +140,11 @@ You can use the asterisk (`*`) to accept any URL after the `/brew` route - if yo
 
 An important point to consider: You will get Fat-Free (and yourself) confused if you have both `GET /brew/@count` and `GET /brew/*` together in the same application. Use one or the other. Another thing: Fat-Free sees `GET /brew` as separate and distinct from the route `GET /brew/@count`. Each can have different route handlers.
 
-### Dynamic Web Sites ###
+### Dynamic Web Sites
 
 Wait a second - in all the previous examples, we never really created any directory in our hard drive to store these routes. The short answer: we don't have to. All F3 routes are virtual. They don't mirror our hard disk folder structure. If you have programs or static files (images, CSS, etc.) that do not use the framework - as long as the paths to these files do not conflict with any route defined in your application - your Web server software will deliver them to the user's browser, provided the server is configured properly.
 
-### Sample Apache Configuration ###
+### Sample Apache Configuration
 
 If you're using Apache, make sure you activate the URL rewriting module (mod_rewrite) in your apache.conf (or httpd.conf) file. You should also create a .htaccess file containing the following:-
 
@@ -194,7 +194,7 @@ If you're developing several applications simultaneously, a virtual host configu
 
 Each `ServerName` (`site1.com` and `site2.com` in our example) must be listed in your `/etc/hosts` file. On Windows, you should edit `C:/WINDOWS/system32/drivers/etc/hosts`. A reboot might be necessary to effect the changes. You can then point your Web browser to the address `http://site1.com` or `http://site2.com`. Virtual hosts make your applications a lot easier to deploy.
 
-### Sample Nginx Configuration ###
+### Sample Nginx Configuration
 
 For Nginx servers, here's the recommended configuration (replace ip_address:port with your environment's FastCGI PHP settings):-
 
@@ -212,7 +212,7 @@ For Nginx servers, here's the recommended configuration (replace ip_address:port
         }
     }
 
-### Sample Lighttpd Configuration ###
+### Sample Lighttpd Configuration
 
 Lighttpd servers are configured in a similar manner:-
 
@@ -221,11 +221,11 @@ Lighttpd servers are configured in a similar manner:-
         server.error-handler-404 = "/index.php"
     }
 
-### Route Handlers ###
+### Route Handlers
 
 Fat-Free has a way of loading classes only at the time you need them, so they don't gobble up more memory than a particular segment of your application needs. Auto-loading classes are described in a later section.
 
-### Rerouting ###
+### Rerouting
 
 So let's get back to coding. You can declare a page obsolete and redirect your visitors to another site:-
 
@@ -241,7 +241,7 @@ Rerouting can be particularly useful when you need to do some maintenance work o
 
 HTTP redirects are indispensable but they can also be expensive. As much as possible, refrain from using `$f3->reroute()` to send a user to another page on the same Web site if you can direct the flow of your application by invoking the function or method that handles the target route. However, this approach will not change the URL on the address bar of the user's Web browser. If this is not the behavior you want and you really need to send a user to another page, in instances like successful submission of a form or after a user has been authenticated, Fat-Free sends an `HTTP 303 See Other` header. For all other attempts to reroute to another page or site, the framework sends an `HTTP 301 Moved Permanently` header.
 
-### Triggering a 404 ###
+### Triggering a 404
 
 At runtime, Fat-Free automatically generates an HTTP 404 error whenever it sees that an incoming HTTP request does not match any of the routes defined in your application. However, there are instances when you need to trigger it yourself.
 
@@ -268,7 +268,7 @@ Fat-Free's `$f3->map()` method provides a ReST interface by mapping routes to th
 
 Note: Browsers do not implement the HTTP PUT and DELETE methods via HTML forms. These and other ReST methods (TRACE, HEAD, and CONNECT) are accessible only via AJAX calls to the server.
 
-### The F3 Autoloader ###
+### The F3 Autoloader
 
 With Fat-Free, you don't have to write a long list of include or require statements just to load PHP classes saved in different files and different locations. The framework can do this automatically for you. Just save your files (one class per file) in a folder and tell the framework to automatically load the appropriate file once you invoke a method in the class:-
 
@@ -280,7 +280,7 @@ You can assign a different location for your autoloaded classes by changing the 
 
 Important: Except for the .php extension, the class name and file name must be identical, for the framework to autoload your class properly. For performance reasons, file names must be in lowercase.
 
-### Working with Namespaces ###
+### Working with Namespaces
 
 `AUTOLOAD` allows class hierarchies to reside in similarly-named subfolders, so if you want the framework to autoload a PHP 5.3 namespaced class that's invoked in the following manner:-
 
@@ -296,7 +296,7 @@ Remember: All directory names in Fat-Free must end with a slash. You can assign 
 
     $f3->set('AUTOLOAD','main/;aux/');
 
-### Routing to a Namespaced Class ###
+### Routing to a Namespaced Class
 
 F3, being a namespace-aware framework, allows you to use a method in namespaced class as a route handler, and there are several ways of doing it. To call a static method:-
 
@@ -311,7 +311,7 @@ If you prefer to work with objects:-
 
 will instantiate the `home` object and call the `show()` method thereafter.
 
-### Event Handlers ###
+### Event Handlers
 
 F3 has a couple of routing event listeners that might help you improve the flow and structure of controller classes. Say you have a route defined as follows:-
 
@@ -319,7 +319,7 @@ F3 has a couple of routing event listeners that might help you improve the flow 
 
 If the application receives an HTTP request matching the above route, F3 instantiates `main` as an object. But before executing the `home()` method, the framework looks for a method in the `main` class named `beforeRoute()`. In case it's found, F3 runs the code contained in the `beforeRoute()` event handler before transferring control to the `home()` method. Once this is accomplished, the framework looks for an `afterRoute()` event handler in the `main` class. Like `beforeRoute()`, the method gets executed if it's defined.
 
-### Dynamic Route Handlers ###
+### Dynamic Route Handlers
 
 Here's another F3 goodie:-
 
@@ -336,9 +336,9 @@ Dynamic route handlers may have various forms:-
 
 F3 triggers an `HTTP 404 Not Found` error at runtime if it cannot transfer control to the class or method associated with the current route, i.e. an undefined class or method.
 
-## Framework Variables ##
+## Framework Variables
 
-### Basic Use ###
+### Basic Use
 
 Variables defined in Fat-Free are global, i.e. they can be accessed by any MVC component. Framework globals are not identical to PHP globals. An F3 variable named `content` is not identical to PHP's `$content`. F3 is a domain-specific language in its own right and maintains its own separate symbol table for system and application variables. The framework, like every well-designed object-oriented program, does not pollute the PHP global namespace with constants, variables, functions or classes that might conflict with any application. Unlike other frameworks, F3 does not use PHP's `define()` statement. All framework constants are confined to classes.
 
@@ -370,7 +370,7 @@ To find out if a variable has been previously defined:-
 
     $f3->exists('variable')
 
-### Globals ###
+### Globals
 
 F3 maintains its own symbol table for framework and application variables, which are independent of PHP's. Some variables are mapped to PHP globals. Fat-Free's `SESSION` is equivalent to `$_SESSION`, and `REQUEST` maps to `$_REQUEST`. Use of framework variables is recommended, instead of PHP's, to help you with data transfer across different functions, classes and methods. They also have other advantages:-
 
@@ -384,14 +384,14 @@ The framework has several variables to help you keep your files and directory st
 
 Refer to the [Quick Reference](#quick-reference) if you need a comprehensive list of F3 framework variables.
 
-### Naming Rules ###
+### Naming Rules
 
 A framework variable may contain any number of letters, digits and underscores. It must start with an alpha character and should have no spaces. Variable names are case-sensitive.
 
 F3 uses all-caps for internal predefined global variables. Nothing stops you from using variable names consisting of all-caps in your own program, but as a general rule, stick to lowercase (or camelCase) when you set up your own variables so you can avoid any possible conflict with current and future framework releases.
 You should not use PHP reserved words like if, for, class, etc. as framework variable names. These may cause unpredictable results.
 
-### Working with String and Array Variables ###
+### Working with String and Array Variables
 
 F3 also provides a number of tools to help you with framework variables.
 
@@ -414,7 +414,7 @@ F3 also provides some primitive methods for working with array variables:-
     $f3->set('grays',array('light','dark'));
     $result=$f3->merge('colors','grays'); // merges the two arrays
 
-### Do-It-Yourself Directory Structures ###
+### Do-It-Yourself Directory Structures
 
 Unlike other frameworks that have rigid folder structures, F3 gives you a lot of flexibility. You can have a folder structure that looks like this (parenthesized words in all-caps represent the F3 framework variables that need tweaking):-
 
@@ -433,11 +433,11 @@ Unlike other frameworks that have rigid folder structures, F3 gives you a lot of
 
 Feel free to organize your files and directories any way you want. Just set the appropriate F3 global variables. If you want a really secure site, Fat-Free even allows you to store all your files in a non-Web-accessible directory. The only requirement is that you leave `index.php` in your Web root and your public files, like CSS, JavaScript, images, etc. The `.htaccess` file should also be in your Web root if you're using Apache.
 
-### About the F3 Error Handler ###
+### About the F3 Error Handler
 
 Fat-Free generates its own HTML error pages, with stack traces to help you with debugging. Here's an example:-
 
-><big>Internal Server Error</big>  
+>##Internal Server Error  
 ><i>The configuration file test.cfg was not found</i>  
 
 >&bull; var/html/dev/index.php:16 Base::config('test.cfg')
@@ -475,7 +475,7 @@ DEBUG can have values ranging from 0 (stack trace suppressed) to 2 (most verbose
 
 Don't forget! Stack traces may contain paths, file names, database commands, and passwords. You might expose your Web site to unnecessary security risks if you fail to set the `DEBUG` global variable properly.
 
-### Configuration Files ###
+### Configuration Files
 
 If your application needs to be user-configurable, F3 provides a handy method for reading configuration files to set up your application. This way, you and your users can tweak the application without touching a bit of code.
 
@@ -528,15 +528,15 @@ String values need not be quoted, unless you want leading or trailing spaces inc
     very long \
     string"
 
-## Views and Templates ##
+## Views and Templates
 
-### Separation of Concerns ###
+### Separation of Concerns
 
 A user interface like an HTML page should be independent of the underlying PHP code related to routing and business logic. This is fundamental to the MVC paradigm. A basic revision like converting `<h3>` to `<p>` should not demand a change in your application code. In the same manner, transforming a simple route like `GET /about` to `GET /about-us` should not have any effect on your user interface (the view) and business logic (the model).
 
 Mixing any or all of the MVC components in a single file, like spaghetti coding, makes future application maintenance a nightmare.
 
-### PHP as a Template Engine ###
+### PHP as a Template Engine
 
 F3 supports PHP as a template engine. Take a look at this HTML fragment saved as `template.htm`:-.
 
@@ -562,7 +562,7 @@ To display this template, you can have PHP code that looks like this (saved in a
 
 The only issue with embedding PHP code in your templates is the conscious effort needed to stick to MVC principles. Nothing stops you from inserting application logic into the data presentation layer.
 
-### A Quick Look at the F3 Template Language ###
+### A Quick Look at the F3 Template Language
 
 As an alternative to PHP, you can use F3's own template engine. The above HTML fragment can be rewritten as:-
 
@@ -627,7 +627,7 @@ The F3 template engine will interpret the token as expected, if you specify the 
 
 The only limit here is your ability to stick to MVC guidelines and resist the temptation of having business logic enter your user interface.
 
-### Templates Within Templates ###
+### Templates Within Templates
 
 Simple variable substitution is one thing all template engines have. Fat-Free has more up its sleeves:-
 
@@ -652,7 +652,7 @@ The `<include>` directive also has an optional `if` attribute so you can specify
 
     <include if="{{ count(@items) }}" href="items.htm" />
 
-### Exclusion of Segments ###
+### Exclusion of Segments
 
 During the course of writing/debugging F3-powered programs and designing templates, there may be instances when disabling the display of a block of HTML may be handy. You can use the `<exclude>` directive for this purpose:-
 
@@ -666,7 +666,7 @@ Here's another way of excluding template content or adding comments:-
 
     {{* <p>A chunk of HTML we don't want displayed at the moment</p> *}}
 
-### Conditional Segments ###
+### Conditional Segments
 
 Another useful template feature is the `<check>` directive. It allows you to embed an HTML fragment depending on the evaluation of a certain condition. Here are a few examples:-
 
@@ -690,7 +690,7 @@ An F3 expression inside an if attribute that equates to NULL, an empty string, a
         <p>HTML chunk to be included if condition is true</p>
     </check>
 
-### Repeating Segments ###
+### Repeating Segments
 
 Fat-Free can also handle repetitive HTML blocks:-
 
@@ -762,7 +762,7 @@ The `<repeat>` template directive's `value` attribute returns the value of the c
 
 Internally, F3's template engine records the number of loop iterations and saves that value in the variable/token `@ctr`, which is used in our example to determine the odd/even classification.
 
-### Embedding Javascript and CSS ###
+### Embedding Javascript and CSS
 
 If you have to insert F3 tokens inside a `<script>` or `<style>` section of your template, the framework will still replace them the usual way:-
 
@@ -780,7 +780,7 @@ Embedding template directives inside your `<script>` or `<style>` tags requires 
         </repeat>
     </script>
 
-### Document Encoding ###
+### Document Encoding
 
 By default, Fat-Free uses the UTF-8 character set unless changed. You can override this behavior by issuing something like:-
 
@@ -788,7 +788,7 @@ By default, Fat-Free uses the UTF-8 character set unless changed. You can overri
 
 Once you inform the framework of the desired character set, F3 will use it in all HTML and XML templates until altered again.
 
-### All Kinds of Templates ###
+### All Kinds of Templates
 
 As mentioned earlier in this section, the framework isn't limited to HTML templates. You can process XML templates just as well. The mechanics are pretty much similar. You still have the same `{{ @variable }}` and `{{ expression }}` tokens, `<repeat>`, `<check>`, `<include>`, and `<exclude>` directives at your disposal. Just tell F3 that you're passing an XML file instead of HTML:-
 
@@ -830,7 +830,7 @@ Here's an alternative solution using the F3's SMTP plug-in:-
     $mail->set('subject','Welcome');
     $mail->send(Template::instance()->render('email.txt'));
 
-### Multilingual Support ###
+### Multilingual Support
 
 F3 supports multiple languages right out of the box.
 
@@ -889,7 +889,7 @@ Dictionary key-value pairs become F3 variables once referenced. Make sure the ke
 
 Did you notice the peculiar `'Today is {0,date}'` pattern in our previous example? F3's multilingual capability hinges on string/message formatting rules of the ICU project. The framework uses its own subset of the ICU string formatting implementation. There is no need for PHP's `intl` extension to be activated on the server.
 
-### Data Sanitation ###
+### Data Sanitation
 
 By default, both view handler and template engine escapes all rendered variables, i.e. converted to HTML entities to protect you from possible XSS and code injection attacks. On the other hand, if you wish to pass valid HTML fragments from your application code to your template:-
 
@@ -909,9 +909,9 @@ As an addition to auto-escaping of F3 variables, the framework also gives you a 
 
 This command will strip all tags (except those specified in the second argument) and unsafe characters from the specified variable. If the variable contains an array, each element in the array is sanitized recursively. If an asterisk (*) is passed as the second argument, `$f3->scrub()` permits all HTML tags to pass through untouched and simply remove unsafe control characters.
 
-## Databases ##
+## Databases
 
-### Connecting to a Database Engine ###
+### Connecting to a Database Engine
 
 Fat-Free is designed to make the job of interfacing with SQL databases a breeze. If you're not the type to immerse yourself in details about SQL, but lean more towards object-oriented data handling, you can go directly to the next section of this tutorial. However, if you need to do some complex data-handling and database performance optimization tasks, SQL is the way to go.
 
@@ -927,7 +927,7 @@ Another example, this time with MySQL:-
         'p455w0rD'
     );
 
-### Querying the Database ###
+### Querying the Database
 
 OK. That was easy, wasn't it? That's pretty much how you would do the same thing in ordinary PHP. You just need to know the DSN format of the database you're connecting to. See the PDO section of the PHP manual.
 
@@ -960,7 +960,7 @@ Here's another example. Instead of a single statement provided as an argument to
 
 F3 is smart enough to know that if you're passing an array of SQL instructions, this indicates a SQL batch transaction. You don't have to worry about SQL rollbacks and commits because the framework will automatically revert to the initial state of the database if any error occurs during the transaction. If successful, F3 commits all changes made to the database.
 
-### Parameterized Queries ###
+### Parameterized Queries
 
 Passing string arguments to SQL statements is fraught with danger. Consider this:-
 
@@ -994,7 +994,7 @@ F3 accepts both positional and named parameters in query strings. The following 
         array(':uid'=>array($f3->get('POST.userID'),PDO::PARAM_INT))
     );
 
-### CRUD (But With a Lot of Style) ###
+### CRUD (But With a Lot of Style)
 
 F3 is packed with easy-to-use object-relational mappers (ORMs) that sit between your application and your data - making it a lot easier and faster for you to write programs that handle common data operations - like creating, retrieving, updating, and deleting (CRUD) information from SQL and NoSQL databases. Data mappers do most of the work by mapping PHP object interactions to the corresponding backend queries.
 
@@ -1032,7 +1032,7 @@ In the case of the MongoDB data mapper:-
 
 Easy, wasn't it? F3 understands that a SQL table already has a structural definition existing within the database engine itself. Unlike other frameworks, F3 requires no extra class declarations (unless you want to extend the data mappers to fit complex objects), no redundant PHP array/object property-to-field mappings (duplication of efforts), no code generators (which require code regeneration if the database structure changes), no stupid XML/YAML files to configure your models, no superfluous commands just to retrieve a single record. With F3, a simple resizing of a `varchar` field in MySQL does not demand a change in your application code. Consistent with MVC and "separation of concerns", the database admin has as much control over the data (and the structures) as a template designer has over HTML/XML templates.
 
-### The Smart SQL ORM ###
+### The Smart SQL ORM
 
 The framework automatically maps the field `visits` in our table to an data mapper property during object instantiation, i.e. `$user=new DB\SQL\Mapper($db,'users');`. Once the object is created, `$user->password` and `$user->userID` would map to the `password` and `userID` fields in our table, respectively.
 
@@ -1058,7 +1058,7 @@ If we wanted to insert a record, we follow this process:-
 
 We still use the same save() method. But how does F3 know when a record should be inserted or updated? At the time a data mapper object is auto-hydrated by a record retrieval, the framework keeps track of the record's primary keys (or `_id`, in the case of MongoDB) - so it knows which record should be updated or deleted - even when the values of the primary keys are changed. A programmatically-hydrated data mapper - the values of which were not retrieved from the database, but populated by the application - will not have any memory of previous values in its primary keys. The same applies to MongoDB, but using object `_id` as reference. So, when we instantiated the `$user` object above and populated its properties with values from our program - without at all retrieving a record from the user table, F3 knows that it should insert this record.
 
-### Caveat for SQL Tables ###
+### Caveat for SQL Tables
 
 Although the issue of having primary keys in all tables in your database is argumentative, F3 does not stop you from creating a data mapper object that communicates with a table containing no primary keys. The only drawback is: you can't delete or update a mapped record because there's absolutely no way for F3 to determine which record you're referring to plus the fact that positional references are not reliable. Row IDs are not portable across different SQL engines and may not be returned by the PHP database driver.
 
@@ -1074,14 +1074,14 @@ The MongoDB equivalent would be:-
     $user->load(array('userID'=>'cheetah'));
     $user->erase();
 
-### The Weather Report ###
+### The Weather Report
 
 To find out whether our data mapper was hydrated or not:-
 
     if ($user->dry())
         echo 'No record matching criteria';
 
-### Beyond CRUD ###
+### Beyond CRUD
 
 We've covered the CRUD handlers. There are some extra methods that you might find useful:-
 
@@ -1132,7 +1132,7 @@ The `load()` method accepts a second argument: an array of options containing ke
     // which translates to the SQL command:
     // SELECT * FROM users WHERE visits>3 ORDER BY userID;
 
-### Virtual Fields ###
+### Virtual Fields
 
 There are instances when you need to retrieve a computed value of a field, or a cross-referenced value from another table. Enter virtual fields. The SQL mini-ORM allows you to work on data derived from existing fields.
 
@@ -1176,7 +1176,7 @@ To destroy a virtual field, use `unset($item->totalPrice);`. The `isset($item->t
 
 Remember that a virtual field must be defined prior to data retrieval. The ORM does not perform the actual computation, nor the derivation of results from another table. It is the database engine that does all the hard work.
 
-### Seek and You Shall Find ###
+### Seek and You Shall Find
 
 If you have no need for record-by-record navigation, you can retrieve an entire batch of records in one shot:-
 
@@ -1234,7 +1234,7 @@ There's also a `select()` method that's similar to `find()` but provides more fi
 
 Much like the `find()` method, `select()` does not alter the mapper object's contents. It only serves as a convenience method for querying a mapped table. The return value of both methods is an array of mapper objects. Using `dry()` to determine whether a record was found by an of these methods is inappropriate. If no records match the `find()` or `select()` criteria, the return value is an empty array.
 
-### Sometimes It Just Ain't Enough ###
+### Sometimes It Just Ain't Enough
 
 In most cases, you can live by the comforts given by the data mapper methods we've discussed so far. If you need the framework to do some heavy-duty work, you can extend the SQL mapper by declaring your own classes with custom methods - but you can't avoid getting your hands greasy on some hardcore SQL:-
 
@@ -1263,7 +1263,7 @@ In most cases, you can live by the comforts given by the data mapper methods we'
 
 Extending the data mappers in this fashion is an easy way to construct your application's DB-related models.
 
-### Pros and Cons ###
+### Pros and Cons
 
 If you're handy with SQL, you'd probably say: everything in the ORM can be handled with old-school SQL queries. Indeed. We can do without the additional event listeners by using database triggers and stored procedures. We can accomplish relational queries with joined tables. The ORM is just unnecessary overhead. But the point is - data mappers give you the added functionality of using objects to represent database entities. As a developer, you can write code faster and be more productive. The resulting program will be cleaner, if not shorter. But you'll have to weigh the benefits against the compromise in speed - specially when handling large and complex data stores. Remember, all ORMS - no matter how thin they are - will always be just another abstraction layer. They still have to pass the work to the underlying SQL engines.
 
@@ -1292,13 +1292,13 @@ Your application code becomes simple because it does not have to maintain two ma
 
 Tip:Use the tools as they're designed for. Fat-Free already has an easy-to-use SQL helper. Use it if you need a bigger hammer :) Try to seek a balance between convenience and performance. SQL will always be your fallback if you're working on complex and legacy data structures.
 
-## Plug-Ins ##
+## Plug-Ins
 
-### About F3 Plug-ins ###
+### About F3 Plug-ins
 
 Plug-ins are nothing more than autoloaded classes that use framework built-ins to extend F3's features and functionality. If you'd like to contribute, leave a note at the Fat-Free Discussion Area hosted by Google Groups or tell us about it in the FreeNode #fatfree IRC channel. Someone else might be involved in a similar project. The framework community will appreciate it a lot if we unify our efforts.
 
-### Grabbing Data from Another Site ###
+### Grabbing Data from Another Site
 
 We've covered almost every feature available in the framework to run a stand-alone Web server. For most applications, these features will serve you quite well. But what do you do if your application needs data from another Web server on the network? F3 has the Web plugin to help you in this situation:-
 
@@ -1338,13 +1338,13 @@ If the framework variable `CACHE` is enabled, and if the remote server instructs
 
 Fat-Free will use whatever means are available on your Web server for the `request()` method to run: PHP stream wrappers (`allow_url_fopen`), cURL module, or low-level sockets.
 
-### Remoting and Distributed Applications ###
+### Remoting and Distributed Applications
 
 The `request()` method can also be used in complex SOAP or XML-RPC applications, if you find the need for another Web server to process data on your computer's behalf - thus harnessing the power of distributing computing. W3Schools.com has an excellent tutorial on SOAP. On the other hand, TutorialsPoint.com gives a nice overview of XML-RPC.
 
-## Optimization ##
+## Optimization
 
-### Cache Engine ###
+### Cache Engine
 
 Caching static Web pages - so the code in some route handlers can be skipped and templates don't have to be reprocessed - is one way of reducing your Web server's work load so it can focus on other tasks. You can activate the framework's cache engine by providing a third argument to the `$f3->route()` method. Just specify the number of seconds before a cached Web page expires:-
 
@@ -1392,7 +1392,7 @@ You can also use the cache engine to store your own variables. These variables w
 
 `$f3->set()` method's third argument instructs the framework to save the variable in the cache for a 90-second duration. If your application issues a `$f3->get('var')` within this period, F3 will automatically retrieve the value from cache. In like manner, `$f3->clear('var')` will purge the value from both cache and RAM. If you want to determine if a variable exists in cache, `$f3->exists('var')); returns one of two possible values: FALSE if the framework variable passed does not exist in cache, or an integer representing the time the variable was saved (Un*x time in seconds, with microsecond precision).
 
-### Keeping Javascript and CSS on a Healthy Diet ###
+### Keeping Javascript and CSS on a Healthy Diet
 
 Fat-Free also has a Javascript and CSS compressor available in the Web plug-in. It can combine all your CSS files into one stylesheet (or Javascript files into a single script) so the number of components on a Web page are decreased. Reducing the number of HTTP requests to your Web server results in faster page loading. First you need to prepare your HTML template so it can take advantage of this feature. Something like:-
 
@@ -1418,17 +1418,17 @@ And that's all there is to it! `minify()` reads each file (`typo.css` and `grid.
 
 Note: Like other Javascript/CSS compression engines, Fat-Free will not go to the trouble of compressing CSS files defined by the `@import` directive.
 
-### Client-Side Caching ###
+### Client-Side Caching
 
 In our examples, the framework sends a far-future expiry date to the client's Web browser so any request for the same CSS or Javascript block will come from the user's hard drive. On the server side, F3 will check each request and see if the CSS or Javascript blocks have already been cached. The route we specified has a cache refresh period of `3600` seconds. Additionally, if the Web browser sends an `If-Modified-Since` request header and the framework sees the cache hasn't changed, F3 just sends an `HTTP 304 Not Modified` response so no content is actually delivered. Without the `If-Modified-Since` header, Fat-Free renders the output from the cached file if available. Otherwise, the relevant code is executed.
 
 Tip: If you're not modifying your Javascript/CSS files frequently (as it would be if you're using a Javascript library like jQuery, MooTools, Dojo, etc.), consider adding a cache timer to the route leading to your Javascript/CSS minify handler (3rd argument of F3::route()) so Fat-Free doesn't have compress and combine these files each time such a request is received.
 
-### PHP Code Acceleration ###
+### PHP Code Acceleration
 
 Want to make your site run even faster? Fat-Free works best with either Alternative PHP Cache (APC), XCache, or WinCache. These PHP extensions boost performance of your application by optimizing your PHP scripts (including the framework code).
 
-### Bandwidth Throttling ###
+### Bandwidth Throttling
 
 A fast application that processes all HTTP requests and responds to them at the shortest time possible is not always a good idea - specially if your bandwidth is limited or traffic on your Web site is particularly heavy. Serving pages ASAP also makes your application vulnerable to Denial-of-Service (DOS) attacks. F3 has a bandwidth throttling feature that allows you to control how fast your Web pages are served. Your can specifies how much time it should take to process a request:-
 
@@ -1438,7 +1438,7 @@ In this example, the framework will serve the Web page at a rate of 128KiBps.
 
 Bandwidth throttling at the application level can be particularly useful for login pages. Slow responses to dictionary attacks is a good way of mitigating this kind of security risk.
 
-### Handling File Downloads ###
+### Handling File Downloads
 
 F3 has a utility for sending files to an HTTP client, i.e. fulfilling download requests. You can use it to hide the real path to your download files. This adds some layer of security because users won't be able to download files if they don't know the file names and their locations. Here's how it's done:-
 
@@ -1451,9 +1451,9 @@ F3 has a utility for sending files to an HTTP client, i.e. fulfilling download r
         }
     );
 
-## Unit Testing ##
+## Unit Testing
 
-### Bullet-Proof Code ###
+### Bullet-Proof Code
 
 Robust applications are the result of comprehensive testing. Verifying that each part of your program conforms to the specifications and lives up to the expectations of the end-user means finding bugs and fixing them as early as possible in the application development cycle.
 
@@ -1512,7 +1512,7 @@ Save it in a file called `hello.php`. Now how do we know it really runs as expec
 
 Save it in a file called `test.php`. This way we can preserve the integrity of `hello.php`.
 
-### Expecting the Worst that can Happen ###
+### Expecting the Worst that can Happen
 
 Now here's the meat of our unit testing process.
 
@@ -1522,9 +1522,9 @@ Fat-Free gives you the freedom to display test results in any way you want. You 
 
 Once you get the hang of testing the smallest units of your application, you can then move on to the bigger components, modules, and subsystems - checking along the way if the parts are correctly communicating with each other. Testing manageable chunks of code leads to more reliable programs that work as you expect, and weaves the testing process into the fabric of your development cycle. The question to ask yourself is:- Have I tested all possible scenarios? More often than not, those situations that have not been taken into consideration are the likely causes of bugs. Unit testing helps a lot in minimizing these occurrences. Even a few tests on each fixture can greatly reduce headaches. On the other hand, writing applications without unit testing at all invites trouble.
 
-## Quick Reference ##
+## Quick Reference
 
-### System Variables ###
+### System Variables
 
 `string AUTOLOAD`
 > Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
@@ -1625,7 +1625,7 @@ Once you get the hang of testing the smallest units of your application, you can
 `string VERSION`
 >Framework version.
 
-### Template Directives ###
+### Template Directives
 
 `@token`
 >Replace `@token` with value of equivalent F3 variable.
@@ -1667,15 +1667,15 @@ text-block
 `{{* text-block *}}`
 >Alias for `<exclude>`.
 
-### API Documentation ###
+### API Documentation
 
 The framework API documentation is contained in `lib/api.chm` of the distribution package. F3 uses [Doxygen](http://www.stack.nl/~dimitri/doxygen/) to generate output in compiled HTML format. You need a CHM reader to view its tree-structured contents. For Mac users, there's [Chmox](http://chmox.sourceforge.net/) and [iChm](http://code.google.com/p/ichm/). Linux users have more choices: [xCHM](http://xchm.sourceforge.net/), [GnoCHM](http://gnochm.sourceforge.net/), [ChmSee](http://code.google.com/p/chmsee/), and [Kchmviewer](http://www.ulduzsoft.com/linux/kchmviewer/). Windows supports `.chm` files right out of the box.
 
-## Support and Licensing ##
+## Support and Licensing
 
 Technical support is available at: [https://groups.google.com/forum/#!forum/f3-framework](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit ][http://webchat.freenode.net/](http://webchat.freenode.net/) to join the conversation. You can also download the Firefox Chatzilla add-on if you don't have an IRC client so you can participate in the live chat.
 
-### Nightly Builds ###
+### Nightly Builds
 
 F3 uses Git for version control. To clone the Git code repository:-
 
@@ -1685,12 +1685,12 @@ If you just want a zipball instead, grab it here.
 
 To file a bug report, visit [https://github.com/bcosca/fatfree/issues](https://github.com/bcosca/fatfree/issues).
 
-### Fair Licensing ###
+### Fair Licensing
 
 Fat-Free Framework is free and released as open source software covered by the terms of the GNU Public License (GPL v3). You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a fee.
 If you feel that this software is one great weapon to have in your programming arsenal, it saves you a lot of time and money, use it for commercial gain or in your business organization, please consider making a donation to the project. A significant amount of time, effort, and money has been spent on this project. Your donations help keep this project alive and the development team motivated. Donors and sponsors get priority support (24-hour response time on business days).
 
-### Credits ###
+### Credits
 
 The Fat-Free Framework is community-driven software. It can't be what it is today without the help and support from the following people and organizations:
 
