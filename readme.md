@@ -2,7 +2,7 @@
 
 *A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!*
 
-Condensed in a single 48KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, support for multilingual applications, and unit testing tools. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
+Condensed in a single 48KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
 
 Whether you're a novice or an expert PHP programmer, F3 will get you up and running in no time. No unnecessary and painstaking installation procedures. No complex configuration required. No convoluted directory structures. There's no better time to start developing Web applications the easy way than right now!
 
@@ -11,6 +11,7 @@ F3 supports both SQL and NoSQL databases off-the-shelf: MySQL, SQLite, MSSQL/Syb
 That's not all. F3 is packaged with other optional plug-ins that extend its capabilities:-
 
 * Fast and clean template engine,
+* Unit testing toolkit,
 * Atom/RSS feed reader,
 * Image handler,
 * On-the-fly Javascript/CSS compressor,
@@ -1744,6 +1745,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Tecnilógica
 * Alan Holding
 * Mirosystems
+* Aurélien Botermans
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 

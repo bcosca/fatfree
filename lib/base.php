@@ -901,6 +901,7 @@ class Base {
 
 	/**
 		Configure framework according to INI-style file settings
+		@return NULL
 		@param $file string
 	**/
 	function config($file) {
@@ -1878,10 +1879,25 @@ class Lexicon {
 	**/
 	function load() {
 		$out=array();
-		foreach ($this->languages as $language)
-			if (is_file($file=strtolower($this->folder.$language).'.php') &&
+		foreach ($this->languages as $language) {
+			$base=strtolower($this->folder.$language);
+			if (is_file($file=$base.'.php') &&
 				is_array($dict=require($file)))
 				$out+=$dict;
+			elseif (is_file($file=$base.'.ini')) {
+				preg_match_all(
+					'/(?<=^|\n)'.
+					'(?:(?:;[^\n]+)|'.
+					'(.+?)[[:blank:]]*=[[:blank:]]*'.
+					'((?:\\\\[[:blank:]]*\n|[^\n])*))'.
+					'(?=\n|$)/',
+					Base::instance()->read($file),$matches,PREG_SET_ORDER);
+				if ($matches)
+					foreach ($matches as $match)
+						if (isset($match[1]))
+							$out+=array($match[1]=>$match[2]);
+			}
+		}
 		return $out;
 	}
 
