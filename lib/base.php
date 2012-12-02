@@ -1894,8 +1894,11 @@ class Lexicon {
 					Base::instance()->read($file),$matches,PREG_SET_ORDER);
 				if ($matches)
 					foreach ($matches as $match)
-						if (isset($match[1]))
-							$out+=array($match[1]=>$match[2]);
+						if (isset($match[1])) {
+							var_dump($match);
+							$out+=array($match[1]=>preg_replace(
+								'/\\\\[[:blank:]]*\n/','',$match[2]));
+						}
 			}
 		}
 		return $out;
