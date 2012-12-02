@@ -713,12 +713,12 @@ The framework allows unlimited nesting of `<repeat>` blocks:-
 
     <repeat group="{{ @div }}" key="{{ @ikey }}" value="{{ @idiv }}">
         <div>
-        <p><span><b>{{ @ikey }}</b></span></p>
-        <p>
-        <repeat group="{{ @idiv }}" value="{{ @ispan }}">
-            <span>{{ @ispan }}</span>
-        </repeat>
-        </p>
+            <p><span><b>{{ @ikey }}</b></span></p>
+            <p>
+            <repeat group="{{ @idiv }}" value="{{ @ispan }}">
+                <span>{{ @ispan }}</span>
+            </repeat>
+            </p>
         </div>
     </repeat>
 
@@ -726,8 +726,8 @@ Apply the following F3 command:-
 
     $f3->set('div',
         array(
-        'coffee'=>array('arabica','barako','liberica','kopiluwak'),
-        'tea'=>array('darjeeling','pekoe','samovar')
+            'coffee'=>array('arabica','barako','liberica','kopiluwak'),
+            'tea'=>array('darjeeling','pekoe','samovar')
         )
     );
 
@@ -736,19 +736,19 @@ As a result, you get the following HTML fragment:-
     <div>
         <p><span><b>coffee</b></span></p>
         <p>
-			<span>arabica</span>
-			<span>barako</span>
-			<span>liberica</span>
-			<span>kopiluwak</span>
-			</p>
+            <span>arabica</span>
+            <span>barako</span>
+            <span>liberica</span>
+            <span>kopiluwak</span>
+        <p>
     </div>
     <div>
         <p><span><b>tea</b></span></p>
         <p>
-			<span>darjeeling</span>
-			<span>pekoe</span>
-			<span>samovar</span>
-			</p>
+            <span>darjeeling</span>
+            <span>pekoe</span>
+            <span>samovar</span>
+        </p>
     </div>
 
 Amazing, isn't it? And the only thing you had to do in PHP was to define the contents of a single F3 variable `div` to replace the `@div` token. Fat-Free makes both programming and Web template design really easy.
@@ -777,7 +777,7 @@ Embedding template directives inside your `<script>` or `<style>` tags requires 
 
     <script type="text/javascript">
         <repeat group="{{ @rates }}" value="{{ @rate }}">
-        // whatever you want to repeat in Javascript
+            // whatever you want to repeat in Javascript
         </repeat>
     </script>
 
@@ -962,9 +962,9 @@ Here's another example. Instead of a single statement provided as an argument to
 
     $db->exec(
         array(
-        'DELETE FROM ...',
-        'INSERT INTO ...',
-        'SELECT ...'
+            'DELETE FROM ...',
+            'INSERT INTO ...',
+            'SELECT ...'
         )
     );
 
@@ -1030,7 +1030,7 @@ Back to SQL. First, we establish communication with our database.
 To retrieve a record from our table:-
 
     $user=new DB\SQL\Mapper($db,'users');
-    $user->load('userID=?','tarzan');
+    $user->load(array('userID=?','tarzan'));
 
 The first line instantiates a data mapper object that interacts with the `users` table in our database. Behind the scene, F3 retrieves the structure of the `users` table and determines which field(s) are defined as primary key(s). At this point, the mapper object contains no data yet (dry state) so `$user` is nothing more than a structured object - but it contains the methods it needs to perform the basic CRUD operations and some extras. To retrieve a record from our users table with a `userID` field containing the string value `tarzan`, we use the `load() method`. This process is called "auto-hydrating" the data mapper object.
 
@@ -1075,7 +1075,7 @@ Although the issue of having primary keys in all tables in your database is argu
 To remove a mapped record from our table, invoke the `erase()` method on an auto-hydrated data mapper. For example:-
 
     $user=new DB\SQL\Mapper($db,'users');
-    $user->load('userID=?','cheetah');
+    $user->load(array('userID=?','cheetah'));
     $user->erase();
 
 The MongoDB equivalent would be:-
@@ -1105,7 +1105,7 @@ The copyFrom() method hydrates the mapper object with elements from a framework 
 On the other hand, if we wanted to retrieve a record and copy the field values to a framework variable for later use, like template rendering:-
 
     $f3->set('user',new DB\SQL\Mapper($db,'users'));
-    $f3->get('user')->load('userID=?','jane');
+    $f3->get('user')->load(array('userID=?','jane'));
     $f3->get('user')->copyTo('POST');
 
 We can then assign {{ @POST.userID }} to the same input field's value attribute. To sum up, the HTML input field will look like this:-
@@ -1138,9 +1138,9 @@ Use the `dry()` method to check if you've maneuvered beyond the limits of the re
 
 The `load()` method accepts a second argument: an array of options containing key-value pairs such as:-
 
-    $user->load('visits>3',array('order'=>'userID'));
+    $user->load(array('visits>?',3),array('order'=>'userID DESC'));
     // which translates to the SQL command:
-    // SELECT * FROM users WHERE visits>3 ORDER BY userID;
+    // SELECT * FROM users WHERE visits>3 ORDER BY userID DESC;
 
 ### Virtual Fields
 
@@ -1297,7 +1297,7 @@ Consider this SQL view created inside your database engine:-
 Your application code becomes simple because it does not have to maintain two mapper objects (one for the projects table and another for users) just to retrieve data from two joined tables:-
 
     $combined=new DB\SQL\Mapper($db,'combined');
-    $combined->load('project=123');
+    $combined->load(array('project=?',123));
     echo $combined->name;
 
 Tip:Use the tools as they're designed for. Fat-Free already has an easy-to-use SQL helper. Use it if you need a bigger hammer :) Try to seek a balance between convenience and performance. SQL will always be your fallback if you're working on complex and legacy data structures.
