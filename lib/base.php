@@ -1154,8 +1154,7 @@ class Base {
 			'ROUTES'=>array(),
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'default',
 			'TEMP'=>'tmp/',
-			'TIME'=>microtime(TRUE)-
-				(function_exists('xdebug_time_index')?xdebug_time_index():0),
+			'TIME'=>microtime(TRUE),
 			'TZ'=>date_default_timezone_get(),
 			'UI'=>'./',
 			'UNLOAD'=>NULL,

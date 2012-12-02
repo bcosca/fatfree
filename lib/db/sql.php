@@ -237,11 +237,19 @@ class SQL extends \PDO {
 	}
 
 	/**
-		Return database engine in use
+		Return database engine
 		@return string
 	**/
 	function driver() {
 		return $this->engine;
+	}
+
+	/**
+		Return database name
+		@return string
+	**/
+	function name() {
+		return $this->dbname;
 	}
 
 	/**

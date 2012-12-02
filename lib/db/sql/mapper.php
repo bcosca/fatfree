@@ -420,3 +420,102 @@ class Mapper extends \DB\Cursor {
 	}
 
 }
+
+//! Custom session handler
+class Session extends Mapper {
+
+	/**
+		Open session
+		@return TRUE
+		@param $path string
+		@param $name string
+	**/
+	function open($path,$name) {
+		return TRUE;
+	}
+
+	/**
+		Close session
+		@return TRUE
+	**/
+	function close() {
+		return TRUE;
+	}
+
+	/**
+		Return session data in serialized format
+		@return string|FALSE
+		@param $id string
+	**/
+	function read($id) {
+		$this->load(array('session_id=?',$id));
+		return $this->dry()?FALSE:$this->get('data');
+	}
+
+	/**
+		Write session data
+		@return TRUE
+		@param $id string
+		@param $data string
+	**/
+	function write($id,$data) {
+		$this->load(array('session_id=?',$id));
+		$this->set('session_id',$id);
+		$this->set('data',$data);
+		$this->set('stamp',time());
+		$this->save();
+		return TRUE;
+	}
+
+	/**
+		Destroy session
+		@return TRUE
+		@param $id string
+	**/
+	function destroy($id) {
+		$this->erase(array('session_id=?',$id));
+		return TRUE;
+	}
+
+	/**
+		Garbage collector
+		@return TRUE
+		@param $max int
+	**/
+	function cleanup($max) {
+		$this->erase('stamp+'.$max.'<'.time());
+		return TRUE;
+	}
+
+	/**
+		Instantiate class
+		@param $db object
+		@param $table string
+	**/
+	function __construct(\DB\SQL $db,$table='sessions') {
+		$db->exec(
+			'CREATE TABLE IF NOT EXISTS '.
+				(($name=$db->name())?($name.'.'):'').$table.' ('.
+				'session_id VARCHAR(40),'.
+				'data TEXT,'.
+				'stamp INTEGER,'.
+				'PRIMARY KEY(session_id)'.
+			');'
+		);
+		parent::__construct($db,'sessions');
+		session_set_save_handler(
+			array($this,'open'),
+			array($this,'close'),
+			array($this,'read'),
+			array($this,'write'),
+			array($this,'destroy'),
+			array($this,'cleanup')
+		);
+	}
+
+	//! Wrap-up
+	function __destruct() {
+		session_commit();
+	}
+
+}
