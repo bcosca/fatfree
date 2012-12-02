@@ -12,7 +12,6 @@ class F3 {
 		@return mixed
 		@param $func callback
 		@param $args array
-		@internal
 	**/
 	static function __callstatic($func,array $args) {
 		if (!self::$fw)
