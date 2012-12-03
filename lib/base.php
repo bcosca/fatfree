@@ -712,12 +712,11 @@ class Base {
 		@param $class string
 		@param $ttl int
 		@param $kbps int
-		@param $prefix string
 	**/
-	function map($url,$class,$ttl=0,$kbps=0,$prefix='') {
+	function map($url,$class,$ttl=0,$kbps=0) {
 		foreach (explode('|',self::VERBS) as $method)
 			$this->route(
-				$method.' '.$url,$class.'->'.strtolower($prefix.$method),
+				$method.' '.$url,$class.'->'.strtolower($method),
 				$ttl,$kbps);
 	}
 
