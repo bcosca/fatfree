@@ -124,10 +124,12 @@ class SMTP extends Magic {
 
 	/**
 		Transmit message
-		@return NULL
+		@return bool
 		@param $message string
 	**/
 	function send($message) {
+		if ($this->scheme=='ssl' && !extension_loaded('openssl'))
+			return FALSE;
 		$fw=Base::instance();
 		// Connect to the server
 		$socket=&$this->socket;
@@ -142,7 +144,7 @@ class SMTP extends Magic {
 		$this->log=str_replace("\r",'',fgets($socket,4096));
 		// Indicate presence
 		$this->dialog('EHLO '.$_SERVER['SERVER_NAME'],TRUE);
-		if (strtoupper($this->scheme)=='TLS') {
+		if (strtoupper($this->scheme)=='tls') {
 			$this->dialog('STARTTLS',TRUE);
 			stream_socket_enable_crypto(
 				$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
@@ -225,6 +227,7 @@ class SMTP extends Magic {
 		$this->dialog('QUIT',TRUE);
 		if ($socket)
 			fclose($socket);
+		return TRUE;
 	}
 
 	/**
@@ -243,7 +246,7 @@ class SMTP extends Magic {
 			'Content-Transfer-Encoding'=>'8bit'
 		);
 		$this->host=$host;
-		if (strtoupper($this->scheme=$scheme)=='SSL')
+		if (strtoupper($this->scheme=strtolower($scheme))=='ssl')
 			$this->host='ssl://'.$host;
 		$this->port=$port;
 		$this->user=$user;

@@ -162,7 +162,7 @@ class Web {
 		Submit HTTP request; Use HTTP context options (described in
 		http://www.php.net/manual/en/context.http.php) if specified;
 		Cache the page as instructed by remote server
-		@return array
+		@return array|FALSE
 		@param $url string
 		@param $options array
 	**/
@@ -199,6 +199,8 @@ class Web {
 					$options['header']+=array('If-Modified-Since: '.$mod[1]);
 			}
 		}
+		if ($parts['scheme']=='https' && !extension_loaded('openssl'))
+			return FALSE;
 		if (ini_get('allow_url_fopen')) {
 			// Use stream wrapper
 			$options['header']=implode($eol,$options['header']);
