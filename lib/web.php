@@ -199,23 +199,7 @@ class Web {
 					$options['header']+=array('If-Modified-Since: '.$mod[1]);
 			}
 		}
-		if ($parts['scheme']=='https' && !extension_loaded('openssl'))
-			return FALSE;
-		if (ini_get('allow_url_fopen')) {
-			// Use stream wrapper
-			$options['header']=implode($eol,$options['header']);
-			$out=file_get_contents($url,FALSE,
-				stream_context_create(array('http'=>$options)));
-			if (!$out)
-				return FALSE;
-			$result=array(
-				'body'=>$out,
-				'headers'=>$http_response_header,
-				'engine'=>'stream-wrapper',
-				'cached'=>FALSE
-			);
-		}
-		elseif (extension_loaded('curl')) {
+		if (extension_loaded('curl')) {
 			// Use cURL extension
 			$curl=curl_init($url);
 			curl_setopt($curl,CURLOPT_FOLLOWLOCATION,
@@ -247,6 +231,23 @@ class Web {
 				'body'=>ob_get_clean(),
 				'headers'=>$headers,
 				'engine'=>'cURL',
+				'cached'=>FALSE
+			);
+		}
+		elseif ($parts['scheme']=='https' && !extension_loaded('openssl'))
+			// short-circuit
+			return FALSE;
+		elseif (ini_get('allow_url_fopen')) {
+			// Use stream wrapper
+			$options['header']=implode($eol,$options['header']);
+			$out=file_get_contents($url,FALSE,
+				stream_context_create(array('http'=>$options)));
+			if (!$out)
+				return FALSE;
+			$result=array(
+				'body'=>$out,
+				'headers'=>$http_response_header,
+				'engine'=>'stream-wrapper',
 				'cached'=>FALSE
 			);
 		}
