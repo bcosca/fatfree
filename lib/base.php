@@ -61,9 +61,7 @@ class Base {
 
 	//@{ Error messages
 	const
-		E_Apache='Apache rewrite_module is disabled',
 		E_Pattern='Invalid routing pattern: %s',
-		E_PCRE='Outdated PCRE library version',
 		E_Fatal='Fatal error: %s',
 		E_Open='Unable to open %s',
 		E_Routes='No routes specified',
@@ -1156,13 +1154,6 @@ class Base {
 			'VERB'=>&$_SERVER['REQUEST_METHOD'],
 			'VERSION'=>self::VERSION
 		);
-		if ((float)strstr(PCRE_VERSION,' ',TRUE)<7.9)
-			// Outdated PCRE version
-			trigger_error(self::E_PCRE);
-		if (function_exists('apache_get_modules') &&
-			!in_array('mod_rewrite',apache_get_modules()))
-			// Apache mod_rewrite disabled
-			trigger_error(self::E_Apache);
 		if (ini_get('auto_globals_jit'))
 			// Override setting
 			$GLOBALS+=array('_ENV'=>$_ENV,'_REQUEST'=>$_REQUEST);
