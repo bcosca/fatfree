@@ -7,7 +7,9 @@ class Template extends View {
 		//! MIME type
 		$mime,
 		//! Template tags
-		$tags='set|include|exclude|loop|repeat|check|true|false';
+		$tags='set|include|exclude|loop|repeat|check|true|false',
+		//! Custom tag handlers
+		$custom=array();
 
 	/**
 		Convert token to variable
@@ -187,6 +189,29 @@ class Template extends View {
 		foreach ($node as $key=>$val)
 			$out.=is_int($key)?$this->build($val):$this->{'_'.$key}($val);
 		return $out;
+	}
+
+	/**
+		Extend template with custom tag
+		@return NULL
+		@param $tag string
+		@param $func callback
+	**/
+	function extend($tag,$func) {
+		$this->tags.='|'.$tag;
+		$this->custom['_'.$tag]=$func;
+	}
+
+	/**
+		Call custom tag handler
+		@return string|FALSE
+		@param $func callback
+		@param $args array
+	**/
+	function __call($func,array $args) {
+		return ($func[0]=='_')?
+			call_user_func_array($this->custom[$func],$args):
+			FALSE;
 	}
 
 	/**

@@ -222,6 +222,16 @@ class Template extends Controller {
 					'email@address.com',
 			'<set>'
 		);
+		$tpl->extend('foo',
+			function($node) use($f3) {
+				return $f3->stringify($node['@attrib']);
+			}
+		);
+		$test->expect(
+			$tpl->render('templates/test9.htm')==
+				'array(\'bar\'=>\'123\',\'baz\'=>\'abc\')',
+			'Custom tag'
+		);
 		$f3->set('results',$test->results());
 	}
 
