@@ -72,7 +72,7 @@ class SQL extends \PDO {
 	**/
 	function exec($cmds,$args=NULL,$ttl=0) {
 		$auto=FALSE;
-		if (!$args)
+		if (is_null($args))
 			$args=array();
 		elseif (!is_array($args))
 			$args=array(1=>$args);
