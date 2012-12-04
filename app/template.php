@@ -146,7 +146,7 @@ class Template extends Controller {
 			)
 		);
 		$test->expect(
-			preg_replace('/[\t\n]/','',
+			preg_replace('/[\t\r\n]/','',
 				$tpl->render('templates/test4.htm'))==
 				'<div>'.
 					'<p><span><b>coffee</b></span></p>'.
@@ -199,7 +199,7 @@ class Template extends Controller {
 		$f3->clear('cond1');
 		$f3->clear('cond2');
 		$test->expect(
-			preg_replace('/[\t\n]/','',
+			preg_replace('/[\t\r\n]/','',
 				$tpl->render('templates/test6.htm'))==
 					'<div>'.
 						'<p class="odd">1</p>'.
@@ -210,7 +210,7 @@ class Template extends Controller {
 			'<loop> with embedded <include>'
 		);
 		$test->expect(
-			preg_replace('/[\t\n]/','',
+			preg_replace('/[\t\r\n]/','',
 				$tpl->render('templates/test8.htm'))==
 					'<span>3</span>'.
 					'<span>6</span>'.
