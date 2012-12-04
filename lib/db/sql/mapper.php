@@ -44,8 +44,8 @@ class Mapper extends \DB\Cursor {
 			$val=eval('return ('.
 				$this->type($this->fields[$key]['type']).')'.
 				\Base::instance()->stringify($val).';');
-			$this->fields[$key]['changed']=
-				($this->fields[$key]['value']!=$val);
+			if ($this->fields[$key]['value']!==$val)
+				$this->fields[$key]['changed']=TRUE;
 			return $this->fields[$key]['value']=$val;
 		}
 		// Parenthesize expression in case it's a subquery
@@ -390,7 +390,7 @@ class Mapper extends \DB\Cursor {
 		foreach (\Base::instance()->get($key) as $key=>$val)
 			if (in_array($key,array_keys($this->fields))) {
 				$field=&$this->fields[$key];
-				if ($field['value']!=$val) {
+				if ($field['value']!==$val) {
 					$field['value']=$val;
 					$field['changed']=TRUE;
 				}
