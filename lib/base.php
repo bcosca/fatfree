@@ -82,19 +82,20 @@ class Base {
 		@param $add bool
 	**/
 	function &ref($key,$add=TRUE) {
-		if ($add)
-			$var=&$this->hive;
-		else
-			$var=$this->hive;
-		$obj=FALSE;
 		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)|\./',
 			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		if ($parts[0]=='SESSION' && !session_id()) {
 			call_user_func_array('session_set_cookie_params',
 				$this->hive['JAR']);
 			session_start();
+			// Sync SESSION
 			$this->hive['SESSION']=&$_SESSION;
 		}
+		if ($add)
+			$var=&$this->hive;
+		else
+			$var=$this->hive;
+		$obj=FALSE;
 		foreach ($parts as $part)
 			if ($part=='->')
 				$obj=TRUE;
