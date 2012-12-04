@@ -41,9 +41,10 @@ class Mapper extends \DB\Cursor {
 	**/
 	function set($key,$val) {
 		if (array_key_exists($key,$this->fields)) {
-			$val=eval('return ('.
-				$this->type($this->fields[$key]['type']).')'.
-				\Base::instance()->stringify($val).';');
+			if (!is_null($val))
+				$val=eval('return ('.
+					$this->type($this->fields[$key]['type']).')'.
+					\Base::instance()->stringify($val).';');
 			if ($this->fields[$key]['value']!==$val)
 				$this->fields[$key]['changed']=TRUE;
 			return $this->fields[$key]['value']=$val;
