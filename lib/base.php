@@ -427,7 +427,7 @@ class Base {
 		@param $str string
 	**/
 	function encode($str) {
-		return @htmlentities($str,ENT_COMPAT,$this->hive['ENCODING']);
+		return @htmlentities($str,ENT_COMPAT,$this->hive['ENCODING'],FALSE);
 	}
 
 	/**
