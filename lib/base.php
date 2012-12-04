@@ -895,17 +895,17 @@ class Base {
 	}
 
 	/**
-		Configure framework according to INI-style file settings
+		Configure framework according to .ini-style file settings
 		@return NULL
 		@param $file string
 	**/
 	function config($file) {
 		preg_match_all(
 			'/(?<=^|\n)'.
-			'(?:(?:;[^\n]+)|(?:\[(.+?)\])|'.
+			'(?:(?:;.+?)|(?:\[(.+?)\])|'.
 			'(.+?)[[:blank:]]*=[[:blank:]]*'.
-			'((?:\\\\[[:blank:]]*\n|[^\n])*))'.
-			'(?=\n|$)/',
+			'((?:\\\\[[:blank:]\r]*\n|.+?)*))'.
+			'(?=\r?\n|$)/',
 			$this->read($file),$matches,PREG_SET_ORDER);
 		if ($matches) {
 			$sec='globals';
@@ -930,7 +930,7 @@ class Base {
 									defined($val))
 									return constant($val);
 								return preg_replace(
-									'/\\\\[[:blank:]]*\n/','',$val);
+									'/\\\\[[:blank:]\r]*\n/','',$val);
 							},
 							str_getcsv(
 								// Mark quoted strings with 0x00 whitespace
@@ -1870,14 +1870,14 @@ class Lexicon {
 					'/(?<=^|\n)'.
 					'(?:(?:;[^\n]+)|'.
 					'(.+?)[[:blank:]]*=[[:blank:]]*'.
-					'((?:\\\\[[:blank:]]*\n|[^\n])*))'.
+					'((?:\\\\[[:blank:]\r]*\n|[^\n])*))'.
 					'(?=\n|$)/',
 					Base::instance()->read($file),$matches,PREG_SET_ORDER);
 				if ($matches)
 					foreach ($matches as $match)
 						if (isset($match[1]))
 							$out+=array($match[1]=>preg_replace(
-								'/\\\\[[:blank:]]*\n/','',$match[2]));
+								'/\\\\[[:blank:]\r]*\n/','',$match[2]));
 			}
 		}
 		return $out;
