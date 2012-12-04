@@ -74,12 +74,12 @@ class SQL extends \PDO {
 		$auto=FALSE;
 		if (is_null($args))
 			$args=array();
-		elseif (!is_array($args))
+		elseif (is_string($args))
 			$args=array(1=>$args);
 		if (is_array($cmds)) {
-			if (($count=count($cmds))!=count($args))
+			if (count($args)<($count=count($cmds)))
 				// Apply arguments to SQL commands
-				$args=array_fill(0,$count,array($args));
+				$args=array_fill(0,$count,$args);
 			if (!$this->trans) {
 				$this->begin();
 				$auto=TRUE;
