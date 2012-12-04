@@ -44,7 +44,7 @@ class Geo {
 			$out['region_code']=$out['region'];
 			$out['region_name']=geoip_region_name_by_code(
 				$out['country_code'],$out['region']);
-			unset($out['country_code3'],$out['postal_code']);
+			unset($out['country_code3'],$out['region'],$out['postal_code']);
 			return $out;
 		}
 		if (($req=$web->request('http://www.geoplugin.net/json.gp'.
