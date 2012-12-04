@@ -923,7 +923,7 @@ class Base {
 					else {
 						$args=array_map(
 							function($val) {
-								$quote=($val[0]=="\x00");
+								$quote=(isset($val[0]) && $val[0]=="\x00");
 								$val=trim($val);
 								if (!$quote && is_numeric($val))
 									return $val+0;
