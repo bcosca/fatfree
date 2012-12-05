@@ -1148,9 +1148,19 @@ Use the `dry()` method to check if you've maneuvered beyond the limits of the re
 
 The `load()` method accepts a second argument: an array of options containing key-value pairs such as:-
 
-    $user->load(array('visits>?',3),array('order'=>'userID DESC'));
-    // which translates to the SQL command:
-    // SELECT * FROM users WHERE visits>3 ORDER BY userID DESC;
+    $user->load(
+		array('visits>?',3),
+		array(
+			'order'=>'userID DESC'
+			'offset'=>5,
+			'limit'=>3
+		)
+	);
+    // If you're using MySQL, the query translates to:
+    // SELECT * FROM users
+    // WHERE visits>3
+    // ORDER BY userID DESC
+    // LIMIT 3 OFFSET 5;
 
 ### Virtual Fields
 
@@ -1171,7 +1181,7 @@ No `totalprice` field exists, so we can tell the framework to request from the d
 
     $item=new DB\SQL\Mapper($db,'products');
     $item->totalprice='unitprice*quantity';
-    $item->load(array('productID=:pid',array(':pid'=>'apple')));
+    $item->load(array('productID=:pid',':pid'=>'apple'));
     echo $item->totalprice;
 
 The above code snippet defines a virtual field called `totalprice` which is computed by multiplying `unitprice` by the `quantity`. The SQL mapper saves that rule/formula, so when the time comes to retrieve the record from the database, we can use the virtual field like a regular mapped field.
