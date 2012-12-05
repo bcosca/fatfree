@@ -133,8 +133,15 @@ class Web {
 				else
 					$item=array($item);
 				foreach ($item as $file) {
+					if (empty($file['name']))
+						return FALSE;
 					$base=basename($file['name']);
-					$dest=$dir.($slug?$this->slug($base):$base);
+					if ($slug) {
+						preg_match('/(.+?)(\.\w+)?$/',$base,$parts);
+						$dest=$dir.$this->slug($parts[1]).$parts[2];
+					}
+					else
+						$dest=$dir.$base;
 					if ($file['error'] ||
 						$file['type']!=$this->mime($file['name']) ||
 						$overwrite && file_exists($dest) ||
