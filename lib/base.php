@@ -1863,8 +1863,9 @@ class Lexicon {
 	function load() {
 		$out=array();
 		foreach ($this->languages as $language) {
-			$base=strtolower($this->folder.$language);
-			if (is_file($file=$base.'.php') &&
+			$base=$this->folder.$language;
+			if ((is_file($file=$base.'.php') ||
+				is_file($file=strtolower($base).'.php')) &&
 				is_array($dict=require($file)))
 				$out+=$dict;
 			elseif (is_file($file=$base.'.ini')) {
