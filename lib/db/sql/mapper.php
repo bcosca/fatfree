@@ -168,8 +168,12 @@ class Mapper extends \DB\Cursor {
 		$sql='SELECT '.$fields.' FROM '.$this->table;
 		$args=array();
 		if ($filter) {
-			if (is_array($filter))
-				list($filter,$params)=$filter;
+			if (is_array($filter)) {
+				$params=isset($filter[1]) && is_array($filter[1])?
+					$filter[1]:
+					array_slice($filter,1,NULL,TRUE);
+				list($filter)=$filter;
+			}
 			$args+=is_array($params)?$params:array(1=>$params);
 			$sql.=' WHERE '.$filter;
 		}
@@ -343,8 +347,12 @@ class Mapper extends \DB\Cursor {
 	**/
 	function erase($filter=NULL) {
 		if ($filter) {
-			if (is_array($filter))
-				list($filter,$params)=$filter;
+			if (is_array($filter)) {
+				$params=isset($filter[1]) && is_array($filter[1])?
+					$filter[1]:
+					array_slice($filter,1,NULL,TRUE);
+				list($filter)=$filter;
+			}
 			$args=is_array($params)?$params:array(1=>$params);
 			return $this->db->
 				exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
