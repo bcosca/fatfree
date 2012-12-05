@@ -85,8 +85,6 @@ class Base {
 		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)|\./',
 			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		if ($parts[0]=='SESSION' && !session_id()) {
-			call_user_func_array('session_set_cookie_params',
-				$this->hive['JAR']);
 			session_start();
 			// Sync SESSION
 			$this->hive['SESSION']=&$_SESSION;
@@ -151,29 +149,32 @@ class Base {
 		@param $ttl int
 	**/
 	function set($key,$val,$ttl=0) {
-		switch ($key) {
-			case 'CACHE':
-				$val=Cache::instance()->load($val);
-				break;
-			case 'ENCODING':
-				$val=ini_set('default_charset',$val);
-				break;
-			case 'LANGUAGE':
-				$lex=Lexicon::instance();
-				$val=$lex->language($val);
-				foreach ($lex->load()?:array() as $key=>$str)
-					$this->set($key,$str);
-				break;
-			case 'LOCALES':
-				$lex=Lexicon::instance();
-				$val=$lex->locales($val);
-				foreach ($lex->load()?:array() as $key=>$str)
-					$this->set($key,$str);
-				break;
-			case 'TZ':
-				date_default_timezone_set($val);
-				break;
-		}
+		if (preg_match('/^JAR\b/',$key))
+			call_user_func_array('session_set_cookie_params',$val);
+		else
+			switch ($key) {
+				case 'CACHE':
+					$val=Cache::instance()->load($val);
+					break;
+				case 'ENCODING':
+					$val=ini_set('default_charset',$val);
+					break;
+				case 'LANGUAGE':
+					$lex=Lexicon::instance();
+					$val=$lex->language($val);
+					foreach ($lex->load()?:array() as $key=>$str)
+						$this->set($key,$str);
+					break;
+				case 'LOCALES':
+					$lex=Lexicon::instance();
+					$val=$lex->locales($val);
+					foreach ($lex->load()?:array() as $key=>$str)
+						$this->set($key,$str);
+					break;
+				case 'TZ':
+					date_default_timezone_set($val);
+					break;
+			}
 		$ref=&$this->ref($key);
 		$ref=$val;
 		if ($ttl)
@@ -1109,6 +1110,18 @@ class Base {
 		$base=implode('/',array_map('urlencode',
 			explode('/',$this->fixslashes(
 			preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME'])))));
+		call_user_func_array('session_set_cookie_params',
+			$jar=array(
+				'expire'=>0,
+				'path'=>$base?:'/',
+				'domain'=>isset($_SERVER['SERVER_NAME']) &&
+					is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
+					!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
+					$_SERVER['SERVER_NAME']:'',
+				'secure'=>($scheme=='https'),
+				'httponly'=>TRUE
+			)
+		);
 		// Default configuration
 		$this->hive=array(
 			'AUTOLOAD'=>'./',
@@ -1121,16 +1134,7 @@ class Base {
 			'ENCODING'=>$charset,
 			'ERROR'=>NULL,
 			'ESCAPE'=>TRUE,
-			'JAR'=>array(
-				'expire'=>0,
-				'path'=>$base?:'/',
-				'domain'=>isset($_SERVER['SERVER_NAME']) &&
-					is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
-					!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
-					$_SERVER['SERVER_NAME']:'',
-				'secure'=>($scheme=='https'),
-				'httponly'=>TRUE
-			),
+			'JAR'=>$jar,
 			'LANGUAGE'=>Lexicon::instance()->language(),
 			'LOCALES'=>'./',
 			'LOGS'=>'./',
