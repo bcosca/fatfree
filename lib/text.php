@@ -1,7 +1,7 @@
 <?php
 
 //! Text manipulation tools
-class Text {
+class Text extends Prefab {
 
 	/**
 		Convert snakecase string to camelcase
@@ -187,21 +187,6 @@ class Text {
 				$out.=implode($delim,$val['a']).$delim;
 		}
 		return rtrim($out,$delim);
-	}
-
-	/**
-		Return class instance
-		@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=__CLASS__))
-			Registry::set($class,$self=new $class);
-		return Registry::get($class);
-	}
-
-	//! Wrap-up
-	function __destruct() {
-		Registry::clear(__CLASS__);
 	}
 
 }

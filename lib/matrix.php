@@ -1,7 +1,7 @@
 <?php
 
 //! Generic array utilities
-class Matrix {
+class Matrix extends Prefab {
 
 	/**
 		Retrieve values from a specified column of a multi-dimensional
@@ -66,21 +66,6 @@ class Matrix {
 		$vals=array_values($var);
 		$keys[array_search($old,$keys)]=$new;
 		$var=array_combine($keys,$vals);
-	}
-
-	/**
-		Return class instance
-		@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=__CLASS__))
-			Registry::set($class,$self=new $class);
-		return Registry::get($class);
-	}
-
-	//! Wrap-up
-	function __destruct() {
-		Registry::clear(__CLASS__);
 	}
 
 }

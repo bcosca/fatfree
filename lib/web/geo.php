@@ -3,7 +3,7 @@
 namespace Web;
 
 //! Geo plugin
-class Geo {
+class Geo extends \Prefab {
 
 	/**
 		Return information about specified Unix time zone
@@ -61,18 +61,4 @@ class Geo {
 		return FALSE;
 	}
 
-	/**
-		Instantiate class
-		@return $obj
-	**/
-	static function instance() {
-		if (!\Registry::exists($class=__CLASS__))
-			\Registry::set($class,$self=new $class);
-		return \Registry::get($class);
-	}
-
-	//! Wrap-up
-	function __destruct() {
-		\Registry::clear(__CLASS__);
-	}
 }

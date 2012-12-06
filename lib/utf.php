@@ -1,7 +1,7 @@
 <?php
 
 //! Unicode string manager
-class UTF {
+class UTF extends Prefab {
 
 	/**
 		Find position of first occurrence of a string (case-insensitive)
@@ -159,21 +159,6 @@ class UTF {
 	**/
 	function trim($str) {
 		return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u','',$str);
-	}
-
-	/**
-		Instantiate class
-		@return $obj
-	**/
-	static function instance() {
-		if (!Registry::exists($class=__CLASS__))
-			Registry::set($class,$self=new $class);
-		return Registry::get($class);
-	}
-
-	//! Wrap-up
-	function __destruct() {
-		Registry::clear(__CLASS__);
 	}
 
 }

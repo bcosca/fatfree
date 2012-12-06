@@ -1,7 +1,7 @@
 <?php
 
 //! Data validator
-class Audit {
+class Audit extends Prefab {
 
 	/**
 		Return TRUE if string is a valid URL
@@ -71,21 +71,6 @@ class Audit {
 		return (bool)filter_var($addr,FILTER_VALIDATE_IP,
 			FILTER_FLAG_IPV4|FILTER_FLAG_IPV6|
 			FILTER_FLAG_NO_PRIV_RANGE|FILTER_FLAG_NO_RES_RANGE);
-	}
-
-	/**
-		Instantiate class
-		@return $obj
-	**/
-	static function instance() {
-		if (!Registry::exists($class=get_called_class()))
-			Registry::set($class,$self=new $class);
-		return Registry::get($class);
-	}
-
-	//! Wrap-up
-	function __destruct() {
-		Registry::clear(get_called_class());
 	}
 
 }

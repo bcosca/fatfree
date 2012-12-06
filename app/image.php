@@ -14,7 +14,7 @@ class Image extends Controller {
 		$f3->set('file','images/south-park.jpg');
 		$img=new \Image($f3->get('file'));
 		$test->expect(
-			$orig=\View::instance()->render('image.htm','images/jpeg'),
+			$orig=\View::instance()->render('image.htm'),
 			'Original image rendered from template<br/>'.$orig
 		);
 		$test->expect(

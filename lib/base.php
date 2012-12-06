@@ -226,7 +226,7 @@ class Base {
 				session_start();
 				$this->sync('SESSION');
 			}
-			if (!count($parts)) {
+			if (!isset($parts[1])) {
 				session_unset();
 				session_destroy();
 			}
@@ -1343,8 +1343,28 @@ class Cache {
 
 }
 
+//! Prefab for classes with constructors and static factory methods
+abstract class Prefab {
+
+	/**
+		Return class instance
+		@return object
+	**/
+	static function instance() {
+		if (!Registry::exists($class=get_called_class()))
+			Registry::set($class,$self=new $class);
+		return Registry::get($class);
+	}
+
+	//! Wrap-up
+	function __destruct() {
+		Registry::clear(get_called_class());
+	}
+
+}
+
 //! View handler
-class View {
+class View extends Prefab {
 
 	protected
 		//! Template file
@@ -1386,25 +1406,10 @@ class View {
 		trigger_error(sprintf(Base::E_Open,$file));
 	}
 
-	/**
-		Return class instance
-		@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=get_called_class()))
-			Registry::set($class,$self=new $class);
-		return Registry::get($class);
-	}
-
-	//! Wrap-up
-	function __destruct() {
-		Registry::clear(get_called_class());
-	}
-
 }
 
 //! ISO language/country codes
-class ISO {
+class ISO extends Prefab {
 
 	//@{ ISO 3166-1 country codes
 	const
@@ -1765,21 +1770,6 @@ class ISO {
 			as $key=>$val)
 			$out[$key=substr(strstr($val,'_'),1)]=constant('self::CC_'.$key);
 		return $out;
-	}
-
-	/**
-		Return class instance
-		@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=get_called_class()))
-			Registry::set($class,$self=new $class);
-		return Registry::get($class);
-	}
-
-	//! Wrap-up
-	function __destruct() {
-		Registry::clear(get_called_class());
 	}
 
 }

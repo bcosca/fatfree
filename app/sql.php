@@ -176,6 +176,62 @@ class SQL extends Controller {
 			$movie->set('director','Rich Cowan');
 			$movie->set('year',2011);
 			$movie->save();
+			$movie->load(
+				array(
+					'title=? AND director=?',
+					'The River Murders',
+					'Rich Cowan'
+				)
+			);
+			$test->expect(
+				$movie->get('title')=='The River Murders' &&
+				$movie->get('director')=='Rich Cowan' &&
+				$movie->get('year')==2011,
+				'Parameterized query (positional)'
+			);
+			$movie->load(
+				array(
+					'title=? AND director=?',
+					array(
+						1=>'The River Murders',
+						2=>'Rich Cowan'
+					)
+				)
+			);
+			$test->expect(
+				$movie->get('title')=='The River Murders' &&
+				$movie->get('director')=='Rich Cowan' &&
+				$movie->get('year')==2011,
+				'Parameterized query (alternative positional)'
+			);
+			$movie->load(
+				array(
+					'title=:title AND director=:director',
+					':title'=>'The River Murders',
+					':director'=>'Rich Cowan'
+				)
+			);
+			$test->expect(
+				$movie->get('title')=='The River Murders' &&
+				$movie->get('director')=='Rich Cowan' &&
+				$movie->get('year')==2011,
+				'Parameterized query (named)'
+			);
+			$movie->load(
+				array(
+					'title=:title AND director=:director',
+					array(
+						':title'=>'The River Murders',
+						':director'=>'Rich Cowan'
+					)
+				)
+			);
+			$test->expect(
+				$movie->get('title')=='The River Murders' &&
+				$movie->get('director')=='Rich Cowan' &&
+				$movie->get('year')==2011,
+				'Parameterized query (alternative named)'
+			);
 			$movie->load();
 			$test->expect(
 				$db->count()==2 && $movie->count()==2,

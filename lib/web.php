@@ -1,7 +1,7 @@
 <?php
 
 //! Wrapper for various HTTP utilities
-class Web {
+class Web extends Prefab {
 
 	/**
 		Return TRUE if HTTP request originated from AJAX client
@@ -547,21 +547,6 @@ class Web {
 				'Ů'=>'U','ù'=>'u','ú'=>'u','û'=>'u','ü'=>'u','ů'=>'u',
 				'Ý'=>'Y','Ÿ'=>'Y','ý'=>'y','ÿ'=>'y','Ž'=>'Z','ž'=>'z'
 			))))));
-	}
-
-	/**
-		Return class instance
-		@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=__CLASS__))
-			Registry::set($class,$self=new $class);
-		return Registry::get($class);
-	}
-
-	//! Wrap-up
-	function __destruct() {
-		Registry::clear(__CLASS__);
 	}
 
 }
