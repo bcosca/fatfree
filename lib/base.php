@@ -144,7 +144,7 @@ class Base {
 		if (!isset($ref)) {
 			// Remove from cache
 			$cache=Cache::instance();
-			return $cache->exists($hash=$this->hash($key));
+			return $cache->exists($this->hash($key));
 		}
 		return TRUE;
 	}
