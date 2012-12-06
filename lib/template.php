@@ -298,12 +298,13 @@ class Template extends View {
 					unset($stack);
 					$fw->write($this->view,$this->build($tree));
 				}
-				if (PHP_SAPI!='cli' && !headers_sent())
-					header('Content-Type: '.($this->mime=$mime).'; '.
-						'charset='.$fw->get('ENCODING'));
+				$fw->sync('SESSION');
 				if (!$hive)
 					$hive=$fw->hive();
 				$this->hive=$fw->get('ESCAPE')?$fw->esc($hive):$hive;
+				if (PHP_SAPI!='cli' && !headers_sent())
+					header('Content-Type: '.($this->mime=$mime).'; '.
+						'charset='.$fw->get('ENCODING'));
 				return $this->sandbox();
 			}
 		trigger_error(sprintf(Base::E_Open,$file));

@@ -75,6 +75,15 @@ class Base {
 		$null=NULL;
 
 	/**
+		Sync PHP global with corresponding hive key
+		@return NULL
+		@param $key string
+	**/
+	function sync($key) {
+		$this->hive[$key]=&$GLOBALS['_'.$key];
+	}
+
+	/**
 		Get hive key reference/contents; Add non-existent hive keys,
 		array elements, and object properties by default
 		@return mixed
@@ -86,8 +95,7 @@ class Base {
 			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		if ($parts[0]=='SESSION' && !session_id()) {
 			session_start();
-			// Sync SESSION
-			$this->hive['SESSION']=&$_SESSION;
+			$this->sync('SESSION');
 		}
 		if ($add)
 			$var=&$this->hive;
@@ -208,20 +216,21 @@ class Base {
 		@param $key string
 	**/
 	function clear($key) {
-		if ($key=='SESSION') {
-			if (!session_id()) {
-				call_user_func_array('session_set_cookie_params',
-					$this->hive['JAR']);
-				session_start();
-			}
-			session_unset();
-			session_destroy();
-		}
 		// Normalize array literal
 		$out='';
 		$obj=FALSE;
-		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)/',
+		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)|\./',
 			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+		if ($parts[0]=='SESSION') {
+			if (!session_id()) {
+				session_start();
+				$this->sync('SESSION');
+			}
+			if (!count($parts)) {
+				session_unset();
+				session_destroy();
+			}
+		}
 		foreach ($parts as $part)
 			if ($part=='->')
 				$obj=TRUE;
@@ -1164,7 +1173,7 @@ class Base {
 			$GLOBALS+=array('_ENV'=>$_ENV,'_REQUEST'=>$_REQUEST);
 		// Sync PHP globals with corresponding hive keys
 		foreach (explode('|',self::GLOBALS) as $global)
-			$this->hive[$global]=&$GLOBALS['_'.$global];
+			$this->sync($global);
 		// Register framework autoloader
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler
@@ -1365,12 +1374,13 @@ class View {
 		$fw=Base::instance();
 		foreach ($fw->split($fw->get('UI')) as $path)
 			if (is_file($this->view=$fw->fixslashes($path.$file))) {
-				if (PHP_SAPI!='cli' && !headers_sent())
-					header('Content-Type: '.$mime.'; '.
-						'charset='.$fw->get('ENCODING'));
+				$fw->sync('SESSION');
 				if (!$hive)
 					$hive=$fw->hive();
 				$this->hive=$fw->get('ESCAPE')?$hive=$fw->esc($hive):$hive;
+				if (PHP_SAPI!='cli' && !headers_sent())
+					header('Content-Type: '.$mime.'; '.
+						'charset='.$fw->get('ENCODING'));
 				return $this->sandbox();
 			}
 		trigger_error(sprintf(Base::E_Open,$file));
