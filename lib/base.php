@@ -229,6 +229,7 @@ class Base {
 			if (!isset($parts[1])) {
 				session_unset();
 				session_destroy();
+				unset($_COOKIE['PHPSESSID']);
 			}
 		}
 		foreach ($parts as $part)
@@ -865,6 +866,17 @@ class Base {
 	}
 
 	/**
+		Convert string to executable PHP callback
+		@return callback|FALSE
+		@param $func string
+	**/
+	function callback($func) {
+		return preg_match('/(.+)\s*(->|::)\s*(.+)/s',$func,$parts)?
+			array($parts[2]=='->'?new $parts[1]:$parts[1],$parts[3]):
+			$func;
+	}
+
+	/**
 		Execute callback/hooks (supports 'class->method' format)
 		@return mixed|FALSE
 		@param $func string|callback
@@ -872,16 +884,9 @@ class Base {
 		@param $hooks string
 	**/
 	function call($func,array $args=NULL,$hooks='') {
-		// Execute function chain; abort if callback/hook returns FALSE
-		if (is_string($func) &&
-			preg_match('/(.+)\s*(->|::)\s*(.+)/s',$func,$parts)) {
-			if (!class_exists($parts[1]) ||
-				!method_exists($parts[1],'__call') &&
-				!method_exists($parts[1],$parts[3]))
-				// Handler not found
-				$this->error(404);
-			$func=array($parts[2]=='->'?new $parts[1]:$parts[1],$parts[3]);
-		}
+		// Execute function; abort if callback/hook returns FALSE
+		if (is_string($func))
+			$func=$this->callback($func);
 		if (!is_callable($func))
 			$this->error(404);
 		$oo=FALSE;
@@ -2056,7 +2061,7 @@ abstract class Magic {
 	**/
 	function __set($key,$val) {
 		$ref=new \ReflectionProperty(get_class($this),$key);
-		return $ref->ispublic()?($this->$key=$val):$this->set($key);
+		return $ref->ispublic()?($this->$key=$val):$this->set($key,$val);
 	}
 
 	/**
