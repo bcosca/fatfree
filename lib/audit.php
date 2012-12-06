@@ -73,4 +73,19 @@ class Audit {
 			FILTER_FLAG_NO_PRIV_RANGE|FILTER_FLAG_NO_RES_RANGE);
 	}
 
+	/**
+		Instantiate class
+		@return $obj
+	**/
+	static function instance() {
+		if (!Registry::exists($class=get_called_class()))
+			Registry::set($class,$self=new $class);
+		return Registry::get($class);
+	}
+
+	//! Wrap-up
+	function __destruct() {
+		Registry::clear(get_called_class());
+	}
+
 }
