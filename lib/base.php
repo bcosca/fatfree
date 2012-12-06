@@ -629,9 +629,10 @@ class Base {
 			'text'=>$text,
 			'trace'=>$trace
 		);
-		if ($this->hive['ONERROR'] && is_callable($this->hive['ONERROR']))
+		if ($this->hive['ONERROR'])
 			// Execute custom error handler
-			$this->hive['ONERROR']();
+			$this->call($this->hive['ONERROR'],
+				array(),'beforeroute,afterroute');
 		elseif (!$prior && PHP_SAPI!='cli')
 			echo
 				'<!DOCTYPE html>'.
