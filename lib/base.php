@@ -1062,7 +1062,6 @@ class Base {
 		@return NULL
 	**/
 	function unload() {
-		chdir($this->hive['ROOT']?:'.');
 		if (($error=error_get_last()) &&
 			in_array($error['type'],
 				array(E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR)))
