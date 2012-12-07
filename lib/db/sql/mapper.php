@@ -170,8 +170,8 @@ class Mapper extends \DB\Cursor {
 					$filter[1]:
 					array_slice($filter,1,NULL,TRUE);
 				list($filter)=$filter;
+				$args+=is_array($params)?$params:array(1=>$params);
 			}
-			$args+=is_array($params)?$params:array(1=>$params);
 			$sql.=' WHERE '.$filter;
 		}
 		if ($options['group']) {
