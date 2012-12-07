@@ -95,7 +95,6 @@ abstract class Cursor extends \Magic {
 	/**
 		Delete current record
 		@return int|bool
-		@param $filter string|array
 	**/
 	function erase() {
 		$this->query=array_slice($this->query,0,$this->ptr,TRUE)+

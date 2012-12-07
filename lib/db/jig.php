@@ -12,9 +12,9 @@ class Jig {
 	//@}
 
 	protected
-		// Storage location
+		//! Storage location
 		$dir,
-		// Current storage format
+		//! Current storage format
 		$format;
 
 	/**
