@@ -10,7 +10,7 @@ abstract class Cursor extends \Magic {
 		E_Field='Undefined field %s';
 	//@}
 
-	private
+	protected
 		//! Query results
 		$query=array(),
 		//! Current position
@@ -35,13 +35,6 @@ abstract class Cursor extends \Magic {
 		@return array
 	**/
 	abstract function update();
-
-	/**
-		Delete current record
-		@return int|bool
-		@param $filter string|array
-	**/
-	abstract function erase($filter=NULL);
 
 	/**
 		Return TRUE if current cursor position is not mapped to any record
@@ -97,6 +90,17 @@ abstract class Cursor extends \Magic {
 	**/
 	function save() {
 		return $this->query?$this->update():$this->insert();
+	}
+
+	/**
+		Delete current record
+		@return int|bool
+		@param $filter string|array
+	**/
+	function erase() {
+		$this->query=array_slice($this->query,0,$this->ptr,TRUE)+
+			array_slice($this->query,$this->ptr,NULL,TRUE);
+		$this->ptr=0;
 	}
 
 	/**
