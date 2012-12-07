@@ -1,5 +1,4 @@
 # Fat-Free Framework
-# Fat-Free Framework
 
 *A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!*
 
@@ -127,7 +126,7 @@ You don't want to clutter the global namespace with function names? Fat-Free rec
 
 HTTP requests can also be routed to static class methods:-
 
-	$f3->route('GET /login','Auth::login');
+    $f3->route('GET /login','Auth::login');
 
 ### Routes and Tokens
 
@@ -363,9 +362,8 @@ To set several variables at once:
 
     $f3->mset(
         array(
-            'var1'=>value1,
-            'var2'=>value2,
-            ...
+            'foo'=>'bar',
+            'baz'=>123
         )
     )
 
@@ -627,7 +625,7 @@ F3 allows you to embed expressions in templates. These expressions may take on v
 
 Framework variables may also contain anonymous functions:
 
-    $f3->set('func',	
+    $f3->set('func',
         function($a,$b) {
             return $a.', '.$b;
         }
@@ -967,15 +965,15 @@ This time we create an HTML template like `abc.htm` that has at a minimum the fo
 
 In most instances, the SQL command set should be enough to generate a Web-ready result so you can use the `result` array variable in your template directly. Be that as it may, Fat-Free will not stop you from getting into its SQL handler internals. In fact, F3's `DB\SQL` class derives directly from PHP's `PDO` class, so you still have access to the underlying PDO components and primitives involved in each process, if you need some fine-grain control.
 
-Transactions
+### Transactions
 
 Here's another example. Instead of a single statement provided as an argument to the `$db->exec()` command, you can also pass an array of SQL statements:-
 
     $db->exec(
         array(
-            'DELETE FROM ...',
-            'INSERT INTO ...',
-            'SELECT ...'
+            'DELETE FROM diet WHERE food="cola"',
+            'INSERT INTO diet (food) VALUES ("carrot")',
+            'SELECT * FROM diet'
         )
     );
 
@@ -1001,18 +999,21 @@ Luckily, parameterized queries help you mitigate these risks:-
         $f3->get('POST.userID')
     );
 
-If F3 detects that the value of the query parameter/token is a string, the underlying data access layer escapes the string and adds quotes as necessary. To override this behavior:-
+If F3 detects that the value of the query parameter/token is a string, the underlying data access layer escapes the string and adds quotes as necessary.
+
+Our example in the previous section will be a lot safer from SQL injection if written this way:-
 
     $db->exec(
-        'SELECT * FROM users WHERE userID=?',
-        array($f3->get('POST.userID'),PDO::PARAM_INT)
-    );
-
-F3 accepts both positional and named parameters in query strings. The following code behaves the same way as the previous query:-
-
-    $db->exec(
-        'SELECT * FROM users WHERE userID=:uID',
-        array(':uid'=>array($f3->get('POST.userID'),PDO::PARAM_INT))
+        array(
+            'DELETE FROM diet WHERE food=:name',
+            'INSERT INTO diet (food) VALUES (?)',
+            'SELECT * FROM diet'
+        ),
+        array(
+			array(':name'=>'cola'),
+			array(1=>'carrot'),
+			NULL
+		)
     );
 
 ### CRUD (But With a Lot of Style)
@@ -1028,7 +1029,7 @@ Suppose you have an existing MySQL database containing a table of users of your 
         PRIMARY KEY(userID)
     );
 
-Note: MongoDB is a NoSQL database engine and inherently schema-less. There are no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.
+Note: MongoDB is a NoSQL database engine and inherently schema-less. F3 has its own NoSQL implementation called Jig, which uses PHP-serialized or JSON-encoded flat files. There are no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.
 
 Back to SQL. First, we establish communication with our database.
 
@@ -1045,13 +1046,19 @@ To retrieve a record from our table:-
 
 The first line instantiates a data mapper object that interacts with the `users` table in our database. Behind the scene, F3 retrieves the structure of the `users` table and determines which field(s) are defined as primary key(s). At this point, the mapper object contains no data yet (dry state) so `$user` is nothing more than a structured object - but it contains the methods it needs to perform the basic CRUD operations and some extras. To retrieve a record from our users table with a `userID` field containing the string value `tarzan`, we use the `load() method`. This process is called "auto-hydrating" the data mapper object.
 
-In the case of the MongoDB data mapper:-
+Easy, wasn't it? F3 understands that a SQL table already has a structural definition existing within the database engine itself. Unlike other frameworks, F3 requires no extra class declarations (unless you want to extend the data mappers to fit complex objects), no redundant PHP array/object property-to-field mappings (duplication of efforts), no code generators (which require code regeneration if the database structure changes), no stupid XML/YAML files to configure your models, no superfluous commands just to retrieve a single record. With F3, a simple resizing of a `varchar` field in MySQL does not demand a change in your application code. Consistent with MVC and "separation of concerns", the database admin has as much control over the data (and the structures) as a template designer has over HTML/XML templates.
+
+If you prefer working with NoSQL databases, the similarities in query syntax are superficial. In the case of the MongoDB data mapper, the equivalent code would be:-
 
     $db=new DB\Mongo('mongodb://localhost:27017','testdb');
     $user=new DB\Mongo\Mapper($db,'users');
     $user->load(array('userID'=>'tarzan'));
 
-Easy, wasn't it? F3 understands that a SQL table already has a structural definition existing within the database engine itself. Unlike other frameworks, F3 requires no extra class declarations (unless you want to extend the data mappers to fit complex objects), no redundant PHP array/object property-to-field mappings (duplication of efforts), no code generators (which require code regeneration if the database structure changes), no stupid XML/YAML files to configure your models, no superfluous commands just to retrieve a single record. With F3, a simple resizing of a `varchar` field in MySQL does not demand a change in your application code. Consistent with MVC and "separation of concerns", the database admin has as much control over the data (and the structures) as a template designer has over HTML/XML templates.
+With Jig, the syntax is similar to F3's template engine:-
+
+    $db=new DB\Jig('db/data/',DB\Jig::FORMAT_JSON);
+    $user=new DB\Jig\Mapper($db,'users');
+    $user->load(array('@userID==?','tarzan'));
 
 ### The Smart SQL ORM
 
@@ -1072,12 +1079,13 @@ If we wanted to insert a record, we follow this process:-
 
     $user=new DB\SQL\Mapper($db,'users');
     // or $user=new DB\Mongo\Mapper($db,'users');
+    // or $user=new DB\Jig\Mapper($db,'users');
     $user->userID='jane';
     $user->password=md5('secret');
     $user->visits=0;
     $user->save();
 
-We still use the same save() method. But how does F3 know when a record should be inserted or updated? At the time a data mapper object is auto-hydrated by a record retrieval, the framework keeps track of the record's primary keys (or `_id`, in the case of MongoDB) - so it knows which record should be updated or deleted - even when the values of the primary keys are changed. A programmatically-hydrated data mapper - the values of which were not retrieved from the database, but populated by the application - will not have any memory of previous values in its primary keys. The same applies to MongoDB, but using object `_id` as reference. So, when we instantiated the `$user` object above and populated its properties with values from our program - without at all retrieving a record from the user table, F3 knows that it should insert this record.
+We still use the same save() method. But how does F3 know when a record should be inserted or updated? At the time a data mapper object is auto-hydrated by a record retrieval, the framework keeps track of the record's primary keys (or `_id`, in the case of MongoDB and Jig) - so it knows which record should be updated or deleted - even when the values of the primary keys are changed. A programmatically-hydrated data mapper - the values of which were not retrieved from the database, but populated by the application - will not have any memory of previous values in its primary keys. The same applies to MongoDB and Jig, but using object `_id` as reference. So, when we instantiated the `$user` object above and populated its properties with values from our program - without at all retrieving a record from the user table, F3 knows that it should insert this record.
 
 ### Caveat for SQL Tables
 
@@ -1086,13 +1094,19 @@ Although the issue of having primary keys in all tables in your database is argu
 To remove a mapped record from our table, invoke the `erase()` method on an auto-hydrated data mapper. For example:-
 
     $user=new DB\SQL\Mapper($db,'users');
-    $user->load(array('userID=?','cheetah'));
+    $user->load(array('userID=? AND password=?','cheetah','ch1mp'));
     $user->erase();
 
-The MongoDB equivalent would be:-
+Jig's query syntax would be slightly similar:-
+
+    $user=new DB\Jig\Mapper($db,'users');
+    $user->load(array('@userID==? && @password==?','cheetah','chimp'));
+    $user->erase();
+
+And the MongoDB equivalent would be:-
 
     $user=new DB\Mongo\Mapper($db,'users');
-    $user->load(array('userID'=>'cheetah'));
+    $user->load(array('userID'=>'cheetah','password'=>'chimp'));
     $user->erase();
 
 ### The Weather Report
@@ -1132,9 +1146,13 @@ By default, a data mapper's `load()` method retrieves only the first record that
     // Rewritten as a parameterized query
     $user->load(array('visits>?',3));
 
-    // For MongoDB users:
+    // For MongoDB users:-
     // $user=new DB\Mongo\Mapper($db,'users');
     // $user->load(array('visits'=>array('$gt'=>3)));
+
+    // If you prefer Jig:-
+    // $user=new DB\Jig\Mapper($db,'users');
+    // $user->load('@visits>?',3);
 
     // Display the userID of the first record that matches the criteria
     echo $user->userID;
@@ -1150,13 +1168,13 @@ Use the `dry()` method to check if you've maneuvered beyond the limits of the re
 The `load()` method accepts a second argument: an array of options containing key-value pairs such as:-
 
     $user->load(
-		array('visits>?',3),
-		array(
-			'order'=>'userID DESC'
-			'offset'=>5,
-			'limit'=>3
-		)
-	);
+        array('visits>?',3),
+        array(
+            'order'=>'userID DESC'
+            'offset'=>5,
+            'limit'=>3
+        )
+    );
     // If you're using MySQL, the query translates to:
     // SELECT * FROM users
     // WHERE visits>3
@@ -1197,7 +1215,9 @@ This time the framework retrieves the product with the highest quantity (notice 
 
 You can also derive a value from another table:-
 
-    $item->supplierName='SELECT name FROM suppliers WHERE products.supplierID=suppliers.supplierID';
+    $item->supplierName=
+        'SELECT name FROM suppliers '.
+        'WHERE products.supplierID=suppliers.supplierID';
     $item->load();
     echo $item->supplierName;
 
@@ -1213,23 +1233,28 @@ If you have no need for record-by-record navigation, you can retrieve an entire 
 
     $frequentUsers=$user->find(array('visits>?',3),array('order'=>'userID'));
 
-Teh equivalent code using the MongoDB mapper:-
+Jig mapper's query syntax has a slight resemblance:-
 
-    $frequentUsers=$user->find(array('visits'=>array('$gt'=>3)),array('userID'=>1));
+    $frequentUsers=$user->find(array('@visits>?',3),array('order'=>'userID'));
+
+The equivalent code using the MongoDB mapper:-
+
+    $frequentUsers=$user->
+        find(array('visits'=>array('$gt'=>3)),array('userID'=>1));
 
 The `find()` method searches the `users` table for records that match the criteria `visits>3`, sorts the result by `userID` and returns the result as an array of mapper objects. `find('visits>3')` is different from `load('visits>3')`. The latter refers to the current `$user` object. `find()` does not have any effect on `skip()`.
 
 Important: Declaring an empty condition, NULL, or a zero-length string as the first argument of `find()` or `load()` will retrieve all records. Be sure you know what you're doing - you might exceed PHP's memory_limit on large tables or collections.
 
-The find() method has the following syntax:-
+The `find()` method has the following syntax:-
 
     find(
-        criteria,
+        $criteria,
         array(
-            'group'=>...,
-            'order'=>...,
-            'limit'=>...,
-            'offset'=>...
+            'group'=>'foo',
+            'order'=>'foo,bar',
+            'limit'=>5,
+            'offset'=>0
         )
     );
 
