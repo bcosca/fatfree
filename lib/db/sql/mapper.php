@@ -136,7 +136,7 @@ class Mapper extends \DB\Cursor {
 	/**
 		Return fields of mapper object as an associative array
 		@return array
-		@param $obj Mapper
+		@param $obj object
 	**/
 	function cast(Mapper $obj=NULL) {
 		if (!$obj)
@@ -360,13 +360,24 @@ class Mapper extends \DB\Cursor {
 		$args=array();
 		$ctr=0;
 		$filter='';
-		foreach ($this->fields as $key=>$field)
+		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
 				$filter.=($filter?' AND ':'').$key.'=?';
 				$args[$ctr+1]=array($field['previous'],$field['type']);
 				$ctr++;
 			}
-		parent::reset();
+			$field['value']=NULL;
+			$field['changed']=(bool)$field['default'];
+			if ($field['pkey'])
+				$field['previous']=NULL;
+			unset($field);
+		}
+		foreach ($this->adhoc as &$field) {
+			$field['value']=NULL;
+			unset($field);
+		}
+		parent::erase();
+		$this->skip(0);
 		return $this->db->
 			exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
 	}

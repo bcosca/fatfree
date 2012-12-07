@@ -393,11 +393,11 @@ class SQL extends Controller {
 			);
 			session_unset();
 			session_destroy();
+			unset($_COOKIE['PHPSESSID']);
 			$test->expect(
 				!isset($_SESSION['foo']),
 				'Session destroyed'
 			);
-			session_commit();
 		}
 		$f3->set('results',$test->results());
 	}

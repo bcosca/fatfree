@@ -1,16 +1,18 @@
 <?php
 
-namespace DB\Mongo;
+namespace DB\Jig;
 
-//! MongoDB mapper
+//! Flat-file DB mapper
 class Mapper extends \DB\Cursor {
 
 	protected
-		//! MongoDB wrapper
+		//! Flat-file DB wrapper
 		$db,
-		//! Mongo collection
-		$collection,
-		//! Mongo document
+		//! Data file
+		$file,
+		//! Document identifier
+		$id,
+		//! Document contents
 		$document=array();
 
 	/**
@@ -29,7 +31,7 @@ class Mapper extends \DB\Cursor {
 		@param $val scalar
 	**/
 	function set($key,$val) {
-		return $this->document[$key]=$val;
+		return ($key=='_id')?FALSE:($this->document[$key]=$val);
 	}
 
 	/**
@@ -38,6 +40,8 @@ class Mapper extends \DB\Cursor {
 		@param $key string
 	**/
 	function get($key) {
+		if ($key=='_id')
+			return $this->id;
 		if (array_key_exists($key,$this->document))
 			return $this->document[$key];
 		trigger_error(sprintf(self::E_Field,$key));
@@ -56,13 +60,16 @@ class Mapper extends \DB\Cursor {
 	/**
 		Convert array to mapper object
 		@return object
+		@param $id string
 		@param $row array
 	**/
-	protected function factory($row) {
+	protected function factory($id,$row) {
 		$mapper=clone($this);
 		$mapper->reset();
-		foreach ($row as $field=>$val)
+		foreach ($row as $field=>$val) {
+			$mapper->id=$id;
 			$mapper->document[$field]=$val;
+		}
 		return $mapper;
 	}
 
@@ -78,92 +85,103 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Build query and execute
-		@return array
-		@param $fields string
-		@param $filter array
-		@param $options array
+		Convert tokens in string expression to variable names
+		@return string
+		@param $str string
 	**/
-	function select($fields,$filter=NULL,array $options=NULL) {
-		if (!$options)
-			$options=array();
-		$options+=array(
-			'group'=>NULL,
-			'order'=>NULL,
-			'offset'=>0,
-			'limit'=>0
+	function token($str) {
+		$self=$this;
+		$str=preg_replace_callback(
+			'/(?<!\w)@(\w(?:[\w\.\[\]])*)/',
+			function($var) use($self) {
+				// Convert from JS dot notation to PHP array notation
+				return '$'.preg_replace_callback(
+					'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
+					function($expr) use($self) {
+						$fw=Base::instance();
+						return 
+							'['.
+							($expr[1]?
+								$fw->stringify(substr($expr[1],1)):
+								(preg_match('/^\w+/',
+									$mix=$self->token($expr[2]))?
+									$fw->stringify($mix):
+									$mix)).
+							']';
+					},
+					$var[1]
+				);
+			},
+			$str
 		);
-		if ($options['group']) {
-			$this->db->selectcollection(
-				$temp=$_SERVER['SERVER_NAME'].'.'.
-					\Base::instance()->hash(uniqid()).'.tmp');
-			$this->db->$temp->batchinsert(
-				$this->collection->group(
-					$options['group']['keys'],
-					$options['group']['initial'],
-					$options['group']['reduce'],
-					array(
-						'condition'=>array(
-							$filter,
-							$options['group']['finalize']
-						)
-					)
-				),
-				array('safe'=>TRUE)
-			);
-			$filter=array();
-			$collection=$this->db->$temp;
-		}
-		else {
-			$filter=$filter?:array();
-			$collection=$this->collection;
-		}
-		$cursor=$collection->find($filter,$fields?:array());
-		if ($options['order'])
-			$cursor=$cursor->sort($options['order']);
-		if ($options['offset'])
-			$cursor=$cursor->skip($options['offset']);
-		if ($options['limit'])
-			$cursor=$cursor->limit($options['limit']);
-		if ($options['group'])
-			$this->db->$temp->drop();
-		$result=iterator_to_array($cursor,FALSE);
-		$out=array();
-		foreach ($result as &$doc) {
-			foreach ($doc as &$val)
-				if (is_array($val))
-					$val=json_decode(json_encode($val));
-			$out[]=$this->factory($doc);
-			unset($doc);
-		}
-		return $out;
+		return trim($str);
 	}
 
 	/**
 		Return records that match criteria
 		@return array
-		@param $filter array
+		@param $filter callback
 		@param $options array
 	**/
 	function find($filter=NULL,array $options=NULL) {
 		if (!$options)
 			$options=array();
 		$options+=array(
-			'group'=>NULL,
 			'order'=>NULL,
 			'offset'=>0,
 			'limit'=>0
 		);
-		return $this->select(NULL,$filter,$options);
+		$fw=\Base::instance();
+		$db=$this->db;
+		$data=$db->read($this->file);
+		if ($filter) {
+			$_self=$this;
+			$_expr=$filter;
+			$data=array_filter($data,
+				function($_) use($_expr,$_self) {
+					extract($_);
+					return eval('return '.$_self->token($_expr).';');
+				}
+			);
+		}
+		if (isset($options['order']))
+			foreach (array_reverse($fw->split($options['order'])) as $col) {
+				$parts=explode(' ',$col);
+				$order=isset($parts[1])?constant($parts[1]):SORT_ASC;
+				uasort(
+					$data,
+					function($val1,$val2) use($col,$order) {
+						list($v1,$v2)=array($val1[$col],$val2[$col]);
+						$out=is_numeric($v1) && is_numeric($v2)?
+							Base::instance()->sign($v1-$v2):strcmp($v1,$v2);
+						if ($order==SORT_DESC)
+							$out=-$out;
+						return $out;
+					}
+				);
+			}
+		$out=array();
+		foreach (array_slice($data,
+			$options['offset'],$options['limit']?:NULL,TRUE) as $id=>$doc)
+			$out[]=$this->factory($id,$doc);
+		return $out;
 	}
 
 	/**
 		Count records that match criteria
 		@return int
-		@param $filter array
+		@param $filter callback
 	**/
 	function count($filter=NULL) {
-		return $this->collection->count($filter);
+		$fw=\Base::instance();
+		$db=$this->db;
+		$data=$db->read($this->file);
+		if ($filter) {
+			if (is_string($filter))
+				$filter=$fw->callback($filter);
+			$data=array_filter($data,$filter);
+		}
+		return count($data);
 	}
 
 	/**
@@ -174,6 +192,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function skip($ofs=1) {
 		$this->document=($out=parent::skip($ofs))?$out->document:array();
+		$this->id=$out?$out->id:NULL;
 		return $out;
 	}
 
@@ -182,7 +201,14 @@ class Mapper extends \DB\Cursor {
 		@return array
 	**/
 	function insert() {
-		$this->collection->insert($this->document);
+		$fw=\Base::instance();
+		$db=$this->db;
+		while (($id=dechex(microtime(TRUE)*1000)) &&
+			($data=$db->read($this->file)) && isset($data[$id]))
+			usleep(mt_rand(0,100));
+		$this->id=$id;
+		$data[$id]=$this->document;
+		$db->write($this->file,$data);
 		parent::reset();
 		return $this->document;
 	}
@@ -192,8 +218,11 @@ class Mapper extends \DB\Cursor {
 		@return array
 	**/
 	function update() {
-		$this->collection->update(
-			array('_id'=>$this->document['_id']),$this->document);
+		$fw=\Base::instance();
+		$db=$this->db;
+		$data=$db->read($this->file);
+		$data[$this->id]=$this->document;
+		$db->write($this->file,$data);
 		return $this->document;
 	}
 
@@ -203,13 +232,30 @@ class Mapper extends \DB\Cursor {
 		@param $filter array
 	**/
 	function erase($filter=NULL) {
-		if ($filter)
-			return $this->collection->remove($filter);
-		$result=$this->collection->
-			remove(array('_id'=>$this->document['_id']));
-		parent::erase();
-		$this->skip(0);
-		return $result;
+		$fw=\Base::instance();
+		$db=$this->db;
+		$data=$db->read($this->file);
+		if ($filter) {
+			$_self=$this;
+			$_expr=$filter;
+			$data=array_filter($data,
+				function($_) use($_expr,$_self) {
+					extract($_);
+					return eval('return '.$_self->token($_expr).';');
+				}
+			);
+			foreach (array_reverse($data) as $id=>$doc)
+				unset($data[$id]);
+		}
+		elseif (isset($this->id)) {
+			unset($data[$this->id]);
+			parent::erase();
+			$this->skip(0);
+		}
+		else
+			return FALSE;
+		$db->write($this->file,$data);
+		return TRUE;
 	}
 
 	/**
@@ -246,11 +292,11 @@ class Mapper extends \DB\Cursor {
 		Instantiate class
 		@return void
 		@param $db object
-		@param $collection string
+		@param $file string
 	**/
-	function __construct(\DB\Mongo $db,$collection) {
+	function __construct(\DB\Jig $db,$file) {
 		$this->db=$db;
-		$this->collection=$db->selectcollection($collection);
+		$this->file=$file;
 		$this->reset();
 	}
 
@@ -283,7 +329,7 @@ class Session extends Mapper {
 		@param $id string
 	**/
 	function read($id) {
-		$this->load(array('session_id'=>$id));
+		$this->load('@session_id=="'.$id.'"');
 		return $this->dry()?FALSE:$this->get('data');
 	}
 
@@ -294,7 +340,7 @@ class Session extends Mapper {
 		@param $data string
 	**/
 	function write($id,$data) {
-		$this->load(array('session_id'=>$id));
+		$this->load('@session_id=="'.$id.'"');
 		$this->set('session_id',$id);
 		$this->set('data',$data);
 		$this->set('stamp',time());
@@ -308,7 +354,7 @@ class Session extends Mapper {
 		@param $id string
 	**/
 	function destroy($id) {
-		$this->erase(array('session_id'=>$id));
+		$this->erase('@session_id=="'.$id.'"');
 		return TRUE;
 	}
 
@@ -318,7 +364,7 @@ class Session extends Mapper {
 		@param $max int
 	**/
 	function cleanup($max) {
-		$this->erase(array('$where'=>'this.stamp+'.$max.'<'.time()));
+		$this->erase('@stamp+'.$max.'<'.time());
 		return TRUE;
 	}
 
@@ -327,7 +373,7 @@ class Session extends Mapper {
 		@param $db object
 		@param $table string
 	**/
-	function __construct(\DB\Mongo $db,$table='sessions') {
+	function __construct(\DB\Jig $db,$table='sessions') {
 		parent::__construct($db,'sessions');
 		session_set_save_handler(
 			array($this,'open'),
