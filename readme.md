@@ -1663,6 +1663,9 @@ Once you get the hang of testing the smallest units of your application, you can
 `string TEMP`
 >Temporary folder for cache, filesystem locks, compiled F3 templates, etc. Default is the `tmp/` folder inside the Web root. Adjust accordingly to conform to your site's security policies.
 
+`string TZ`
+>Default timezone. Changing this value automatically calls the underlying `date_default_timezone_set()` function. 
+
 `string UI`
 >Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
 
