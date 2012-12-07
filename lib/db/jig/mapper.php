@@ -137,6 +137,7 @@ class Mapper extends \DB\Cursor {
 		if ($filter) {
 			if (!is_array($filter))
 				return FALSE;
+			// Prefix variables to prevent conflict with user code
 			$_self=$this;
 			$_args=array();
 			$params=isset($filter[1]) && is_array($filter[1])?
@@ -148,17 +149,22 @@ class Mapper extends \DB\Cursor {
 			$data=array_filter($data,
 				function($_) use($_expr,$_args,$_self) {
 					extract($_);
-					$ctr=0;
+					$_ctr=0;
+					// Evaluate user code
 					return eval('return '.
 						preg_replace_callback(
 							'/(\:\w+)|(\?)/',
-							function($token) use($_args,$_self,$ctr) {
+							function($token) use($_args,$_self,$_ctr) {
+								// Parameterized query
 								if ($token[1])
+									// Named
 									$key=$token[1];
 								else {
-									$ctr++;
-									$key=$ctr;
+									// Positional
+									$_ctr++;
+									$key=$_ctr;
 								}
+								// Add slashes to prevent code injection
 								return \Base::instance()->stringify(
 									is_string($_args[$key])?
 										addslashes($_args[$key]):
