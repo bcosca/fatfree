@@ -151,7 +151,7 @@ class Mongo extends Controller {
 			);
 			session_unset();
 			session_destroy();
-			unset($_COOKIE['PHPSESSID']);
+			unset($_COOKIE[session_name()]);
 			$test->expect(
 				!isset($_SESSION['foo']),
 				'Session destroyed'

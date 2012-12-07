@@ -229,7 +229,7 @@ class Base {
 			if (!isset($parts[1])) {
 				session_unset();
 				session_destroy();
-				unset($_COOKIE['PHPSESSID']);
+				unset($_COOKIE[session_name()]);
 			}
 		}
 		foreach ($parts as $part)
@@ -1399,7 +1399,7 @@ class View extends Prefab {
 		$fw=Base::instance();
 		foreach ($fw->split($fw->get('UI')) as $path)
 			if (is_file($this->view=$fw->fixslashes($path.$file))) {
-				if (isset($_COOKIE['PHPSESSID']) && !session_id())
+				if (isset($_COOKIE[session_name()]) && !session_id())
 					session_start();
 				$fw->sync('SESSION');
 				if (!$hive)

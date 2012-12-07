@@ -38,7 +38,7 @@ class Mapper extends \DB\Cursor {
 		@param $key string
 	**/
 	function get($key) {
-		if (array_key_exists($key,$this->document))
+		if ($this->exists($key))
 			return $this->document[$key];
 		trigger_error(sprintf(self::E_Field,$key));
 		return FALSE;
@@ -61,8 +61,8 @@ class Mapper extends \DB\Cursor {
 	protected function factory($row) {
 		$mapper=clone($this);
 		$mapper->reset();
-		foreach ($row as $field=>$val)
-			$mapper->document[$field]=$val;
+		foreach ($row as $key=>$val)
+			$mapper->document[$key]=$val;
 		return $mapper;
 	}
 

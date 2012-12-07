@@ -124,12 +124,9 @@ class Mapper extends \DB\Cursor {
 	protected function factory($row) {
 		$mapper=clone($this);
 		$mapper->reset();
-		foreach ($row as $field=>$val) {
-			if (array_key_exists($field,$this->fields))
-				$mapper->fields[$field]['value']=$val;
-			else
-				$mapper->adhoc[$field]['value']=$val;
-		}
+		foreach ($row as $key=>$val)
+			$mapper->{array_key_exists($key,$this->fields)?'fields':'adhoc'}
+				[$key]['value']=$val;
 		return $mapper;
 	}
 

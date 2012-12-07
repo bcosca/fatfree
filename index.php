@@ -20,7 +20,6 @@ $f3->set('menu',
 		'/audit'=>'Audit',
 		'/sql'=>'SQL',
 		'/mongo'=>'MongoDB',
-		'/jig'=>'Jig',
 		'/template'=>'Template',
 		'/log'=>'Log Engine',
 		'/text'=>'Text',
@@ -36,3 +35,4 @@ $f3->map('/','App\Internals');
 $f3->map('/@controller','App\@controller');
 
 $f3->run();
+
