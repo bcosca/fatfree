@@ -526,7 +526,7 @@ class Session extends Mapper {
 				'PRIMARY KEY(session_id)'.
 			');'
 		);
-		parent::__construct($db,'sessions');
+		parent::__construct($db,$table);
 		session_set_save_handler(
 			array($this,'open'),
 			array($this,'close'),

@@ -328,7 +328,7 @@ class Session extends Mapper {
 		@param $table string
 	**/
 	function __construct(\DB\Mongo $db,$table='sessions') {
-		parent::__construct($db,'sessions');
+		parent::__construct($db,$table);
 		session_set_save_handler(
 			array($this,'open'),
 			array($this,'close'),
