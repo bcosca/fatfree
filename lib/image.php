@@ -264,7 +264,7 @@ class Image {
 		if (is_file($file=($path=$fw->get('TEMP').'images/'.
 			$fw->hash($this->file).'-').$state.'.png')) {
 			$this->data=imagecreatefromstring($fw->read($file));
-			foreach (glob($path.'*.png') as $match)
+			foreach (glob($path.'*.png',GLOB_NOSORT) as $match)
 				if (preg_match('/-(\d+)\.png/',$match,$parts) &&
 					$parts[1]>$state)
 					$fw->unlink($match);
