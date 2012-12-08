@@ -26,6 +26,10 @@ class Cache extends Controller {
 			'Cache backend '.$f3->stringify($backend).' detected'
 		);
 		$cache=\Cache::instance();
+		$test->expect(
+			$cache===\Cache::instance(),
+			'Same cache engine instance returned'
+		);
 		$cache->set($f3->hash('foo'),'bar');
 		$test->expect(
 			$f3->get('foo')=='bar',
