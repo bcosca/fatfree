@@ -7,8 +7,8 @@ class Jig {
 
 	//@{ Storage formats
 	const
-		FORMAT_Serialized=0,
-		FORMAT_JSON=1;
+		FORMAT_JSON=0;
+		FORMAT_Serialized=1,
 	//@}
 
 	protected
@@ -28,11 +28,11 @@ class Jig {
 			return array();
 		$raw=$fw->read($this->dir.$file);
 		switch ($this->format) {
-			case self::FORMAT_Serialized:
-				$data=$fw->unserialize($raw);
-				break;
 			case self::FORMAT_JSON:
 				$data=json_decode($raw,TRUE);
+				break;
+			case self::FORMAT_Serialized:
+				$data=$fw->unserialize($raw);
 				break;
 		}
 		return $data;
@@ -47,11 +47,11 @@ class Jig {
 	function write($file,array $data=NULL) {
 		$fw=\Base::instance();
 		switch ($this->format) {
-			case self::FORMAT_Serialized:
-				$out=$fw->serialize($data);
-				break;
 			case self::FORMAT_JSON:
 				$out=json_encode($data);
+				break;
+			case self::FORMAT_Serialized:
+				$out=$fw->serialize($data);
 				break;
 		}
 		return $fw->write($this->dir.$file,$out);
@@ -69,7 +69,7 @@ class Jig {
 		@param $dir string
 		@param $format int
 	**/
-	function __construct($dir,$format=self::FORMAT_Serialized) {
+	function __construct($dir,$format=self::FORMAT_JSON) {
 		if (!is_dir($dir))
 			\Base::instance()->mkdir($dir);
 		$this->dir=$dir;
