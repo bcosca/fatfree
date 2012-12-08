@@ -872,11 +872,14 @@ class Base {
 	**/
 	function call($func,array $args=NULL,$hooks='') {
 		// Execute function; abort if callback/hook returns FALSE
-		if (is_string($func))
-			// Convert string to executable PHP callback
-			$func=preg_match('/(.+)\s*(->|::)\s*(.+)/s',$func,$parts)?
-				array($parts[2]=='->'?new $parts[1]:$parts[1],$parts[3]):
-				$func;
+		if (is_string($func)) {
+			if (preg_match('/(.+)\s*(->|::)\s*(.+)/s',$func,$parts))
+				// Convert string to executable PHP callback
+				if (!class_exists($parts[1]))
+					$this->error(404);
+				$func=array($parts[2]=='->'?
+					new $parts[1]:$parts[1],$parts[3]);
+		}
 		if (!is_callable($func))
 			$this->error(404);
 		$oo=FALSE;
