@@ -206,7 +206,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function count($filter=NULL) {
 		$db=$this->db;
-		return count($filter?$this->find($filter):$db->read($this->file));
+		return count($this->find($filter));
 	}
 
 	/**
@@ -228,9 +228,8 @@ class Mapper extends \DB\Cursor {
 	function insert() {
 		$fw=\Base::instance();
 		$db=$this->db;
-		while (($id=dechex(microtime(TRUE)*1000)) &&
-			($data=$db->read($this->file)) && isset($data[$id]))
-			usleep(mt_rand(0,100));
+		while (($id=dechex(microtime(TRUE)*1e3)) &&
+			($data=$db->read($this->file)) && isset($data[$id]));
 		$this->id=$id;
 		$data[$id]=$this->document;
 		$db->write($this->file,$data);
