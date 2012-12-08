@@ -228,7 +228,7 @@ class Mapper extends \DB\Cursor {
 	function insert() {
 		$fw=\Base::instance();
 		$db=$this->db;
-		while (($id=dechex(microtime(TRUE)*1e3)) &&
+		while (($id=dechex(microtime(TRUE)*100)) &&
 			($data=$db->read($this->file)) && isset($data[$id]))
 			usleep(mt_rand(0,100));
 		$this->id=$id;
