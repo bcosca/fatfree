@@ -1029,7 +1029,7 @@ Suppose you have an existing MySQL database containing a table of users of your 
         PRIMARY KEY(userID)
     );
 
-Note: MongoDB is a NoSQL database engine and inherently schema-less. F3 has its own NoSQL implementation called Jig, which uses PHP-serialized or JSON-encoded flat files. There are no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.
+Note: MongoDB is a NoSQL database engine and inherently schema-less. F3 has its own fast and lightweight NoSQL implementation called Jig, which uses PHP-serialized or JSON-encoded flat files. There are no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.
 
 Back to SQL. First, we establish communication with our database.
 
