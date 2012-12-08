@@ -3,7 +3,7 @@
 //! Custom logger
 class Log {
 
-	private
+	protected
 		//! File name
 		$file;
 
