@@ -24,6 +24,23 @@ class Globals extends Controller {
 			'ROOT (document root): '.$f3->stringify($root)
 		);
 		$test->expect(
+			is_string($base=$f3->get('BASE')),
+			'BASE (path to index.php relative to ROOT): '.
+				$f3->stringify($base)
+		);
+		$test->expect(
+			$scheme=$f3->get('SCHEME'),
+			'SCHEME (Web protocol): '.$f3->stringify($scheme)
+		);
+		$test->expect(
+			($verb=$f3->get('VERB'))==$_SERVER['REQUEST_METHOD'],
+			'VERB (request method): '.$f3->stringify($verb)
+		);
+		$test->expect(
+			($uri=$f3->get('URI'))==$_SERVER['REQUEST_URI'],
+			'URI (request URI): '.$f3->stringify($uri)
+		);
+		$test->expect(
 			($charset=$f3->get('ENCODING'))=='UTF-8',
 			'ENCODING (character set): '.$f3->stringify($charset)
 		);
@@ -39,18 +56,6 @@ class Globals extends Controller {
 		$test->expect(
 			($tz=$f3->get('TZ'))==date_default_timezone_get(),
 			'Time zone adjusted: '.$f3->stringify($tz)
-		);
-		$test->expect(
-			$scheme=$f3->get('SCHEME'),
-			'SCHEME (Web protocol): '.$f3->stringify($scheme)
-		);
-		$test->expect(
-			($verb=$f3->get('VERB'))==$_SERVER['REQUEST_METHOD'],
-			'VERB (request method): '.$f3->stringify($verb)
-		);
-		$test->expect(
-			($uri=$f3->get('URI'))==$_SERVER['REQUEST_URI'],
-			'URI (request URI): '.$f3->stringify($uri)
 		);
 		$test->expect(
 			$serializer=$f3->get('SERIALIZER'),
