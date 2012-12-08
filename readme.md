@@ -42,9 +42,9 @@ The philosophy behind the framework and its approach to software architecture is
 
 ### Version 3.0 Is Finally Here!
 
-The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that took several months to develop and refine, version 3.0 is finally available for download. Enterprise-grade but still as user-friendly as before. Same lightweight footprint. Yet sturdier and more powerful than ever!
+The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that took several months to develop and refine, version 3.0 is finally available for download. The code base has been rewritten from the ground up to provide enterprise-class architecture and performance but with the same user-friendly features and lightweight footprint.
 
-It is highly recommended that users develop new applications using this version to take advantage of the latest features and significant performance improvements.
+It is highly recommended that users develop new applications using this version to take advantage of the latest features and significant improvements.
 
 ## Getting Started
 
