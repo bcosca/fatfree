@@ -26,6 +26,11 @@ class Cache extends Controller {
 			'Cache backend '.$f3->stringify($backend).' detected'
 		);
 		$cache=\Cache::instance();
+		$cache->set($f3->hash('foo'),'bar');
+		$test->expect(
+			$f3->get('foo')=='bar',
+			'Retrieve previously cached entry'
+		);
 		$ttl=1;
 		$mark=microtime(TRUE);
 		$cache->set('a',1,$ttl);
