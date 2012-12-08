@@ -138,15 +138,15 @@ class Web extends Prefab {
 					$base=basename($file['name']);
 					if ($slug) {
 						preg_match('/(.+?)(\.\w+)?$/',$base,$parts);
-						$dest=$dir.$this->slug($parts[1]).$parts[2];
+						$dst=$dir.$this->slug($parts[1]).$parts[2];
 					}
 					else
-						$dest=$dir.$base;
+						$dst=$dir.$base;
 					if ($file['error'] ||
 						$file['type']!=$this->mime($file['name']) ||
-						$overwrite && file_exists($dest) ||
+						$overwrite && file_exists($dst) ||
 						$func && !$fw->call($func,array($file)) ||
-						!move_uploaded_file($file['tmp_name'],$dest))
+						!move_uploaded_file($file['tmp_name'],$dst))
 						return FALSE;
 				}
 				return TRUE;
@@ -366,7 +366,7 @@ class Web extends Prefab {
 		if (!$mime)
 			$mime=$this->mime($files[0]);
 		preg_match('/\w+$/',$files[0],$ext);
-		if (!is_dir($dir=$fw->get('TEMP').'minified'))
+		if (!is_dir($dir=$fw->get('TEMP')))
 			$fw->mkdir($dir);
 		$dst='';
 		foreach ($fw->split($fw->get('UI')) as $path)

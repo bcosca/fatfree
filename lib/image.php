@@ -246,7 +246,7 @@ class Image {
 	**/
 	function save() {
 		$fw=Base::instance();
-		if (!is_dir($dir=$fw->get('TEMP').'images'))
+		if (!is_dir($dir=$fw->get('TEMP')))
 			$fw->mkdir($dir);
 		$this->count++;
 		$fw->write($dir.'/'.$fw->hash($this->file).'-'.$this->count.'.png',
@@ -261,7 +261,7 @@ class Image {
 	**/
 	function restore($state=1) {
 		$fw=Base::instance();
-		if (is_file($file=($path=$fw->get('TEMP').'images/'.
+		if (is_file($file=($path=$fw->get('TEMP').
 			$fw->hash($this->file).'-').$state.'.png')) {
 			$this->data=imagecreatefromstring($fw->read($file));
 			foreach (glob($path.'*.png',GLOB_NOSORT) as $match)

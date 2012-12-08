@@ -223,7 +223,7 @@ class Template extends View {
 	**/
 	function render($file,$mime='text/html',array $hive=NULL) {
 		$fw=Base::instance();
-		if (!is_dir($dir=$fw->get('TEMP').'views'))
+		if (!is_dir($dir=$fw->get('TEMP')))
 			$fw->mkdir($dir);
 		foreach ($fw->split($fw->get('UI')) as $path)
 			if (is_file($view=$fw->fixslashes($path.$file))) {

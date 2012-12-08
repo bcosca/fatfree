@@ -176,8 +176,8 @@ class SMTP extends Magic {
 		$this->dialog('MAIL FROM: '.strstr($headers['From'],'<'),TRUE);
 		foreach ($fw->split($headers['To'].
 			(isset($headers['Cc'])?(';'.$headers['Cc']):'').
-			(isset($headers['Bcc'])?(';'.$headers['Bcc']):'')) as $dest)
-			$this->dialog('RCPT TO: '.strstr($dest,'<'),TRUE);
+			(isset($headers['Bcc'])?(';'.$headers['Bcc']):'')) as $dst)
+			$this->dialog('RCPT TO: '.strstr($dst,'<'),TRUE);
 		$this->dialog('DATA',TRUE);
 		if ($this->attachments) {
 			// Replace Content-Type

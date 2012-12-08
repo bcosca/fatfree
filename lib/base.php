@@ -93,8 +93,9 @@ class Base {
 	function &ref($key,$add=TRUE) {
 		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)|\./',
 			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-		if ($parts[0]=='SESSION' && !session_id()) {
-			session_start();
+		if ($parts[0]=='SESSION')
+			if (!session_id()) {
+				session_start();
 			$this->sync('SESSION');
 		}
 		if ($add)
@@ -141,12 +142,7 @@ class Base {
 	**/
 	function exists($key) {
 		$ref=&$this->ref($key,FALSE);
-		if (!isset($ref)) {
-			// Remove from cache
-			$cache=Cache::instance();
-			return $cache->exists($this->hash($key));
-		}
-		return TRUE;
+		return isset($ref)?TRUE:Cache::instance()->exists($this->hash($key));
 	}
 
 	/**
@@ -204,8 +200,8 @@ class Base {
 		if (is_null($val)) {
 			// Attempt to retrieve from cache
 			$cache=Cache::instance();
-			if ($cache->exists($hash=$this->hash($key)))
-				return $cache->get($hash);
+			if ($cache->exists($hash=$this->hash($key),$data))
+				return $data[0];
 		}
 		return $val;
 	}
@@ -222,10 +218,9 @@ class Base {
 		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)|\./',
 			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		if ($parts[0]=='SESSION') {
-			if (!session_id()) {
+			if (!session_id())
 				session_start();
-				$this->sync('SESSION');
-			}
+			$this->sync('SESSION');
 			if (!isset($parts[1])) {
 				session_unset();
 				session_destroy();
@@ -632,8 +627,7 @@ class Base {
 		);
 		if ($this->hive['ONERROR'])
 			// Execute custom error handler
-			$this->call($this->hive['ONERROR'],
-				array(),'beforeroute,afterroute');
+			$this->call($this->hive['ONERROR'],NULL,'beforeroute,afterroute');
 		elseif (!$prior && PHP_SAPI!='cli')
 			echo
 				'<!DOCTYPE html>'.
@@ -818,8 +812,7 @@ class Base {
 						$this->expire($ttl);
 						// Call route handler
 						ob_start();
-						$this->call($handler,
-							array(),'beforeroute,afterroute');
+						$this->call($handler,NULL,'beforeroute,afterroute');
 						$body=ob_get_clean();
 						if (!error_get_last())
 							// Save to cache backend
@@ -831,8 +824,7 @@ class Base {
 					$this->expire(0);
 					// Call route handler
 					ob_start();
-					$this->call($handler,
-						array(),'beforeroute,afterroute');
+					$this->call($handler,NULL,'beforeroute,afterroute');
 					$body=ob_get_clean();
 				}
 				if ($this->hive['RESPONSE']=$body) {
@@ -911,9 +903,10 @@ class Base {
 	function config($file) {
 		preg_match_all(
 			'/(?<=^|\n)'.
-			'(?:(?:;.+?)|(?:<\?php.+\?>?)|(?:\[(.+?)\])|'.
+			'(?:;.+?)|(?:<\?php.+\?>?)|'.
+			'(?:\[(.+?)\])|'.
 			'(.+?)[[:blank:]]*=[[:blank:]]*'.
-			'((?:\\\\[[:blank:]\r]*\n|.+?)*))'.
+			'((?:\\\\[[:blank:]\r]*\n|.+?)*)'.
 			'(?=\r?\n|$)/',
 			$this->read($file),$matches,PREG_SET_ORDER);
 		if ($matches) {
@@ -977,7 +970,7 @@ class Base {
 	function mutex($files,$func,array $args=NULL) {
 		$files=is_array($files)?$files:$this->split($files);
 		$handles=array();
-		if (!is_dir($dir=$this->hive['TEMP'].'locks'))
+		if (!is_dir($dir=$this->hive['TEMP']))
 			$this->mkdir($dir);
 		// Max lock duration
 		$max=ini_get('max_execution_time');
@@ -1205,24 +1198,21 @@ class Cache {
 		$parts=explode('=',$this->dsn);
 		switch ($parts[0]) {
 			case 'apc':
-				if ($cached=apc_fetch($ndx))
-					break;
-				return FALSE;
+				$cached=apc_fetch($ndx);
+				break;
 			case 'wincache':
-				if ($cached=wincache_ucache_get($ndx))
-					break;
-				return FALSE;
+				$cached=wincache_ucache_get($ndx);
+				break;
 			case 'xcache':
-				if ($cached=xcache_get($ndx))
-					break;
-				return FALSE;
+				$cached=xcache_get($ndx);
+				break;
 			case 'folder':
-				if (is_file($file=$parts[1].$ndx) && $cached=$fw->read($file))
-					break;
-				return FALSE;
+				if (is_file($file=$parts[1].$ndx))
+					$cached=$fw->read($file);
+				break;
 		}
 		if (isset($cached)) {
-			$data=list($time,$ttl,$val)=$fw->unserialize($cached);
+			$data=list($val,$time,$ttl)=$fw->unserialize($cached);
 			if (!$ttl || $time+$ttl>microtime(TRUE))
 				return $time;
 			$this->clear($key);
@@ -1242,7 +1232,7 @@ class Cache {
 		if (!$this->dsn)
 			return TRUE;
 		$ndx=$fw->hash($fw->get('ROOT')).'.'.$key;
-		$data=$fw->serialize(array(microtime(TRUE),$ttl,$val));
+		$data=$fw->serialize(array($val,microtime(TRUE),$ttl));
 		$parts=explode('=',$this->dsn);
 		switch ($parts[0]) {
 			case 'apc':
@@ -1263,10 +1253,9 @@ class Cache {
 		@param $key string
 	**/
 	function get($key) {
-		$data=array();
 		if (!$this->dsn || !$this->exists($key,$data))
 			return FALSE;
-		list($time,$ttl,$val)=$data;
+		list($val,$time,$ttl)=$data;
 		return $val;
 	}
 
@@ -1874,9 +1863,9 @@ class Lexicon {
 			elseif (is_file($file=$base.'.ini')) {
 				preg_match_all(
 					'/(?<=^|\n)'.
-					'(?:(?:;.+?)|(?:<\?php.+\?>?)|'.
+					'(?:;.+?)|(?:<\?php.+\?>?)|'.
 					'(.+?)[[:blank:]]*=[[:blank:]]*'.
-					'((?:\\\\[[:blank:]\r]*\n|[^\n])*))'.
+					'((?:\\\\[[:blank:]\r]*\n|[^\n])*)'.
 					'(?=\n|$)/',
 					Base::instance()->read($file),$matches,PREG_SET_ORDER);
 				if ($matches)

@@ -24,9 +24,9 @@ class Jig {
 	**/
 	function read($file) {
 		$fw=\Base::instance();
-		if (!is_file($this->dir.$file))
+		if (!is_file($dst=$this->dir.$file))
 			return array();
-		$raw=$fw->read($this->dir.$file);
+		$raw=$fw->read($dst);
 		switch ($this->format) {
 			case self::FORMAT_JSON:
 				$data=json_decode($raw,TRUE);
