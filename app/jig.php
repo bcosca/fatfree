@@ -11,7 +11,7 @@ class Jig extends Controller {
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$db=new \DB\Jig('tmp/jig/',\DB\Jig::FORMAT_JSON);
+		$db=new \DB\Jig('tmp/jig/');
 		$db->drop();
 		$test->expect(
 			is_object($db),
@@ -33,6 +33,12 @@ class Jig extends Controller {
 			$movie->get('director')=='Mike Newell' &&
 			$movie->get('year')==1997,
 			'Record loaded'
+		);
+		$test->expect(
+			$movie->title=='Donnie Brasco' &&
+			$movie->director=='Mike Newell' &&
+			$movie->year==1997,
+			'Magic properties'
 		);
 		$movie->reset();
 		$test->expect(

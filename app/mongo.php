@@ -39,6 +39,12 @@ class Mongo extends Controller {
 				$movie->get('year')==1997,
 				'Record loaded'
 			);
+			$test->expect(
+				$movie->title=='Donnie Brasco' &&
+				$movie->director=='Mike Newell' &&
+				$movie->year==1997,
+				'Magic properties'
+			);
 			$movie->reset();
 			$test->expect(
 				$movie->dry(),

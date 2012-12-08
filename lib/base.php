@@ -641,11 +641,9 @@ class Base {
 				'<head><title>'.$code.' '.$header.'</title></head>'.$eol.
 				'<body>'.$eol.
 					'<h1>'.$header.'</h1>'.$eol.
-					'<p><big><i>'.
-						$this->encode($text?:$req).
-					'</i></big></p>'.$eol.
+					'<p>'.$this->encode($text?:$req).'</p>'.$eol.
 					($out && $this->hive['DEBUG']?
-						('<p>'.$eol.$out.'</p>'.$eol):'').
+						('<p><i>'.$eol.$out.'</i></p>'.$eol):'').
 				'</body>'.$eol.
 				'</html>';
 	}
@@ -866,17 +864,6 @@ class Base {
 	}
 
 	/**
-		Convert string to executable PHP callback
-		@return callback|FALSE
-		@param $func string
-	**/
-	function callback($func) {
-		return preg_match('/(.+)\s*(->|::)\s*(.+)/s',$func,$parts)?
-			array($parts[2]=='->'?new $parts[1]:$parts[1],$parts[3]):
-			$func;
-	}
-
-	/**
 		Execute callback/hooks (supports 'class->method' format)
 		@return mixed|FALSE
 		@param $func string|callback
@@ -886,7 +873,10 @@ class Base {
 	function call($func,array $args=NULL,$hooks='') {
 		// Execute function; abort if callback/hook returns FALSE
 		if (is_string($func))
-			$func=$this->callback($func);
+			// Convert string to executable PHP callback
+			$func=preg_match('/(.+)\s*(->|::)\s*(.+)/s',$func,$parts)?
+				array($parts[2]=='->'?new $parts[1]:$parts[1],$parts[3]):
+				$func;
 		if (!is_callable($func))
 			$this->error(404);
 		$oo=FALSE;
@@ -2043,43 +2033,53 @@ abstract class Magic {
 	abstract function clear($key);
 
 	/**
-		Convenience method for checking value of public property
+		Return TRUE if property has public visibility
+		@return bool
+		@param $Key string
+	**/
+	private function visible($key) {
+		if (property_exists($this,$key)) {
+			$ref=new \ReflectionProperty(get_class($this),$key);
+			return $ref->ispublic();
+		}
+		return FALSE;
+	}
+
+	/**
+		Convenience method for checking property value
 		@return mixed
 		@param $key string
 	**/
 	function __isset($key) {
-		return property_exists($this,$key)?
-			isset($this->$key):$this->exists($key);
+		return $this->visible($key)?isset($this->$key):$this->exists($key);
 	}
 
 	/**
-		Convenience method for assigning value to public property
+		Convenience method for assigning property value
 		@return mixed
 		@param $key string
 		@param $val scalar
 	**/
 	function __set($key,$val) {
-		return property_exists($this,$key)?
-			($this->$key=$val):$this->set($key,$val);
+		return $this->visible($key)?($this->key=$val):$this->set($key,$val);
 	}
 
 	/**
-		Convenience method for retrieving value of public property
+		Convenience method for retrieving property value
 		@return mixed
 		@param $key string
 	**/
 	function __get($key) {
-		return property_exists($this,$key)?
-			$this->$key:$this->get($key);
+		return $this->visible($key)?$this->$key:$this->get($key);
 	}
 
 	/**
-		Convenience method for checking value of public property
+		Convenience method for checking property value
 		@return mixed
 		@param $key string
 	**/
 	function __unset($key) {
-		if (property_exists($this,$key))
+		if ($this->visible($key))
 			unset($this->$key);
 		else
 			$this->clear($key);
