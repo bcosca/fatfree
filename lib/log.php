@@ -11,13 +11,14 @@ class Log {
 		Write specified text to log file
 		@return string
 		@param $text string
+		@param $format string
 	**/
-	function write($text) {
+	function write($text,$format='r') {
 		$fw=Base::instance();
 		$trace=debug_backtrace(FALSE);
 		$fw->write(
 			$this->file,
-			date('r').
+			date($format).
 				(isset($_SERVER['REMOTE_ADDR'])?
 					(' ['.$_SERVER['REMOTE_ADDR'].']'):'').' '.
 			$fw->fixslashes($trace[0]['file']).':'.
