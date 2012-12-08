@@ -186,7 +186,7 @@ class SQL extends \PDO {
 				'SELECT '.
 					'c.column_name AS field,'.
 					'c.data_type AS type,'.
-					'c.column_default AS defval',
+					'c.column_default AS defval,'.
 					'c.is_nullable AS nullable,'.
 					't.constraint_type AS pkey '.
 				'FROM information_schema.columns AS c '.
@@ -210,12 +210,12 @@ class SQL extends \PDO {
 								'k.table_catalog=t.table_catalog':
 								'k.table_schema=t.table_schema').' '):'').
 				'WHERE '.
-					'c.table_name="'.$table.'"'.
+					'c.table_name=\''.$table.'\''.
 					($this->dbname?
 						('AND '.
 							($this->engine=='pgsql'?
 							'c.table_catalog':'c.table_schema').
-							'="'.$this->dbname.'"'):'').
+							'=\''.$this->dbname.'\''):'').
 				';',
 				'field','type','defval','nullable','YES','pkey','PRIMARY KEY')
 		);
@@ -228,6 +228,7 @@ class SQL extends \PDO {
 							preg_match('/int|bool/i',$row[$val[2]],$parts)?
 							constant('\PDO::PARAM_'.strtoupper($parts[0])):
 							\PDO::PARAM_STR,
+						'type_raw'=>$row[$val[2]],
 						'default'=>$row[$val[3]],
 						'nullable'=>$row[$val[4]]==$val[5],
 						'pkey'=>$row[$val[6]]==$val[7]
