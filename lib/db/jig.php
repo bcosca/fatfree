@@ -7,8 +7,8 @@ class Jig {
 
 	//@{ Storage formats
 	const
-		FORMAT_JSON=0;
-		FORMAT_Serialized=1,
+		FORMAT_JSON=0,
+		FORMAT_Serialized=1;
 	//@}
 
 	protected
