@@ -2048,8 +2048,8 @@ abstract class Magic {
 		@param $key string
 	**/
 	function __isset($key) {
-		$ref=new \ReflectionProperty(get_class($this),$key);
-		return $ref->ispublic()?isset($this->$key):$this->exists($key);
+		return property_exists($this,$key)?
+			isset($this->$key):$this->exists($key);
 	}
 
 	/**
@@ -2059,8 +2059,8 @@ abstract class Magic {
 		@param $val scalar
 	**/
 	function __set($key,$val) {
-		$ref=new \ReflectionProperty(get_class($this),$key);
-		return $ref->ispublic()?($this->$key=$val):$this->set($key,$val);
+		return property_exists($this,$key)?
+			($this->$key=$val):$this->set($key,$val);
 	}
 
 	/**
@@ -2069,8 +2069,8 @@ abstract class Magic {
 		@param $key string
 	**/
 	function __get($key) {
-		$ref=new \ReflectionProperty(get_class($this),$key);
-		return $ref->ispublic()?$this->$key:$this->get($key);
+		return property_exists($this,$key)?
+			$this->$key:$this->get($key);
 	}
 
 	/**
@@ -2079,8 +2079,7 @@ abstract class Magic {
 		@param $key string
 	**/
 	function __unset($key) {
-		$ref=new \ReflectionProperty(get_class($this),$key);
-		if ($ref->ispublic())
+		if (property_exists($this,$key))
 			unset($this->$key);
 		else
 			$this->clear($key);
