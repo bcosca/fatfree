@@ -186,7 +186,7 @@ class SQL extends \PDO {
 				'SELECT '.
 					'c.column_name AS field,'.
 					'c.data_type AS type,'.
-					'c.column_default AS defval',
+					'c.column_default AS defval,'.
 					'c.is_nullable AS nullable,'.
 					't.constraint_type AS pkey '.
 				'FROM information_schema.columns AS c '.
@@ -224,7 +224,8 @@ class SQL extends \PDO {
 				$rows=array();
 				foreach ($this->exec($val[0],NULL,$ttl) as $row)
 					$rows[$row[$val[1]]]=array(
-						'type'=>
+						'type'=>$row[$val[2]],
+						'pdo_type'=>
 							preg_match('/int|bool/i',$row[$val[2]],$parts)?
 							constant('\PDO::PARAM_'.strtoupper($parts[0])):
 							\PDO::PARAM_STR,

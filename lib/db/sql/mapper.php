@@ -42,7 +42,7 @@ class Mapper extends \DB\Cursor {
 	function set($key,$val) {
 		if (array_key_exists($key,$this->fields)) {
 			if (!is_null($val))
-				$val=$this->value($this->fields[$key]['type'],$val);
+				$val=$this->value($this->fields[$key]['pdo_type'],$val);
 			if ($this->fields[$key]['value']!==$val ||
 				$this->fields[$key]'default']!==$val)
 				$this->fields[$key]['changed']=TRUE;
@@ -190,7 +190,7 @@ class Mapper extends \DB\Cursor {
 		foreach ($result as &$row) {
 			foreach ($row as $field=>&$val) {
 				if (array_key_exists($field,$this->fields))
-					$val=$this->value($this->fields[$field]['type'],$val);
+					$val=$this->value($this->fields[$field]['pdo_type'],$val);
 				elseif (array_key_exists($field,$this->adhoc))
 					$this->adhoc[$field]['value']=$val;
 				unset($val);
@@ -269,7 +269,7 @@ class Mapper extends \DB\Cursor {
 				$fields.=($ctr?',':'').
 					($this->engine=='mysql'?('`'.$key.'`'):$key);
 				$values.=($ctr?',':'').'?';
-				$args[$ctr+1]=array($field['value'],$field['type']);
+				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
 			}
 		if ($fields)
@@ -283,8 +283,8 @@ class Mapper extends \DB\Cursor {
 			$out+=array($key=>$field['value']);
 			if ($field['pkey']) {
 				$field['previous']=$field['value'];
-				if ($field['type']==\PDO::PARAM_INT && !$field['nullable'] &&
-					is_null($field['value']))
+				if ($field['pdo_type']==\PDO::PARAM_INT &&
+					!$field['nullable'] && is_null($field['value']))
 					$inc[]=$key;
 			}
 		}
@@ -301,7 +301,7 @@ class Mapper extends \DB\Cursor {
 			}
 			return $this->load(
 				array($inc[0].'=?',$this->value(
-					$this->fields[$inc[0]]['type'],
+					$this->fields[$inc[0]]['pdo_type'],
 					$this->id=$this->db->lastinsertid($seq))));
 		}
 	}
@@ -319,13 +319,13 @@ class Mapper extends \DB\Cursor {
 			if ($field['changed']) {
 				$pairs.=($pairs?',':'').
 					($this->engine=='mysql'?('`'.$key.'`'):$key).'=?';
-				$args[$ctr+1]=array($field['value'],$field['type']);
+				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
 			}
 		foreach ($this->fields as $key=>$field)
 			if ($field['pkey']) {
 				$filter.=($filter?' AND ':'').$key.'=?';
-				$args[$ctr+1]=array($field['previous'],$field['type']);
+				$args[$ctr+1]=array($field['previous'],$field['pdo_type']);
 				$ctr++;
 			}
 		if ($pairs) {
@@ -359,7 +359,7 @@ class Mapper extends \DB\Cursor {
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
 				$filter.=($filter?' AND ':'').$key.'=?';
-				$args[$ctr+1]=array($field['previous'],$field['type']);
+				$args[$ctr+1]=array($field['previous'],$field['pdo_type']);
 				$ctr++;
 			}
 			$field['value']=NULL;
