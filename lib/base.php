@@ -586,9 +586,8 @@ class Base {
 	function error($code,$text='',array $trace=NULL) {
 		$prior=$this->hive['ERROR'];
 		$header=$this->status($code);
+		error_log($text?:$header.' ('.$req.')');
 		$req=$this->hive['VERB'].' '.$this->hive['URI'];
-		if (!$this->hive['QUIET'])
-			error_log($text?:$header.' ('.$req.')');
 		$out='';
 		$eol="\n";
 		if (!$trace)
@@ -615,8 +614,7 @@ class Base {
 					}
 				}
 				$str=$addr.' '.$line;
-				if (!$this->hive['QUIET'])
-					error_log('- '.$str);
+				error_log('- '.$str);
 				$out.='&bull; '.nl2br($this->encode($str)).'<br />'.$eol;
 			}
 		}
@@ -628,7 +626,7 @@ class Base {
 		if ($this->hive['ONERROR'])
 			// Execute custom error handler
 			$this->call($this->hive['ONERROR'],NULL,'beforeroute,afterroute');
-		elseif (!$prior && PHP_SAPI!='cli')
+		elseif (!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo
 				'<!DOCTYPE html>'.
 				'<html>'.$eol.

@@ -51,7 +51,7 @@ class Jig extends Controller {
 		$movie->save();
 		$movie->load(
 			array(
-				'@title==? && @director==?',
+				'@title==? AND @director==?',
 				'The River Murders',
 				'Rich Cowan'
 			)
