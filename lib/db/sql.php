@@ -210,12 +210,12 @@ class SQL extends \PDO {
 								'k.table_catalog=t.table_catalog':
 								'k.table_schema=t.table_schema').' '):'').
 				'WHERE '.
-					'c.table_name="'.$table.'"'.
+					'c.table_name='.$this->quote($table).' '.
 					($this->dbname?
 						('AND '.
 							($this->engine=='pgsql'?
 							'c.table_catalog':'c.table_schema').
-							'="'.$this->dbname.'"'):'').
+							'='.$this->quote($this->dbname)):'').
 				';',
 				'field','type','defval','nullable','YES','pkey','PRIMARY KEY')
 		);
