@@ -71,6 +71,8 @@ class Base {
 	private
 		//! Globals
 		$hive,
+		//! Default settings
+		$defaults,
 		//! Null reference
 		$null=NULL;
 
@@ -227,24 +229,29 @@ class Base {
 				unset($_COOKIE[session_name()]);
 			}
 		}
-		foreach ($parts as $part)
-			if ($part=='->')
-				$obj=TRUE;
-			elseif ($obj) {
-				$obj=FALSE;
-				$out.='->'.$out;
-			}
-			else
-				$out.='['.$this->stringify($part).']';
-		if (preg_match('/^(?:GET|POST|COOKIE)\b(.+)/',$key,$parts))
-			// Sync GET, POST, or COOKIE with REQUEST
-			$this->clear('REQUEST'.$parts[1]);
-		// Remove from cache
-		$cache=Cache::instance();
-		if ($cache->exists($hash=$this->hash($key)))
-			$cache->clear($hash);
-		// PHP can't unset a referenced array/object directly
-		eval('unset($this->hive'.$out.');');
+		elseif (array_key_exists($parts[0],$this->defaults) &&
+			!isset($parts[1]))
+			$this->hive[$parts[0]]=$this->defaults[$parts[0]];
+		else {
+			foreach ($parts as $part)
+				if ($part=='->')
+					$obj=TRUE;
+				elseif ($obj) {
+					$obj=FALSE;
+					$out.='->'.$out;
+				}
+				else
+					$out.='['.$this->stringify($part).']';
+			if (preg_match('/^(?:GET|POST|COOKIE)\b(.+)/',$key,$parts))
+				// Sync GET, POST, or COOKIE with REQUEST
+				$this->clear('REQUEST'.$parts[1]);
+			// Remove from cache
+			$cache=Cache::instance();
+			if ($cache->exists($hash=$this->hash($key)))
+				$cache->clear($hash);
+			// PHP can't unset a referenced array/object directly
+			eval('unset($this->hive'.$out.');');
+		}
 	}
 
 	/**
@@ -1162,6 +1169,7 @@ class Base {
 		// Sync PHP globals with corresponding hive keys
 		foreach (explode('|',self::GLOBALS) as $global)
 			$this->sync($global);
+		$this->defaults=$this->hive;
 		// Register framework autoloader
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler

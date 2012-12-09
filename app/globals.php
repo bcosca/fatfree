@@ -19,6 +19,12 @@ class Globals extends Controller {
 			$version=$f3->get('VERSION'),
 			'VERSION: '.$version
 		);
+		$f3->clear('PACKAGE');
+		$f3->clear('VERSION');
+		$test->expect(
+			$f3->get('PACKAGE')==$package && $f3->get('VERSION')==$version,
+			'Clearing global variable resets to default value'
+		);
 		$test->expect(
 			is_dir($root=$f3->get('ROOT')),
 			'ROOT (document root): '.$f3->stringify($root)
