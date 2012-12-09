@@ -168,14 +168,12 @@ class Base {
 				case 'LANGUAGE':
 					$lex=Lexicon::instance();
 					$val=$lex->language($val);
-					foreach ($lex->load()?:array() as $key=>$str)
-						$this->set($key,$str);
+					$this->mset($lex->load());
 					break;
 				case 'LOCALES':
 					$lex=Lexicon::instance();
 					$val=$lex->locales($val);
-					foreach ($lex->load()?:array() as $key=>$str)
-						$this->set($key,$str);
+					$this->mset($lex->load());
 					break;
 				case 'TZ':
 					date_default_timezone_set($val);
@@ -359,7 +357,7 @@ class Base {
 		@param $str string
 	**/
 	function fixslashes($str) {
-		return $str?strtr($str,'\\','/'):$str;
+		return $str?strtr($str,'\','/'):$str;
 	}
 
 	/**

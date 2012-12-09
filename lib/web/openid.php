@@ -62,8 +62,8 @@ class OpenID extends \Magic {
 			// Parse document
 			while ($ptr<$len)
 				if (preg_match(
-					'/^<link\b((?:\s+\w+s*=\s*(?:"(?:.+?)"|'.
-					'\'(?:.+?)\'))*)\s*\/?>/is',
+					'/^<link\b((?:\s+\w+s*=\s*'.
+					'(?:"(?:.+?)"|\'(?:.+?)\'))*)\s*\/?>/is',
 					substr($req['body'],$ptr),$parts)) {
 					if ($parts[1]) {
 						// Process attributes
