@@ -42,10 +42,9 @@ class Mapper extends \DB\Cursor {
 	function set($key,$val) {
 		if (array_key_exists($key,$this->fields)) {
 			if (!is_null($val))
-				$val=eval('return ('.
-					$this->type($this->fields[$key]['type']).')'.
-					\Base::instance()->stringify($val).';');
-			if ($this->fields[$key]['value']!==$val)
+				$val=$this->value($this->fields[$key]['type'],$val);
+			if ($this->fields[$key]['value']!==$val ||
+				$this->fields[$key]'default']!==$val)
 				$this->fields[$key]['changed']=TRUE;
 			return $this->fields[$key]['value']=$val;
 		}
@@ -386,7 +385,7 @@ class Mapper extends \DB\Cursor {
 	function reset() {
 		foreach ($this->fields as &$field) {
 			$field['value']=NULL;
-			$field['changed']=(bool)$field['default'];
+			$field['changed']=FALSE;
 			if ($field['pkey'])
 				$field['previous']=NULL;
 			unset($field);
