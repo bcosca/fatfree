@@ -168,12 +168,12 @@ class Base {
 				case 'LANGUAGE':
 					$lex=Lexicon::instance();
 					$val=$lex->language($val);
-					$this->mset($lex->load());
+					$this->mset($lex->load(),NULL,$ttl);
 					break;
 				case 'LOCALES':
 					$lex=Lexicon::instance();
 					$val=$lex->locales($val);
-					$this->mset($lex->load());
+					$this->mset($lex->load(),NULL,$ttl);
 					break;
 				case 'TZ':
 					date_default_timezone_set($val);
@@ -357,7 +357,7 @@ class Base {
 		@param $str string
 	**/
 	function fixslashes($str) {
-		return $str?strtr($str,'\','/'):$str;
+		return $str?strtr($str,'\\','/'):$str;
 	}
 
 	/**
@@ -481,8 +481,10 @@ class Base {
 		if (is_string($arg))
 			return $this->encode($arg);
 		if (is_array($arg))
-			foreach ($arg as $key=>$val)
-				$arg[$key]=$this->esc($val);
+			foreach ($arg as &$val) {
+				$val=$this->esc($val);
+				unset($val);
+			}
 		return $arg;
 	}
 
@@ -495,8 +497,10 @@ class Base {
 		if (is_string($arg))
 			return $this->decode($arg);
 		if (is_array($arg))
-			foreach ($arg as $key=>$val)
-				$arg[$key]=$this->raw($val);
+			foreach ($arg as &$val) {
+				$val=$this->raw($val);
+				unset($val);
+			}
 		return $arg;
 	}
 
@@ -971,13 +975,12 @@ class Base {
 		@param $args array
 	**/
 	function mutex($files,$func,array $args=NULL) {
-		$files=is_array($files)?$files:$this->split($files);
 		$handles=array();
 		if (!is_dir($dir=$this->hive['TEMP']))
 			$this->mkdir($dir);
 		// Max lock duration
 		$max=ini_get('max_execution_time');
-		foreach ($files as $file) {
+		foreach (is_array($files)?$files:$this->split($files) as $file) {
 			// Use filesystem lock
 			if (is_file($lock=$dir.'/'.
 				$this->hash($this->hive['ROOT']).'.'.
@@ -1802,12 +1805,12 @@ class Lexicon {
 		}
 		setlocale(LC_ALL,$list);
 		// Get formatting rules
-		$format=localeconv();
+		$conv=localeconv();
 		if (!is_array($args))
 			$args=array($args);
 		$out=preg_replace_callback(
 			'/{(?P<index>\d+)(?:,(?P<format>\w+)(?:,(?P<type>\w+))?)?}/',
-			function($expr) use($args,$format) {
+			function($expr) use($args,$conv) {
 				if (!isset($args[$expr['index']]))
 					return $expr[0];
 				if (!isset($expr['format']))
@@ -1821,21 +1824,21 @@ class Lexicon {
 								return
 									number_format(
 										$args[$expr['index']],0,'',
-										$format['thousands_sep']);
+										$conv['thousands_sep']);
 							case 'currency':
 								return
-									$format['currency_symbol'].
+									$conv['currency_symbol'].
 									number_format(
 										$args[$expr['index']],
-										$format['frac_digits'],
-										$format['decimal_point'],
-										$format['thousands_sep']);
+										$conv['frac_digits'],
+										$conv['decimal_point'],
+										$conv['thousands_sep']);
 							case 'percent':
 								return
 									number_format(
 										$args[$expr['index']]*100,0,
-										$format['decimal_point'],
-										$format['thousands_sep']).'%';
+										$conv['decimal_point'],
+										$conv['thousands_sep']).'%';
 						}
 					case 'date':
 						return strftime(!isset($expr['type']) ||
