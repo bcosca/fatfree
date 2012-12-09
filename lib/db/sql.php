@@ -269,8 +269,10 @@ class SQL extends \PDO {
 		if (!$options)
 			$options=array();
 		$options+=array(\PDO::ATTR_EMULATE_PREPARES=>FALSE);
-		if (in_array('mysql',pdo_drivers()))
-			$options+=array(\PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES utf8;');
+		if (strstr($parts[0],':',TRUE)=='mysql')
+			$options+=array(\PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES '.
+				strtolower(str_replace('-','',
+					\Base::instance()->get('ENCODING'))).';');
 		parent::__construct($dsn,$user,$pw,$options);
 		$this->engine=parent::getattribute(parent::ATTR_DRIVER_NAME);
 	}
