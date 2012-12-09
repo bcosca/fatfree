@@ -44,7 +44,7 @@ class Mapper extends \DB\Cursor {
 			if (!is_null($val))
 				$val=$this->value($this->fields[$key]['pdo_type'],$val);
 			if ($this->fields[$key]['value']!==$val ||
-				$this->fields[$key]'default']!==$val)
+				$this->fields[$key]['default']!==$val)
 				$this->fields[$key]['changed']=TRUE;
 			return $this->fields[$key]['value']=$val;
 		}
