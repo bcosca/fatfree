@@ -846,7 +846,7 @@ class Base {
 		if (!$allowed)
 			// URL doesn't match any route
 			$this->error(404);
-		if (PHP_SAPI!='cli' && !headers_sent()) {
+		elseif (PHP_SAPI!='cli' && !headers_sent()) {
 			// Unhandled HTTP method
 			header('Allow: '.implode(',',$allowed));
 			$this->error(405);
