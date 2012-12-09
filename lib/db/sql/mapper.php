@@ -281,9 +281,11 @@ class Mapper extends \DB\Cursor {
 			);
 		$out=array();
 		$inc=array();
+		$pkeys=array();
 		foreach ($this->fields as $key=>$field) {
 			$out+=array($key=>$field['value']);
 			if ($field['pkey']) {
+				$pkeys[]=$key;
 				$field['previous']=$field['value'];
 				if ($field['type']==\PDO::PARAM_INT && !$field['nullable'] &&
 					is_null($field['value']))
@@ -297,10 +299,8 @@ class Mapper extends \DB\Cursor {
 		if ($ctr) {
 			// Reload to obtain default and auto-increment field values
 			$seq=NULL;
-			if ($this->engine=='pgsql') {
-				$pkeys=array_keys($this->pkeys);
+			if ($this->engine=='pgsql')
 				$seq=$this->table.'_'.end($pkeys).'_seq';
-			}
 			return $this->load(
 				array($inc[0].'=?',$this->value(
 					$this->fields[$inc[0]]['type'],
