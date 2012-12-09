@@ -586,8 +586,8 @@ class Base {
 	function error($code,$text='',array $trace=NULL) {
 		$prior=$this->hive['ERROR'];
 		$header=$this->status($code);
-		error_log($text?:$header.' ('.$req.')');
 		$req=$this->hive['VERB'].' '.$this->hive['URI'];
+		error_log($text?:$header.' ('.$req.')');
 		$out='';
 		$eol="\n";
 		if (!$trace)
