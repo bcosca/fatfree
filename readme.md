@@ -237,13 +237,13 @@ Lighttpd servers are configured in a similar manner:-
 
 So let's get back to coding. You can declare a page obsolete and redirect your visitors to another site:-
 
-    $f3->route('GET /obsoletepage',
+    $f3->route('GET|HEAD /obsoletepage',
         function() use($f3) {
             $f3->reroute('/newpage');
         }
     );
 
-If someone tries to access the URL `http://www.example.com/obsoletepage`, the framework redirects the user to the URL: `http://www.example.com/newpage` as shown in the above example. You can also redirect the user to another site, like `$f3->reroute('http://www.anotherexample.org/');`.
+If someone tries to access the URL `http://www.example.com/obsoletepage` using either HTTP GET or HEAD request, the framework redirects the user to the URL: `http://www.example.com/newpage` as shown in the above example. You can also redirect the user to another site, like `$f3->reroute('http://www.anotherexample.org/');`.
 
 Rerouting can be particularly useful when you need to do some maintenance work on your site. You can have a route handler that informs your visitors that your site is offline for a short period.
 
@@ -311,13 +311,13 @@ Remember: All directory names in Fat-Free must end with a slash. You can assign 
 F3, being a namespace-aware framework, allows you to use a method in namespaced class as a route handler, and there are several ways of doing it. To call a static method:-
 
     $f3->set('AUTOLOAD','classes/');
-    $f3->route('GET /','Main\Home::show');
+    $f3->route('GET|POST /','Main\Home::show');
 
 The above code will invoke the static `show()` method of the class `Home` within the `Main` namespace. The `Home` class must be saved in the folder `classes/main/home.php` for it to be loaded automatically.
 
 If you prefer to work with objects:-
 
-    $f3->route('GET /','Main\Home->show');
+    $f3->route('GET|POST /','Main\Home->show');
 
 will instantiate the `Home` class at runtime and call the `show()` method thereafter.
 
