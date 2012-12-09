@@ -269,7 +269,7 @@ class SQL extends \PDO {
 		if (!$options)
 			$options=array();
 		$options+=array(\PDO::ATTR_EMULATE_PREPARES=>FALSE);
-		if (strstr($parts[0],':',TRUE)=='mysql')
+		if (isset($parts[0]) && strstr($parts[0],':',TRUE)=='mysql')
 			$options+=array(\PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES '.
 				strtolower(str_replace('-','',
 					\Base::instance()->get('ENCODING'))).';');
