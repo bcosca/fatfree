@@ -1100,7 +1100,7 @@ To remove a mapped record from our table, invoke the `erase()` method on an auto
 Jig's query syntax would be slightly similar:-
 
     $user=new DB\Jig\Mapper($db,'users');
-    $user->load(array('@userID==? && @password==?','cheetah','chimp'));
+    $user->load(array('@userID==? AND @password==?','cheetah','chimp'));
     $user->erase();
 
 And the MongoDB equivalent would be:-
