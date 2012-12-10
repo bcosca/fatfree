@@ -20,6 +20,7 @@ class Controller {
 	function afterroute() {
 		$f3=\Base::instance();
 		$f3->set('QUIET',FALSE);
+		header_remove();
 		echo \View::instance()->render('layout.htm');
 	}
 
