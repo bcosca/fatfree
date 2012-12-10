@@ -1371,7 +1371,7 @@ class View extends Prefab {
 		$fw=Base::instance();
 		foreach ($fw->split($fw->get('UI')) as $path)
 			if (is_file($this->view=$fw->fixslashes($path.$file))) {
-				if (isset($_COOKIE[session_name()]) && !session_id())
+				if (!session_id() && isset($_COOKIE[session_name()]))
 					session_start();
 				$fw->sync('SESSION');
 				if (!$hive)
