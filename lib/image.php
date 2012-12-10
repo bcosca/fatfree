@@ -137,6 +137,8 @@ class Image {
 	function hflip() {
 		$tmp=imagecreatetruecolor(
 			$width=imagesx($this->data),$height=imagesy($this->data));
+		imagealphablending($tmp,FALSE);
+		imagesavealpha($tmp,TRUE);
 		imagecopyresampled($tmp,
 			$this->data,0,0,$width-1,0,$width,$height,-$width,$height);
 		$this->data=$tmp;
@@ -150,6 +152,8 @@ class Image {
 	function vflip() {
 		$tmp=imagecreatetruecolor(
 			$width=imagesx($this->data),$height=imagesy($this->data));
+		imagealphablending($tmp,FALSE);
+		imagesavealpha($tmp,TRUE);
 		imagecopyresampled($tmp,
 			$this->data,0,0,0,$height-1,$width,$height,$width,-$height);
 		$this->data=$tmp;
@@ -185,11 +189,11 @@ class Image {
 		list($r,$g,$b)=$this->bg;
 		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
 		imagefill($tmp,0,0,$bg);
+		imagealphablending($tmp,FALSE);
+		imagesavealpha($tmp,TRUE);
 		// Resize
 		imagecopyresampled($tmp,
 			$this->data,0,0,0,0,$width,$height,$oldx,$oldy);
-		imagealphablending($tmp,FALSE);
-		imagesavealpha($tmp,TRUE);
 		$this->data=$tmp;
 		return $this->save();
 	}
@@ -227,30 +231,26 @@ class Image {
 	/**
 		Send image to HTTP client
 		@return NULL
-		@param $format string
-		@param $quality int
-		@param $filters int
 	**/
-	function render($format='png',$quality=100,$filters=0) {
+	function render() {
+		$args=func_get_args();
+		$format=$args?array_shift($args):'png';
 		if (PHP_SAPI!='cli') {
 			header('Content-Type: image/'.$format);
 			header('X-Powered-By: '.Base::instance()->get('PACKAGE'));
 		}
-		eval('image'.$format.'($this->data,NULL,'.$quality.
-			($filters?(','.$filters):'').');');
+		call_user_func_array('image'.$format,array($this->data)+$args);
 	}
 
 	/**
 		Return image as a string
 		@return string
-		@param $format string
-		@param $quality int
-		@param $filters int
 	**/
-	function dump($format='png',$quality=0,$filters=0) {
+	function dump() {
+		$args=func_get_args();
+		$format=$args?array_shift($args):'png';
 		ob_start();
-		eval('image'.$format.'($this->data,NULL'.
-			($quality?(','.$quality.($filters?(','.$filters):'')):'').');');
+		call_user_func_array('image'.$format,array($this->data)+$args);
 		return ob_get_clean();
 	}
 
@@ -278,6 +278,8 @@ class Image {
 		if (is_file($file=($path=$fw->get('TEMP').
 			$fw->hash($this->file).'-').$state.'.png')) {
 			$this->data=imagecreatefromstring($fw->read($file));
+			imagealphablending($this->data,FALSE);
+			imagesavealpha($this->data,TRUE);
 			foreach (glob($path.'*.png',GLOB_NOSORT) as $match)
 				if (preg_match('/-(\d+)\.png/',$match,$parts) &&
 					$parts[1]>$state)
@@ -307,15 +309,19 @@ class Image {
 			// Create image from file
 			$this->file=$file;
 			foreach ($fw->split($fw->get('UI')) as $dir)
-				if (is_file($dir.$file))
+				if (is_file($dir.$file)) {
 					$this->data=imagecreatefromstring($fw->read($dir.$file));
+					imagealphablending($this->data,FALSE);
+					imagesavealpha($this->data,TRUE);
+				}
 			$this->save();
 		}
 	}
 
 	//! Wrap-up
 	function __destruct() {
-		imagedestroy($this->data);
+		if (is_resource($this->data))
+			imagedestroy($this->data);
 	}
 
 }

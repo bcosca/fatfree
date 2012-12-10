@@ -18,101 +18,113 @@ class Image extends Controller {
 			'Original image rendered from template<br />'.$orig
 		);
 		$test->expect(
-			$src=$f3->base64($img->dump('jpeg'),'image/jpeg'),
+			$src=$f3->base64($img->dump(),'image/png'),
 			'Same image from base64-encoded data URI<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->hflip()->dump('jpeg'),'image/jpeg'),
+			$src=$f3->base64($img->hflip()->dump(),'image/png'),
 			'Horizontal flip<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->undo()->dump('jpeg'),'image/jpeg'),
+			$src=$f3->base64($img->undo()->dump(),'image/png'),
 			'Undo<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->vflip()->dump('jpeg'),'image/jpeg'),
+			$src=$f3->base64($img->vflip()->dump(),'image/png'),
 			'Vertical flip<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
 			$src=$f3->base64($img->undo()->invert()->sepia()->sketch()->
-				restore()->dump('jpeg'),'image/jpeg'),
+				restore()->dump(),'image/png'),
 			'Restore<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->invert()->dump('png'),'image/png'),
+			$src=$f3->base64($img->invert()->dump(),'image/png'),
 			'Invert<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->undo()->grayscale()->dump('jpeg'),'image/jpeg'),
+			$src=$f3->base64($img->undo()->grayscale()->dump(),'image/png'),
 			'Grayscale<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->undo()->pixelate(10)->dump('gif'),'image/gif'),
+			$src=$f3->base64($img->undo()->pixelate(10)->dump('png'),'image/png'),
 			'Pixelate<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->undo()->sketch()->dump('png'),'image/png'),
+			$src=$f3->base64($img->undo()->sketch()->dump(),'image/png'),
 			'Sketch<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->undo()->sepia()->dump('png'),'image/png'),
+			$src=$f3->base64($img->undo()->sepia()->dump(),'image/png'),
 			'Sepia<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->undo()->blur()->dump('png'),'image/png'),
+			$src=$f3->base64($img->undo()->blur()->dump(),'image/png'),
 			'Blur<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->undo()->emboss()->dump('png'),'image/png'),
+			$src=$f3->base64($img->undo()->emboss()->dump(),'image/png'),
 			'Emboss<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->restore()->resize(120,90)->dump('png'),'image/png'),
+			$src=$f3->base64($img->restore()->resize(120,90)->dump(),'image/png'),
 			'Resize (smaller)<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->restore()->resize(200,150)->dump('png'),'image/png'),
+			$src=$f3->base64($img->restore()->resize(200,150)->dump(),'image/png'),
 			'Resize (larger)<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->restore()->rotate(-90)->dump('png'),'image/png'),
+			$src=$f3->base64($img->restore()->rotate(-90)->dump(),'image/png'),
 			'Rotate clockwise<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->restore()->rotate(90)->dump('png'),'image/png'),
+			$src=$f3->base64($img->restore()->rotate(90)->dump(),'image/png'),
 			'Rotate anti-clockwise<br />'.
 			'<img src="'.$src.'" '.
-				'title="'.$img->width().'x'.$img->height().'"/>'
+				'title="'.$img->width().'x'.$img->height().'" />'
+		);
+		$test->expect(
+			$src=$f3->base64($img->restore()->dump('gif'),'image/gif'),
+			'Convert to GIF format<br />'.
+			'<img src="'.$src.'" '.
+				'title="'.$img->width().'x'.$img->height().'" />'
+		);
+		$test->expect(
+			$src=$f3->base64($img->restore()->dump('jpeg'),'image/jpeg'),
+			'Convert to JPEG format<br />'.
+			'<img src="'.$src.'" '.
+				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$f3->set('ESCAPE',FALSE);
 		$f3->set('results',$test->results());
