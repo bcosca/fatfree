@@ -95,6 +95,7 @@ class Base {
 		@param $add bool
 	**/
 	function &ref($key,$add=TRUE) {
+		var_dump($key);
 		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)|\./',
 			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		if ($parts[0]=='SESSION')
@@ -130,12 +131,6 @@ class Base {
 				$var=$var[$part];
 			else
 				return $this->null;
-		if ($add &&
-			preg_match('/^(?:GET|POST|COOKIE)\b(.+)/',$key,$parts)) {
-			// Sync GET, POST, or COOKIE with REQUEST
-			$req=&$this->ref('REQUEST'.$parts[1]);
-			$req=$var;
-		}
 		return $var;
 	}
 
@@ -159,24 +154,28 @@ class Base {
 	function set($key,$val,$ttl=0) {
 		if (preg_match('/^JAR\b/',$key))
 			call_user_func_array('session_set_cookie_params',$val);
-		else
-			switch ($key) {
-				case 'CACHE':
-					$val=Cache::instance()->load($val);
-					break;
-				case 'ENCODING':
-					$val=ini_set('default_charset',$val);
-					break;
-				case 'LANGUAGE':
-				case 'LOCALES':
-					$lex=Lexicon::instance();
-					$val=$lex->{$key}($val);
-					$this->mset($lex->load(),NULL,$ttl);
-					break;
-				case 'TZ':
-					date_default_timezone_set($val);
-					break;
-			}
+		elseif (preg_match('/^(?:GET|POST|COOKIE)\b(.+)/',$key,$parts)) {
+			// Sync GET, POST, and COOKIE with REQUEST
+			$req=&$this->ref('REQUEST'.$parts[1]);
+			$req=$val;
+		}
+		else switch ($key) {
+			case 'CACHE':
+				$val=Cache::instance()->load($val);
+				break;
+			case 'ENCODING':
+				$val=ini_set('default_charset',$val);
+				break;
+			case 'LANGUAGE':
+			case 'LOCALES':
+				$lex=Lexicon::instance();
+				$val=$lex->{$key}($val);
+				$this->mset($lex->load(),NULL,$ttl);
+				break;
+			case 'TZ':
+				date_default_timezone_set($val);
+				break;
+		}
 		$ref=&$this->ref($key);
 		$ref=$val;
 		if ($ttl)
