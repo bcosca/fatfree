@@ -23,7 +23,7 @@ class Router extends Controller {
 		);
 		if (is_file($file))
 			$f3->unlink($file);
-		$f3->set('ROUTES',array());
+		$f3->clear('ROUTES');
 		$f3->route('GET /',
 			function() use($f3) {
 				$f3->set('bar','foo');
@@ -34,7 +34,7 @@ class Router extends Controller {
 			$f3->get('bar')=='foo',
 			'Routed to anonymous/lambda function'
 		);
-		$f3->set('ROUTES',array());
+		$f3->clear('ROUTES');
 		$f3->route('GET /',__NAMESPACE__.'\please');
 			function please() {
 				\Base::instance()->set('send','money');
@@ -44,7 +44,7 @@ class Router extends Controller {
 			$f3->get('send')=='money',
 			'Routed to regular namespaced function'
 		);
-		$f3->set('ROUTES',array());
+		$f3->clear('ROUTES');
 		$f3->set('QUIET',FALSE);
 		$f3->map('/dummy','NS\C');
 		$ok=TRUE;
@@ -66,11 +66,24 @@ class Router extends Controller {
 		$f3->set('BODY','');
 		$f3->mock('PUT /dummy');
 		$test->expect(
-			$f3->exists('BODY'),
+			!$f3->get('ERROR') && $f3->exists('BODY'),
 			'Request body available'
 		);
-		$f3->set('ERROR',NULL);
-		$f3->set('ROUTES',array());
+		$f3->mock('OPTIONS /dummy');
+		$test->expect(
+			!$f3->get('ERROR') &&
+			preg_grep('/Allow: '.
+				str_replace('|',',',\Base::VERBS.'/'),headers_list()),
+			'HTTP OPTIONS request returns allowed methods'
+		);
+		$f3->mock('GRAB /dummy');
+		$test->expect(
+			($error=$f3->get('ERROR')) && isset($error['code']) &&
+			$error['code']==405,
+			'Return 405 status code on invalid HTTP method'
+		);
+		$f3->clear('ERROR');
+		$f3->clear('ROUTES');
 		$f3->route('GET /food/@id',
 			function() use($f3) {
 				$f3->set('id',$f3->get('PARAMS["id"]'));
@@ -116,7 +129,7 @@ class Router extends Controller {
 			$f3->get('id')=='öäü' && $f3->get('quantity')==123,
 			'Unicode characters in URL (PCRE version: '.PCRE_VERSION.')'
 		);
-		$f3->set('ROUTES',array());
+		$f3->clear('ROUTES');
 		$mark=microtime(TRUE);
 		$f3->route('GET /nothrottle',
 			function() {
@@ -129,7 +142,7 @@ class Router extends Controller {
 			'Page rendering baseline: '.
 				sprintf('%.1f',$elapsed*1e3).'ms'
 		);
-		$f3->set('ROUTES',array());
+		$f3->clear('ROUTES');
 		$mark=microtime(TRUE);
 		$f3->route('GET /throttled',
 			function() {
