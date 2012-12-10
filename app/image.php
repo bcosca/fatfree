@@ -126,6 +126,13 @@ class Image extends Controller {
 			'<img src="'.$src.'" '.
 				'title="'.$img->width().'x'.$img->height().'" />'
 		);
+		$img=new \Image;
+		$test->expect(
+			$src=$f3->base64(
+				$img->identicon(md5(mt_rand()),48)->dump(),'image/png'),
+			'Identicon<br />'.
+			'<img src="'.$src.'" title="Identicon" />'
+		);
 		$f3->set('ESCAPE',FALSE);
 		$f3->set('results',$test->results());
 	}

@@ -213,6 +213,65 @@ class Image {
 	}
 
 	/**
+		Generate identicon
+			@return object
+			@param $str string
+			@param $size int
+			@param $blocks int
+	**/
+	function identicon($str,$size=64,$blocks=4) {
+		$sprites=array(
+			array(.5,1,1,0,1,1),
+			array(.5,0,1,0,.5,1,0,1),
+			array(.5,0,1,0,1,1,.5,1,1,.5),
+			array(0,.5,.5,0,1,.5,.5,1,.5,.5),
+			array(0,.5,1,0,1,1,0,1,1,.5),
+			array(1,0,1,1,.5,1,1,.5,.5,.5),
+			array(0,0,1,0,1,.5,0,0,.5,1,0,1),
+			array(0,0,.5,0,1,.5,.5,1,0,1,.5,.5),
+			array(.5,0,.5,.5,1,.5,1,1,.5,1,.5,.5,0,.5),
+			array(0,0,1,0,.5,.5,1,.5,.5,1,.5,.5,0,1),
+			array(0,.5,.5,1,1,.5,.5,0,1,0,1,1,0,1),
+			array(.5,0,1,0,1,1,.5,1,1,.75,.5,.5,1,.25),
+			array(0,.5,.5,0,.5,.5,1,0,1,.5,.5,1,.5,.5,0,1),
+			array(0,0,1,0,1,1,0,1,1,.5,.5,.25,.5,.75,0,.5,.5,.25),
+			array(0,.5,.5,.5,.5,0,1,0,.5,.5,1,.5,.5,1,.5,.5,0,1),
+			array(0,0,1,0,.5,.5,.5,0,0,.5,1,.5,.5,1,.5,.5,0,1)
+		);
+		$this->data=imagecreatetruecolor($size,$size);
+		list($r,$g,$b)=$this->rgb(mt_rand(0x333,0xCCC));
+		$fg=imagecolorallocate($this->data,$r,$g,$b);
+		list($r,$g,$b)=$this->bg;
+		$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
+		imagefill($this->data,0,0,$bg);
+		$hash=md5($str);
+		$ctr=count($sprites);
+		$dim=$blocks*(int)($size/$blocks)*2/$blocks;
+		for ($j=0,$y=ceil($blocks/2);$j<$y;$j++)
+			for ($i=$j,$x=$blocks-1-$j;$i<$x;$i++) {
+				$sprite=imagecreatetruecolor($dim,$dim);
+				imagefill($sprite,0,0,$bg);
+				if ($block=$sprites[
+					hexdec($hash[($j*$blocks+$i)*2])%$ctr]) {
+					for ($k=0,$pts=count($block);$k<$pts;$k++)
+						$block[$k]*=$dim;
+					imagefilledpolygon($sprite,$block,$pts/2,$fg);
+				}
+				$sprite=imagerotate($sprite,
+					90*(hexdec($hash[($j*$blocks+$i)*2+1])%4),$bg);
+				for ($k=0;$k<4;$k++) {
+					imagecopyresampled($this->data,$sprite,
+						$i*$dim/2,$j*$dim/2,0,0,$dim/2,$dim/2,$dim,$dim);
+					$this->data=imagerotate($this->data,90,$bg);
+				}
+				imagedestroy($sprite);
+			}
+		imagealphablending($this->data,FALSE);
+		imagesavealpha($this->data,TRUE);
+		return $this->save();
+	}
+
+	/**
 		Return image width
 		@return int
 	**/
