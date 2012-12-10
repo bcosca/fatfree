@@ -25,7 +25,7 @@ class Web extends Controller {
 			'Auto-detect MIME type using file extension'
 		);
 		$now=microtime(TRUE);
-		$file=$f3->get('UI').'images/wallpaper.jpeg';
+		$file=$f3->get('UI').'images/wallpaper.jpg';
 		ob_start();
 		$web->send($file,NULL,$kbps=256);
 		$out=ob_get_clean();
