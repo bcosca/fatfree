@@ -141,7 +141,6 @@ class Globals extends Controller {
 		$f3->clear('SESSION');
 		$f3->set('GET["bar"]','foo');
 		$f3->set('POST.baz','qux');
-		echo '***'; var_dump($_REQUEST);
 		$test->expect(
 			$f3->get('GET["bar"]')=='foo' && $_GET['bar']=='foo' &&
 			$f3->get('REQUEST["bar"]')=='foo' && $_REQUEST['bar']=='foo' &&
