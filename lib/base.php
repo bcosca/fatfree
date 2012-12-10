@@ -57,7 +57,7 @@ class Base {
 		//! Mapped PHP globals
 		GLOBALS='GET|POST|COOKIE|REQUEST|SESSION|FILES|SERVER|ENV',
 		//! HTTP verbs
-		VERBS='GET|HEAD|POST|PUT|DELETE|OPTIONS|TRACE|CONNECT';
+		VERBS='GET|HEAD|POST|PUT|DELETE|TRACE|CONNECT';
 
 	//@{ Error messages
 	const
@@ -229,6 +229,7 @@ class Base {
 		}
 		elseif (array_key_exists($parts[0],$this->defaults) &&
 			!isset($parts[1]))
+			// Reset global to default value
 			$this->hive[$parts[0]]=$this->defaults[$parts[0]];
 		else {
 			foreach ($parts as $part)
@@ -351,8 +352,7 @@ class Base {
 	}
 
 	/**
-		Convert Windows double-backslashes to slashes (also for
-		referencing namespaced classes in subdirectories)
+		Convert backslashes to slashes
 		@return string
 		@param $str string
 	**/
@@ -452,7 +452,7 @@ class Base {
 
 	/**
 		Remove HTML tags (except those enumerated) and non-printable
-		characters from string to mitigate XSS/code injection attacks
+		characters to mitigate XSS/code injection attacks
 		@return mixed
 		@param $var mixed
 		@param $tags string
@@ -738,8 +738,6 @@ class Base {
 		@param $mock bool
 	**/
 	function run($mock=FALSE) {
-		if (!preg_match('/'.self::VERBS.'/',$this->hive['VERB']))
-			$this->error(405);
 		if (!$this->hive['ROUTES'])
 			// No routes defined
 			trigger_error(self::E_Routes);
@@ -858,7 +856,8 @@ class Base {
 		elseif (PHP_SAPI!='cli' && !headers_sent()) {
 			// Unhandled HTTP method
 			header('Allow: '.implode(',',$allowed));
-			$this->error(405);
+			if ($this->hive['VERB']!='OPTIONS')
+				$this->error(405);
 		}
 	}
 
