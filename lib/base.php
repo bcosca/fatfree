@@ -168,13 +168,9 @@ class Base {
 					$val=ini_set('default_charset',$val);
 					break;
 				case 'LANGUAGE':
-					$lex=Lexicon::instance();
-					$val=$lex->language($val);
-					$this->mset($lex->load(),NULL,$ttl);
-					break;
 				case 'LOCALES':
 					$lex=Lexicon::instance();
-					$val=$lex->locales($val);
+					$val=$lex->{$key}($val);
 					$this->mset($lex->load(),NULL,$ttl);
 					break;
 				case 'TZ':
@@ -608,7 +604,7 @@ class Base {
 			$line='';
 			if (isset($frame['file']) && ($frame['file']!=__FILE__ ||
 				$this->hive['DEBUG']>1) && (!isset($frame['class']) ||
-				$frame['class']!='Agent') && (!isset($frame['function']) ||
+				$frame['class']!='Magic') && (!isset($frame['function']) ||
 				!preg_match('/^(?:trigger_error|__call|call_user_func)/',
 				$frame['function']))) {
 				$addr=$this->fixslashes($frame['file']).':'.
