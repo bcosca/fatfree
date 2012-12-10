@@ -183,13 +183,13 @@ class Image {
 		// Create blank image
 		$tmp=imagecreatetruecolor($width,$height);
 		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocate($tmp,$r,$g,$b);
+		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
 		imagefill($tmp,0,0,$bg);
-		imagealphablending($tmp,FALSE);
-		imagesavealpha($tmp,TRUE);
 		// Resize
 		imagecopyresampled($tmp,
 			$this->data,0,0,0,0,$width,$height,$oldx,$oldy);
+		imagealphablending($tmp,FALSE);
+		imagesavealpha($tmp,TRUE);
 		$this->data=$tmp;
 		return $this->save();
 	}
@@ -201,8 +201,10 @@ class Image {
 	**/
 	function rotate($angle) {
 		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocate($this->data,$r,$g,$b);
+		$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
 		$this->data=imagerotate($this->data,$angle,$bg);
+		imagealphablending($this->data,FALSE);
+		imagesavealpha($this->data,TRUE);
 		return $this->save();
 	}
 
@@ -309,6 +311,11 @@ class Image {
 					$this->data=imagecreatefromstring($fw->read($dir.$file));
 			$this->save();
 		}
+	}
+
+	//! Wrap-up
+	function __destruct() {
+		imagedestroy($this->data);
 	}
 
 }
