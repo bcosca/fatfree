@@ -195,6 +195,18 @@ class Image {
 	}
 
 	/**
+		Rotate image
+		@return object
+		@param $angle int
+	**/
+	function rotate($angle) {
+		list($r,$g,$b)=$this->bg;
+		$bg=imagecolorallocate($this->data,$r,$g,$b);
+		$this->data=imagerotate($this->data,$angle,$bg);
+		return $this->save();
+	}
+
+	/**
 		Return image width
 		@return int
 	**/
@@ -292,8 +304,9 @@ class Image {
 			$fw=Base::instance();
 			// Create image from file
 			$this->file=$file;
-			$this->data=imagecreatefromstring(
-				$fw->read($fw->get('UI').$file));
+			foreach ($fw->split($fw->get('UI')) as $dir)
+				if (is_file($dir.$file))
+					$this->data=imagecreatefromstring($fw->read($dir.$file));
 			$this->save();
 		}
 	}
