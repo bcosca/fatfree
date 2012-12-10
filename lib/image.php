@@ -141,6 +141,7 @@ class Image {
 		imagesavealpha($tmp,TRUE);
 		imagecopyresampled($tmp,
 			$this->data,0,0,$width-1,0,$width,$height,-$width,$height);
+		imagedestroy($this->data);
 		$this->data=$tmp;
 		return $this->save();
 	}
@@ -156,6 +157,7 @@ class Image {
 		imagesavealpha($tmp,TRUE);
 		imagecopyresampled($tmp,
 			$this->data,0,0,0,$height-1,$width,$height,$width,-$height);
+		imagedestroy($this->data);
 		$this->data=$tmp;
 		return $this->save();
 	}
@@ -194,6 +196,7 @@ class Image {
 		// Resize
 		imagecopyresampled($tmp,
 			$this->data,0,0,0,0,$width,$height,$oldx,$oldy);
+		imagedestroy($this->data);
 		$this->data=$tmp;
 		return $this->save();
 	}
@@ -336,6 +339,8 @@ class Image {
 		$fw=Base::instance();
 		if (is_file($file=($path=$fw->get('TEMP').
 			$fw->hash($this->file).'-').$state.'.png')) {
+			if (is_resource($this->data))
+				imagedestroy($this->data);
 			$this->data=imagecreatefromstring($fw->read($file));
 			imagealphablending($this->data,FALSE);
 			imagesavealpha($this->data,TRUE);
