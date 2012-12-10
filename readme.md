@@ -1658,7 +1658,7 @@ Once you get the hang of testing the smallest units of your application, you can
 >Server protocol, i.e. `http` or `https`.
 
 `string SERIALIZER`
->Default serializer. Normally set to `default`, unless PHP `igbinary` extension is auto-detected.
+>Default serializer. Normally set to `default`, unless PHP `igbinary` extension is auto-detected. Assign `json` if desired.
 
 `string TEMP`
 >Temporary folder for cache, filesystem locks, compiled F3 templates, etc. Default is the `tmp/` folder inside the Web root. Adjust accordingly to conform to your site's security policies.
