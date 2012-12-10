@@ -218,7 +218,7 @@ class Image {
 		@param $filters int
 	**/
 	function render($format='png',$quality=100,$filters=0) {
-		if (PHP_SAPI!='cli' && !headers_sent()) {
+		if (PHP_SAPI!='cli') {
 			header('Content-Type: image/'.$format);
 			header('X-Powered-By: '.Base::instance()->get('PACKAGE'));
 		}

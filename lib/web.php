@@ -76,10 +76,10 @@ class Web extends Prefab {
 	function send($file,$mime=NULL,$kbps=0) {
 		if (!is_file($file))
 			return FALSE;
-		if (PHP_SAPI!='cli' && !headers_sent()) {
+		if (PHP_SAPI!='cli') {
 			header('Content-Type: '.$mime?:$this->mime($file));
-			//header('Content-Disposition: attachment; '.
-			//	'filename='.basename($file));
+			header('Content-Disposition: attachment; '.
+				'filename='.basename($file));
 			header('Accept-Ranges: bytes');
 			header('Content-Length: '.$size=filesize($file));
 			header('X-Powered-By: '.Base::instance()->get('PACKAGE'));
@@ -473,7 +473,7 @@ class Web extends Prefab {
 					else
 						$dst=$fw->read($save);
 				}
-		if (PHP_SAPI!='cli' && !headers_sent())
+		if (PHP_SAPI!='cli')
 			header('Content-Type: '.$mime.'; charset='.$fw->get('ENCODING'));
 		return $dst;
 	}

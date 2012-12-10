@@ -551,7 +551,7 @@ class Base {
 		@param $code int
 	**/
 	function status($code) {
-		if (PHP_SAPI!='cli' && !headers_sent())
+		if (PHP_SAPI!='cli')
 			header('HTTP/1.1 '.$code);
 		return @constant('self::HTTP_'.$code);
 	}
@@ -562,7 +562,7 @@ class Base {
 		@param $secs int
 	**/
 	function expire($secs=0) {
-		if (PHP_SAPI!='cli' && !headers_sent()) {
+		if (PHP_SAPI!='cli') {
 			header('X-Powered-By: '.$this->hive['PACKAGE']);
 			if ($secs) {
 				$time=microtime(TRUE);
@@ -607,8 +607,7 @@ class Base {
 				$frame['class']!='Magic') && (!isset($frame['function']) ||
 				!preg_match('/^(?:trigger_error|__call|call_user_func)/',
 				$frame['function']))) {
-				$addr=$this->fixslashes($frame['file']).':'.
-					$frame['line'];
+				$addr=$this->fixslashes($frame['file']).':'.$frame['line'];
 				if (isset($frame['class']))
 					$line.=$frame['class'].$frame['type'];
 				if (isset($frame['function'])) {
@@ -705,7 +704,7 @@ class Base {
 		@param $uri string
 	**/
 	function reroute($uri) {
-		if (PHP_SAPI!='cli' && !headers_sent()) {
+		if (PHP_SAPI!='cli') {
 			if (session_id())
 				session_commit();
 			header('Location: '.(preg_match('/^https?:\/\//',$uri)?
@@ -799,7 +798,7 @@ class Base {
 							$cached>strtotime($req['If-Modified-Since'])) {
 							// Retrieve from cache backend
 							list($headers,$body)=$cache->get($hash);
-							if (PHP_SAPI!='cli' && !headers_sent())
+							if (PHP_SAPI!='cli')
 								array_walk($headers,'header');
 							// Override headers
 							$this->expire($cached+$ttl-$now);
@@ -851,7 +850,7 @@ class Base {
 		if (!$allowed)
 			// URL doesn't match any route
 			$this->error(404);
-		elseif (PHP_SAPI!='cli' && !headers_sent()) {
+		elseif (PHP_SAPI!='cli') {
 			// Unhandled HTTP method
 			header('Allow: '.implode(',',$allowed));
 			if ($this->hive['VERB']!='OPTIONS')
@@ -1378,7 +1377,7 @@ class View extends Prefab {
 				if (!$hive)
 					$hive=$fw->hive();
 				$this->hive=$fw->get('ESCAPE')?$hive=$fw->esc($hive):$hive;
-				if (PHP_SAPI!='cli' && !headers_sent())
+				if (PHP_SAPI!='cli')
 					header('Content-Type: '.$mime.'; '.
 						'charset='.$fw->get('ENCODING'));
 				return $this->sandbox();

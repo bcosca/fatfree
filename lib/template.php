@@ -304,7 +304,7 @@ class Template extends View {
 				if (!$hive)
 					$hive=$fw->hive();
 				$this->hive=$fw->get('ESCAPE')?$fw->esc($hive):$hive;
-				if (PHP_SAPI!='cli' && !headers_sent())
+				if (PHP_SAPI!='cli')
 					header('Content-Type: '.($this->mime=$mime).'; '.
 						'charset='.$fw->get('ENCODING'));
 				return $this->sandbox();
