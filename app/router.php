@@ -76,12 +76,6 @@ class Router extends Controller {
 				str_replace('|',',',\Base::VERBS.'/'),headers_list()),
 			'HTTP OPTIONS request returns allowed methods'
 		);
-		$f3->mock('GRAB /dummy');
-		$test->expect(
-			($error=$f3->get('ERROR')) && isset($error['code']) &&
-			$error['code']==405,
-			'Return 405 status code on invalid HTTP method'
-		);
 		$f3->clear('ERROR');
 		$f3->clear('ROUTES');
 		$f3->route('GET /food/@id',
