@@ -16,7 +16,8 @@ class SQL extends Controller {
 			'PDO extension enabled'
 		);
 		if ($loaded) {
-			mkdir('tmp/',\Base::MODE,TRUE);
+			if (!is_dir('tmp/'))
+				mkdir('tmp/',\Base::MODE,TRUE);
 			$db=new \DB\SQL('sqlite:tmp/sqlite.db');
 			//$db=new \DB\SQL('mysql:host=localhost');
 			$engine=$db->driver();
