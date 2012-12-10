@@ -366,13 +366,13 @@ class Web extends Prefab {
 		if (!$mime)
 			$mime=$this->mime($files[0]);
 		preg_match('/\w+$/',$files[0],$ext);
-		if (!is_dir($dir=$fw->get('TEMP')))
-			$fw->mkdir($dir);
+		if (!is_dir($tmp=$fw->get('TEMP')))
+			$fw->mkdir($tmp);
 		$dst='';
-		foreach ($fw->split($fw->get('UI')) as $path)
+		foreach ($fw->split($fw->get('UI')) as $dir)
 			foreach ($files as $file)
-				if (is_file($min=$fw->fixslashes($path.$file))) {
-					if (!is_file($save=($dir.'/'.
+				if (is_file($min=$fw->fixslashes($dir.$file))) {
+					if (!is_file($save=($tmp.'/'.
 						$fw->hash($fw->get('ROOT')).'.'.
 						$fw->hash($min).'.'.$ext[0])) ||
 						filemtime($save)<filemtime($min)) {

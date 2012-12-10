@@ -960,13 +960,13 @@ class Base {
 	**/
 	function mutex($files,$func,array $args=NULL) {
 		$handles=array();
-		if (!is_dir($dir=$this->hive['TEMP']))
-			mkdir($dir,self::MODE,TRUE);
+		if (!is_dir($tmp=$this->hive['TEMP']))
+			mkdir($tmp,self::MODE,TRUE);
 		// Max lock duration
 		$max=ini_get('max_execution_time');
 		foreach (is_array($files)?$files:$this->split($files) as $file) {
 			// Use filesystem lock
-			if (is_file($lock=$dir.'/'.
+			if (is_file($lock=$tmp.'/'.
 				$this->hash($this->hive['ROOT']).'.'.
 				$this->hash($file).'.lock') &&
 				filemtime($lock)+$max<microtime(TRUE))
@@ -1369,8 +1369,8 @@ class View extends Prefab {
 	**/
 	function render($file,$mime='text/html',array $hive=NULL) {
 		$fw=Base::instance();
-		foreach ($fw->split($fw->get('UI')) as $path)
-			if (is_file($this->view=$fw->fixslashes($path.$file))) {
+		foreach ($fw->split($fw->get('UI')) as $dir)
+			if (is_file($this->view=$fw->fixslashes($dir.$file))) {
 				if (!session_id() && isset($_COOKIE[session_name()]))
 					session_start();
 				$fw->sync('SESSION');

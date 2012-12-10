@@ -11,9 +11,9 @@ class Log extends Controller {
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$f3->set('LOGS',$dir=$f3->get('TEMP'));
+		$f3->set('LOGS',$tmp=$f3->get('TEMP'));
 		$log=new \Log($name='test.log');
-		if (is_file($file=$dir.$name))
+		if (is_file($file=$tmp.$name))
 			$log->erase();
 		$log->write('foo');
 		$test->expect(

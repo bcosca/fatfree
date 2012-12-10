@@ -223,11 +223,11 @@ class Template extends View {
 	**/
 	function render($file,$mime='text/html',array $hive=NULL) {
 		$fw=Base::instance();
-		if (!is_dir($dir=$fw->get('TEMP')))
-			mkdir($dir,Base::MODE,TRUE);
-		foreach ($fw->split($fw->get('UI')) as $path)
-			if (is_file($view=$fw->fixslashes($path.$file))) {
-				if (!is_file($this->view=($dir.'/'.
+		if (!is_dir($tmp=$fw->get('TEMP')))
+			mkdir($tmp,Base::MODE,TRUE);
+		foreach ($fw->split($fw->get('UI')) as $dir)
+			if (is_file($view=$fw->fixslashes($dir.$file))) {
+				if (!is_file($this->view=($tmp.'/'.
 					$fw->hash($fw->get('ROOT')).'.'.
 					$fw->hash($view).'.php')) ||
 					filemtime($this->view)<filemtime($view)) {
