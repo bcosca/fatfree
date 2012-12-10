@@ -80,11 +80,12 @@ class Router extends Controller {
 		$f3->clear('ROUTES');
 		$f3->route('GET /food/@id',
 			function() use($f3) {
-				$f3->set('id',$f3->get('PARAMS["id"]'));
+				$f3->set('id',$f3->get('PARAMS.id'));
 			}
 		);
 		$f3->mock('GET /food/fish');
 		$test->expect(
+			$f3->get('PARAMS.id')=='fish' &&
 			$f3->get('id')=='fish',
 			'Parameter in route captured'
 		);
@@ -95,17 +96,21 @@ class Router extends Controller {
 		);
 		$f3->route('GET /food/@id/@quantity',
 			function() use($f3) {
-				$f3->set('id',$f3->get('PARAMS["id"]'));
-				$f3->set('quantity',$f3->get('PARAMS["quantity"]'));
+				$f3->set('id',$f3->get('PARAMS.id'));
+				$f3->set('quantity',$f3->get('PARAMS.quantity'));
 			}
 		);
 		$f3->mock('GET /food/beef/789');
 		$test->expect(
+			$f3->get('PARAMS.id')=='beef' &&
+			$f3->get('PARAMS.quantity')==789 &&
 			$f3->get('id')=='beef' && $f3->get('quantity')==789,
 			'Multiple parameters'
 		);
-		$f3->mock('GET /food/nuts?a=1&b=3&c=5');
+		$f3->mock('GET /food/macademia-nuts/253?a=1&b=3&c=5');
 		$test->expect(
+			$f3->get('PARAMS.id')=='macademia-nuts' &&
+			$f3->get('PARAMS.quantity')==253 &&
 			$_GET==array('a'=>1,'b'=>3,'c'=>5),
 			'Query string mocked'
 		);

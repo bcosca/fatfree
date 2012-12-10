@@ -95,7 +95,6 @@ class Base {
 		@param $add bool
 	**/
 	function &ref($key,$add=TRUE) {
-		var_dump($key);
 		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)|\./',
 			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		if ($parts[0]=='SESSION')
@@ -154,11 +153,8 @@ class Base {
 	function set($key,$val,$ttl=0) {
 		if (preg_match('/^JAR\b/',$key))
 			call_user_func_array('session_set_cookie_params',$val);
-		elseif (preg_match('/^(?:GET|POST|COOKIE)\b(.+)/',$key,$parts)) {
-			// Sync GET, POST, and COOKIE with REQUEST
-			$req=&$this->ref('REQUEST'.$parts[1]);
-			$req=$val;
-		}
+		elseif (preg_match('/^(?:GET|POST|COOKIE)\b(.+)/',$key,$parts))
+			$this->set('REQUEST'.$parts[1],$val);
 		else switch ($key) {
 			case 'CACHE':
 				$val=Cache::instance()->load($val);
@@ -224,8 +220,8 @@ class Base {
 				unset($_COOKIE[session_name()]);
 			}
 		}
-		elseif (array_key_exists($parts[0],$this->defaults) &&
-			!isset($parts[1]))
+		elseif (!isset($parts[1]) &&
+			array_key_exists($parts[0],$this->defaults))
 			// Reset global to default value
 			$this->hive[$parts[0]]=$this->defaults[$parts[0]];
 		else {
@@ -748,7 +744,7 @@ class Base {
 		$case=$this->hive['CASELESS']?'i':'';
 		foreach ($this->hive['ROUTES'] as $url=>$route) {
 			if (!preg_match('/^'.
-				preg_replace('/@(\w+\b)/','(?P<\1>[^\/&\?]+)',
+				preg_replace('/@(\w+\b)/','(?P<\1>.+?)',
 				str_replace('\*','(.*)',preg_quote($url,'/'))).
 				'\/?(?:\?.*)?$/'.$case.'um',$req,$args))
 				// Process next route
