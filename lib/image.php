@@ -247,7 +247,7 @@ class Image {
 	function save() {
 		$fw=Base::instance();
 		if (!is_dir($dir=$fw->get('TEMP')))
-			$fw->mkdir($dir);
+			mkdir($dir,Base::MODE,TRUE);
 		$this->count++;
 		$fw->write($dir.'/'.$fw->hash($this->file).'-'.$this->count.'.png',
 			$this->dump());

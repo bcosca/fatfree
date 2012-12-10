@@ -115,7 +115,7 @@ class Web extends Prefab {
 		$fw=Base::instance();
 		$dir=$fw->get('UPLOADS');
 		if (!is_dir($dir))
-			$fw->mkdir($dir);
+			mkdir($dir,Base::MODE,TRUE);
 		if ($fw->get('VERB')=='PUT') {
 			$fw->write($dir.basename($fw->get('URI')),$fw->get('BODY'));
 			return TRUE;

@@ -71,7 +71,7 @@ class Jig {
 	**/
 	function __construct($dir,$format=self::FORMAT_JSON) {
 		if (!is_dir($dir))
-			\Base::instance()->mkdir($dir);
+			mkdir($dir,\Base::MODE,TRUE);
 		$this->dir=$dir;
 		$this->format=$format;
 	}

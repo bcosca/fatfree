@@ -57,7 +57,9 @@ class Base {
 		//! Mapped PHP globals
 		GLOBALS='GET|POST|COOKIE|REQUEST|SESSION|FILES|SERVER|ENV',
 		//! HTTP verbs
-		VERBS='GET|HEAD|POST|PUT|DELETE|CONNECT';
+		VERBS='GET|HEAD|POST|PUT|DELETE|CONNECT',
+		//! Default directory permissions
+		MODE=0755;
 
 	//@{ Error messages
 	const
@@ -954,18 +956,6 @@ class Base {
 	}
 
 	/**
-		Create folder with specified permissions
-		@return bool
-		@param $name string
-		@param $perm int
-		@param $recursive bool
-	**/
-	function mkdir($name,$perm=0755,$recursive=TRUE) {
-		// Create the folder
-		return mkdir($name,$perm,$recursive);
-	}
-
-	/**
 		Obtain exclusive locks on specified files and invoke callback;
 		Release locks after callback execution
 		@return mixed
@@ -976,7 +966,7 @@ class Base {
 	function mutex($files,$func,array $args=NULL) {
 		$handles=array();
 		if (!is_dir($dir=$this->hive['TEMP']))
-			$this->mkdir($dir);
+			mkdir($dir,self::MODE,TRUE);
 		// Max lock duration
 		$max=ini_get('max_execution_time');
 		foreach (is_array($files)?$files:$this->split($files) as $file) {
@@ -1305,7 +1295,7 @@ class Cache {
 				$dsn=$grep?current($grep):'folder='.$fw->get('TEMP').'cache/';
 			}
 			if (preg_match('/folder=(.+)/',$dsn,$parts) && !is_dir($parts[1]))
-				$fw->mkdir($parts[1]);
+				$fw->mkdir($parts[1],Base::MODE,TRUE);
 		}
 		return $this->dsn=$dsn;
 	}

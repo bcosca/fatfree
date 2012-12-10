@@ -42,7 +42,7 @@ class Log {
 	function __construct($file) {
 		$fw=Base::instance();
 		if (!is_dir($dir=$fw->get('LOGS')))
-			$fw->mkdir($dir);
+			mkdir($dir,Base::MODE,TRUE);
 		$this->file=$dir.$file;
 	}
 
