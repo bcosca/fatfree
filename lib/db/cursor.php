@@ -93,10 +93,7 @@ abstract class Cursor extends \Magic {
 			$this->skip(0)?$this->query[$this->ptr=0]:FALSE;
 	}
 
-	/**
-		Move pointer to first record in cursor
-		@return NULL
-	**/
+	//! Move pointer to first record in cursor
 	function rewind() {
 		$this->ptr=0;
 	}
@@ -130,10 +127,7 @@ abstract class Cursor extends \Magic {
 		$this->ptr=0;
 	}
 
-	/**
-		Reset cursor
-		@return NULL
-	**/
+	//! Reset cursor
 	function reset() {
 		$this->query=array();
 		$this->ptr=0;

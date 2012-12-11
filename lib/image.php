@@ -290,10 +290,7 @@ class Image {
 		return imagesy($this->data);
 	}
 
-	/**
-		Send image to HTTP client
-		@return NULL
-	**/
+	//! Send image to HTTP client
 	function render() {
 		$args=func_get_args();
 		$format=$args?array_shift($args):'png';

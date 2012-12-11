@@ -1049,10 +1049,7 @@ class Base {
 			}
 	}
 
-	/**
-		Execute framework/application shutdown sequence
-		@return NULL
-	**/
+	//! Execute framework/application shutdown sequence
 	function unload() {
 		if (($error=error_get_last()) &&
 			in_array($error['type'],

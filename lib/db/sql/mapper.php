@@ -380,10 +380,7 @@ class Mapper extends \DB\Cursor {
 			exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
 	}
 
-	/**
-		Reset cursor
-		@return NULL
-	**/
+	//! Reset cursor
 	function reset() {
 		foreach ($this->fields as &$field) {
 			$field['value']=NULL;
