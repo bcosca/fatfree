@@ -983,7 +983,7 @@ F3 is smart enough to know that if you're passing an array of SQL instructions, 
 
 You can also start and end a transaction programmatically:-
 
-	$db->start();
+	$db->begin();
 	$db->exec('DELETE FROM diet WHERE food="cola"');
 	$db->exec('INSERT INTO diet (food) VALUES ("carrot")');
 	$db->exec('SELECT * FROM diet');
@@ -1045,9 +1045,9 @@ Suppose you have an existing MySQL database containing a table of users of your 
         PRIMARY KEY(userID)
     );
 
-Note: MongoDB is a NoSQL database engine and inherently schema-less. F3 has its own fast and lightweight NoSQL implementation called Jig, which uses PHP-serialized or JSON-encoded flat files. There are no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.
+Note: MongoDB is a NoSQL database engine and inherently schema-less. F3 has its own fast and lightweight NoSQL implementation called Jig, which uses PHP-serialized or JSON-encoded flat files. These abstraction layers require no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.
 
-Back to SQL. First, we establish communication with our database.
+Now back to SQL. First, we establish communication with our database.
 
     $db=new DB\SQL(
         'mysql:host=localhost;port=3306;dbname=mysqldb',
