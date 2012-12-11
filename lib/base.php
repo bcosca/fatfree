@@ -218,6 +218,7 @@ class Base {
 				session_unset();
 				session_destroy();
 				unset($_COOKIE[session_name()]);
+				header_remove('Set-Cookie');
 			}
 		}
 		elseif (!isset($parts[1]) &&
