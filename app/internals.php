@@ -78,6 +78,16 @@ class Internals extends Controller {
 			$f3->decode($out)=='I\'ll "walk" the <b>dog</b> now™',
 			'Decode HTML entities'
 		);
+		$text=\Text::instance();
+		$test->expect(
+			\Registry::exists('Text'),
+			'instance() saves object to framework registry'
+		);
+		unset($text);
+		$test->expect(
+			\Registry::exists('Text'),
+			'Destruction of object removes instance from registry'
+		);
 		$f3->set('results',$test->results());
 	}
 
