@@ -17,7 +17,14 @@ abstract class Cursor extends \Magic {
 		$ptr=0;
 
 	/**
-		Return records that match criteria
+		Return fields of mapper object as an associative array
+		@return array
+		@param $obj object
+	**/
+	abstract function cast($obj=NULL);
+
+	/**
+		Return records (array of mapper objects) that match criteria
 		@return array
 		@param $filter string|array
 		@param $options array
@@ -45,13 +52,34 @@ abstract class Cursor extends \Magic {
 	}
 
 	/**
-		Return first record that matches criteria
-		@return array|FALSE
+		Return first record (mapper object) that matches criteria
+		@return object|FALSE
 		@param $filter string|array
 		@param $options array
 	**/
 	function findone($filter=NULL,array $options=NULL) {
 		return ($data=$this->find($filter,$options))?$data[0]:FALSE;
+	}
+
+	/**
+		Return records (array of associative arrays) that match criteria
+		@return array
+		@param $filter string|array
+		@param $options array
+	**/
+	function afind($filter=NULL,array $options=NULL) {
+		return array_map(array($this,'cast'),$this->find($filter,$options));
+	}
+
+	/**
+		Return first record (associative array) that matches criteria
+		@return array|FALSE
+		@param $filter string|array
+		@param $options array
+	**/
+	function afindone($filter=NULL,array $options=NULL) {
+		return ($found=$this->findone($filter,$options))?
+			$found->cast():FALSE;
 	}
 
 	/**

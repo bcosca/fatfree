@@ -321,7 +321,14 @@ class SQL extends Controller {
 				$obj->get('title')=='Zodiac' &&
 				$obj->get('director')=='David Fincher' &&
 				$obj->get('year')==2007,
-				'Object returned by findone: '.$class
+				'Object returned by findone(): '.$class
+			);
+			$array=$movie->afindone(array('title=?','Zodiac'));
+			$test->expect(
+				$array['title']=='Zodiac' &&
+				$array['director']=='David Fincher' &&
+				$array['year']==2007,
+				'Associative array returned by afindone()'
 			);
 			$db->exec(
 				array(

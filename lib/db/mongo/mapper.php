@@ -71,7 +71,7 @@ class Mapper extends \DB\Cursor {
 		@return array
 		@param $obj object
 	**/
-	function cast(Mapper $obj=NULL) {
+	function cast($obj=NULL) {
 		if (!$obj)
 			$obj=$this;
 		return $obj->document;
