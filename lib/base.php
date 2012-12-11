@@ -1011,6 +1011,16 @@ class Base {
 	}
 
 	/**
+		Exclusive file rename
+		@return bool
+		@param $from string
+		@param $to string
+	**/
+	function rename($from,$to) {
+		return $this->mutex($from,'rename',array($from,$to));
+	}
+
+	/**
 		Exclusive file delete
 		@return bool
 		@param $file string
