@@ -11,6 +11,13 @@ class Image extends Controller {
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
+		$img=new \Image;
+		$test->expect(
+			$src=$f3->base64(
+				$img->identicon(md5(mt_rand()),48)->dump(),'image/png'),
+			'Identicon<br />'.
+			'<img src="'.$src.'" title="Identicon" />'
+		);
 		$f3->set('file','images/south-park.jpg');
 		$img=new \Image($f3->get('file'));
 		$test->expect(
@@ -125,13 +132,6 @@ class Image extends Controller {
 			'Convert to JPEG format<br />'.
 			'<img src="'.$src.'" '.
 				'title="'.$img->width().'x'.$img->height().'" />'
-		);
-		$img=new \Image;
-		$test->expect(
-			$src=$f3->base64(
-				$img->identicon(md5(mt_rand()),48)->dump(),'image/png'),
-			'Identicon<br />'.
-			'<img src="'.$src.'" title="Identicon" />'
 		);
 		$f3->set('ESCAPE',FALSE);
 		$f3->set('results',$test->results());
