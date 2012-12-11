@@ -1085,7 +1085,14 @@ If we wanted to insert a record, we follow this process:-
     $user->visits=0;
     $user->save();
 
-We still use the same save() method. But how does F3 know when a record should be inserted or updated? At the time a data mapper object is auto-hydrated by a record retrieval, the framework keeps track of the record's primary keys (or `_id`, in the case of MongoDB and Jig) - so it knows which record should be updated or deleted - even when the values of the primary keys are changed. A programmatically-hydrated data mapper - the values of which were not retrieved from the database, but populated by the application - will not have any memory of previous values in its primary keys. The same applies to MongoDB and Jig, but using object `_id` as reference. So, when we instantiated the `$user` object above and populated its properties with values from our program - without at all retrieving a record from the user table, F3 knows that it should insert this record.
+We still use the same `save()` method. But how does F3 know when a record should be inserted or updated? At the time a data mapper object is auto-hydrated by a record retrieval, the framework keeps track of the record's primary keys (or `_id`, in the case of MongoDB and Jig) - so it knows which record should be updated or deleted - even when the values of the primary keys are changed. A programmatically-hydrated data mapper - the values of which were not retrieved from the database, but populated by the application - will not have any memory of previous values in its primary keys. The same applies to MongoDB and Jig, but using object `_id` as reference. So, when we instantiated the `$user` object above and populated its properties with values from our program - without at all retrieving a record from the user table, F3 knows that it should insert this record.
+
+A mapper object will not be empty after a `save()`. If you wish to add a new record to your database, you must first dehydrate the mapper:-
+
+    $user->reset();
+    $user->userID='cheetah';
+    $user->password=md5('unknown');
+    $user->save();
 
 ### Caveat for SQL Tables
 
