@@ -981,6 +981,20 @@ Here's another example. Instead of a single statement provided as an argument to
 
 F3 is smart enough to know that if you're passing an array of SQL instructions, this indicates a SQL batch transaction. You don't have to worry about SQL rollbacks and commits because the framework will automatically revert to the initial state of the database if any error occurs during the transaction. If successful, F3 commits all changes made to the database.
 
+You can also start and end a transaction programmatically:-
+
+	$db->start();
+	$db->exec('DELETE FROM diet WHERE food="cola"');
+	$db->exec('INSERT INTO diet (food) VALUES ("carrot")');
+	$db->exec('SELECT * FROM diet');
+	$db->commit();
+
+A rollback will occur if any of the statements encounter an error.
+
+To get a list of all database instructions issued:-
+
+    echo $db->log();
+
 ### Parameterized Queries
 
 Passing string arguments to SQL statements is fraught with danger. Consider this:-
