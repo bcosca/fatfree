@@ -868,7 +868,13 @@ class Base {
 			// Convert string to executable PHP callback
 			if (!class_exists($parts[1]))
 				$this->error(404);
-			$func=array($parts[2]=='->'?new $parts[1]:$parts[1],$parts[3]);
+			$func=array(
+				$parts[2]=='->'?
+					(is_subclass_of($parts[1],'Prefab')?
+						($parts[1].'::instance'):new $parts[1]):
+					$parts[1],
+				$parts[3]
+			);
 		}
 		if (!is_callable($func))
 			$this->error(404);
