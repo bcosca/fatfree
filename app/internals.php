@@ -15,6 +15,10 @@ class Internals extends Controller {
 			PHP_VERSION,
 			'PHP version '.PHP_VERSION
 		);
+		$test->expect(
+			!@strpos(),
+			'Intentional error'
+		);
 		$f3->foo='bar';
 		$test->expect(
 			$f3===\Base::instance() && @\Base::instance()->foo=='bar',
