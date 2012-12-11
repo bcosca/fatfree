@@ -387,6 +387,8 @@ You can use framework variables directly in your templates. You don't have to in
 
 Fat-Free does not maintain just a dumb storage for variables and their values. It can also automate session management. Assigning or retrieving a value through F3's `SESSION` variable auto-starts the session. If you use `$_SESSION` (or session-related functions) directly, instead of the framework variable `SESSION`, your application becomes responsible for managing sessions.
 
+As a rule, framework variables do not persist between HTTP requests. Only `SESSION` and `COOKIE` (and their elements) which are mapped to PHP's `$_SESSION` and `$_COOKIE` global variables are exempt from the stateless nature of HTTP.
+
 There are several predefined global variables used internally by Fat-Free, and you can certainly utilize them in your application. Be sure you know what you're doing. Altering some Fat-Free global variables may result in unexpected framework behavior.
 
 The framework has several variables to help you keep your files and directory structures organized. We've seen how we can automate class loading by using the `AUTOLOAD`. There's a `UI` global variable, which contains the path pointing to the location of your HTML views/templates. `DEBUG` is another variable you'll be using quite often during application development and it's used for setting the verbosity of error traces.
