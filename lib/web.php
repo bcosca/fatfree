@@ -78,8 +78,9 @@ class Web extends Prefab {
 			return FALSE;
 		if (PHP_SAPI!='cli') {
 			header('Content-Type: '.$mime?:$this->mime($file));
-			header('Content-Disposition: attachment; '.
-				'filename='.basename($file));
+			if ($mime=='application/octet-stream')
+				header('Content-Disposition: attachment; '.
+					'filename='.basename($file));
 			header('Accept-Ranges: bytes');
 			header('Content-Length: '.$size=filesize($file));
 			header('X-Powered-By: '.Base::instance()->get('PACKAGE'));
