@@ -2067,7 +2067,7 @@ abstract class Magic {
 if (!function_exists('getallheaders')) {
 
 	/**
-		Fetch HTTP headers
+		Fetch HTTP request headers
 		@return array
 	**/
 	function getallheaders() {
