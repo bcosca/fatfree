@@ -379,6 +379,16 @@ class SQL extends Controller {
 				!$ticket->exists('adhoc'),
 				'Ad hoc field destroyed'
 			);
+			$f3->set('GET',
+				array('title'=>'admin\'; DELETE FROM tickets; SELECT \'1'));
+			$ticket->copyfrom('GET');
+			$ticket->save();
+			$ticket->load(
+				array('title=?','admin\'; DELETE FROM tickets; SELECT \'1'));
+			$test->expect(
+				!$ticket->dry(),
+				'SQL injection-safe'
+			);
 			$db->exec('DROP TABLE IF EXISTS sessions;');
 			$session=new \DB\SQL\Session($db);
 			$test->expect(
