@@ -208,6 +208,7 @@ class Base {
 		// Normalize array literal
 		$out='';
 		$obj=FALSE;
+		$cache=Cache::instance();
 		$parts=preg_split('/\[\s*[\'"]?(.+?)[\'"]?\s*\]|(->)|\./',
 			$key,NULL,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		if ($parts[0]=='SESSION') {
@@ -220,6 +221,10 @@ class Base {
 				unset($_COOKIE[session_name()]);
 				header_remove('Set-Cookie');
 			}
+		}
+		elseif ($parts[0]=='CACHE' && !isset($parts[1])) {
+			$this->hive['CACHE']=$this->defaults['CACHE'];
+			$cache->reset();
 		}
 		elseif (!isset($parts[1]) &&
 			array_key_exists($parts[0],$this->defaults))
@@ -239,7 +244,6 @@ class Base {
 				// Sync GET, POST, or COOKIE with REQUEST
 				$this->clear('REQUEST'.$parts[1]);
 			// Remove from cache
-			$cache=Cache::instance();
 			if ($cache->exists($hash=$this->hash($key)))
 				$cache->clear($hash);
 			// PHP can't unset a referenced array/object directly
@@ -1288,6 +1292,29 @@ class Cache {
 	}
 
 	/**
+		Clear contents of cache backend
+		@return bool
+	**/
+	function reset() {
+		if (!$this->dsn)
+			return TRUE;
+		$parts=explode('=',$this->dsn);
+		switch ($parts[0]) {
+			case 'apc':
+				return apc_clear_cache('user');
+			case 'wincache':
+				return wincache_ucache_clear();
+			case 'xcache':
+				return TRUE; // Not supported
+			case 'folder':
+				array_map(
+					array(Base::instance(),'unlink'),glob($parts[1].'*'));
+				return TRUE;
+		}
+		return FALSE;
+	}
+
+	/**
 		Load/auto-detect cache backend
 		@return string
 		@param $dsn bool|string
@@ -1303,7 +1330,7 @@ class Cache {
 				$dsn=$grep?current($grep):'folder='.$fw->get('TEMP').'cache/';
 			}
 			if (preg_match('/folder=(.+)/',$dsn,$parts) && !is_dir($parts[1]))
-				$fw->mkdir($parts[1],Base::MODE,TRUE);
+				mkdir($parts[1],Base::MODE,TRUE);
 		}
 		return $this->dsn=$dsn;
 	}
