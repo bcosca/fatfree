@@ -1190,7 +1190,9 @@ class Cache {
 
 	private
 		//! Cache DSN
-		$dsn;
+		$dsn,
+		//! Prefix for cache entries
+		$prefix;
 
 	/**
 		Return timestamp of cache entry or FALSE if not found
@@ -1202,7 +1204,7 @@ class Cache {
 		$fw=Base::instance();
 		if (!$this->dsn)
 			return FALSE;
-		$ndx=$fw->hash($fw->get('ROOT')).'.'.$key;
+		$ndx=$this->prefix.'.'.$key;
 		$parts=explode('=',$this->dsn);
 		switch ($parts[0]) {
 			case 'apc':
@@ -1239,7 +1241,7 @@ class Cache {
 		$fw=Base::instance();
 		if (!$this->dsn)
 			return TRUE;
-		$ndx=$fw->hash($fw->get('ROOT')).'.'.$key;
+		$ndx=$this->prefix.'.'.$key;
 		$data=$fw->serialize(array($val,microtime(TRUE),$ttl));
 		$parts=explode('=',$this->dsn);
 		switch ($parts[0]) {
@@ -1276,7 +1278,7 @@ class Cache {
 		$fw=Base::instance();
 		if (!$this->dsn)
 			return;
-		$ndx=$fw->hash($fw->get('ROOT')).'.'.$key;
+		$ndx=$this->prefix.'.'.$key;
 		$parts=explode('=',$this->dsn);
 		switch ($parts[0]) {
 			case 'apc':
@@ -1301,14 +1303,26 @@ class Cache {
 		$parts=explode('=',$this->dsn);
 		switch ($parts[0]) {
 			case 'apc':
-				return apc_clear_cache('user');
+				$info=apc_cache_info('user');
+				foreach ($info['cache_list'] as $item)
+					if (preg_match('/'.preg_quote($this->prefix,'/').'/',
+						$item['info']))
+						apc_delete($item['info']);
+				return TRUE;
 			case 'wincache':
-				return wincache_ucache_clear();
+				$info=wincache_ucache_info();
+				foreach ($info['ucache_entries'] as $item)
+					if (preg_match('/'.preg_quote($this->prefix,'/').'/',
+						$item['key_name']))
+					apc_delete($item['key_name']);
+				return TRUE;
 			case 'xcache':
 				return TRUE; // Not supported
 			case 'folder':
-				array_map(
-					array(Base::instance(),'unlink'),glob($parts[1].'*'));
+				foreach (glob($parts[1].'*') as $file)
+					if (preg_match('/'.preg_quote($this->prefix,'/').'/',
+						basename($file)))
+						Base::instance()->unlink($file);
 				return TRUE;
 		}
 		return FALSE;
@@ -1351,6 +1365,8 @@ class Cache {
 
 	//! Prohibit instantiation
 	private function __construct() {
+		$fw=Base::instance();
+		$this->prefix=$fw->hash($fw->get('ROOT'));
 	}
 
 	//! Wrap-up
