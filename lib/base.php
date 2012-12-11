@@ -974,7 +974,7 @@ class Base {
 		foreach (is_array($files)?$files:$this->split($files) as $file) {
 			// Use filesystem lock
 			if (is_file($lock=$tmp.'/'.
-				$this->hash($this->hive['ROOT']).'.'.
+				$this->hash($this->hive['ROOT'].$this->hive['BASE']).'.'.
 				$this->hash($file).'.lock') &&
 				filemtime($lock)+$max<microtime(TRUE))
 				// Stale lock
@@ -1366,7 +1366,7 @@ class Cache {
 	//! Prohibit instantiation
 	private function __construct() {
 		$fw=Base::instance();
-		$this->prefix=$fw->hash($fw->get('ROOT'));
+		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
 	}
 
 	//! Wrap-up

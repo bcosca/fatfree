@@ -374,7 +374,7 @@ class Web extends Prefab {
 			foreach ($files as $file)
 				if (is_file($min=$fw->fixslashes($dir.$file))) {
 					if (!is_file($save=($tmp.'/'.
-						$fw->hash($fw->get('ROOT')).'.'.
+						$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 						$fw->hash($min).'.'.$ext[0])) ||
 						filemtime($save)<filemtime($min)) {
 						$src=$fw->read($min);

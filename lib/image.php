@@ -325,7 +325,8 @@ class Image {
 		if (!is_dir($dir=$fw->get('TEMP')))
 			mkdir($dir,Base::MODE,TRUE);
 		$this->count++;
-		$fw->write($dir.'/'.$fw->hash($this->file).'-'.$this->count.'.png',
+		$fw->write($dir.'/'.$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+			$fw->hash($this->file).'-'.$this->count.'.png',
 			$this->dump());
 		return $this;
 	}
@@ -338,6 +339,7 @@ class Image {
 	function restore($state=1) {
 		$fw=Base::instance();
 		if (is_file($file=($path=$fw->get('TEMP').
+			$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash($this->file).'-').$state.'.png')) {
 			if (is_resource($this->data))
 				imagedestroy($this->data);

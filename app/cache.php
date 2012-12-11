@@ -140,6 +140,7 @@ class Cache extends Controller {
 				sprintf('%.1f',(microtime(TRUE)-$mark)*1e3).'ms'
 		);
 		$cache->clear($hash);
+		$f3->clear('CACHE');
 		$f3->set('results',$test->results());
 	}
 
