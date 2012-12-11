@@ -209,6 +209,7 @@ class Jig extends Controller {
 		);
 		session_unset();
 		session_destroy();
+		header_remove('Set-Cookie');
 		unset($_COOKIE[session_name()]);
 		$test->expect(
 			!isset($_SESSION['foo']),
