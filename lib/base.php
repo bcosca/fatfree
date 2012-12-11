@@ -871,7 +871,8 @@ class Base {
 			$func=array(
 				$parts[2]=='->'?
 					(is_subclass_of($parts[1],'Prefab')?
-						($parts[1].'::instance'):new $parts[1]):
+						call_user_func($parts[1].'::instance'):
+						new $parts[1]):
 					$parts[1],
 				$parts[3]
 			);
