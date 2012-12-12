@@ -54,6 +54,14 @@ class Internals extends Controller {
 			$f3->csv(array(1,'a',0.5))=='1,\'a\',0.5',
 			'Flatten and convert array to CSV string'
 		);
+		$test->expect(
+			$f3->snakecase('helloWorld')=='hello_world',
+			'Snake-case'
+		);
+		$test->expect(
+			$f3->camelcase('hello_world')=='helloWorld',
+			'Camel-case'
+		);
 		$_GET=array('foo'=>'ok<h1>foo</h1><p>bar<span>baz</span></p>');
 		$f3->scrub($_GET);
 		$test->expect(
@@ -82,14 +90,14 @@ class Internals extends Controller {
 			$f3->decode($out)=='I\'ll "walk" the <b>dog</b> now™',
 			'Decode HTML entities'
 		);
-		$text=\Text::instance();
+		$obj=\Matrix::instance();
 		$test->expect(
-			\Registry::exists('Text'),
+			\Registry::exists($class=get_class($obj)),
 			'instance() saves object to framework registry'
 		);
-		unset($text);
+		unset($obj);
 		$test->expect(
-			\Registry::exists('Text'),
+			\Registry::exists($class),
 			'Destruction of object removes instance from registry'
 		);
 		$f3->set('results',$test->results());

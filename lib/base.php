@@ -400,6 +400,30 @@ class Base {
 	}
 
 	/**
+		Convert snakecase string to camelcase
+		@return string
+		@param $str string
+	**/
+	function camelcase($str) {
+		return preg_replace_callback(
+			'/_(\w)/',
+			function($match) {
+				return strtoupper($match[1]);
+			},
+			$str
+		);
+	}
+
+	/**
+		Convert camelcase string to snakecase
+		@return string
+		@param $str string
+	**/
+	function snakecase($str) {
+		return strtolower(preg_replace('/[[:upper:]]/','_\0',$str));
+	}
+
+	/**
 		Return -1 if specified number is negative, 0 if zero,
 		or 1 if the number is positive
 		@return int
