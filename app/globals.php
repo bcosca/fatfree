@@ -47,6 +47,10 @@ class Globals extends Controller {
 			'URI (request URI): '.$f3->stringify($uri)
 		);
 		$test->expect(
+			$pattern=$f3->get('PATTERN'),
+			'PATTERN (matching route): '.$f3->stringify($pattern)
+		);
+		$test->expect(
 			($charset=$f3->get('ENCODING'))=='UTF-8',
 			'ENCODING (character set): '.$f3->stringify($charset)
 		);
