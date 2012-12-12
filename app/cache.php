@@ -186,13 +186,15 @@ class Cache extends Controller {
 			if (extension_loaded('memcache') &&
 				!preg_match('/memcache=/',$backend)) {
 				$f3->set('CACHE','memcache=localhost');
-				$test->expect(
-					$backend=$f3->get('CACHE'),
-					'Cache backend '.$f3->stringify($backend).' specified'
-				);
+				if (preg_match('/memcache=/',$backend=$f3->get('CACHE'))) {
+					$test->expect(
+						$backend,
+						'Cache backend '.$f3->stringify($backend).' specified'
+					);
+					continue;
+				}
 			}
-			else
-				$repeat=FALSE;
+			$repeat=FALSE;
 		}
 		$f3->set('results',$test->results());
 	}
