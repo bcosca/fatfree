@@ -211,6 +211,10 @@ class Jig extends Controller {
 			$stamp=$session->stamp($id),
 			'Timestamp: '.date('r',$stamp)
 		);
+		$test->expect(
+			$agent=$session->agent($id),
+			'User agent: '.$agent
+		);
 		session_unset();
 		$_SESSION=array();
 		$test->expect(

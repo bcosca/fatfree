@@ -302,6 +302,8 @@ class Session extends Mapper {
 					// Use first IP address in list
 					current(explode(',',$_SERVER['HTTP_X_FORWARDED_FOR'])):
 					$_SERVER['REMOTE_ADDR']));
+		$this->set('agent',isset($_SERVER['HTTP_USER_AGENT'])?
+			$_SERVER['HTTP_USER_AGENT']:'');
 		$this->set('stamp',time());
 		$this->save();
 		return TRUE;
@@ -345,6 +347,16 @@ class Session extends Mapper {
 	function stamp($id) {
 		$this->load(array('session_id'=>$id));
 		return $this->dry()?FALSE:$this->get('stamp');
+	}
+
+	/**
+		Return HTTP user agent associated with specified session ID
+		@return string|FALSE
+		@param $id string
+	**/
+	function agent($id) {
+		$this->load(array('session_id'=>$id));
+		return $this->dry()?FALSE:$this->get('agent');
 	}
 
 	/**
