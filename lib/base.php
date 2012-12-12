@@ -192,8 +192,7 @@ class Base {
 				format($val,$args,$this->hive['ENCODING']);
 		if (is_null($val)) {
 			// Attempt to retrieve from cache
-			$cache=Cache::instance();
-			if ($cache->exists($hash=$this->hash($key),$data))
+			if (Cache::instance()->exists($hash=$this->hash($key),$data))
 				return $data[0];
 		}
 		return $val;
@@ -1293,32 +1292,36 @@ class Cache {
 	/**
 		Clear contents of cache backend
 		@return bool
+		@param $suffix string
+		@param $lifetime int
 	**/
-	function reset() {
+	function reset($suffix=NULL,$lifetime=0) {
 		if (!$this->dsn)
 			return TRUE;
+		$regex='/'.preg_quote($this->prefix.'.','/').'.+?'.
+			preg_quote($suffix,'/').'/';
 		$parts=explode('=',$this->dsn);
 		switch ($parts[0]) {
 			case 'apc':
 				$info=apc_cache_info('user');
 				foreach ($info['cache_list'] as $item)
-					if (preg_match('/'.preg_quote($this->prefix,'/').'/',
-						$item['info']))
+					if (preg_match($regex,$item['info']) &&
+						$item['mtime']+$lifetime<time())
 						apc_delete($item['info']);
 				return TRUE;
 			case 'wincache':
 				$info=wincache_ucache_info();
 				foreach ($info['ucache_entries'] as $item)
-					if (preg_match('/'.preg_quote($this->prefix,'/').'/',
-						$item['key_name']))
+					if (preg_match($regex,$item['key_name']) &&
+						$item['use_time']+$lifetime<time())
 					apc_delete($item['key_name']);
 				return TRUE;
 			case 'xcache':
 				return TRUE; // Not supported
 			case 'folder':
 				foreach (glob($parts[1].'*') as $file)
-					if (preg_match('/'.preg_quote($this->prefix,'/').'/',
-						basename($file)))
+					if (preg_match($regex,basename($file)) &&
+						filemtime($file)+$lifetime<time())
 						Base::instance()->unlink($file);
 				return TRUE;
 		}

@@ -25,6 +25,7 @@ class Cache extends Controller {
 			$backend,
 			'Cache backend '.$f3->stringify($backend).' detected'
 		);
+		/*
 		$cache=\Cache::instance();
 		$test->expect(
 			$cache===\Cache::instance(),
@@ -140,6 +141,46 @@ class Cache extends Controller {
 				sprintf('%.1f',(microtime(TRUE)-$mark)*1e3).'ms'
 		);
 		$cache->clear($hash);
+		*/
+		$session=new \Cache\Session;
+		$test->expect(
+			session_start(),
+			'Cache-based session started'
+		);
+		$_SESSION['foo']='hello world';
+		session_commit();
+		$test->expect(
+			$ip=$session->ip(),
+			'IP address: '.$ip
+		);
+		$test->expect(
+			$stamp=$session->stamp(),
+			'Timestamp: '.date('r',$stamp)
+		);
+		$test->expect(
+			$agent=$session->agent(),
+			'User agent: '.$agent
+		);
+		session_unset();
+		$_SESSION=array();
+		$test->expect(
+			!isset($_SESSION['foo']),
+			'Session cleared'
+		);
+		session_commit();
+		session_start();
+		$test->expect(
+			isset($_SESSION['foo']) && $_SESSION['foo']=='hello world',
+			'Session variable retrieved from cache'
+		);
+		session_unset();
+		session_destroy();
+		header_remove('Set-Cookie');
+		unset($_COOKIE[session_name()]);
+		$test->expect(
+			!isset($_SESSION['foo']),
+			'Session destroyed'
+		);
 		$f3->clear('CACHE');
 		$f3->set('results',$test->results());
 	}
