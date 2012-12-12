@@ -440,7 +440,7 @@ class Mapper extends \DB\Cursor {
 
 }
 
-//! Custom session handler
+//! Custom SQL-managed session handler
 class Session extends Mapper {
 
 	/**

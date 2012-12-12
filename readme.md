@@ -60,7 +60,7 @@ F3's declarative approach to programming makes it easy for novices and experts a
 
 Unpack the contents of `fatfree-3.x.x.zip` anywhere in your hard drive. By default, the framework file and optional plug-ins are located in the `lib/` path. Organize your directory structures any way you want. You may move the default folders to a path that's not Web-accessible for better security. Delete the plug-ins that you don't need. You can always restore them later and F3 will detect their presence automatically.
 
-Important: If your application uses APC, WinCache, XCache, or a filesystem cache, clear all cache entries first before overwriting an older version of the framework with a new one.
+Important: If your application uses APC, Memcached, WinCache, XCache, or a filesystem cache, clear all cache entries first before overwriting an older version of the framework with a new one.
 
 Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 5.3. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by outdated PHP versions. To find out, open your console (run cmd.exe if you're running Windows):-
 
@@ -1467,6 +1467,10 @@ Disabling the cache is as simple as:-
 
     $f3->set('CACHE',FALSE);
 
+If you wish to override the auto-detection feature, you can do so - as in the case of a Memcached back-end which F3 also supports:-
+
+	$f3->set('CACHE','memcache=localhost:11211');
+
 You can also use the cache engine to store your own variables. These variables will persist between HTTP requests and remain in cache until the engine receives instructions to delete them. To save a value in the cache:-
 
     $f3->set('var','I want this value saved',90);
@@ -1617,7 +1621,7 @@ Once you get the hang of testing the smallest units of your application, you can
 >HTTP request body for ReSTful post-processing.
 
 `bool/string CACHE`
->Cache backend. F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a FALSE value.
+>Cache backend. Unless assigned a value like 'memcache=localhost' (and the PHP memcache module is present), F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a FALSE value.
 
 `bool CASELESS`
 >Pattern matching of routes against incoming URIs is case-insensitive by default. Set to `FALSE` to make it case-sensitive.

@@ -317,7 +317,7 @@ class Mapper extends \DB\Cursor {
 
 }
 
-//! Custom session handler
+//! Custom Jig-managed session handler
 class Session extends Mapper {
 
 	/**

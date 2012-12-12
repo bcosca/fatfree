@@ -2,7 +2,7 @@
 
 namespace Cache;
 
-//! Custom session handler
+//! Custom cache-based session handler
 class Session {
 
 	/**

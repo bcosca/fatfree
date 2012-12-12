@@ -253,7 +253,7 @@ class Mapper extends \DB\Cursor {
 
 }
 
-//! Custom session handler
+//! Custom Mongo-managed session handler
 class Session extends Mapper {
 
 	/**
