@@ -6,7 +6,7 @@ class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.0-RC2';
+		VERSION='3.0.1 Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -1175,7 +1175,7 @@ class Base {
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>array(),
 			'SCHEME'=>$scheme,
-			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'default',
+			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'php',
 			'TEMP'=>'tmp/',
 			'TIME'=>microtime(TRUE),
 			'TZ'=>date_default_timezone_get(),
