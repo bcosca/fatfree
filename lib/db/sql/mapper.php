@@ -521,7 +521,9 @@ class Session extends Mapper {
 		@return string|FALSE
 		@param $id string
 	**/
-	function ip($id) {
+	function ip($id=NULL) {
+		if (!$id)
+			$id=session_id();
 		$this->load(array('session_id=?',$id));
 		return $this->dry()?FALSE:$this->get('ip');
 	}
@@ -531,7 +533,9 @@ class Session extends Mapper {
 		@return string|FALSE
 		@param $id string
 	**/
-	function stamp($id) {
+	function stamp($id=NULL) {
+		if (!$id)
+			$id=session_id();
 		$this->load(array('session_id=?',$id));
 		return $this->dry()?FALSE:$this->get('stamp');
 	}
@@ -541,7 +545,9 @@ class Session extends Mapper {
 		@return string|FALSE
 		@param $id string
 	**/
-	function agent($id) {
+	function agent($id=NULL) {
+		if (!$id)
+			$id=session_id();
 		$this->load(array('session_id=?',$id));
 		return $this->dry()?FALSE:$this->get('agent');
 	}

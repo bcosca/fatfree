@@ -404,17 +404,16 @@ class SQL extends Controller {
 			);
 			$_SESSION['foo']='hello world';
 			session_commit();
-			$id=session_id();
 			$test->expect(
-				$ip=$session->ip($id),
+				$ip=$session->ip(),
 				'IP address: '.$ip
 			);
 			$test->expect(
-				$stamp=$session->stamp($id),
+				$stamp=$session->stamp(),
 				'Timestamp: '.date('r',$stamp)
 			);
 			$test->expect(
-				$agent=$session->agent($id),
+				$agent=$session->agent(),
 				'User agent: '.$agent
 			);
 			session_unset();
