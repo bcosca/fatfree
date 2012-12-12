@@ -814,13 +814,14 @@ class Base {
 					// Only GET and HEAD requests are cacheable
 					$req=getallheaders();
 					$cache=Cache::instance();
-					$cached=$cache->exists($hash=$this->hash(
-						$this->hive['VERB'].' '.$this->hive['URI']).'.url');
+					$cached=$cache->exists(
+						$hash=$this->hash($this->hive['VERB'].' '.
+							$this->hive['URI']).'.url',$data);
 					if ($cached && $cached+$ttl>$now) {
 						if (!isset($req['If-Modified-Since']) ||
 							$cached>strtotime($req['If-Modified-Since'])) {
 							// Retrieve from cache backend
-							list($headers,$body)=$cache->get($hash);
+							list($headers,$body)=$data[0];
 							if (PHP_SAPI!='cli')
 								array_walk($headers,'header');
 							// Override headers
@@ -1212,7 +1213,9 @@ class Cache {
 		//! Cache DSN
 		$dsn,
 		//! Prefix for cache entries
-		$prefix;
+		$prefix,
+		//! MemCache object
+		$ref;
 
 	/**
 		Return timestamp of cache entry or FALSE if not found
@@ -1228,21 +1231,24 @@ class Cache {
 		$parts=explode('=',$this->dsn);
 		switch ($parts[0]) {
 			case 'apc':
-				$cached=apc_fetch($ndx);
+				$raw=apc_fetch($ndx);
+				break;
+			case 'memcache':
+				$raw=memcache_get($this->ref,$ndx);
 				break;
 			case 'wincache':
-				$cached=wincache_ucache_get($ndx);
+				$raw=wincache_ucache_get($ndx);
 				break;
 			case 'xcache':
-				$cached=xcache_get($ndx);
+				$raw=xcache_get($ndx);
 				break;
 			case 'folder':
 				if (is_file($file=$parts[1].$ndx))
-					$cached=$fw->read($file);
+					$raw=$fw->read($file);
 				break;
 		}
-		if (isset($cached)) {
-			$data=list($val,$time,$ttl)=$fw->unserialize($cached);
+		if (isset($raw)) {
+			$data=list($val,$time,$ttl)=$fw->unserialize($raw);
 			if (!$ttl || $time+$ttl>microtime(TRUE))
 				return $time;
 			$this->clear($key);
@@ -1267,6 +1273,8 @@ class Cache {
 		switch ($parts[0]) {
 			case 'apc':
 				return apc_store($ndx,$data,$ttl);
+			case 'memcache':
+				return memcache_set($this->ref,$ndx,$data,0,$ttl);
 			case 'wincache':
 				return wincache_ucache_set($ndx,$data,$ttl);
 			case 'xcache':
@@ -1303,6 +1311,8 @@ class Cache {
 		switch ($parts[0]) {
 			case 'apc':
 				return apc_delete($ndx);
+			case 'memcache':
+				return memcache_delete($this->ref,$ndx);
 			case 'wincache':
 				return wincache_ucache_delete($ndx);
 			case 'xcache':
@@ -1333,6 +1343,19 @@ class Cache {
 						$item['mtime']+$lifetime<time())
 						apc_delete($item['info']);
 				return TRUE;
+			case 'memcache':
+				foreach (memcache_get_extended_stats(
+					$this->ref,'slabs') as $slabs)
+					foreach (array_keys($slabs) as $id)
+						foreach (memcache_get_extended_stats(
+							$this->ref,'cachedump',(int)$id)
+							as $server=>$data)
+							if (is_array($data))
+								foreach ($data as $key=>$val)
+									if (preg_match($regex,$key) &&
+										$val[1]+$lifetime<time())
+										memcache_delete($this->ref,$key);
+				return TRUE;
 			case 'wincache':
 				$info=wincache_ucache_info();
 				foreach ($info['ucache_entries'] as $item)
@@ -1360,13 +1383,27 @@ class Cache {
 	function load($dsn) {
 		if ($dsn) {
 			$fw=Base::instance();
-			if (!preg_match('/folder=/',$dsn)) {
-				// Auto-detect
-				$ext=array_map('strtolower',get_loaded_extensions());
-				$grep=preg_grep('/^(apc|wincache|xcache)/',$ext);
-				// Use filesystem as fallback
-				$dsn=$grep?current($grep):'folder='.$fw->get('TEMP').'cache/';
-			}
+			if (preg_match('/memcache=(.+)/',$dsn,$parts) &&
+				extension_loaded('memcache'))
+				foreach ($fw->split($parts[1]) as $server) {
+					$port=11211;
+					$parts=explode(':',$server,2);
+					if (count($parts)>1)
+						list($host,$port)=$parts;
+					else
+						$host=$parts[0];
+					if (!isset($this->ref))
+						$this->ref=memcache_connect($host,$port);
+					else
+						memcache_add_server($this->ref,$host,$port);
+				}
+			if (!isset($this->ref) && !preg_match('/folder=/',$dsn))
+				$dsn=($grep=preg_grep('/^(apc|wincache|xcache)/',
+					array_map('strtolower',get_loaded_extensions())))?
+						// Auto-detect
+						current($grep):
+						// Use filesystem as fallback
+						('folder='.$fw->get('TEMP').'cache/');
 			if (preg_match('/folder=(.+)/',$dsn,$parts) && !is_dir($parts[1]))
 				mkdir($parts[1],Base::MODE,TRUE);
 		}
