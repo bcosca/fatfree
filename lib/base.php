@@ -1393,7 +1393,7 @@ class Cache {
 					else
 						$host=$parts[0];
 					if (!isset($this->ref))
-						$this->ref=memcache_connect($host,$port);
+						$this->ref=@memcache_connect($host,$port)?:NULL;
 					else
 						memcache_add_server($this->ref,$host,$port);
 				}
