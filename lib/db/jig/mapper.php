@@ -358,6 +358,14 @@ class Session extends Mapper {
 		$this->load(array('@session_id==?',$id));
 		$this->set('session_id',$id);
 		$this->set('data',$data);
+		$this->set('ip',
+			isset($_SERVER['HTTP_CLIENT_IP'])?
+				// Behind proxy
+				$_SERVER['HTTP_CLIENT_IP']:
+				(isset($_SERVER['HTTP_X_FORWARDED_FOR'])?
+					// Use first IP address in list
+					current(explode(',',$_SERVER['HTTP_X_FORWARDED_FOR'])):
+					$_SERVER['REMOTE_ADDR']));
 		$this->set('stamp',time());
 		$this->save();
 		return TRUE;
@@ -381,6 +389,26 @@ class Session extends Mapper {
 	function cleanup($max) {
 		$this->erase(array('@stamp+?<?',$max,time()));
 		return TRUE;
+	}
+
+	/**
+		Return IP address associated with specified session ID
+		@return string|FALSE
+		@param $id string
+	**/
+	function ip($id) {
+		$this->load(array('@session_id==?',$id));
+		return $this->dry()?FALSE:$this->get('ip');
+	}
+
+	/**
+		Return Unix timestamp associated with specified session ID
+		@return string|FALSE
+		@param $id string
+	**/
+	function stamp($id) {
+		$this->load(array('@session_id==?',$id));
+		return $this->dry()?FALSE:$this->get('stamp');
 	}
 
 	/**

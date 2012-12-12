@@ -404,6 +404,15 @@ class SQL extends Controller {
 			);
 			$_SESSION['foo']='hello world';
 			session_commit();
+			$id=session_id();
+			$test->expect(
+				$ip=$session->ip($id),
+				'IP address: '.$ip
+			);
+			$test->expect(
+				$stamp=$session->stamp($id),
+				'Timestamp: '.date('r',$stamp)
+			);
 			session_unset();
 			$_SESSION=array();
 			$test->expect(
