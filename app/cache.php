@@ -21,12 +21,12 @@ class Cache extends Controller {
 			$backend!='invalid',
 			'Invalid backend specified (fallback invoked)'
 		);
+		$test->expect(
+			$backend=$f3->get('CACHE'),
+			'Cache backend '.$f3->stringify($backend).' detected'
+		);
 		$repeat=TRUE;
 		while ($repeat) {
-			$test->expect(
-				$backend=$f3->get('CACHE'),
-				'Cache backend '.$f3->stringify($backend).' detected'
-			);
 			$cache=\Cache::instance();
 			$test->expect(
 				$cache===\Cache::instance(),
@@ -184,8 +184,13 @@ class Cache extends Controller {
 			$backend=$f3->get('CACHE');
 			$f3->clear('CACHE');
 			if (extension_loaded('memcache') &&
-				!preg_match('/memcache=/',$backend))
+				!preg_match('/memcache=/',$backend)) {
 				$f3->set('CACHE','memcache=localhost');
+				$test->expect(
+					$backend=$f3->get('CACHE'),
+					'Cache backend '.$f3->stringify($backend).' specified'
+				);
+			}
 			else
 				$repeat=FALSE;
 		}
