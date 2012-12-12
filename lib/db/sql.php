@@ -113,7 +113,7 @@ class SQL extends \PDO {
 					// Statement-level error occurred
 					if ($this->trans)
 						$this->rollback();
-					trigger_error('PDOStatement: '.$error[2]);
+					user_error('PDOStatement: '.$error[2]);
 				}
 				if (preg_match(
 					'/^\s*(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW)\s/i',$cmd)) {
@@ -132,7 +132,7 @@ class SQL extends \PDO {
 					// PDO-level error occurred
 					if ($this->trans)
 						$this->rollback();
-					trigger_error('PDO: '.$error[2]);
+					user_error('PDO: '.$error[2]);
 				}
 			}
 			$this->log.=preg_replace($keys,$vals,$cmd,1)."\n";

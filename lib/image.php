@@ -26,7 +26,7 @@ class Image {
 	function rgb($color) {
 		$hex=str_pad($hex=dechex($color),$color<4096?3:6,'0',STR_PAD_LEFT);
 		if (($len=strlen($hex))>6)
-			trigger_error(sprintf(self::E_Color,'0x'.$hex));
+			user_error(sprintf(self::E_Color,'0x'.$hex));
 		$color=str_split($hex,$len/3);
 		foreach ($color as &$hue)
 			$hue=hexdec(str_repeat($hue,6/$len));

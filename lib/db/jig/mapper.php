@@ -44,7 +44,7 @@ class Mapper extends \DB\Cursor {
 			return $this->id;
 		if (array_key_exists($key,$this->document))
 			return $this->document[$key];
-		trigger_error(sprintf(self::E_Field,$key));
+		user_error(sprintf(self::E_Field,$key));
 		return FALSE;
 	}
 

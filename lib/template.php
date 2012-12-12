@@ -309,7 +309,7 @@ class Template extends View {
 						'charset='.$fw->get('ENCODING'));
 				return $this->sandbox();
 			}
-		trigger_error(sprintf(Base::E_Open,$file));
+		user_error(sprintf(Base::E_Open,$file));
 	}
 
 }

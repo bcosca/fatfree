@@ -118,7 +118,7 @@ class SMTP extends Magic {
 	**/
 	function attach($file) {
 		if (!is_file($file))
-			trigger_error(sprintf(self::E_Attach,$file));
+			user_error(sprintf(self::E_Attach,$file));
 		$this->attachments[]=$file;
 	}
 
@@ -135,7 +135,7 @@ class SMTP extends Magic {
 		$socket=&$this->socket;
 		$socket=@fsockopen($this->host,$this->port,$errno,$errstr);
 		if (!$socket) {
-			trigger_error($errstr);
+			user_error($errstr);
 			return;
 		}
 		stream_set_blocking($socket,TRUE);
@@ -162,10 +162,10 @@ class SMTP extends Magic {
 		$headers=$this->headers;
 		foreach ($reqd as $id)
 			if (!isset($headers[$id]))
-				trigger_error(sprintf(self::E_Header,$id));
+				user_error(sprintf(self::E_Header,$id));
 		// Message should not be blank
 		if (!$message)
-			trigger_error(self::E_Blank);
+			user_error(self::E_Blank);
 		$eol="\r\n";
 		$str='';
 		// Stringify headers

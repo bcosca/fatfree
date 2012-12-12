@@ -605,8 +605,8 @@ class Base {
 			if (isset($frame['file']) && ($frame['file']!=__FILE__ ||
 				$this->hive['DEBUG']>1) && (!isset($frame['class']) ||
 				$frame['class']!='Magic') && (!isset($frame['function']) ||
-				!preg_match('/^(?:trigger_error|__call|call_user_func)/',
-				$frame['function']))) {
+				!preg_match('/^(?:(?:trigger|user)_error|'.
+					'__call|call_user_func)/',$frame['function']))) {
 				$addr=$this->fixslashes($frame['file']).':'.$frame['line'];
 				if (isset($frame['class']))
 					$line.=$frame['class'].$frame['type'];
@@ -688,7 +688,7 @@ class Base {
 	function route($pattern,$handler,$ttl=0,$kbps=0) {
 		$parts=preg_split('/\s+/',$pattern,2,PREG_SPLIT_NO_EMPTY);
 		if (count($parts)<2)
-			trigger_error(sprintf(self::E_Pattern,$pattern));
+			user_error(sprintf(self::E_Pattern,$pattern));
 		list($verbs,$url)=$parts;
 		foreach ($this->split($verbs) as $verb) {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
@@ -737,7 +737,7 @@ class Base {
 	function run($mock=FALSE) {
 		if (!$this->hive['ROUTES'])
 			// No routes defined
-			trigger_error(self::E_Routes);
+			user_error(self::E_Routes);
 		// Match specific routes first
 		krsort($this->hive['ROUTES']);
 		// Convert to BASE-relative URL
@@ -1083,7 +1083,7 @@ class Base {
 		// Deprecated directives
 		ini_set('magic_quotes_gpc',0);
 		ini_set('register_globals',0);
-		// Intercept errors/exceptions
+		// Intercept errors/exceptions; PHP5.3-compatible
 		error_reporting(E_ALL|E_STRICT);
 		$fw=$this;
 		set_exception_handler(
@@ -1435,7 +1435,7 @@ class View extends Prefab {
 						'charset='.$fw->get('ENCODING'));
 				return $this->sandbox();
 			}
-		trigger_error(sprintf(Base::E_Open,$file));
+		user_error(sprintf(Base::E_Open,$file));
 	}
 
 }
