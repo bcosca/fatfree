@@ -560,7 +560,7 @@ $f3->set('DEBUG',0);
 
 This will suppress the stack trace output in any system-generated HTML error page (because it's not meant to be seen by your site visitors).
 
-DEBUG can have values ranging from 0 (stack trace suppressed) to 2 (most verbose).
+`DEBUG` can have values ranging from 0 (stack trace suppressed) to 2 (most verbose).
 
 Don't forget! Stack traces may contain paths, file names, database commands, user names and passwords. You might expose your Web site to unnecessary security risks if you fail to set the `DEBUG` global variable to 0 in a production environment.
 
@@ -845,7 +845,7 @@ $f3->set('fruits',array('apple','orange ',' banana'));
 
 Nothing is gained by assigning a value to `@fruit` in your application code. Fat-Free ignores any preset value it may have because it uses the variable to represent the current item during iteration over the group. The output of the above HTML template fragment and the corresponding PHP code becomes:-
 
-``` php
+``` html
 <p>apple</p>
 <p>orange</p>
 <p>banana</p>
@@ -957,7 +957,7 @@ The second argument represents the MIME type of the document being rendered.
 
 The View component of MVC covers everything that doesn't fall under the Model and Controller, which means your presentation can and should include all kinds of user interfaces, like RSS, e-mail, RDF, FOAF, text files, etc. The example below shows you how to separate your e-mail presentation from your application's business logic:-
 
-```
+``` html
 MIME-Version: 1.0
 Content-type: text/html; charset={{ @ENCODING }}
 From: {{ @from }}
@@ -1024,7 +1024,7 @@ return array(
 
 Dictionaries are nothing more than key-value pairs. F3 automatically instantiates framework variables based on the keys in the language files. As such, it's easy to embed these variables as tokens in your templates. Using the F3 template engine:-
 
-``` php
+``` html
 <h1>{{ @love }}</h1>
 <p>
 {{ @today | time() | format }}.<br />
@@ -1198,7 +1198,7 @@ $db->exec(
 If the `POST` variable `userID` does not go through any data sanitation process, a malicious user can pass the following string and damage your database irreversibly:-
 
 ``` sql
-    admin"; DELETE FROM users; SELECT "1
+admin"; DELETE FROM users; SELECT "1
 ```
 
 Luckily, parameterized queries help you mitigate these risks:-
@@ -1430,6 +1430,7 @@ $user->load(
 		'limit'=>3
 	)
 );
+```
 
 If you're using MySQL, the query translates to:-
 
@@ -1511,8 +1512,7 @@ $frequentUsers=$user->find(array('@visits>?',3),array('order'=>'userID'));
 The equivalent code using the MongoDB mapper:-
 
 ``` php
-$frequentUsers=$user->
-	find(array('visits'=>array('$gt'=>3)),array('userID'=>1));
+$frequentUsers=$user->find(array('visits'=>array('$gt'=>3)),array('userID'=>1));
 ```
 
 The `find()` method searches the `users` table for records that match the criteria `visits>3`, sorts the result by `userID` and returns the result as an array of mapper objects. `find('visits>3')` is different from `load('visits>3')`. The latter refers to the current `$user` object. `find()` does not have any effect on `skip()`.
