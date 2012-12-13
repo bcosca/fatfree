@@ -79,12 +79,16 @@ class Text extends Base {
 		$ofs2=0;
 		$patch='';
 		$html='';
+		$d=0;
+		$a=0;
 		foreach ($diff as $key=>$val)
 			if (is_array($val)) {
 				$pos1=$key+$ofs1;
 				$pos2=$key+$ofs2;
 				$ctrd=count($val['d']);
 				$ctra=count($val['a']);
+				$d = $d + $ctrd;
+				$a = $a + $ctra;
 				if ($val['d'])
 					$html.='<del>'.implode($delim,$val['d']).'</del>'.$delim;
 				if ($val['a'])
@@ -117,7 +121,18 @@ class Text extends Base {
 			}
 			else
 				$html.=$val.$delim;
-		return array('patch'=>$patch,'html'=>$html);
+
+
+		$old = F3::scrub($old);
+		$new = F3::scrub($new);
+		$stats=array(
+			"removed"=>$d,
+			"added"=>$a,
+			"old"=> count($delim ? explode($delim, $old) : str_split($old)),
+			"new"=> count($delim ? explode($delim, $new) : str_split($new)),
+		);
+		$stats['percent']= Number_format(((($d+$a) *100)/ $stats['old'])/2,2);
+		return array('patch'=>$patch,'html'=>$html,"stats"=>$stats);
 	}
 
 	/**

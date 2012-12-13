@@ -37,7 +37,8 @@ $app->set('menu',
 		'web'=>'Web Tools',
 		'network'=>'Network',
 		'misc'=>'Miscellaneous',
-		'openid'=>'OpenID'
+		'openid'=>'OpenID',
+		'diff'=>'Text Diff',
 	)
 );
 

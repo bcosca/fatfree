@@ -3607,4 +3607,256 @@ class Main extends F3instance {
 		echo $this->render('basic/results.htm');
 	}
 
+	function diff() {
+		$this->set('title','Text Diff');
+
+		$this->expect(
+			is_null($this->get('ERROR')),
+			'No errors expected at this point',
+			'ERROR variable is set: '.$this->get('ERROR.text')
+		);
+
+		$o = "1234567890";
+		$a = "123446789";
+		$str = text::diff($o, $a, "");
+		$this->expect(true, "<hr>" . $str['html'] . "<hr>");
+
+
+		$str = $str['stats'];
+		$this->expect(
+			$str['added']=='1',
+			'String - Added: '. $str['added'],
+			'String - Added failed: '. $str['added']
+		);
+		$this->expect(
+			$str['removed']=='2',
+			'String - Removed: '. $str['removed'],
+			'String - Removed failed: '. $str['removed']
+		);
+		$this->expect(
+			$str['percent']=='15',
+			'String - Percent: '. $str['percent'],
+			'String - Percent failed: '. $str['percent']
+		);
+
+
+
+		$delim = array(
+				array("desc"=>'character-based comparison',"d"=>''),
+				array("desc"=>'space as delimiter',"d"=>' '),
+				array("desc"=>'line-by-line comparison',"d"=>"\n")
+			) ;
+
+		$old = "this brown fox went to the market";
+		$new = "That brown Fox went to the Markets";
+
+		$i=0;
+
+		$desc ="Single Line - ".($delim[$i]['desc']);
+		$diff=Text::diff($old,$new, $delim[$i]['d']);
+		$this->expect(true, "<hr>" . $diff['html'] . "<hr>");
+		$str = $diff['stats'];
+		$this->expect(
+			$str['added']=='6',
+			$desc.'- Added: '. $str['added'],
+			$desc . '- Added failed: '. $str['added']
+		);
+		$this->expect(
+			$str['removed']=='5',
+			$desc.'- Removed: '. $str['removed'],
+			$desc.'- Removed failed: '. $str['removed']
+		);
+		$this->expect(
+			$str['percent']=='16.67',
+			$desc.'- Percent: '. $str['percent'],
+			$desc.'- Percent failed: '. $str['percent']
+		);
+		$i++;
+
+		$desc = "Single Line - " .($delim[$i]['desc']);
+		$diff=Text::diff($old,$new, $delim[$i]['d']);
+		$this->expect(true, "<hr>" . $diff['html'] . "<hr>");
+		$str = $diff['stats'];
+		$this->expect(
+			$str['added']=='3',
+			$desc.'- Added: '. $str['added'],
+			$desc . '- Added failed: '. $str['added']
+		);
+		$this->expect(
+			$str['removed']=='3',
+			$desc.'- Removed: '. $str['removed'],
+			$desc.'- Removed failed: '. $str['removed']
+		);
+		$this->expect(
+			$str['percent']=='42.86',
+			$desc.'- Percent: '. $str['percent'],
+			$desc.'- Percent failed: '. $str['percent']
+		);
+		$i++;
+
+		$desc = "Single Line - " .($delim[$i]['desc']);
+		$diff=Text::diff($old,$new, $delim[$i]['d']);
+		$this->expect(true, "<hr>" . $diff['html'] . "<hr>");
+		$str = $diff['stats'];
+		$this->expect(
+			$str['added']=='1',
+			$desc.'- Added: '. $str['added'],
+			$desc . '- Added failed: '. $str['added']
+		);
+		$this->expect(
+			$str['removed']=='1',
+			$desc.'- Removed: '. $str['removed'],
+			$desc.'- Removed failed: '. $str['removed']
+		);
+		$this->expect(
+			$str['percent']=='100',
+			$desc.'- Percent: '. $str['percent'],
+			$desc.'- Percent failed: '. $str['percent']
+		);
+		$i++;
+
+
+
+
+		$old = nl2br("this brown fox went to the market \n and this piggy went home");
+		$new =  nl2br("That brown Fox went to the Markets \n and this piggy went home");
+
+		$i=0;
+
+		$desc ="Multi Line - ".($delim[$i]['desc']);
+		$diff=Text::diff($old,$new, $delim[$i]['d']);
+		$this->expect(true, "<hr>" . $diff['html'] . "<hr>");
+		$str = $diff['stats'];
+		$this->expect(
+			$str['added']=='6',
+			$desc.'- Added: '. $str['added'],
+			$desc . '- Added failed: '. $str['added']
+		);
+		$this->expect(
+			$str['removed']=='5',
+			$desc.'- Removed: '. $str['removed'],
+			$desc.'- Removed failed: '. $str['removed']
+		);
+		$this->expect(
+			$str['percent']=='9.17',
+			$desc.'- Percent: '. $str['percent'],
+			$desc.'- Percent failed: '. $str['percent']
+		);
+		$i++;
+
+		$desc = "Multi Line - " .($delim[$i]['desc']);
+		$diff=Text::diff($old,$new, $delim[$i]['d']);
+		$this->expect(true, "<hr>" . $diff['html'] . "<hr>");
+		$str = $diff['stats'];
+		$this->expect(
+			$str['added']=='3',
+			$desc.'- Added: '. $str['added'],
+			$desc . '- Added failed: '. $str['added']
+		);
+		$this->expect(
+			$str['removed']=='3',
+			$desc.'- Removed: '. $str['removed'],
+			$desc.'- Removed failed: '. $str['removed']
+		);
+		$this->expect(
+			$str['percent']=='23.08',
+			$desc.'- Percent: '. $str['percent'],
+			$desc.'- Percent failed: '. $str['percent']
+		);
+		$i++;
+
+		$desc = "Multi Line - " .($delim[$i]['desc']);
+		$diff=Text::diff($old,$new, $delim[$i]['d']);
+		$this->expect(true, "<hr>" . $diff['html'] . "<hr>");
+		$str = $diff['stats'];
+		$this->expect(
+			$str['added']=='1',
+			$desc.'- Added: '. $str['added'],
+			$desc . '- Added failed: '. $str['added']
+		);
+		$this->expect(
+			$str['removed']=='1',
+			$desc.'- Removed: '. $str['removed'],
+			$desc.'- Removed failed: '. $str['removed']
+		);
+		$this->expect(
+			$str['percent']=='50.00',
+			$desc.'- Percent: '. $str['percent'],
+			$desc.'- Percent failed: '. $str['percent']
+		);
+		$i++;
+
+
+		$old = "<p>this brown fox went to the market</p><p>and this piggy went home</p>";
+		$new = "<p>That brown Fox went to the Market.</p><p>This piggy went home</p>";
+
+		$i=0;
+
+		$desc ="HTML - ".($delim[$i]['desc']);
+		$diff=Text::diff($old,$new, $delim[$i]['d']);
+		$this->expect(true, "<hr>" . $diff['html'] . "<hr>");
+		$str = $diff['stats'];
+		$this->expect(
+			$str['added']=='7',
+			$desc.'- Added: '. $str['added'],
+			$desc . '- Added failed: '. $str['added']
+		);
+		$this->expect(
+			$str['removed']=='10',
+			$desc.'- Removed: '. $str['removed'],
+			$desc.'- Removed failed: '. $str['removed']
+		);
+		$this->expect(
+			$str['percent']=='14.91',
+			$desc.'- Percent: '. $str['percent'],
+			$desc.'- Percent failed: '. $str['percent']
+		);
+		$i++;
+
+		$desc = "HTML - " .($delim[$i]['desc']);
+		$diff=Text::diff($old,$new, $delim[$i]['d']);
+		$this->expect(true, "<hr>" . $diff['html'] . "<hr>");
+		$str = $diff['stats'];
+		$this->expect(
+			$str['added']=='3',
+			$desc.'- Added: '. $str['added'],
+			$desc . '- Added failed: '. $str['added']
+		);
+		$this->expect(
+			$str['removed']=='4',
+			$desc.'- Removed: '. $str['removed'],
+			$desc.'- Removed failed: '. $str['removed']
+		);
+		$this->expect(
+			$str['percent']=='31.82',
+			$desc.'- Percent: '. $str['percent'],
+			$desc.'- Percent failed: '. $str['percent']
+		);
+		$i++;
+
+		$desc = "HTML - " .($delim[$i]['desc']);
+		$diff=Text::diff($old,$new, $delim[$i]['d']);
+		$this->expect(true, "<hr>" . $diff['html'] . "<hr>");
+		$str = $diff['stats'];
+		$this->expect(
+			$str['added']=='1',
+			$desc.'- Added: '. $str['added'],
+			$desc . '- Added failed: '. $str['added']
+		);
+		$this->expect(
+			$str['removed']=='1',
+			$desc.'- Removed: '. $str['removed'],
+			$desc.'- Removed failed: '. $str['removed']
+		);
+		$this->expect(
+			$str['percent']=='100',
+			$desc.'- Percent: '. $str['percent'],
+			$desc.'- Percent failed: '. $str['percent']
+		);
+		$i++;
+
+
+		echo $this->render('basic/results.htm');
+	}
+
 }
