@@ -672,7 +672,7 @@ During the course of writing/debugging F3-powered programs and designing templat
         <p>A chunk of HTML we don't want displayed at the moment</p>
     </exclude>
 
-That's like the `<-- comment !-->` HTML comment tag, but the `<exclude>` directive makes the HTML block totally invisible once the template is rendered.
+That's like the `<!-- comment -->` HTML comment tag, but the `<exclude>` directive makes the HTML block totally invisible once the template is rendered.
 
 Here's another way of excluding template content or adding comments:-
 
