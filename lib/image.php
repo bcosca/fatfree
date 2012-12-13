@@ -139,8 +139,8 @@ class Image {
 			$width=imagesx($this->data),$height=imagesy($this->data));
 		imagealphablending($tmp,FALSE);
 		imagesavealpha($tmp,TRUE);
-		imagecopyresampled($tmp,
-			$this->data,0,0,$width-1,0,$width,$height,-$width,$height);
+		imagecopyresampled($tmp,$this->data,
+			0,0,$width-1,0,$width,$height,-$width,$height);
 		imagedestroy($this->data);
 		$this->data=$tmp;
 		return $this->save();
@@ -155,8 +155,8 @@ class Image {
 			$width=imagesx($this->data),$height=imagesy($this->data));
 		imagealphablending($tmp,FALSE);
 		imagesavealpha($tmp,TRUE);
-		imagecopyresampled($tmp,
-			$this->data,0,0,0,$height-1,$width,$height,$width,-$height);
+		imagecopyresampled($tmp,$this->data,
+			0,0,0,$height-1,$width,$height,$width,-$height);
 		imagedestroy($this->data);
 		$this->data=$tmp;
 		return $this->save();
@@ -172,20 +172,21 @@ class Image {
 	}
 
 	/**
-		Resize image (Maintain aspect ratio)
+		Resize image (Maintain aspect ratio); Crop relative to center
+		if flag is enabled
 		@return object
 		@param $width int
 		@param $height int
+		@param $crop bool
 	**/
-	function resize($width,$height) {
+	function resize($width,$height,$crop=TRUE) {
 		// Adjust dimensions; retain aspect ratio
-		$ratio=($oldx=imagesx($this->data))/($oldy=imagesy($this->data));
-		if ($width/$ratio<=$height)
-			// Adjust height
-			$height=$width/$ratio;
-		else
-			// Adjust width
-			$width=$height*$ratio;
+		$ratio=($origw=imagesx($this->data))/($origh=imagesy($this->data));
+		if (!$crop)
+			if ($width/$ratio<=$height)
+				$height=$width/$ratio;
+			else
+				$width=$height*$ratio;
 		// Create blank image
 		$tmp=imagecreatetruecolor($width,$height);
 		list($r,$g,$b)=$this->bg;
@@ -194,8 +195,21 @@ class Image {
 		imagealphablending($tmp,FALSE);
 		imagesavealpha($tmp,TRUE);
 		// Resize
-		imagecopyresampled($tmp,
-			$this->data,0,0,0,0,$width,$height,$oldx,$oldy);
+		if ($crop) {
+			if ($width/$ratio<=$height) {
+				$cropw=$origh*$width/$height;
+				imagecopyresampled($tmp,$this->data,
+					0,0,($origw-$cropw)/2,0,$width,$height,$cropw,$origh);
+			}
+			else {
+				$croph=$origw*$height/$width;
+				imagecopyresampled($tmp,$this->data,
+					0,0,0,($origh-$croph)/2,$width,$height,$origw,$croph);
+			}
+		}
+		else
+			imagecopyresampled($tmp,$this->data,
+				0,0,0,0,$width,$height,$origw,$origh);
 		imagedestroy($this->data);
 		$this->data=$tmp;
 		return $this->save();

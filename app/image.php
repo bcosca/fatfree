@@ -110,6 +110,19 @@ class Image extends Controller {
 				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
+			$src=$f3->base64($img->restore()->resize(100,90)->dump(),'image/png'),
+			'Resize/crop horizontal<br />'.
+			'<img src="'.$src.'" '.
+				'title="'.$img->width().'x'.$img->height().'" />'
+		);
+		$test->expect(
+			$src=$f3->base64($img->restore()->resize(90,100)->dump(),'image/png'),
+			'Resize/crop vertical<br />'.
+			'<img src="'.$src.'" '.
+				'title="'.$img->width().'x'.$img->height().'" />'
+		);
+
+		$test->expect(
 			$src=$f3->base64($img->restore()->rotate(-90)->dump(),'image/png'),
 			'Rotate clockwise<br />'.
 			'<img src="'.$src.'" '.
@@ -133,6 +146,7 @@ class Image extends Controller {
 			'<img src="'.$src.'" '.
 				'title="'.$img->width().'x'.$img->height().'" />'
 		);
+		unset($img);
 		$f3->set('ESCAPE',FALSE);
 		$f3->set('results',$test->results());
 	}
