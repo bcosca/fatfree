@@ -8,6 +8,16 @@ class Image {
 		E_Color='Invalid color specified: %s';
 	//@}
 
+	//@{ Positional cues
+	const
+		POS_Left=1,
+		POS_Center=2,
+		POS_Right=4,
+		POS_Top=8,
+		POS_Middle=16,
+		POS_Bottom=32;
+	//@}
+
 	private
 		//! Source filename
 		$file,
@@ -136,9 +146,11 @@ class Image {
 	**/
 	function hflip() {
 		$tmp=imagecreatetruecolor(
-			$width=imagesx($this->data),$height=imagesy($this->data));
-		imagealphablending($tmp,FALSE);
+			$width=$this->width(),$height=$this->height());
+		list($r,$g,$b)=$this->bg;
+		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
 		imagesavealpha($tmp,TRUE);
+		imagefill($tmp,0,0,$bg);
 		imagecopyresampled($tmp,$this->data,
 			0,0,$width-1,0,$width,$height,-$width,$height);
 		imagedestroy($this->data);
@@ -152,9 +164,11 @@ class Image {
 	**/
 	function vflip() {
 		$tmp=imagecreatetruecolor(
-			$width=imagesx($this->data),$height=imagesy($this->data));
-		imagealphablending($tmp,FALSE);
+			$width=$this->width(),$height=$this->height());
+		list($r,$g,$b)=$this->bg;
+		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
 		imagesavealpha($tmp,TRUE);
+		imagefill($tmp,0,0,$bg);
 		imagecopyresampled($tmp,$this->data,
 			0,0,0,$height-1,$width,$height,$width,-$height);
 		imagedestroy($this->data);
@@ -191,9 +205,8 @@ class Image {
 		$tmp=imagecreatetruecolor($width,$height);
 		list($r,$g,$b)=$this->bg;
 		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
-		imagefill($tmp,0,0,$bg);
-		imagealphablending($tmp,FALSE);
 		imagesavealpha($tmp,TRUE);
+		imagefill($tmp,0,0,$bg);
 		// Resize
 		if ($crop) {
 			if ($width/$ratio<=$height) {
@@ -224,8 +237,42 @@ class Image {
 		list($r,$g,$b)=$this->bg;
 		$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
 		$this->data=imagerotate($this->data,$angle,$bg);
-		imagealphablending($this->data,FALSE);
 		imagesavealpha($this->data,TRUE);
+		return $this->save();
+	}
+
+	/**
+		Apply an image overlay
+		@return object
+		@param $img object
+		@param $align int
+	**/
+	function overlay(Image $img,$align=NULL) {
+		if (is_null($align))
+			$align=self::POS_Right|self::POS_Bottom;
+		$ovr=imagecreatefromstring($img->dump());
+		imagesavealpha($ovr,TRUE);
+		$imgw=$this->width();
+		$imgh=$this->height();
+		$ovrw=imagesx($ovr);
+		$ovrh=imagesy($ovr);
+		if ($align & self::POS_Left)
+			$posx=0;
+		if ($align & self::POS_Center)
+			$posx=($imgw-$ovrw)/2;
+		if ($align & self::POS_Right)
+			$posx=$imgw-$ovrw;
+		if ($align & self::POS_Top)
+			$posy=0;
+		if ($align & self::POS_Middle)
+			$posy=($imgh-$ovrh)/2;
+		if ($align & self::POS_Bottom)
+			$posy=$imgh-$ovrh;
+		if (!isset($posx))
+			$posx=0;
+		if (!isset($posy))
+			$posy=0;
+		imagecopy($this->data,$ovr,$posx,$posy,0,0,$ovrw,$ovrh);
 		return $this->save();
 	}
 
@@ -283,7 +330,6 @@ class Image {
 				}
 				imagedestroy($sprite);
 			}
-		imagealphablending($this->data,FALSE);
 		imagesavealpha($this->data,TRUE);
 		return $this->save();
 	}
@@ -355,7 +401,6 @@ class Image {
 			if (is_resource($this->data))
 				imagedestroy($this->data);
 			$this->data=imagecreatefromstring($fw->read($file));
-			imagealphablending($this->data,FALSE);
 			imagesavealpha($this->data,TRUE);
 			foreach (glob($path.'*.png',GLOB_NOSORT) as $match)
 				if (preg_match('/-(\d+)\.png/',$match,$parts) &&
@@ -388,7 +433,6 @@ class Image {
 			foreach ($fw->split($fw->get('UI')) as $dir)
 				if (is_file($dir.$file)) {
 					$this->data=imagecreatefromstring($fw->read($dir.$file));
-					imagealphablending($this->data,FALSE);
 					imagesavealpha($this->data,TRUE);
 				}
 			$this->save();

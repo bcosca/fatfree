@@ -121,7 +121,6 @@ class Image extends Controller {
 			'<img src="'.$src.'" '.
 				'title="'.$img->width().'x'.$img->height().'" />'
 		);
-
 		$test->expect(
 			$src=$f3->base64($img->restore()->rotate(-90)->dump(),'image/png'),
 			'Rotate clockwise<br />'.
@@ -131,6 +130,14 @@ class Image extends Controller {
 		$test->expect(
 			$src=$f3->base64($img->restore()->rotate(90)->dump(),'image/png'),
 			'Rotate anti-clockwise<br />'.
+			'<img src="'.$src.'" '.
+				'title="'.$img->width().'x'.$img->height().'" />'
+		);
+		$ovr=new \Image('images/watermark.png');
+		$ovr->resize(100,38);
+		$test->expect(
+			$src=$f3->base64($img->restore()->overlay($ovr)->dump(),'image/png'),
+			'Overlay<br />'.
 			'<img src="'.$src.'" '.
 				'title="'.$img->width().'x'.$img->height().'" />'
 		);
