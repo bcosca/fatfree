@@ -617,7 +617,7 @@ class Base {
 		$prior=$this->hive['ERROR'];
 		$header=$this->status($code);
 		$req=$this->hive['VERB'].' '.$this->hive['URI'];
-		error_log($text?:$header.' ('.$req.')');
+		error_log($text?:($header.' ('.$req.')'));
 		$out='';
 		$eol="\n";
 		if (!$trace)
