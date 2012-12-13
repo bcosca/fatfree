@@ -617,11 +617,11 @@ class Base {
 		$prior=$this->hive['ERROR'];
 		$header=$this->status($code);
 		$req=$this->hive['VERB'].' '.$this->hive['URI'];
-		error_log($text?:($header.' ('.$req.')'));
+		error_log($text=$text?:($header.' ('.$req.')'));
 		$out='';
 		$eol="\n";
 		if (!$trace)
-			$trace=array_slice(debug_backtrace(),1);
+			$trace=array_slice(debug_backtrace(FALSE),1);
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';

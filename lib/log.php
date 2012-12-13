@@ -15,14 +15,12 @@ class Log {
 	**/
 	function write($text,$format='r') {
 		$fw=Base::instance();
-		$trace=debug_backtrace(FALSE);
 		$fw->write(
 			$this->file,
 			date($format).
 				(isset($_SERVER['REMOTE_ADDR'])?
 					(' ['.$_SERVER['REMOTE_ADDR'].']'):'').' '.
-			$fw->fixslashes($trace[0]['file']).':'.
-			$trace[0]['line'].' '.trim($text)."\n",
+			trim($text)."\n",
 			TRUE
 		);
 	}
