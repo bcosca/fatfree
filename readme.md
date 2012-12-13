@@ -83,6 +83,7 @@ Upgrade if necessary and come back here if you've made the jump to PHP 5.3 or a 
 
 Time to start writing our first application:-
 
+``` php
     $f3=require('path/to/base.php');
     $f3->route('GET /',
         function() {
@@ -90,6 +91,7 @@ Time to start writing our first application:-
         }
     );
     $f3->run();
+```
 
 Prepend `base.php` on the first line with the appropriate path. Save the above code fragment as index.php in your Web root folder. We've written our first Web page.
 
@@ -983,11 +985,11 @@ F3 is smart enough to know that if you're passing an array of SQL instructions, 
 
 You can also start and end a transaction programmatically:-
 
-	$db->begin();
-	$db->exec('DELETE FROM diet WHERE food="cola"');
-	$db->exec('INSERT INTO diet (food) VALUES ("carrot")');
-	$db->exec('SELECT * FROM diet');
-	$db->commit();
+    $db->begin();
+    $db->exec('DELETE FROM diet WHERE food="cola"');
+    $db->exec('INSERT INTO diet (food) VALUES ("carrot")');
+    $db->exec('SELECT * FROM diet');
+    $db->commit();
 
 A rollback will occur if any of the statements encounter an error.
 
@@ -1026,10 +1028,10 @@ Our example in the previous section will be a lot safer from SQL injection if wr
             'SELECT * FROM diet'
         ),
         array(
-			array(':name'=>'cola'),
-			array(1=>'carrot'),
-			NULL
-		)
+            array(':name'=>'cola'),
+            array(1=>'carrot'),
+            NULL
+        )
     );
 
 ### CRUD (But With a Lot of Style)
@@ -1469,7 +1471,7 @@ Disabling the cache is as simple as:-
 
 If you wish to override the auto-detection feature, you can do so - as in the case of a Memcached back-end which F3 also supports:-
 
-	$f3->set('CACHE','memcache=localhost:11211');
+    $f3->set('CACHE','memcache=localhost:11211');
 
 You can also use the cache engine to store your own variables. These variables will persist between HTTP requests and remain in cache until the engine receives instructions to delete them. To save a value in the cache:-
 
