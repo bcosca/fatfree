@@ -181,10 +181,10 @@ class Mapper extends \DB\Cursor {
 		}
 		if ($options['order'])
 			$sql.=' ORDER BY '.$options['order'];
-		if ($options['offset'])
-			$sql.=' OFFSET '.$options['offset'];
 		if ($options['limit'])
 			$sql.=' LIMIT '.$options['limit'];
+		if ($options['offset'])
+			$sql.=' OFFSET '.$options['offset'];
 		$result=$this->db->exec($sql.';',$args);
 		$out=array();
 		foreach ($result as &$row) {
