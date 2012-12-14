@@ -819,7 +819,7 @@ class Base {
 							$this->hive['URI']).'.url',$data);
 					if ($cached && $cached+$ttl>$now) {
 						if (!isset($req['If-Modified-Since']) ||
-							$cached>strtotime($req['If-Modified-Since'])) {
+							floor($cached)>strtotime($req['If-Modified-Since'])) {
 							// Retrieve from cache backend
 							list($headers,$body)=$data[0];
 							if (PHP_SAPI!='cli')
