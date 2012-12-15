@@ -99,7 +99,7 @@ $f3->route('GET /',
 $f3->run();
 ```
 
-Prepend `base.php` on the first line with the appropriate path. Save the above code fragment as index.php in your Web root folder. We've written our first Web page.
+Prepend `base.php` on the first line with the appropriate path. Save the above code fragment as `index.php` in your Web root folder. We've written our first Web page.
 
 The first command tells the PHP interpreter that you want the framework's functions and features available to your application. The `$f3->route()` method informs Fat-Free that a Web page is available at the relative URL indicated by the slash (`/`). Anyone visiting your site located at `http://www.example.com/` will see the `'Hello, world!'` message because the URL `/` is equivalent to the root page. To create a route that branches out from the root page, like `http://www.example.com/inside/`, you can define another route with a simple `GET /inside` string.
 
@@ -516,7 +516,7 @@ tmp/ (TEMP, used by the framework)
 	cache/ (CACHE)
 ```
 
-Feel free to organize your files and directories any way you want. Just set the appropriate F3 global variables. If you want a really secure site, Fat-Free even allows you to store all your files in a non-Web-accessible directory. The only requirement is that you leave `index.php` in your Web root and your public files, like CSS, JavaScript, images, etc. The `.htaccess` file should also be in your Web root if you're using Apache.
+Feel free to organize your files and directories any way you want. Just set the appropriate F3 global variables. If you want a really secure site, Fat-Free even allows you to store all your files in a non-Web-accessible directory. The only requirement is that you leave `index.php`, `.htaccess` and your public files, like CSS, JavaScript, images, etc. in a path visible to your browser.
 
 ### About the F3 Error Handler
 
