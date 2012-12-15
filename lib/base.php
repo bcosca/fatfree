@@ -2071,14 +2071,14 @@ class Registry {
 abstract class Magic {
 
 	/**
-		Return TRUE if hive key is not empty
+		Return TRUE if key is not empty
 		@return bool
 		@param $key string
 	**/
 	abstract function exists($key);
 
 	/**
-		Bind value to hive key
+		Bind value to key
 		@return mixed
 		@param $key string
 		@param $val mixed
@@ -2086,14 +2086,14 @@ abstract class Magic {
 	abstract function set($key,$val);
 
 	/**
-		Retrieve contents of hive key
+		Retrieve contents of key
 		@return mixed
 		@param $key string
 	**/
 	abstract function get($key);
 
 	/**
-		Unset hive key
+		Unset key
 		@return NULL
 		@param $key string
 	**/
