@@ -1,4 +1,4 @@
-[![Fat-Free Framework](https://github.com/bcosca/fatfree/raw/master/ui/images/logo.png)](http://fatfree.sf.net/)
+[![Fat-Free Framework](https://raw.github.com/bcosca/fatfree/master/ui/logo.png)](http://fatfree.sf.net/)
 
 *A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!*
 
@@ -1845,4 +1845,4 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
-[![Donate](https://github.com/bcosca/fatfree/raw/master/ui/images/donate.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
+[![Donate](https://raw.github.com/bcosca/fatfree/master/ui/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
