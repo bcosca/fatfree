@@ -62,7 +62,7 @@
 				<td><code><?php echo $class; ?></code></td>
 				<td>
 					<?php foreach ($modules as $module): ?>
-					<input type="checkbox" <?php echo extension_loaded($module)?'checked="checked"':''?> /><code><?php echo $module; ?></code><br />
+					<input type="checkbox" <?php echo extension_loaded($module)?'checked="checked"':''?> /> <code><?php echo $module; ?></code><br />
 					<?php endforeach; ?>
 				</td>
 			</tr>
