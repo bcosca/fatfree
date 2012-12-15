@@ -92,6 +92,7 @@ class SQL extends \PDO {
 					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
 				}
 			}
+			else {
 			if (is_object($query=$this->prepare($cmd))) {
 				foreach ($arg as $key=>$val) {
 					if (is_array($val)) {
@@ -133,6 +134,7 @@ class SQL extends \PDO {
 						$this->rollback();
 					user_error('PDO: '.$error[2]);
 				}
+			}
 			}
 			$this->log.=preg_replace($keys,$vals,$cmd,1)."\n";
 		}
