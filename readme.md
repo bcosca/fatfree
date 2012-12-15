@@ -27,6 +27,8 @@ Unlike other frameworks, F3 aims to be usable - not usual.
 
 The philosophy behind the framework and its approach to software architecture is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.
 
+[![Donate](https://raw.github.com/bcosca/fatfree/master/ui/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
+
 ## Table of Contents
 
 * [Getting Started](#getting-started)
