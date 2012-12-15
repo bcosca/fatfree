@@ -290,7 +290,7 @@ Take for instance a route defined as `GET /dogs/@breed`. Your application logic 
 $f3->error(404);
 ```
 
-Representational State Transfer (ReST)
+### Representational State Transfer (ReST)
 
 Fat-Free's architecture is based on the concept that HTTP URIs represent abstract Web resources (not limited to HTML) and each resource can move from one application state to another. Here's an example of a ReST interface:-
 
