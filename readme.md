@@ -441,7 +441,7 @@ $f3->clear('var')
 To find out if a variable has been previously defined:-
 
 ``` php
-$f3->exists('variable')
+$f3->exists('var')
 ```
 
 ### Globals
