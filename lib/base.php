@@ -789,7 +789,7 @@ class Base {
 		);
 		if ($this->hive['ONERROR'])
 			// Execute custom error handler
-			$this->call($this->hive['ONERROR'],NULL,'beforeroute,afterroute');
+			$this->call($this->hive['ONERROR']);
 		elseif (!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo
 				'<!DOCTYPE html>'.
