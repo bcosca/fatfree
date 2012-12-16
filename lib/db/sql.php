@@ -92,7 +92,7 @@ class SQL extends \PDO {
 					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
 				}
 			}
-			if (is_object($query=$this->prepare($cmd))) {
+			elseif (is_object($query=$this->prepare($cmd))) {
 				foreach ($arg as $key=>$val) {
 					if (is_array($val)) {
 						// User-specified data type
