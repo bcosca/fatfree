@@ -448,7 +448,7 @@ class Image {
 				$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 				$fw->hash($this->file);
 			foreach (glob($path.'*.png',GLOB_NOSORT) as $match)
-				if (preg_match('/-(\d+)\.png/',$match,$parts))
+				if (preg_match('/-(\d+)\.png/',$match))
 					$fw->unlink($match);
 		}
 	}
