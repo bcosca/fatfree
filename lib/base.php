@@ -1559,7 +1559,7 @@ class Cache {
 	**/
 	static function instance() {
 		if (!Registry::exists($class=__CLASS__))
-			Registry::set($class,=new $class);
+			Registry::set($class,new $class);
 		return Registry::get($class);
 	}
 
