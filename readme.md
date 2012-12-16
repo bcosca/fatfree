@@ -128,7 +128,7 @@ $f3->route('GET /about',
 You don't want to clutter the global namespace with function names? Fat-Free recognizes different ways of mapping route handlers to OOP classes and methods:-
 
 ``` php
-class webpage {
+class WebPage {
 	function display() {
 		echo 'I cannot object to an object';
 	}
@@ -327,7 +327,7 @@ You can assign a different location for your autoloaded classes by changing the 
 $f3->set('AUTOLOAD','admin/autoload/; user/autoload/; default/');
 ```
 
-Important: Except for the .php extension, the class name and file name must be identical, for the framework to autoload your class properly. For performance reasons, file names must be in lowercase.
+Important: Except for the .php extension, the class name and file name must be identical, for the framework to autoload your class properly. The basename of this file must be identical to your class invocation, e.g. F3 will look for either `Foo/BarBaz.php` or `foo/barbaz.php` when it detects a `new Foo\BarBaz` statement in your application.
 
 ### Working with Namespaces
 
