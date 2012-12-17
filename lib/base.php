@@ -265,21 +265,21 @@ class Base {
 				header_remove('Set-Cookie');
 			}
 		}
-		elseif (!isset($parts[1]) &&
+		elseif (preg_match('/^(GET|POST|COOKIE)\b(.+)/',$key,$expr)) {
+			$this->clear('REQUEST'.$expr[2]);
+			if ($expr[1]=='COOKIE') {
+				$parts=$this->cut($key);
+				$jar=$this->hive['JAR'];
+				$jar['expire']=strtotime('-1 year');
+				call_user_func_array('setcookie',
+					array($parts[1],'')+$jar);
+			}
+		}
+		if (!isset($parts[1]) &&
 			array_key_exists($parts[0],$this->defaults))
 			// Reset global to default value
 			$this->hive[$parts[0]]=$this->defaults[$parts[0]];
 		else {
-			if (preg_match('/^(GET|POST|COOKIE)\b(.+)/',$key,$expr)) {
-				$this->clear('REQUEST'.$expr[2]);
-				if ($expr[1]=='COOKIE') {
-					$parts=$this->cut($key);
-					$jar=$this->hive['JAR'];
-					$jar['expire']=strtotime('-1 year');
-					call_user_func_array('setcookie',
-						array($parts[1],'')+$jar);
-				}
-			}
 			$out='';
 			$obj=FALSE;
 			foreach ($parts as $part)
