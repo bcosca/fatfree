@@ -29,14 +29,6 @@ The philosophy behind the framework and its approach to software architecture is
 
 [![Donate](https://raw.github.com/bcosca/fatfree/master/ui/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
 
-<script type="text/javascript">
-var sc_project=5666392; 
-var sc_invisible=1; 
-var sc_security="fd7c8312"; 
-</script>
-<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script>
-<noscript><div class="statcounter"><a title="web analytics" href="http://statcounter.com/" class="statcounter"><img class="statcounter" src="http://c.statcounter.com/5666392/0/fd7c8312/1/" alt="web analytics" /></a></div></noscript>
-
 ## Table of Contents
 
 * [Getting Started](#getting-started)
