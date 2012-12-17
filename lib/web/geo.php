@@ -37,9 +37,7 @@ class Geo extends \Prefab {
 			FILTER_FLAG_IPV4|FILTER_FLAG_IPV6|
 			FILTER_FLAG_NO_RES_RANGE|FILTER_FLAG_NO_PRIV_RANGE);
 		if ($public && function_exists('geoip_db_avail') &&
-			geoip_db_avail(GEOIP_CITY_EDITION_REV1) &&
-			geoip_db_avail(GEOIP_COUNTRY_EDITION) &&
-			$out=@geoip_record_by_name($ip)) {
+			$out=geoip_record_by_name($ip)) {
 			$out['request']=$ip;
 			$out['region_code']=$out['region'];
 			$out['region_name']=geoip_region_name_by_code(
