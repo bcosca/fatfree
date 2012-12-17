@@ -29,6 +29,8 @@ The philosophy behind the framework and its approach to software architecture is
 
 [![Donate](https://raw.github.com/bcosca/fatfree/master/ui/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
 
+[![Hit Counter](http://c.statcounter.com/5666392/0/fd7c8312/1/)](http://statcounter.com/)
+
 ## Table of Contents
 
 * [Getting Started](#getting-started)
