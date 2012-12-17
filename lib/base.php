@@ -1077,6 +1077,19 @@ class Base {
 	}
 
 	/**
+		Execute specified callbacks in succession
+		@return array
+		@param $funcs array|string
+		@param $args array
+	**/
+	function chain($funcs,array $args=NULL) {
+		$out=array();
+		foreach (is_array($funcs)?$funcs:$this->split($funcs) as $func)
+			$out[]=$this->call($func,$args);
+		return $out;
+	}
+
+	/**
 		Configure framework according to .ini-style file settings
 		@return NULL
 		@param $file string
