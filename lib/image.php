@@ -336,51 +336,55 @@ class Image {
 
 	/**
 		Generate CAPTCHA image
-		@return object
+		@return object|FALSE
 		@param $font string
 		@param $size int
 		@param $len int
 		@param $key string
 	**/
 	function captcha($font,$size=24,$len=5,$key=NULL) {
-		$seed=strtoupper(substr(md5(uniqid()),0,$len));
-		$block=$size*3;
-		$tmp=array();
-		for ($i=0,$width=0,$height=0;$i<$len;$i++) {
-			$box=imagettfbbox($size*2,0,$font,$seed[$i]);
-			$w=$box[2]-$box[0];
-			$h=$box[1]-$box[5];
-			$char=imagecreatetruecolor($block,$block);
-			list($r,$g,$b)=$this->rgb(mt_rand(0x333,0xCCC));
-			$bg=imagecolorallocate($char,$r,$g,$b);
-			imagefill($char,0,0,$bg);
-			imagettftext($char,$size*2,0,
-				($block-$w)/2,$block-($block-$h)/2,
-				0xFFFFFF,$font,$seed[$i]);
-			list($r,$g,$b)=$this->bg;
-			$bg=imagecolorallocatealpha($char,$r,$g,$b,127);
-			$char=imagerotate($char,mt_rand(-30,30),$bg);
-			$tmp[$i]=imagecreatetruecolor(
-				($w=imagesx($char))/2,($h=imagesy($char))/2);
-			list($r,$g,$b)=$this->bg;
-			$bg=imagecolorallocatealpha($tmp[$i],$r,$g,$b,127);
-			imagefill($tmp[$i],0,0,$bg);
-			imagecopyresampled($tmp[$i],$char,0,0,0,0,$w/2,$h/2,$w,$h);
-			$width+=$i+1<$len?$block/2:$w/2;
-			$height=max($height,$h/2);
-		}
-		$this->data=imagecreatetruecolor($width,$height);
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
-		imagefill($this->data,0,0,$bg);
-		for ($i=0;$i<$len;$i++)
-			imagecopy($this->data,$tmp[$i],
-				$i*$block/2,($height-imagesy($tmp[$i]))/2,0,0,
-				imagesx($tmp[$i]),imagesy($tmp[$i]));
-		imagesavealpha($this->data,TRUE);
-		if ($key)
-			Base::instance()->set($key,$seed);
-		return $this->save();
+		$fw=Base::instance();
+		foreach ($fw->split($fw->get('UI')) as $dir)
+			if (is_file($path=$dir.$font)) {
+				$seed=strtoupper(substr(md5(uniqid()),0,$len));
+				$block=$size*3;
+				$tmp=array();
+				for ($i=0,$width=0,$height=0;$i<$len;$i++) {
+					// Process at 2x magnification
+					$box=imagettfbbox($size*2,0,$path,$seed[$i]);
+					$w=$box[2]-$box[0];
+					$h=$box[1]-$box[5];
+					$char=imagecreatetruecolor($block,$block);
+					imagefill($char,0,0,0);
+					imagettftext($char,$size*2,0,
+						($block-$w)/2,$block-($block-$h)/2,
+						0xFFFFFF,$path,$seed[$i]);
+					list($r,$g,$b)=$this->bg;
+					$bg=imagecolorallocatealpha($char,$r,$g,$b,127);
+					$char=imagerotate($char,mt_rand(-30,30),$bg);
+					// Reduce to normal size
+					$tmp[$i]=imagecreatetruecolor(
+						($w=imagesx($char))/2,($h=imagesy($char))/2);
+					$bg=imagecolorallocatealpha($tmp[$i],$r,$g,$b,127);
+					imagefill($tmp[$i],0,0,$bg);
+					imagecopyresampled($tmp[$i],$char,0,0,0,0,$w/2,$h/2,$w,$h);
+					$width+=$i+1<$len?$block/2:$w/2;
+					$height=max($height,$h/2);
+				}
+				$this->data=imagecreatetruecolor($width,$height);
+				list($r,$g,$b)=$this->bg;
+				$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
+				imagefill($this->data,0,0,$bg);
+				for ($i=0;$i<$len;$i++)
+					imagecopy($this->data,$tmp[$i],
+						$i*$block/2,($height-imagesy($tmp[$i]))/2,0,0,
+						imagesx($tmp[$i]),imagesy($tmp[$i]));
+				imagesavealpha($this->data,TRUE);
+				if ($key)
+					$fw->set($key,$seed);
+				return $this->save();
+			}
+		return FALSE;
 	}
 
 	/**
@@ -483,8 +487,8 @@ class Image {
 				if (is_file($dir.$file)) {
 					$this->data=imagecreatefromstring($fw->read($dir.$file));
 					imagesavealpha($this->data,TRUE);
+					$this->save();
 				}
-			$this->save();
 		}
 	}
 
