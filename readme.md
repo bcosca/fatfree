@@ -1942,6 +1942,9 @@ Once you get the hang of testing the smallest units of your application, you can
 `integer DEBUG`
 >Stack trace verbosity. Assign values 1 to 2 for increasing verbosity levels. Zero (0) suppresses the stack trace. This is the default value and it should be the assigned setting on a production server.
 
+`string DNSBL`
+>Comma-separated list of DNS blacklist servers. Framework generates a `403 Forbidden` error if the user's IPv4 address is listed on the specified server(s).
+
 `array DIACRITICS`
 >Key-value pairs for foreign-to-ASCII character translations.
 
@@ -1953,6 +1956,9 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool ESCAPE`
 >Used to enable/disable auto-escaping.
+
+`string EXEMPT`
+>COmma-separated list of IPv4 addresses exempt from DNSBL lookups.
 
 `array HEADERS`
 >HTTP request headers received by the server.

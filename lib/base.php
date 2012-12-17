@@ -77,10 +77,12 @@ class Base {
 		$hive,
 		//! Default settings
 		$defaults,
-		//! NULL reference
-		$null=NULL,
 		//! Languages
-		$languages;
+		$languages,
+		//! Spammer detect flag
+		$spammer=FALSE,
+		//! NULL reference
+		$null=NULL;
 
 	/**
 		Sync PHP global with corresponding hive key
@@ -892,6 +894,20 @@ class Base {
 		@return NULL
 	**/
 	function run() {
+		if ($this->hive['DNSBL'] && !in_array($this->hive['IP'],
+			is_array($this->hive['EXEMPT'])?
+				$this->hive['EXEMPT']:
+				$this->split($this->hive['EXEMPT']))) {
+			// Reverse IPv4 dotted quad
+			$rev=implode('.',array_reverse(explode('.',$this->hive['IP'])));
+			foreach (is_array($this->hive['DNSBL'])?
+				$this->hive['DNSBL']:
+				$this->split($this->hive['DNSBL']) as $server)
+				// DNSBL lookup
+				if (gethostbyname($host=$rev.'.'.$server)!=$host)
+					// Spammer detected
+					$this->error(403);
+		}
 		if (!$this->hive['ROUTES'])
 			// No routes defined
 			user_error(self::E_Routes);
@@ -1292,9 +1308,11 @@ class Base {
 			'CASELESS'=>TRUE,
 			'DEBUG'=>0,
 			'DIACRITICS'=>array(),
+			'DNSBL'=>'',
 			'ENCODING'=>$charset,
 			'ERROR'=>NULL,
 			'ESCAPE'=>TRUE,
+			'EXEMPT'=>NULL,
 			'HEADERS'=>$req,
 			'IP'=>isset($req['Client-IP'])?
 				$req['Client-IP']:
