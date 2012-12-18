@@ -93,8 +93,6 @@ class Base {
 		$defaults,
 		//! Languages
 		$languages,
-		//! Spammer detect flag
-		$spammer=FALSE,
 		//! NULL reference
 		$null=NULL;
 
