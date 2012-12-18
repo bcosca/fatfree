@@ -803,7 +803,7 @@ class Base {
 		);
 		if ($this->hive['ONERROR'])
 			// Execute custom error handler
-			$this->call($this->hive['ONERROR']);
+			$this->call($this->hive['ONERROR'],array($this));
 		elseif (!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo
 				'<!DOCTYPE html>'.
@@ -1057,14 +1057,15 @@ class Base {
 			// Convert string to executable PHP callback
 			if (!class_exists($parts[1]))
 				$this->error(404);
-			$func=array(
-				$parts[2]=='->'?
-					(is_subclass_of($parts[1],'Prefab')?
-						call_user_func($parts[1].'::instance'):
-						new $parts[1]):
-					$parts[1],
-				$parts[3]
-			);
+			if ($parts[2]=='->') {
+				if (is_subclass_of($parts[1],'Prefab'))
+					$parts[1]=call_user_func($parts[1].'::instance');
+				else {
+					$ref=new ReflectionClass($parts[1]);
+					$parts[1]=$ref->newinstanceargs($args);
+				}
+			}
+			$func=array($parts[1],$parts[3]);
 		}
 		if (!is_callable($func))
 			$this->error(404);
