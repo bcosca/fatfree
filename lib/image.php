@@ -347,7 +347,6 @@ class Image {
 		foreach ($fw->split($fw->get('UI')) as $dir)
 			if (is_file($path=$dir.$font)) {
 				$seed=strtoupper(md5(uniqid()));
-				var_dump($seed);
 				$block=$size*3;
 				$tmp=array();
 				for ($i=0,$width=0,$height=0;$i<$len;$i++) {
