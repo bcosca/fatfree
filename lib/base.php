@@ -1292,6 +1292,8 @@ class Base {
 			$_SERVER['REQUEST_URI']=$_SERVER['argv'][1];
 		}
 		$req=getallheaders();
+		if (isset($req['X-HTTP-Method-Override']))
+			$_SERVER['REQUEST_METHOD']=$req['X-HTTP-Method-Override'];
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
 			isset($req['X-Forwarded-Proto']) &&
 			$req['X-Forwarded-Proto']=='https'?'https':'http';
