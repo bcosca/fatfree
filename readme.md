@@ -149,7 +149,7 @@ As a demonstration of Fat-Free's powerful domain-specific language (DSL), you ca
 
 ``` php
 $f3->route('GET /brew/@count',
-	function() use($f3) {
+	function($f3) {
 		echo $f3->get('PARAMS.count').' bottles of beer on the wall.';
 	}
 );
@@ -158,6 +158,16 @@ $f3->route('GET /brew/@count',
 This example shows how we can specify a token `@count` to represent part of a URL. The framework will serve any request URL that matches the `/brew/` prefix, like `/brew/99`, `/brew/98`, etc. This will display `'99 bottles of beer on the wall'` and `'98 bottles of beer on the wall'`, respectively. Fat-Free will also accept a page request for `/brew/unbreakable`. (Expect this to display `'unbreakable bottles of beer on the wall'`.) When such a dynamic route is specified, Fat-Free automagically populates the global `PARAMS` array variable with the value of the captured strings in the URL. The `$f3->get()` call inside the callback function retrieves the value of a framework variable. You can certainly apply this method in your code as part of the presentation or business logic. But we'll discuss that in greater detail later.
 
 Notice that Fat-Free understands array dot-notation. You can certainly use `@PARAMS['count']` regular notation, which is prone to typo errors and unbalanced braces. The framework also permits `@PARAMS.count` which is somehow similar to Javascript. This feature is limited to arrays in F3 templates. Take note that `@foo.@bar` is a string concatenation, whereas `@foo.bar` translates to `@foo['bar']`.
+
+Here's another way to access tokens in a request pattern:-
+
+``` php
+$f3->route('GET /brew/@count',
+    function($f3,$params) {
+        echo $params['count'].' bottles of beer on the wall.';
+    }
+);
+```
 
 You can use the asterisk (`*`) to accept any URL after the `/brew` route - if you don't really care about the rest of the path:-
 
@@ -268,7 +278,7 @@ So let's get back to coding. You can declare a page obsolete and redirect your v
 
 ``` php
 $f3->route('GET|HEAD /obsoletepage',
-	function() use($f3) {
+	function($f3) {
 		$f3->reroute('/newpage');
 	}
 );
@@ -658,7 +668,7 @@ To display this template, you can have PHP code that looks like this (saved in a
 ``` php
 $f3=require('lib/base.php');
 $f3->route('GET /',
-	function() use($f3) {
+	function($f3) {
 		$f3->set('name','world');
 		$view=new View;
 		echo $view->render('template.htm');
@@ -684,7 +694,7 @@ and the code needed to view this template:-
 ``` php
 $f3=require('lib/base.php');
 $f3->route('GET /',
-	function() use($f3) {
+	function($f3) {
 		$f3->set('name','world');
 		$template=new Template;
 		echo $template->render('template.htm');
@@ -1790,7 +1800,7 @@ Of course we need to set up a route so your application can handle the necessary
 
 ``` php
 $f3->route('GET /minify/@type',
-	function() use($f3) {
+	function($f3) {
 		$f3->set('UI',$f3->get('PARAMS.type').'/');
 		echo Web::instance()->minify($_GET['files']);
 	},

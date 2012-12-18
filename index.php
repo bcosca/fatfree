@@ -12,7 +12,7 @@ if (function_exists('apache_get_modules') &&
 $f3->set('DEBUG',2);
 $f3->set('UI','ui/');
 $f3->route('GET /',
-	function() use($f3) {
+	function($f3) {
 		$classes=array(
 			'Base'=>
 				array(

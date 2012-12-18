@@ -667,9 +667,9 @@ class Base {
 	function language($code=NULL) {
 		$this->languages=array(self::FALLBACK);
 		// Use Accept-Language header, if available
-		$req=$this->hive['HEADERS'];
-		if (!$code && isset($req['HEADERS']['Accept-Language']))
-			$code=str_replace('-','_',$req['Accept-Language']);
+		$headers=$this->hive['HEADERS'];
+		if (!$code && isset($headers['HEADERS']['Accept-Language']))
+			$code=str_replace('-','_',$headers['Accept-Language']);
 		// Validate string/header
 		if (preg_match('/^(\w{2})(?:_(\w{2}))?\b/',$code,$parts)) {
 			if ($parts[1]!=self::FALLBACK)
@@ -742,9 +742,9 @@ class Base {
 				header('Expires: '.gmdate('r',$time+$secs));
 				header('Cache-Control: max-age='.$secs);
 				header('Last-Modified: '.gmdate('r'));
-				$req=$this->hive['HEADERS'];
-				if (isset($req['If-Modified-Since']) &&
-					strtotime($req['If-Modified-Since'])+$secs>$time) {
+				$headers=$this->hive['HEADERS'];
+				if (isset($headers['If-Modified-Since']) &&
+					strtotime($headers['If-Modified-Since'])+$secs>$time) {
 					$this->status(304);
 					die;
 				}
@@ -970,15 +970,15 @@ class Base {
 				if (preg_match('/GET|HEAD/',$this->hive['VERB']) &&
 					isset($ttl)) {
 					// Only GET and HEAD requests are cacheable
-					$req=$this->hive['HEADERS'];
+					$headers=$this->hive['HEADERS'];
 					$cache=Cache::instance();
 					$cached=$cache->exists(
 						$hash=$this->hash($this->hive['VERB'].' '.
 							$this->hive['URI']).'.url',$data);
 					if ($cached && $cached+$ttl>$now) {
-						if (empty($req['If-Modified-Since']) ||
+						if (empty($headers['If-Modified-Since']) ||
 							floor($cached)>
-								strtotime($req['If-Modified-Since'])) {
+								strtotime($headers['If-Modified-Since'])) {
 							// Retrieve from cache backend
 							list($headers,$body)=$data;
 							if (PHP_SAPI!='cli')
@@ -997,7 +997,7 @@ class Base {
 						$this->expire($ttl);
 						// Call route handler
 						ob_start();
-						$this->call($handler,array($args),
+						$this->call($handler,array($this,$args),
 							'beforeroute,afterroute');
 						$body=ob_get_clean();
 						if (!error_get_last())
@@ -1010,7 +1010,7 @@ class Base {
 					$this->expire(0);
 					// Call route handler
 					ob_start();
-					$this->call($handler,array($args),
+					$this->call($handler,array($this,$args),
 						'beforeroute,afterroute');
 					$body=ob_get_clean();
 				}
@@ -1076,7 +1076,7 @@ class Base {
 		// Execute pre-route hook if any
 		if ($oo && $hooks && in_array($hook='beforeroute',$hooks) &&
 			method_exists($func[0],$hook) &&
-			call_user_func(array($func[0],$hook))===FALSE)
+			call_user_func_array(array($func[0],$hook),$args)===FALSE)
 			return FALSE;
 		// Execute callback
 		$out=call_user_func_array($func,$args?:array());
@@ -1085,7 +1085,7 @@ class Base {
 		// Execute post-route hook if any
 		if ($oo && $hooks && in_array($hook='afterroute',$hooks) &&
 			method_exists($func[0],$hook) &&
-			call_user_func(array($func[0],$hook))===FALSE)
+			call_user_func_array(array($func[0],$hook),$args)===FALSE)
 			return FALSE;
 		return $out;
 	}
@@ -1305,12 +1305,12 @@ class Base {
 			$_SERVER['REQUEST_METHOD']='GET';
 			$_SERVER['REQUEST_URI']=$_SERVER['argv'][1];
 		}
-		$req=getallheaders();
-		if (isset($req['X-HTTP-Method-Override']))
-			$_SERVER['REQUEST_METHOD']=$req['X-HTTP-Method-Override'];
+		$headers=getallheaders();
+		if (isset($headers['X-HTTP-Method-Override']))
+			$_SERVER['REQUEST_METHOD']=$headers['X-HTTP-Method-Override'];
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
-			isset($req['X-Forwarded-Proto']) &&
-			$req['X-Forwarded-Proto']=='https'?'https':'http';
+			isset($headers['X-Forwarded-Proto']) &&
+			$headers['X-Forwarded-Proto']=='https'?'https':'http';
 		$base=implode('/',array_map('urlencode',
 			explode('/',$this->fixslashes(
 			preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME'])))));
@@ -1328,8 +1328,8 @@ class Base {
 		);
 		// Default configuration
 		$this->hive=array(
-			'AJAX'=>isset($req['X-Requested-With']) &&
-				$req['X-Requested-With']=='XMLHttpRequest',
+			'AJAX'=>isset($headers['X-Requested-With']) &&
+				$headers['X-Requested-With']=='XMLHttpRequest',
 			'AUTOLOAD'=>'./',
 			'BASE'=>$base,
 			'BODY'=>file_get_contents('php://input'),
@@ -1342,11 +1342,11 @@ class Base {
 			'ERROR'=>NULL,
 			'ESCAPE'=>TRUE,
 			'EXEMPT'=>NULL,
-			'HEADERS'=>$req,
-			'IP'=>isset($req['Client-IP'])?
-				$req['Client-IP']:
-				(isset($req['X-Forwarded-For'])?
-					current(explode(',',$req['X-Forwarded-For'])):
+			'HEADERS'=>$headers,
+			'IP'=>isset($headers['Client-IP'])?
+				$headers['Client-IP']:
+				(isset($headers['X-Forwarded-For'])?
+					current(explode(',',$headers['X-Forwarded-For'])):
 					(isset($_SERVER['REMOTE_ADDR'])?
 						$_SERVER['REMOTE_ADDR']:'')),
 			'JAR'=>$jar,
@@ -2210,12 +2210,12 @@ if (!function_exists('getallheaders')) {
 	function getallheaders() {
 		if (PHP_SAPI=='cli')
 			return FALSE;
-		$req=array();
+		$headers=array();
 		foreach ($_SERVER as $key=>$val)
 			if (substr($key,0,5)=='HTTP_')
-				$req[strtr(ucwords(strtolower(
+				$headers[strtr(ucwords(strtolower(
 					strtr(substr($key,5),'_',' '))),' ','-')]=$val;
-		return $req;
+		return $headers;
 	}
 
 }
