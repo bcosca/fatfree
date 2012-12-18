@@ -247,7 +247,7 @@ class Base {
 			return $this->format($val,$args);
 		if (is_null($val)) {
 			// Attempt to retrieve from cache
-			if (Cache::instance()->exists($hash=$this->hash($key),$data))
+			if (Cache::instance()->exists($this->hash($key),$data))
 				return $data;
 		}
 		return $val;
