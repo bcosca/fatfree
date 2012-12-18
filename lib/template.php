@@ -151,7 +151,7 @@ class Template extends View {
 				$true=array($pos,$block);
 			elseif (isset($block['false']))
 				$false=array($pos,$block);
-		if (isset($true) && isset($false) && $true[0]>$false[0])
+		if (isset($true,$false) && $true[0]>$false[0])
 			// Reverse <true> and <false> blocks
 			list($node[$true[0]],$node[$false[0]])=array($false[1],$true[1]);
 		return

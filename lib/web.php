@@ -268,7 +268,7 @@ class Web extends Prefab {
 			$headers=array();
 			$body='';
 			for ($i=0;$i<$options['max_redirects'];$i++) {
-				if (isset($parts['user']) && isset($parts['pass']))
+				if (isset($parts['user'],$parts['pass']))
 					$options['header']+=array(
 						'Authorization: Basic '.
 							base64_encode($parts['user'].':'.$parts['pass'])
