@@ -997,7 +997,8 @@ class Base {
 						$this->expire($ttl);
 						// Call route handler
 						ob_start();
-						$this->call($handler,NULL,'beforeroute,afterroute');
+						$this->call($handler,array($args),
+							'beforeroute,afterroute');
 						$body=ob_get_clean();
 						if (!error_get_last())
 							// Save to cache backend
@@ -1009,7 +1010,8 @@ class Base {
 					$this->expire(0);
 					// Call route handler
 					ob_start();
-					$this->call($handler,NULL,'beforeroute,afterroute');
+					$this->call($handler,array($args),
+						'beforeroute,afterroute');
 					$body=ob_get_clean();
 				}
 				if ($this->hive['RESPONSE']=$body) {
