@@ -52,13 +52,14 @@ class Session {
 	**/
 	function write($id,$data) {
 		$fw=Base::instance();
-		$req=$fw->get('HEADERS');
+		$headers=$fw->get('HEADERS');
 		$jar=session_get_cookie_params();
 		Cache::instance()->set($id.'.@',
 			array(
 				'data'=>$data,
 				'ip'=>$fw->get('IP'),
-				'agent'=>isset($req['User-Agent'])?$req['User-Agent']:'',
+				'agent'=>isset($headers['User-Agent'])?
+					$headers['User-Agent']:'',
 				'stamp'=>time()
 			),
 			$jar['lifetime']

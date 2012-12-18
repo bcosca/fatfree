@@ -55,12 +55,13 @@ class Session extends Mapper {
 	**/
 	function write($id,$data) {
 		$fw=\Base::instance();
-		$req=$fw->get('HEADERS');
+		$headers=$fw->get('HEADERS');
 		$this->load(array('session_id'=>$id));
 		$this->set('session_id',$id);
 		$this->set('data',$data);
 		$this->set('ip',$fw->get('IP'));
-		$this->set('agent',isset($req['User-Agent'])?$req['User-Agent']:'');
+		$this->set('agent',
+			isset($headers['User-Agent'])?$headers['User-Agent']:'');
 		$this->set('stamp',time());
 		$this->save();
 		return TRUE;
