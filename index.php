@@ -52,7 +52,7 @@ $f3->route('GET /',
 			'SMTP'=>
 				array('openssl'),
 			'Web'=>
-				array('openssl','simplexml'),
+				array('curl','openssl','simplexml'),
 			'Web\Geo'=>
 				array('geoip','json'),
 			'Web\OpenID'=>
