@@ -2185,3 +2185,5 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
 [![Donate](https://raw.github.com/bcosca/fatfree/master/ui/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
+
+Copyright (c) 2009-2012 F3::Factory/Bong Cosca
