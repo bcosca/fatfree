@@ -1902,7 +1902,7 @@ $test->expect(
 
 // Display the results
 foreach ($test->results() as $result) {
-	echo $test['text'].'<br/>';
+	echo $test['text'].'<br />';
 	if ($test['status'])
 	echo 'Pass';
 	else
