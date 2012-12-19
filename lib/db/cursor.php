@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2010-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -107,8 +107,13 @@ abstract class Cursor extends \Magic {
 	}
 
 	//! Move pointer to first record in cursor
-	function rewind() {
+	function first() {
 		$this->ptr=0;
+	}
+
+	//! Move pointer to last record in cursor
+	function last() {
+		$this->ptr=($ctr=count($this->query))?$ctr-1:0;
 	}
 
 	/**
