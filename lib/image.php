@@ -161,7 +161,7 @@ class Image {
 		imagesavealpha($tmp,TRUE);
 		imagefill($tmp,0,0,IMG_COLOR_TRANSPARENT);
 		imagecopyresampled($tmp,$this->data,
-			0,0,$width,0,$width,$height,-$width,$height);
+			0,0,$width-1,0,$width,$height,-$width,$height);
 		imagedestroy($this->data);
 		$this->data=$tmp;
 		return $this->save();
