@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<base href="<?php echo $BASE.'/'.$UI; ?>" />
+		<meta charset="<?php echo $ENCODING; ?>" />
+		<title><?php echo $PACKAGE; ?>: <?php echo $active; ?></title>
+		<style>
+			html {
+				height:100%;
+				overflow-y:scroll;
+			}
+			body {
+				font-family:Ubuntu,Tahoma,sans-serif;
+				background:#eee;
+				margin:0;
+				min-height:100%;
+				overflow:hidden;
+			}
+			h1 {
+				font-size:18pt;
+				margin:0 0 8pt 0;
+			}
+			#sidebar {
+				-webkit-text-stroke:1px;
+				text-align:right;
+				color:#fc3;
+				background:#000;
+				padding:2% 2% 9999px 2%;
+				margin-bottom:-9999px;
+				width:21%;
+				float:left;
+			}
+			#sidebar h1 {
+				color:#fff;
+			}
+			#sidebar ul {
+				font-size:14pt;
+				margin:10pt 0;
+			}
+			#sidebar li {
+				list-style-type:none;
+				line-height:1.5em;
+			}
+			#sidebar a {
+				color:#999;
+				text-decoration:none;
+			}
+			#sidebar a:hover { color:#fff; }
+			#main {
+				color:#000;
+				padding:2% 2% 9999px 2%;
+				margin-bottom:-9999px;
+				width:71%;
+				float:left;
+			}
+			#main h1 {
+				-webkit-text-stroke:1px;
+				color:#666;
+			}
+			#main p {
+				font-size:9pt;
+				line-height:1.6em;
+			}
+			#main p.stats {
+				color:#666;
+			}
+			#main span.status {
+				font-size:8pt;
+				font-weight:bold;
+				text-align:center;
+				margin:0.15em 0;
+				display:block;
+				float:left;
+				width:2em;
+			}
+			#main span.text {
+				margin:0.15em 0.5em;
+				display:block;
+				float:left;
+			}
+			#main span.pass {
+				color:#fff;
+				background:#090;
+			}
+			#main span.fail {
+				color:#fff;
+				background:#c00;
+			}
+			#main br {
+				clear:both;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="sidebar">
+			<h1>Unit Tests</h1>
+			<ul>
+				<?php foreach ($menu as $url=>$desc): ?>
+				<li><?php if ($active==$desc): ?><?php echo $desc; ?><?php else: ?><a href="<?php echo $BASE.$url; ?>"><?php echo $desc; ?></a><?php endif; ?></li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+		<div id="main">
+			<h1><?php echo $active; ?></h1>
+			<p>
+				<?php foreach ($results as $i=>$result): ?>
+				<span class="status <?php echo $result['status']?'pass':'fail'; ?>"><?php echo $i+1; ?></span> <span class="text"><?php echo $result['text']; ?> <?php if (!$result['status'] && $result['source']) echo '('.$result['source'].')'; ?></span><br/>
+				<?php endforeach; ?>
+			</p>
+			<p><a href="http://fatfree.sf.net/"><img src="images/powered.png" title="Fat-Free Framework" /></a><br />
+			<p class="stats">Page rendered in <?php echo round(1e3*(microtime(TRUE)-$TIME),2); ?> msecs / Memory usage <?php echo round(memory_get_usage(TRUE)/1e3,1); ?> Kibytes</p>
+		</div>
+	</body>
+</html>

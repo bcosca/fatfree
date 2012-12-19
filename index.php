@@ -2,64 +2,35 @@
 
 $f3=require('lib/base.php');
 
-if ((float)strstr(PCRE_VERSION,' ',TRUE)<7.9)
-	trigger_error('Outdated PCRE library version');
-
-if (function_exists('apache_get_modules') &&
-	!in_array('mod_rewrite',apache_get_modules()))
-	trigger_error('Apache rewrite_module is disabled');
-
 $f3->set('DEBUG',2);
 $f3->set('UI','ui/');
-$f3->route('GET /',
-	function($f3) {
-		$classes=array(
-			'Base'=>
-				array(
-					'hash',
-					'json',
-					'session'
-				),
-			'Cache'=>
-				array(
-					'apc',
-					'memcache',
-					'wincache',
-					'xcache'
-				),
-			'DB\SQL'=>
-				array(
-					'pdo',
-					'pdo_dblib',
-					'pdo_mssql',
-					'pdo_mysql',
-					'pdo_odbc',
-					'pdo_pgsql',
-					'pdo_sqlite',
-					'pdo_sqlsrv'
-				),
-			'DB\Jig'=>
-				array('json'),
-			'DB\Mongo'=>
-				array(
-					'json',
-					'mongo'
-				),
-			'Image'=>
-				array('gd'),
-			'Lexicon'=>
-				array('iconv'),
-			'SMTP'=>
-				array('openssl'),
-			'Web'=>
-				array('openssl','simplexml'),
-			'Web\Geo'=>
-				array('json'),
-			'Web\OpenID'=>
-				array('json','simplexml')
-		);
-		$f3->set('classes',$classes);
-		echo View::instance()->render('welcome.htm');
-	}
+
+$f3->set('menu',
+	array(
+		'/'=>'Internals',
+		'/globals'=>'Globals',
+		'/hive'=>'Hive',
+		'/lexicon'=>'Lexicon',
+		'/autoload'=>'Autoloader',
+		'/redir'=>'Router',
+		'/cache'=>'Cache Engine',
+		'/config'=>'Config',
+		'/template'=>'Template',
+		'/unicode'=>'Unicode',
+		'/audit'=>'Audit',
+		'/sql'=>'SQL',
+		'/mongo'=>'MongoDB',
+		'/jig'=>'Jig',
+		'/log'=>'Log Engine',
+		'/matrix'=>'Matrix',
+		'/image'=>'Image',
+		'/web'=>'Web',
+		'/geo'=>'Geo',
+		'/openid'=>'OpenID'
+	)
 );
+
+$f3->map('/','App\Internals');
+$f3->map('/@controller','App\@controller');
+
 $f3->run();

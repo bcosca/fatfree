@@ -1,0 +1,9 @@
+<div>
+	<?php foreach ($div as $dkey=>$dval): ?>
+	<p><span><?php echo $dkey; ?></span>
+		<?php foreach ($dval as $skey=>$sval): ?>
+		<span><?php echo $skey?>: <?php echo $sval; ?></span>
+		<?php endforeach; ?>
+	</p>
+	<?php endforeach; ?>
+</div>
