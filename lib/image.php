@@ -381,6 +381,7 @@ class Image {
 					$bg=imagecolorallocatealpha($tmp[$i],$r,$g,$b,127);
 					imagefill($tmp[$i],0,0,$bg);
 					imagecopyresampled($tmp[$i],$char,0,0,0,0,$w/2,$h/2,$w,$h);
+					imagedestroy($char);
 					$width+=$i+1<$len?$block/2:$w/2;
 					$height=max($height,$h/2);
 				}
@@ -388,10 +389,12 @@ class Image {
 				list($r,$g,$b)=$this->bg;
 				$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
 				imagefill($this->data,0,0,$bg);
-				for ($i=0;$i<$len;$i++)
+				for ($i=0;$i<$len;$i++) {
 					imagecopy($this->data,$tmp[$i],
 						$i*$block/2,($height-imagesy($tmp[$i]))/2,0,0,
 						imagesx($tmp[$i]),imagesy($tmp[$i]));
+					imagedestroy($tmp[$i]);
+				}
 				imagesavealpha($this->data,TRUE);
 				if ($key)
 					$fw->set($key,$seed);
