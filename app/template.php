@@ -227,7 +227,13 @@ class Template extends Controller {
 			}
 		);
 		$test->expect(
-			$tpl->render('templates/test9.htm')==
+			preg_replace('/[\t\r\n]/','',
+				$tpl->render('templates/test9.htm'))==
+				'<script type="text/javascript">var a=\'{{a}}\';</script>',
+			'<ignore>'
+		);
+		$test->expect(
+			$tpl->render('templates/test10.htm')==
 				'array(\'bar\'=>\'123\',\'baz\'=>\'abc\')',
 			'Custom tag'
 		);

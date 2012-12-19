@@ -20,7 +20,7 @@ class Template extends View {
 		//! MIME type
 		$mime,
 		//! Template tags
-		$tags='set|include|exclude|loop|repeat|check|true|false',
+		$tags='set|include|exclude|ignore|loop|repeat|check|true|false',
 		//! Custom tag handlers
 		$custom=array();
 
@@ -95,6 +95,15 @@ class Template extends View {
 	**/
 	protected function _exclude() {
 		return '';
+	}
+
+	/**
+		Template -ignore- tag handler
+		@return string
+		@param $node array
+	**/
+	protected function _ignore(array $node) {
+		return $node[0];
 	}
 
 	/**

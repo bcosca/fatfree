@@ -2071,6 +2071,9 @@ Once you get the hang of testing the smallest units of your application, you can
 `<exclude>text-block</exclude>`
 >Remove `text-block` at runtime. Used for embedding comments in templates.
 
+`<ignore>text-block</ignore>`
+>Display `text-block` as-is, without interpretation/modification by the template engine.
+
 `<check if="{{ bool condition }}">  
 <true>true-block</true>  
 <false>false-block</false>  
