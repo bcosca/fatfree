@@ -36,8 +36,6 @@ class Image {
 		$file,
 		//! Image resource
 		$data,
-		//! Background color
-		$bg=array(255,255,255),
 		//! Filter count
 		$count=0;
 
@@ -160,10 +158,8 @@ class Image {
 	function hflip() {
 		$tmp=imagecreatetruecolor(
 			$width=$this->width(),$height=$this->height());
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
 		imagesavealpha($tmp,TRUE);
-		imagefill($tmp,0,0,$bg);
+		imagefill($tmp,0,0,IMG_COLOR_TRANSPARENT);
 		imagecopyresampled($tmp,$this->data,
 			0,0,$width,0,$width,$height,-$width,$height);
 		imagedestroy($this->data);
@@ -178,24 +174,13 @@ class Image {
 	function vflip() {
 		$tmp=imagecreatetruecolor(
 			$width=$this->width(),$height=$this->height());
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
 		imagesavealpha($tmp,TRUE);
-		imagefill($tmp,0,0,$bg);
+		imagefill($tmp,0,0,IMG_COLOR_TRANSPARENT);
 		imagecopyresampled($tmp,$this->data,
 			0,0,0,$height-1,$width,$height,$width,-$height);
 		imagedestroy($this->data);
 		$this->data=$tmp;
 		return $this->save();
-	}
-
-	/**
-		Assign background color
-		@return object
-		@param $color int
-	**/
-	function background($color) {
-		$this->bg=$color;
 	}
 
 	/**
@@ -216,10 +201,8 @@ class Image {
 				$width=$height*$ratio;
 		// Create blank image
 		$tmp=imagecreatetruecolor($width,$height);
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
 		imagesavealpha($tmp,TRUE);
-		imagefill($tmp,0,0,$bg);
+		imagefill($tmp,0,0,IMG_COLOR_TRANSPARENT);
 		// Resize
 		if ($crop) {
 			if ($width/$ratio<=$height) {
@@ -247,9 +230,7 @@ class Image {
 		@param $angle int
 	**/
 	function rotate($angle) {
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
-		$this->data=imagerotate($this->data,$angle,$bg);
+		$this->data=imagerotate($this->data,$angle,IMG_COLOR_TRANSPARENT);
 		imagesavealpha($this->data,TRUE);
 		return $this->save();
 	}
@@ -318,16 +299,14 @@ class Image {
 		$this->data=imagecreatetruecolor($size,$size);
 		list($r,$g,$b)=$this->rgb(mt_rand(0x333,0xCCC));
 		$fg=imagecolorallocate($this->data,$r,$g,$b);
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
-		imagefill($this->data,0,0,$bg);
+		imagefill($this->data,0,0,IMG_COLOR_TRANSPARENT);
 		$hash=md5($str);
 		$ctr=count($sprites);
 		$dim=$blocks*(int)($size/$blocks)*2/$blocks;
 		for ($j=0,$y=ceil($blocks/2);$j<$y;$j++)
 			for ($i=$j,$x=$blocks-1-$j;$i<$x;$i++) {
 				$sprite=imagecreatetruecolor($dim,$dim);
-				imagefill($sprite,0,0,$bg);
+				imagefill($sprite,0,0,IMG_COLOR_TRANSPARENT);
 				if ($block=$sprites[
 					hexdec($hash[($j*$blocks+$i)*2])%$ctr]) {
 					for ($k=0,$pts=count($block);$k<$pts;$k++)
@@ -335,11 +314,13 @@ class Image {
 					imagefilledpolygon($sprite,$block,$pts/2,$fg);
 				}
 				$sprite=imagerotate($sprite,
-					90*(hexdec($hash[($j*$blocks+$i)*2+1])%4),$bg);
+					90*(hexdec($hash[($j*$blocks+$i)*2+1])%4),
+					IMG_COLOR_TRANSPARENT);
 				for ($k=0;$k<4;$k++) {
 					imagecopyresampled($this->data,$sprite,
 						$i*$dim/2,$j*$dim/2,0,0,$dim/2,$dim/2,$dim,$dim);
-					$this->data=imagerotate($this->data,90,$bg);
+					$this->data=imagerotate($this->data,90,
+						IMG_COLOR_TRANSPARENT);
 				}
 				imagedestroy($sprite);
 			}
@@ -372,23 +353,19 @@ class Image {
 					imagettftext($char,$size*2,0,
 						($block-$w)/2,$block-($block-$h)/2,
 						0xFFFFFF,$path,$seed[$i]);
-					list($r,$g,$b)=$this->bg;
-					$bg=imagecolorallocatealpha($char,$r,$g,$b,127);
-					$char=imagerotate($char,mt_rand(-30,30),$bg);
+					$char=imagerotate($char,
+						mt_rand(-30,30),IMG_COLOR_TRANSPARENT);
 					// Reduce to normal size
 					$tmp[$i]=imagecreatetruecolor(
 						($w=imagesx($char))/2,($h=imagesy($char))/2);
-					$bg=imagecolorallocatealpha($tmp[$i],$r,$g,$b,127);
-					imagefill($tmp[$i],0,0,$bg);
+					imagefill($tmp[$i],0,0,IMG_COLOR_TRANSPARENT);
 					imagecopyresampled($tmp[$i],$char,0,0,0,0,$w/2,$h/2,$w,$h);
 					imagedestroy($char);
 					$width+=$i+1<$len?$block/2:$w/2;
 					$height=max($height,$h/2);
 				}
 				$this->data=imagecreatetruecolor($width,$height);
-				list($r,$g,$b)=$this->bg;
-				$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
-				imagefill($this->data,0,0,$bg);
+				imagefill($this->data,0,0,IMG_COLOR_TRANSPARENT);
 				for ($i=0;$i<$len;$i++) {
 					imagecopy($this->data,$tmp[$i],
 						$i*$block/2,($height-imagesy($tmp[$i]))/2,0,0,
