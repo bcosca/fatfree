@@ -54,7 +54,7 @@ $f3->route('GET /',
 			'Web'=>
 				array('openssl','simplexml'),
 			'Web\Geo'=>
-				array('json'),
+				array('geoip','json'),
 			'Web\OpenID'=>
 				array('json','simplexml')
 		);
