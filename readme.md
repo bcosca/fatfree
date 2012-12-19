@@ -1505,7 +1505,7 @@ $item->load();
 echo $item->supplierName;
 ```
 
-Every time you load a record from the products table, the ORM cross-references the `buyerID` in the `products` table with the `buyerID` in the `buyers` table.
+Every time you load a record from the products table, the ORM cross-references the `supplerID` in the `products` table with the `supplierID` in the `buyers` table.
 
 To destroy a virtual field, use `unset($item->totalPrice);`. The `isset($item->totalPrice)` expression returns TRUE if the `totalPrice` virtual field was defined, or FALSE if otherwise.
 
