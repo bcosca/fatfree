@@ -15,7 +15,7 @@
 
 namespace Web;
 
-//! OpenID plugin
+//! OpenID consumer
 class OpenID extends \Magic {
 
 	//@{ Error messages
