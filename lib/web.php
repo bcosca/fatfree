@@ -181,9 +181,13 @@ class Web extends Prefab {
 	function request($url,array $options=NULL) {
 		if (!is_array($options))
 			$options=array();
+		$fw=Base::instance();
 		$parts=parse_url($url);
 		if (empty($parts['scheme']))
-			$parts=parse_url('http://'.$url);
+			// Local URL
+			$parts=parse_url($fw->get('SCHEME').'://'.
+				$fw->get('HOST').
+				($url[0]!='/'?($fw->get('BASE')?:'/'):'').$url);
 		elseif (!preg_match('/https?/',$parts['scheme']))
 			return FALSE;
 		if (isset($options['header']) && is_string($options['header']))
@@ -203,7 +207,6 @@ class Web extends Prefab {
 			$options['header']+=
 				array('Content-Type: application/x-www-form-urlencoded');
 		$eol="\r\n";
-		$fw=Base::instance();
 		if ($fw->get('CACHE') &&
 			preg_match('/GET|HEAD/',$options['method'])) {
 			$cache=Cache::instance();
