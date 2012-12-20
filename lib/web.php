@@ -266,7 +266,7 @@ class Web extends Prefab {
 				stream_context_create(array('http'=>$options)));
 			$result=array(
 				'body'=>$out,
-				'headers'=>$http_response_header,
+				'headers'=>$out?$http_response_header:array(),
 				'engine'=>'stream-wrapper',
 				'cached'=>FALSE
 			);

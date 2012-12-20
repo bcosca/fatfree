@@ -5,9 +5,8 @@ namespace App;
 class Pingback2 {
 
 	function get($f3) {
-		header('X-Pingback: '.$f3->get('SCHEME').'://'.
-			$_SERVER['SERVER_NAME'].($f3->get('BASE')?:'/').'pingback');
-		echo \View::instance()->render('pingback.htm');
+		if ($f3->exists('GET.page'))
+			echo \View::instance()->render($f3->get('GET.page').'.htm');
 		die;
 	}
 

@@ -62,7 +62,7 @@ class Web extends Controller {
 			'HTTP request ('.$url.') using '.$req['engine']
 		);
 		$test->expect(
-			$web->request('pingback2'),
+			$web->request('pingback2?page=pingback'),
 			'HTTP request (local resource)'
 		);
 		$test->expect(
