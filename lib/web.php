@@ -487,6 +487,8 @@ class Web extends Prefab {
 	function rss($url,$max=10,$tags=NULL) {
 		if (!$data=$this->request($url))
 			return FALSE;
+		// Suppress errors caused by invalid XML structures
+		libxml_use_internal_errors(TRUE);
 		$xml=simplexml_load_string($data['body'],
 			NULL,LIBXML_NOBLANKS|LIBXML_NOERROR);
 		if (!is_object($xml))
