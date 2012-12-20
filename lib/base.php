@@ -793,7 +793,8 @@ class Base {
 				}
 				error_log('- '.$addr.' '.$line);
 				//$line=$this->encode($line);
-				$out.='&bull; '.nl2br($addr.' '.
+				$out.='&bull; '.nl2br(
+					($css?$this->highlight($addr):$addr).' '.
 					($css?$this->highlight($line):$line)).'<br />'.$eol;
 			}
 		}

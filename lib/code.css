@@ -21,14 +21,14 @@
 .t_line,
 .t_method_c,
 .t_ns_c,
-.t_ns_separator { color:#ff0000; }
+.t_ns_separator { color:#00a0c0; }
 
 /* Identifiers */
-.t_string { color:#00a0c0; }
+.t_string { color:303030; }
 
 /* Numbers */
 .t_lnumber,
-.t_dnumber { color:#00c000; }
+.t_dnumber { color:#ff0000; }
 
 /* Operators */
 .t_and_equal,
@@ -119,7 +119,7 @@
 .t_unset,
 .t_use,
 .t_var,
-.t_while { color:#c000f0; }
+.t_while { color:#606060; font-weight:bold; }
 
 .t_open_tag,
 .t_open_tag_with_echo,
