@@ -92,9 +92,9 @@ Time to start writing our first application:-
 ``` php
 $f3=require('path/to/base.php');
 $f3->route('GET /',
-	function() {
-		echo 'Hello, world!';
-	}
+    function() {
+        echo 'Hello, world!';
+    }
 );
 $f3->run();
 ```
@@ -119,9 +119,9 @@ Our first example wasn't too hard to swallow, was it? If you like a little more 
 
 ``` php
 $f3->route('GET /about',
-	function() {
-		echo 'Donations go to a local charity... us!';
-	}
+    function() {
+        echo 'Donations go to a local charity... us!';
+    }
 );
 ```
 
@@ -129,9 +129,9 @@ You don't want to clutter the global namespace with function names? Fat-Free rec
 
 ``` php
 class WebPage {
-	function display() {
-		echo 'I cannot object to an object';
-	}
+    function display() {
+        echo 'I cannot object to an object';
+    }
 }
 
 $f3->route('GET /about','WebPage->display');
@@ -149,9 +149,9 @@ As a demonstration of Fat-Free's powerful domain-specific language (DSL), you ca
 
 ``` php
 $f3->route('GET /brew/@count',
-	function($f3) {
-		echo $f3->get('PARAMS.count').' bottles of beer on the wall.';
-	}
+    function($f3) {
+        echo $f3->get('PARAMS.count').' bottles of beer on the wall.';
+    }
 );
 ```
 
@@ -173,9 +173,9 @@ You can use the asterisk (`*`) to accept any URL after the `/brew` route - if yo
 
 ``` php
 $f3->route('GET /brew/*',
-	function() {
-		echo 'Enough beer! We always end up here.';
-	}
+    function() {
+        echo 'Enough beer! We always end up here.';
+    }
 );
 ```
 
@@ -206,10 +206,10 @@ You also need to set up Apache so it knows the physical location of `index.php` 
 ``` apache
 DocumentRoot "/var/www/html"
 <Directory "/var/www/html">
-	Options -Indexes FollowSymLinks Includes
-	AllowOverride All
-	Order allow,deny
-	Allow from All
+    Options -Indexes FollowSymLinks Includes
+    AllowOverride All
+    Order allow,deny
+    Allow from All
 </Directory>
 ```
 
@@ -218,24 +218,24 @@ If you're developing several applications simultaneously, a virtual host configu
 ``` apache
 NameVirtualHost *
 <VirtualHost *>
-	ServerName site1.com
-	DocumentRoot "/var/www/site1"
-	<Directory "/var/www/site1">
-		Options -Indexes FollowSymLinks Includes
-		AllowOverride All
-		Order allow,deny
-		Allow from All
-	</Directory>
+    ServerName site1.com
+    DocumentRoot "/var/www/site1"
+    <Directory "/var/www/site1">
+        Options -Indexes FollowSymLinks Includes
+        AllowOverride All
+        Order allow,deny
+        Allow from All
+    </Directory>
 </VirtualHost>
 <VirtualHost *>
-	ServerName site2.com
-	DocumentRoot "/var/www/site2"
-	<Directory "/var/www/site2">
-		Options -Indexes FollowSymLinks Includes
-		AllowOverride All
-		Order allow,deny
-		Allow from All
-	</Directory>
+    ServerName site2.com
+    DocumentRoot "/var/www/site2"
+    <Directory "/var/www/site2">
+        Options -Indexes FollowSymLinks Includes
+        AllowOverride All
+        Order allow,deny
+        Allow from All
+    </Directory>
 </VirtualHost>
 ```
 
@@ -247,17 +247,17 @@ For Nginx servers, here's the recommended configuration (replace ip_address:port
 
 ``` nginx
 server {
-	root /var/www/html;
-	location / {
-		index index.php index.html index.htm;
-		try_files $uri /index.php;
-	}
-	location ~ \.php$ {
-		fastcgi_pass ip_address:port;
-		fastcgi_index index.php;
-		fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
-		include fastcgi_params;
-	}
+    root /var/www/html;
+    location / {
+        index index.php index.html index.htm;
+        try_files $uri /index.php;
+    }
+    location ~ \.php$ {
+        fastcgi_pass ip_address:port;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
+        include fastcgi_params;
+    }
 }
 ```
 
@@ -267,8 +267,8 @@ Lighttpd servers are configured in a similar manner:-
 
 ``` lighttpd
 $HTTP["host"] =~ "www\.example\.com$" {
-	url.rewrite-once = ( "^/(.*)$"=>"/index.php/$1" )
-	server.error-handler-404 = "/index.php"
+    url.rewrite-once = ( "^/(.*)$"=>"/index.php/$1" )
+    server.error-handler-404 = "/index.php"
 }
 ```
 
@@ -278,9 +278,9 @@ So let's get back to coding. You can declare a page obsolete and redirect your v
 
 ``` php
 $f3->route('GET|HEAD /obsoletepage',
-	function($f3) {
-		$f3->reroute('/newpage');
-	}
+    function($f3) {
+        $f3->reroute('/newpage');
+    }
 );
 ```
 
@@ -306,10 +306,10 @@ Fat-Free's architecture is based on the concept that HTTP URIs represent abstrac
 
 ``` php
 class Item {
-	function get() {}
-	function post() {}
-	function put() {}
-	function delete() {}
+    function get() {}
+    function post() {}
+    function put() {}
+    function delete() {}
 }
 
 $f3=require('lib/base.php');
@@ -429,10 +429,10 @@ To set several variables at once:
 
 ``` php
 $f3->mset(
-	array(
-		'foo'=>'bar',
-		'baz'=>123
-	)
+    array(
+        'foo'=>'bar',
+        'baz'=>123
+    )
 );
 ```
 
@@ -514,16 +514,16 @@ Unlike other frameworks that have rigid folder structures, F3 gives you a lot of
 ```
 / (your Web root, where index.php is located)
 app/ (application files)
-	dict/ (LOCALES, optional)
-	controllers/
-	logs/ (LOGS, optional)
-	models/
-	views/ (UI)
+    dict/ (LOCALES, optional)
+    controllers/
+    logs/ (LOGS, optional)
+    models/
+    views/ (UI)
 css/
 js/
 lib/ (you can store base.php here)
 tmp/ (TEMP, used by the framework)
-	cache/ (CACHE)
+   cache/ (CACHE)
 ```
 
 Feel free to organize your files and directories any way you want. Just set the appropriate F3 global variables. If you want a really secure site, Fat-Free even allows you to store all your files in a non-Web-accessible directory. The only requirement is that you leave `index.php`, `.htaccess` and your public files, like CSS, JavaScript, images, etc. in a path visible to your browser.
@@ -541,11 +541,11 @@ If you feel it's a bit too plain or wish to do other things when the error occur
 
 ``` php
 $f3->set('ONERROR',
-	function() {
-		// custom error handler code goes here
-		// use this if you want to display errors in a
-		// format consistent with your site's theme
-	}
+    function() {
+        // custom error handler code goes here
+        // use this if you want to display errors in a
+        // format consistent with your site's theme
+    }
 );
 ```
 
@@ -668,13 +668,13 @@ To display this template, you can have PHP code that looks like this (saved in a
 ``` php
 $f3=require('lib/base.php');
 $f3->route('GET /',
-	function($f3) {
-		$f3->set('name','world');
-		$view=new View;
-		echo $view->render('template.htm');
-		// Previous two lines can be shortened to:-
-		// echo View::instance()->render('template.htm');
-	}
+    function($f3) {
+        $f3->set('name','world');
+        $view=new View;
+        echo $view->render('template.htm');
+        // Previous two lines can be shortened to:-
+        // echo View::instance()->render('template.htm');
+    }
 );
 $f3->run();
 ```
@@ -694,13 +694,13 @@ and the code needed to view this template:-
 ``` php
 $f3=require('lib/base.php');
 $f3->route('GET /',
-	function($f3) {
-		$f3->set('name','world');
-		$template=new Template;
-		echo $template->render('template.htm');
-		// Above lines can be writtern as:-
-		echo Template::instance()->render('template.htm');
-	}
+    function($f3) {
+        $f3->set('name','world');
+        $template=new Template;
+        echo $template->render('template.htm');
+        // Above lines can be writtern as:-
+        echo Template::instance()->render('template.htm');
+    }
 );
 $f3->run();
 ```
@@ -748,9 +748,9 @@ Framework variables may also contain anonymous functions:
 
 ``` php
 $f3->set('func',
-	function($a,$b) {
-		return $a.', '.$b;
-	}
+    function($a,$b) {
+        return $a.', '.$b;
+    }
 );
 ```
 
@@ -801,7 +801,7 @@ During the course of writing/debugging F3-powered programs and designing templat
 
 ``` html
 <exclude>
-	<p>A chunk of HTML we don't want displayed at the moment</p>
+    <p>A chunk of HTML we don't want displayed at the moment</p>
 </exclude>
 ```
 
@@ -819,15 +819,15 @@ Another useful template feature is the `<check>` directive. It allows you to emb
 
 ``` html
 <check if="{{ @page=='Home' }}">
-	<false><span>Inserted if condition is false</span></false>
+    <false><span>Inserted if condition is false</span></false>
 </check>
 <check if="{{ @gender=='M' }}">
-	<true>
-		<div>Appears when condition is true</div>
-	</true>
-	<false>
-		<div>Appears when condition is false</div>
-	</false>
+    <true>
+        <div>Appears when condition is true</div>
+    </true>
+    <false>
+        <div>Appears when condition is false</div>
+    </false>
 </check>
 ```
 
@@ -837,7 +837,7 @@ An F3 expression inside an if attribute that equates to `NULL`, an empty string,
 
 ``` html
 <check if="{{ @loggedin }}">
-	<p>HTML chunk to be included if condition is true</p>
+    <p>HTML chunk to be included if condition is true</p>
 </check>
 ```
 
@@ -847,7 +847,7 @@ Fat-Free can also handle repetitive HTML blocks:-
 
 ``` html
 <repeat group="{{ @fruits }}" value="{{ @fruit }}">
-	<p>{{ trim(@fruit) }}</p>
+    <p>{{ trim(@fruit) }}</p>
 </repeat>
 ```
 
@@ -869,14 +869,14 @@ The framework allows unlimited nesting of `<repeat>` blocks:-
 
 ``` php
 <repeat group="{{ @div }}" key="{{ @ikey }}" value="{{ @idiv }}">
-	<div>
-		<p><span><b>{{ @ikey }}</b></span></p>
-		<p>
-		<repeat group="{{ @idiv }}" value="{{ @ispan }}">
-			<span>{{ @ispan }}</span>
-		</repeat>
-		</p>
-	</div>
+    <div>
+        <p><span><b>{{ @ikey }}</b></span></p>
+        <p>
+        <repeat group="{{ @idiv }}" value="{{ @ispan }}">
+            <span>{{ @ispan }}</span>
+        </repeat>
+        </p>
+    </div>
 </repeat>
 ```
 
@@ -884,10 +884,10 @@ Apply the following F3 command:-
 
 ``` php
 $f3->set('div',
-	array(
-		'coffee'=>array('arabica','barako','liberica','kopiluwak'),
-		'tea'=>array('darjeeling','pekoe','samovar')
-	)
+    array(
+        'coffee'=>array('arabica','barako','liberica','kopiluwak'),
+        'tea'=>array('darjeeling','pekoe','samovar')
+    )
 );
 ```
 
@@ -895,21 +895,21 @@ As a result, you get the following HTML fragment:-
 
 ``` html
 <div>
-	<p><span><b>coffee</b></span></p>
-	<p>
-		<span>arabica</span>
-		<span>barako</span>
-		<span>liberica</span>
-		<span>kopiluwak</span>
-	<p>
+    <p><span><b>coffee</b></span></p>
+    <p>
+        <span>arabica</span>
+        <span>barako</span>
+        <span>liberica</span>
+        <span>kopiluwak</span>
+    <p>
 </div>
 <div>
-	<p><span><b>tea</b></span></p>
-	<p>
-		<span>darjeeling</span>
-		<span>pekoe</span>
-		<span>samovar</span>
-	</p>
+    <p><span><b>tea</b></span></p>
+    <p>
+        <span>darjeeling</span>
+        <span>pekoe</span>
+        <span>samovar</span>
+    </p>
 </div>
 ```
 
@@ -921,7 +921,7 @@ The `<repeat>` template directive's `value` attribute returns the value of the c
 
 ``` html
 <repeat group="{{ @fruits }}" value="{{ @fruit }}" counter="{{ @ctr }}">
-	<p class="{{ @ctr%2?'odd':'even' }}">{{ trim(@fruit) }}</p>
+    <p class="{{ @ctr%2?'odd':'even' }}">{{ trim(@fruit) }}</p>
 </repeat>
 ```
 
@@ -933,9 +933,9 @@ If you have to insert F3 tokens inside a `<script>` or `<style>` section of your
 
 ``` html
 <script type="text/javascript">
-	function notify() {
-		alert('You are logged in as: {{ @userID }}');
-	}
+    function notify() {
+        alert('You are logged in as: {{ @userID }}');
+    }
 </script>
 ```
 
@@ -943,9 +943,9 @@ Embedding template directives inside your `<script>` or `<style>` tags requires 
 
 ``` html
 <script type="text/javascript">
-	<repeat group="{{ @rates }}" value="{{ @rate }}">
-		// whatever you want to repeat in Javascript
-	</repeat>
+    <repeat group="{{ @rates }}" value="{{ @rate }}">
+        // whatever you want to repeat in Javascript
+    </repeat>
 </script>
 ```
 
@@ -989,9 +989,9 @@ $f3->set('to','<slasher@throats.com>');
 $f3->set('subject','Welcome');
 ini_set('sendmail_from',$f3->get('from'));
 mail(
-	$f3->get('to'),
-	$f3->get('subject'),
-	Template::instance()->render('email.txt','text/html')
+    $f3->get('to'),
+    $f3->get('subject'),
+    Template::instance()->render('email.txt','text/html')
 );
 ```
 
@@ -1018,10 +1018,10 @@ First, create a dictionary file with the following structure (one file per langu
 ``` php
 <?php
 return array(
-	'love'=>'I love F3',
-	'today'=>'Today is {0,date}',
-	'pi'=>'{0,number}',
-	'money'=>'Amount remaining: {0,number,currency}'
+    'love'=>'I love F3',
+    'today'=>'Today is {0,date}',
+    'pi'=>'{0,number}',
+    'money'=>'Amount remaining: {0,number,currency}'
 );
 ```
 
@@ -1030,9 +1030,9 @@ Save it as `dict/en.php`. Let's create another dictionary, this time for German.
 ``` php
 <?php
 return array(
-	'love'=>'Ich liebe F3',
-	'today'=>'Heute ist {0,date}',
-	'money'=>'Restbetrag: {0,number,currency}'
+    'love'=>'Ich liebe F3',
+    'today'=>'Heute ist {0,date}',
+    'money'=>'Restbetrag: {0,number,currency}'
 );
 ```
 
@@ -1053,9 +1053,9 @@ And the longer version that utilizes PHP as a template engine:-
 <?php $f3=Base::instance(); ?>
 <h1><?php echo $f3->get('love'); ?></h1>
 <p>
-	<?php echo $f3->get('today',time()); ?>.<br />
-	<?php echo $f3->get('money',365.25); ?>
-	<?php echo $f3->get('pi'); ?>
+    <?php echo $f3->get('today',time()); ?>.<br />
+    <?php echo $f3->get('money',365.25); ?>
+    <?php echo $f3->get('pi'); ?>
 </p>
 ```
 
@@ -1135,9 +1135,9 @@ Another example, this time with MySQL:-
 
 ``` php
 $db=new DB\SQL(
-	'mysql:host=localhost;port=3306;dbname=mysqldb',
-	'admin',
-	'p455w0rD'
+    'mysql:host=localhost;port=3306;dbname=mysqldb',
+    'admin',
+    'p455w0rD'
 );
 ```
 
@@ -1158,7 +1158,7 @@ This time we create an HTML template like `abc.htm` that has at a minimum the fo
 
 ``` html
 <repeat group="@result" value="@item">
-	<span>{{ @item.brandName  }}</span>
+    <span>{{ @item.brandName  }}</span>
 </repeat>
 ```
 
@@ -1170,11 +1170,11 @@ Here's another example. Instead of a single statement provided as an argument to
 
 ``` php
 $db->exec(
-	array(
-		'DELETE FROM diet WHERE food="cola"',
-		'INSERT INTO diet (food) VALUES ("carrot")',
-		'SELECT * FROM diet'
-	)
+    array(
+        'DELETE FROM diet WHERE food="cola"',
+        'INSERT INTO diet (food) VALUES ("carrot")',
+        'SELECT * FROM diet'
+    )
 );
 ```
 
@@ -1204,8 +1204,8 @@ Passing string arguments to SQL statements is fraught with danger. Consider this
 
 ``` php
 $db->exec(
-	'SELECT * FROM users '.
-	'WHERE username="'.$f3->get('POST.userID'.'"')
+    'SELECT * FROM users '.
+    'WHERE username="'.$f3->get('POST.userID'.'"')
 );
 ```
 
@@ -1219,8 +1219,8 @@ Luckily, parameterized queries help you mitigate these risks:-
 
 ``` php
 $db->exec(
-	'SELECT * FROM users WHERE userID=?',
-	$f3->get('POST.userID')
+    'SELECT * FROM users WHERE userID=?',
+    $f3->get('POST.userID')
 );
 ```
 
@@ -1230,16 +1230,16 @@ Our example in the previous section will be a lot safer from SQL injection if wr
 
 ``` php
 $db->exec(
-	array(
-		'DELETE FROM diet WHERE food=:name',
-		'INSERT INTO diet (food) VALUES (?)',
-		'SELECT * FROM diet'
-	),
-	array(
-		array(':name'=>'cola'),
-		array(1=>'carrot'),
-		NULL
-	)
+    array(
+        'DELETE FROM diet WHERE food=:name',
+        'INSERT INTO diet (food) VALUES (?)',
+        'SELECT * FROM diet'
+    ),
+    array(
+        array(':name'=>'cola'),
+        array(1=>'carrot'),
+        NULL
+    )
 );
 ```
 
@@ -1251,10 +1251,10 @@ Suppose you have an existing MySQL database containing a table of users of your 
 
 ``` sql
 CREATE TABLE users (
-	userID VARCHAR(30),
-	password VARCHAR(30),
-	visits INT,
-	PRIMARY KEY(userID)
+    userID VARCHAR(30),
+    password VARCHAR(30),
+    visits INT,
+    PRIMARY KEY(userID)
 );
 ```
 
@@ -1264,9 +1264,9 @@ Now back to SQL. First, we establish communication with our database.
 
 ``` php
 $db=new DB\SQL(
-	'mysql:host=localhost;port=3306;dbname=mysqldb',
-	'admin',
-	'wh4t3v3r'
+    'mysql:host=localhost;port=3306;dbname=mysqldb',
+    'admin',
+    'wh4t3v3r'
 );
 ```
 
@@ -1439,12 +1439,12 @@ The `load()` method accepts a second argument: an array of options containing ke
 
 ``` php
 $user->load(
-	array('visits>?',3),
-	array(
-		'order'=>'userID DESC'
-		'offset'=>5,
-		'limit'=>3
-	)
+    array('visits>?',3),
+    array(
+        'order'=>'userID DESC'
+        'offset'=>5,
+        'limit'=>3
+    )
 );
 ```
 
@@ -1481,12 +1481,12 @@ Suppose we have the following table defined as:-
 
 ``` sql
 CREATE TABLE products
-	productID VARCHAR(30),
-	desc VARCHAR(255),
-	supplierID VARCHAR(30),
-	unitprice DECIMAL(10,2),
-	quantity INT,
-	PRIMARY KEY(productID)
+    productID VARCHAR(30),
+    desc VARCHAR(255),
+    supplierID VARCHAR(30),
+    unitprice DECIMAL(10,2),
+    quantity INT,
+    PRIMARY KEY(productID)
 );
 ```
 
@@ -1515,8 +1515,8 @@ You can also derive a value from another table:-
 
 ``` php
 $item->supplierName=
-	'SELECT name FROM suppliers '.
-	'WHERE products.supplierID=suppliers.supplierID';
+    'SELECT name FROM suppliers '.
+    'WHERE products.supplierID=suppliers.supplierID';
 $item->load();
 echo $item->supplierName;
 ```
@@ -1555,13 +1555,13 @@ The `find()` method has the following syntax:-
 
 ``` php
 find(
-	$criteria,
-	array(
-		'group'=>'foo',
-		'order'=>'foo,bar',
-		'limit'=>5,
-		'offset'=>0
-	)
+    $criteria,
+    array(
+        'group'=>'foo',
+        'order'=>'foo,bar',
+        'limit'=>5,
+        'offset'=>0
+    )
 );
 ```
 
@@ -1571,7 +1571,7 @@ find() returns an array of objects. Each object is a mapper to a record that mat
 $place=new DB\SQL\Mapper($db,'places');
 $list=$place->find('state="New York"');
 foreach ($list as $obj)
-	echo $obj->city.', '.$obj->country;
+    echo $obj->city.', '.$obj->country;
 ```
 
 If you need to convert a mapper object to an associative array, use the `cast()` method:-
@@ -1585,21 +1585,21 @@ To retrieve the number of records in a table that match a certain condition, use
 
 ``` php
 if (!$user->found(array('visits>?',10)))
-	echo 'We need a better ad campaign!';
+    echo 'We need a better ad campaign!';
 ```
 
 There's also a `select()` method that's similar to `find()` but provides more fine-grained control over fields returned. It has a SQL-like syntax:-
 
 ``` php
 select(
-	fields,
-	criteria,
-	array(
-		'group'=>...,
-		'order'=>...,
-		'limit'=>...,
-		'offset'=>...
-	)
+    fields,
+    criteria,
+    array(
+        'group'=>...,
+        'order'=>...,
+        'limit'=>...,
+        'offset'=>...
+    )
 );
 ```
 
@@ -1612,24 +1612,24 @@ In most cases, you can live by the comforts given by the data mapper methods we'
 ``` php
 class Vendor extends DB\SQL\Mapper {
 
-	// Instantiate mapper
-	function __construct(DB\SQL $db) {
-		// This is where the mapper and DB structure synchronization occurs
-		parent::__construct($db,'vendors');
-	}
+    // Instantiate mapper
+    function __construct(DB\SQL $db) {
+        // This is where the mapper and DB structure synchronization occurs
+        parent::__construct($db,'vendors');
+    }
 
-	// Specialized query
-	function listByCity() {
-		return $this->select(
-			'vendorID,name,city',array('order'=>'city DESC'));
-		/*
-			We could have done the the same thing with plain vanilla SQL:-
-			return $this->db->exec(
-				'SELECT vendorID,name,city FROM vendors '.
-				'ORDER BY city DESC;'
-		);
-		*/
-	}
+    // Specialized query
+    function listByCity() {
+        return $this->select(
+            'vendorID,name,city',array('order'=>'city DESC'));
+        /*
+            We could have done the the same thing with plain vanilla SQL:-
+            return $this->db->exec(
+                'SELECT vendorID,name,city FROM vendors '.
+                'ORDER BY city DESC;'
+            );
+        */
+    }
 
 }
 
@@ -1653,13 +1653,13 @@ Consider this SQL view created inside your database engine:-
 
 ``` sql
 CREATE VIEW combined AS
-	SELECT
-	projects.project_id AS project,
-	users.name AS name
-	FROM projects
-	LEFT OUTER JOIN users ON
-		projects.project_id=users.project_id AND
-		projects.user_id=users.user_id;
+    SELECT
+        projects.project_id AS project,
+        users.name AS name
+    FROM projects
+    LEFT OUTER JOIN users ON
+        projects.project_id=users.project_id AND
+        projects.user_id=users.user_id;
 ```
 
 Your application code becomes simple because it does not have to maintain two mapper objects (one for the projects table and another for users) just to retrieve data from two joined tables:-
@@ -1701,22 +1701,22 @@ You may have noticed that you can pass an array of additional options to the `re
 
 ``` php
 $web->request(
-	'https://www.example.com:443?'.
-	http_build_query(
-		array(
-		'key1'=>'value1',
-		'key2'=>'value2'
-		)
-	),
-	array(
-	'headers'=>array(
-		'Accept: text/html,application/xhtml+xml,application/xml',
-		'Accept-Language: en-us'
-	),
-	'follow_location'=>FALSE,
-	'max_redirects'=>30,
-	'ignore_errors'=>TRUE
-	)
+    'https://www.example.com:443?'.
+    http_build_query(
+        array(
+            'key1'=>'value1',
+            'key2'=>'value2'
+        )
+    ),
+    array(
+        'headers'=>array(
+            'Accept: text/html,application/xhtml+xml,application/xml',
+            'Accept-Language: en-us'
+        ),
+        'follow_location'=>FALSE,
+        'max_redirects'=>30,
+        'ignore_errors'=>TRUE
+    )
 );
 ```
 
@@ -1816,11 +1816,11 @@ Of course we need to set up a route so your application can handle the necessary
 
 ``` php
 $f3->route('GET /minify/@type',
-	function($f3) {
-		$f3->set('UI',$f3->get('PARAMS.type').'/');
-		echo Web::instance()->minify($_GET['files']);
-	},
-	3600
+    function($f3,$args) {
+        $f3->set('UI',$args['type'].'/');
+        echo Web::instance()->minify($_GET['files']);
+    },
+    3600
 );
 ```
 
@@ -1856,12 +1856,12 @@ F3 has a utility for sending files to an HTTP client, i.e. fulfilling download r
 
 ``` php
 $f3->route('GET /downloads/@filename',
-	function() {
-		// send() method returns FALSE if file doesn't exist
-		if (!Web::instance()->send('/real/path/'.$f3->get('PARAMS.filename')))
-			// Generate an HTTP 404
-			$f3->error(404);
-	}
+    function($f3,$args) {
+        // send() method returns FALSE if file doesn't exist
+        if (!Web::instance()->send('/real/path/'.$args['filename']))
+            // Generate an HTTP 404
+        $f3->error(404);
+    }
 );
 ```
 
@@ -1879,7 +1879,7 @@ A unit (or test fixture) can be a function/method or a class. Let's have a simpl
 
 ``` php
 function hello() {
-	return 'Hello, World';
+    return 'Hello, World';
 }
 ```
 
@@ -1894,37 +1894,36 @@ include('hello.php');
 
 // This is where the tests begin
 $test->expect(
-	is_callable('hello'),
-	'hello() is a function'
+    is_callable('hello'),
+    'hello() is a function'
 );
 
 // Another test
 $test->expect(
-	!empty(hello()),
-	'Something was returned'
+    !empty(hello()),
+    'Something was returned'
 );
 
 // This test should succeed
 $test->expect
-	is_string(hello()),
-	'Return value is a string'
+    is_string(hello()),
+    'Return value is a string'
 );
 
 // This test is bound to fail
 $test->expect(
-	strlen(hello())==13,
-	'String length is 13'
+    strlen(hello())==13,
+    'String length is 13'
 );
 
-// Display the results
+// Display the results; not MVC but let's keep it simple
 foreach ($test->results() as $result) {
-	echo $test['text'].'<br />';
-	if ($test['status'])
-	echo 'Pass';
-	else
-	echo 'Fail ('.$test['source'].')';
-	// Not MVC, but let's keep it simple
-	echo '<br />';
+    echo $test['text'].'<br />';
+    if ($test['status'])
+        echo 'Pass';
+    else
+        echo 'Fail ('.$test['source'].')';
+    echo '<br />';
 }
 ```
 
