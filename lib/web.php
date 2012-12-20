@@ -228,6 +228,10 @@ class Web extends Prefab {
 				curl_setopt($curl,CURLOPT_USERAGENT,$options['user_agent']);
 			if (isset($options['content']))
 				curl_setopt($curl,CURLOPT_POSTFIELDS,$options['content']);
+			curl_setopt($curl,CURLOPT_CONNECTTIMEOUT,
+				isset($options['timeout'])?
+					$options['timeout']:
+					ini_get('default_socket_timeout'));
 			$headers=array();
 			curl_setopt($curl,CURLOPT_HEADERFUNCTION,
 				function($curl,$line) use(&$headers) {
