@@ -186,6 +186,8 @@ class Web extends Prefab {
 			$parts['scheme']='http';
 		elseif (!preg_match('/https?/',$parts['scheme']))
 			return FALSE;
+		if (isset($options['header']) && is_string($options['header']))
+			$options['header']=array($options['header']);
 		$options+=array(
 			'method'=>'GET',
 			'header'=>array(
@@ -199,7 +201,7 @@ class Web extends Prefab {
 		);
 		if ($options['method']!='GET')
 			$options['header']+=
-				'Content-Type: application/x-www-form-urlencoded';
+				array('Content-Type: application/x-www-form-urlencoded');
 		$eol="\r\n";
 		$fw=Base::instance();
 		if ($fw->get('CACHE') &&
