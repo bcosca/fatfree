@@ -770,6 +770,7 @@ class Base {
 		$eol="\n";
 		if (!$trace)
 			$trace=array_slice(debug_backtrace(FALSE),1);
+		$css=is_file($file=__DIR__.'/code.css');
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';
@@ -790,9 +791,10 @@ class Base {
 						$line.=')';
 					}
 				}
-				$str=$addr.' '.$line;
-				error_log('- '.$str);
-				$out.='&bull; '.nl2br($this->encode($str)).'<br />'.$eol;
+				error_log('- '.$addr.' '.$line);
+				//$line=$this->encode($line);
+				$out.='&bull; '.nl2br($addr.' '.
+					($css?$this->highlight($line):$line)).'<br />'.$eol;
 			}
 		}
 		$this->hive['ERROR']=array(
@@ -807,12 +809,16 @@ class Base {
 			echo
 				'<!DOCTYPE html>'.
 				'<html>'.$eol.
-				'<head><title>'.$code.' '.$header.'</title></head>'.$eol.
+				'<head>'.
+					'<title>'.$code.' '.$header.'</title>'.
+					($css?('<style>'.$this->read($file).'</style>'):'').
+				'</head>'.$eol.
 				'<body>'.$eol.
 					'<h1>'.$header.'</h1>'.$eol.
-					'<p>'.$this->encode($text?:$req).'</p>'.$eol.
+					'<p><big><i>'.
+						$this->encode($text?:$req).'</i></big></p>'.$eol.
 					($out && $this->hive['DEBUG']?
-						('<p><i>'.$eol.$out.'</i></p>'.$eol):'').
+						('<p>'.$eol.$out.'</p>'.$eol):'').
 				'</body>'.$eol.
 				'</html>';
 	}
@@ -1225,6 +1231,32 @@ class Base {
 	**/
 	function unlink($file) {
 		return $this->mutex($file,'unlink',array($file));
+	}
+
+	/**
+		Apply syntax highlighting
+		@return string
+		@param $text string
+	**/
+	function highlight($text) {
+		$out='';
+		$pre=FALSE;
+		if (!preg_match('/<\?php/',$text)) {
+			$text='<?php '.$text;
+			$pre=TRUE;
+		}
+		$ref=new ReflectionExtension('tokenizer');
+		$tokens=$ref->getconstants();
+		foreach (token_get_all($text) as $token) {
+			if ($pre)
+				$pre=FALSE;
+			else
+				$out.=is_array($token)?
+					('<span class="'.
+						strtolower(array_search($token[0],$tokens)).'">'.
+						$token[1].'</span>'):$token;
+		}
+		return $out?:$text;
 	}
 
 	/**

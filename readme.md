@@ -2076,7 +2076,7 @@ Once you get the hang of testing the smallest units of your application, you can
 ```
 {{ mixed expr }}
 ```
-* Evaluate `expr`. `expr` may include template tokens, constants, operators (unary, arithmetic, ternary and relational), parentheses, data type converters, and functions.
+* Evaluate. `expr` may include template tokens, constants, operators (unary, arithmetic, ternary and relational), parentheses, data type converters, and functions. If not an attribute of a template directive, result is echoed.
 
 ```
 {{ string expr | raw }}
