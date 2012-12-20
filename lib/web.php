@@ -255,7 +255,7 @@ class Web extends Prefab {
 		elseif (ini_get('allow_url_fopen')) {
 			// Use stream wrapper
 			$options['header']=implode($eol,$options['header']);
-			$out=file_get_contents($url,FALSE,
+			$out=@file_get_contents($url,FALSE,
 				stream_context_create(array('http'=>$options)));
 			if (!$out)
 				return FALSE;
