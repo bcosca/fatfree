@@ -244,6 +244,20 @@ class SQL extends Controller {
 				$db->count()==2 && $movie->count()==2,
 				'Record count: '.$movie->count()
 			);
+			$page=$movie->paginate(0,1);
+			$test->expect(
+				$page['subset'][0]->get('title')=='Donnie Brasco' &&
+				$page['subset'][0]->get('director')=='Mike Newell' &&
+				$page['subset'][0]->get('year')==1997,
+				'Pagination: first page'
+			);
+			$page=$movie->paginate(1,1);
+			$test->expect(
+				$page['subset'][0]->get('title')=='The River Murders' &&
+				$page['subset'][0]->get('director')=='Rich Cowan' &&
+				$page['subset'][0]->get('year')==2011,
+				'Pagination: last page'
+			);
 			$movie->next();
 			$cast=$movie->cast();
 			$test->expect(

@@ -96,6 +96,28 @@ abstract class Cursor extends \Magic {
 	}
 
 	/**
+		Return array containing subset of records matching criteria,
+		number of subsets available, and actual subset position
+		@return array
+		@param $pos int
+		@param $size int
+		@param $filter string|array
+		@param $options array
+	**/
+	function paginate($pos=0,$size=10,$filter=NULL,array $options=NULL) {
+		return array(
+			'subset'=>$this->find($filter,
+				array_merge(
+					$options?:array(),
+					array('limit'=>$size,'offset'=>$pos*$size)
+				)
+			),
+			'count'=>($count=ceil($this->count($filter,$options)/$size)),
+			'pos'=>($pos && $pos<$count?$pos:NULL)
+		);
+	}
+
+	/**
 		Map to first record that matches criteria
 		@return array|FALSE
 		@param $filter string|array

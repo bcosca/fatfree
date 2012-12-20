@@ -1457,6 +1457,22 @@ ORDER BY userID DESC
 LIMIT 3 OFFSET 5;
 ```
 
+This is one way of presenting data in small chunks. Here's another way of paginating results:-
+
+``` php
+$page=$user->paginate(2,5,'array('visits>?',3));
+```
+
+In the above scenario, F3 will retrieve records that match the criteria `visits>3'. It will then limit the results to 5 records starting on page 2 (0-based offset). The framework will return an array consisting of the following elements:-
+
+``` php
+[subset] array of mapper objects that match the criteria
+[count] number of of subsets available
+[pos] actual subset position
+```
+
+The actual subset position returned will be NULL if the first argument of `paginate()` is a negative number or exceeeds the number of subsets found.
+
 ### Virtual Fields
 
 There are instances when you need to retrieve a computed value of a field, or a cross-referenced value from another table. Enter virtual fields. The SQL mini-ORM allows you to work on data derived from existing fields.
