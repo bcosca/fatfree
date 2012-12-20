@@ -244,8 +244,6 @@ class Web extends Prefab {
 			ob_start();
 			$out=curl_exec($curl);
 			curl_close($curl);
-			if (!$out)
-				return FALSE;
 			$result=array(
 				'body'=>ob_get_clean(),
 				'headers'=>$headers,
@@ -261,8 +259,6 @@ class Web extends Prefab {
 			$options['header']=implode($eol,$options['header']);
 			$out=@file_get_contents($url,FALSE,
 				stream_context_create(array('http'=>$options)));
-			if (!$out)
-				return FALSE;
 			$result=array(
 				'body'=>$out,
 				'headers'=>$http_response_header,
