@@ -183,7 +183,7 @@ class Web extends Prefab {
 			$options=array();
 		$parts=parse_url($url);
 		if (empty($parts['scheme']))
-			$parts['scheme']='http';
+			$parts=parse_url('http://'.$url);
 		elseif (!preg_match('/https?/',$parts['scheme']))
 			return FALSE;
 		if (isset($options['header']) && is_string($options['header']))
