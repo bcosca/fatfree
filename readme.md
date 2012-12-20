@@ -1463,9 +1463,9 @@ This is one way of presenting data in small chunks. Here's another way of pagina
 $page=$user->paginate(2,5,array('visits>?',3));
 ```
 
-In the above scenario, F3 will retrieve records that match the criteria `visits>3'. It will then limit the results to 5 records starting on page 2 (0-based offset). The framework will return an array consisting of the following elements:-
+In the above scenario, F3 will retrieve records that match the criteria `'visits>3'`. It will then limit the results to 5 records (per page) starting at page offset 2 (0-based). The framework will return an array consisting of the following elements:-
 
-``` php
+```
 [subset] array of mapper objects that match the criteria
 [count] number of of subsets available
 [pos] actual subset position
@@ -1547,7 +1547,7 @@ The equivalent code using the MongoDB mapper:-
 $frequentUsers=$user->find(array('visits'=>array('$gt'=>3)),array('userID'=>1));
 ```
 
-The `find()` method searches the `users` table for records that match the criteria `visits>3`, sorts the result by `userID` and returns the result as an array of mapper objects. `find('visits>3')` is different from `load('visits>3')`. The latter refers to the current `$user` object. `find()` does not have any effect on `skip()`.
+The `find()` method searches the `users` table for records that match the criteria, sorts the result by `userID` and returns the result as an array of mapper objects. `find('visits>3')` is different from `load('visits>3')`. The latter refers to the current `$user` object. `find()` does not have any effect on `skip()`.
 
 Important: Declaring an empty condition, NULL, or a zero-length string as the first argument of `find()` or `load()` will retrieve all records. Be sure you know what you're doing - you might exceed PHP's memory_limit on large tables or collections.
 
@@ -1618,16 +1618,16 @@ class Vendor extends DB\SQL\Mapper {
 		parent::__construct($db,'vendors');
 	}
 
-	// Some plain vanilla SQL query
+	// Specialized query
 	function listByCity() {
-		return $this->db->exec(
-			'SELECT vendorID,name,city FROM vendors '.
-			'ORDER BY city DESC;'
-		);
+		return $this->select(
+			'vendorID,name,city',array('order'=>'city DESC'));
 		/*
-		    We could have done the the same thing without SQL:-
-		    return $this->select(
-		        'vendorID,name,city',array('order'=>'city DESC'));
+			We could have done the the same thing with plain vanilla SQL:-
+			return $this->db->exec(
+				'SELECT vendorID,name,city FROM vendors '.
+				'ORDER BY city DESC;'
+		);
 		*/
 	}
 
