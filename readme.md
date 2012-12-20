@@ -2068,50 +2068,81 @@ Once you get the hang of testing the smallest units of your application, you can
 
 ### Template Directives
 
-`@token`
+```
+@token
+```
 * Replace `@token` with value of equivalent F3 variable.
 
-`{{ mixed expr }}`
+```
+{{ mixed expr }}
+```
 * Evaluate `expr`. `expr` may include template tokens, constants, operators (unary, arithmetic, ternary and relational), parentheses, data type converters, and functions.
 
-`{{ string expr | raw }}`
+```
+{{ string expr | raw }}
+```
 * Render unescaped `expr`. F3 auto-escapes strings by default.
 
-`{{ string expr | esc }}`
+```
+{{ string expr | esc }}
+```
 * Render escaped `expr`. This is the default framework behavior. The `| esc` suffix is only necessary if `ESCAPE` global variable is set to `FALSE`.
 
-`{{ string expr | args | format }}`
+```
+{{ string expr | args | format }}
+```
 * Render an ICU-formatted `expr` and pass the comma-separated `args`.
 
-`<include [ if="{{ bool condition }}" ] href="{{ string subtemplate }}" />`
+```
+<include
+    [ if="{{ bool condition }}" ]
+    href="{{ string subtemplate }}"
+/>
+```
 * Get contents of `subtemplate` and insert at current position in template if optional condition is `TRUE`.
 
-`<exclude>text-block</exclude>`
+```
+<exclude>text-block</exclude>
+```
 * Remove `text-block` at runtime. Used for embedding comments in templates.
 
-`<ignore>text-block</ignore>`
+```
+<ignore>text-block</ignore>
+```
 * Display `text-block` as-is, without interpretation/modification by the template engine.
 
-`<check if="{{ bool condition }}">`
-`    <true>true-block</true>`
-`    <false>false-block</false>`
-`</check>`
+```
+<check if="{{ bool condition }}">
+    <true>true-block</true>
+    <false>false-block</false>
+</check>
+```
 * Evaluate condition. If `TRUE`, then `true-block` is rendered. Otherwise, `false-block` is used.
 
-`<loop from="{{ statement }}" to="{{ bool expr }}" [ step="{{ statement }}" ]>`
-`text-block`
-`</loop>`
+```
+<loop
+    from="{{ statement }}"
+    to="{{ bool expr }}"
+    [ step="{{ statement }}" ]>
+    text-block
+</loop>
+```
 * Evaluate `from` statement once. Check if the expression in the `to` attribute is `TRUE`, render `text-block` and evaluate `step` statement. Repeat iteration until `to` expression is `FALSE`.
 
-`<repeat group="{{ array @group|expr }}"`
-`    [ key="{{ scalar @key }}" ]`
-`    value="{{ mixed @value }}`
-`    [ counter="{{ scalar @key }}" ]>`
-`    text-block`
-`</repeat>`
+```
+<repeat
+    group="{{ array @group|expr }}"
+    [ key="{{ scalar @key }}" ]
+    value="{{ mixed @value }}
+    [ counter="{{ scalar @key }}" ]>
+    text-block
+</repeat>
+```
 * Repeat `text-block` as many times as there are elements in the array variable `@group` or the expression `expr`. `@key` and `@value` function in the same manner as the key-value pair in the equivalent PHP `foreach()` statement. Variable represented by `key` in `counter` attribute increments by `1` with every iteration.
 
-`{{* text-block *}}`
+```
+{{* text-block *}}
+```
 * Alias for `<exclude>`.
 
 ### API Documentation
