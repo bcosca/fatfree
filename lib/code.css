@@ -1,5 +1,5 @@
 /* Comments */
-.t_comment,.t_doc_comment,.t_ml_comment { color:#ff8000; }
+.t_comment,.t_doc_comment,.t_ml_comment { color:#c0c0c0; }
 
 /* Variables */
 .t_variable { color:#ff00cc; }
@@ -15,14 +15,14 @@
 .t_line,
 .t_method_c,
 .t_ns_c,
-.t_ns_separator { color:#ffc000; }
+.t_ns_separator { color:#ff0000; }
 
 /* Identifiers */
 .t_string { color:#00a0c0; }
 
 /* Numbers */
 .t_lnumber,
-.t_dnumber { color:#ff0000; }
+.t_dnumber { color:#00c000; }
 
 /* Operators */
 .t_and_equal,
