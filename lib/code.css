@@ -1,3 +1,9 @@
+/* PHP */
+.t_php {
+	font-family:Consolas,Monaco,monospace;
+	font-size:0.8em;
+}
+
 /* Comments */
 .t_comment,.t_doc_comment,.t_ml_comment { color:#c0c0c0; }
 

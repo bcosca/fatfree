@@ -1252,7 +1252,7 @@ class Base {
 				$pre=FALSE;
 			else
 				$out.=is_array($token)?
-					('<span class="'.
+					('<span class="t_php '.
 						strtolower(array_search($token[0],$tokens)).'">'.
 						$token[1].'</span>'):$token;
 		}
