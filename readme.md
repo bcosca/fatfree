@@ -543,7 +543,7 @@ If you feel it's a bit too plain or wish to do other things when the error occur
 $f3->set('ONERROR',
 	function() {
 		// custom error handler code goes here
-		// use this if u want to display errors in a
+		// use this if you want to display errors in a
 		// format consistent with your site's theme
 	}
 );
@@ -1114,7 +1114,7 @@ In the case of PHP templates:-
 As an addition to auto-escaping of F3 variables, the framework also gives you a free hand at sanitizing user input from HTML forms:-
 
 ``` php
-$f3->scrub($_GET,'p; br; span; div; a);
+$f3->scrub($_GET,'p; br; span; div; a');
 ```
 
 This command will strip all tags (except those specified in the second argument) and unsafe characters from the specified variable. If the variable contains an array, each element in the array is sanitized recursively. If an asterisk (*) is passed as the second argument, `$f3->scrub()` permits all HTML tags to pass through untouched and simply remove unsafe control characters.
@@ -1460,7 +1460,7 @@ LIMIT 3 OFFSET 5;
 This is one way of presenting data in small chunks. Here's another way of paginating results:-
 
 ``` php
-$page=$user->paginate(2,5,'array('visits>?',3));
+$page=$user->paginate(2,5,array('visits>?',3));
 ```
 
 In the above scenario, F3 will retrieve records that match the criteria `visits>3'. It will then limit the results to 5 records starting on page 2 (0-based offset). The framework will return an array consisting of the following elements:-
