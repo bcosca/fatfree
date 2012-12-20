@@ -114,3 +114,7 @@
 .t_use,
 .t_var,
 .t_while { color:#c000f0; }
+
+.t_open_tag,
+.t_open_tag_with_echo,
+.t_close_tag { color:#ff0000; }
