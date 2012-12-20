@@ -13,8 +13,8 @@ class OpenID extends Controller {
 		$openid=new \Web\OpenID;
 		$openid->set('identity','https://www.google.com/accounts/o8/id');
 		$openid->set('return_to',
-			$f3->get('SCHEME').'://'.$_SERVER['SERVER_NAME'].
-			$f3->get('BASE').'/openid2');
+			$f3->get('SCHEME').'://'.$f3->get('HOST').
+			($f3->get('BASE')?:'/').'openid2');
 		// auth() should always redirect if successful; fail if displayed
 		$test->expect(
 			$openid->auth(),

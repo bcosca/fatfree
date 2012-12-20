@@ -156,12 +156,12 @@ class SMTP extends Magic {
 		// Get server's initial response
 		$this->log=str_replace("\r",'',fgets($socket,4096));
 		// Indicate presence
-		$this->dialog('EHLO '.$_SERVER['SERVER_NAME'],TRUE);
+		$this->dialog('EHLO '.$fw->get('HOST'),TRUE);
 		if (strtoupper($this->scheme)=='tls') {
 			$this->dialog('STARTTLS',TRUE);
 			stream_socket_enable_crypto(
 				$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
-			$this->dialog('EHLO '.$_SERVER['SERVER_NAME'],TRUE);
+			$this->dialog('EHLO '.$fw->get('HOST'),TRUE);
 		}
 		if ($this->user && $this->pw) {
 			// Authenticate

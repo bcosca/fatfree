@@ -1291,13 +1291,14 @@ class Base {
 					throw new ErrorException($text);
 			}
 		);
+		if (!isset($_SERVER['SERVER_NAME']))
+			$_SERVER['SERVER_NAME']=gethostname();
 		if (PHP_SAPI=='cli') {
 			// Emulate HTTP request
 			if (isset($_SERVER['argc']) && $_SERVER['argc']<2) {
 				$_SERVER['argc']++;
 				$_SERVER['argv'][1]='/';
 			}
-			$_SERVER['SERVER_NAME']=gethostname();
 			$_SERVER['REQUEST_METHOD']='GET';
 			$_SERVER['REQUEST_URI']=$_SERVER['argv'][1];
 		}
@@ -1314,8 +1315,7 @@ class Base {
 			$jar=array(
 				'expire'=>0,
 				'path'=>$base?:'/',
-				'domain'=>isset($_SERVER['SERVER_NAME']) &&
-					is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
+				'domain'=>is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
 					!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
 					$_SERVER['SERVER_NAME']:'',
 				'secure'=>($scheme=='https'),
@@ -1339,6 +1339,7 @@ class Base {
 			'ESCAPE'=>TRUE,
 			'EXEMPT'=>NULL,
 			'HEADERS'=>$headers,
+			'HOST'=>$_SERVER['SERVER_NAME'],
 			'IP'=>isset($headers['Client-IP'])?
 				$headers['Client-IP']:
 				(isset($headers['X-Forwarded-For'])?

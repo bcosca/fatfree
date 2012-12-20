@@ -1988,6 +1988,9 @@ Once you get the hang of testing the smallest units of your application, you can
 `array HEADERS`
 >HTTP request headers received by the server.
 
+`string HOST`
+>Server host name. If `$_SERVER['SERVER_NAME']` is not available, return value of `gethostname()` is used.
+
 `string IP`
 >Remote IP address. The framework derives the address from headers if HTTP client is behind a proxy server.
 

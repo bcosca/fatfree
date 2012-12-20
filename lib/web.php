@@ -483,7 +483,7 @@ class Web extends Prefab {
 		if (!$data=$this->request($url))
 			return FALSE;
 		$xml=simplexml_load_string($data['body'],
-			NULL,LIBXML_NOCDATA|LIBXML_ERR_FATAL);
+			NULL,LIBXML_NOBLANKS|LIBXML_NOERROR);
 		if (!is_object($xml))
 			return FALSE;
 		$out=array();
