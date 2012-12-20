@@ -5,7 +5,6 @@ namespace App;
 class Internals extends Controller {
 
 	function get($f3) {
-		strpos();
 		$test=new \Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
