@@ -26,7 +26,8 @@ $f3->set('menu',
 		'/image'=>'Image',
 		'/web'=>'Web',
 		'/geo'=>'Geo',
-		'/openid'=>'OpenID'
+		'/openid'=>'OpenID',
+		'/pingback'=>'Pingback'
 	)
 );
 

@@ -62,6 +62,10 @@ class Web extends Controller {
 			'HTTP request ('.$url.') using '.$req['engine']
 		);
 		$test->expect(
+			$web->request('pingback2'),
+			'HTTP request (local resource)'
+		);
+		$test->expect(
 			is_array($web->rss(
 				$url='https://news.google.com/news/feeds?output=rss')),
 			'RSS/Atom feed ('.$url.')'
