@@ -191,13 +191,15 @@ class Web extends Prefab {
 			'header'=>array(
 				'Host: '.$parts['host'],
 				'User-Agent: Mozilla/5.0 (compatible; '.php_uname('s').')',
-				'Content-Type: application/x-www-form-urlencoded',
 				'Connection: close',
 			),
 			'follow_location'=>TRUE,
 			'max_redirects'=>20,
 			'ignore_errors'=>TRUE
 		);
+		if ($options['method']!='GET')
+			$options['header']+=
+				'Content-Type: application/x-www-form-urlencoded';
 		$eol="\r\n";
 		$fw=Base::instance();
 		if ($fw->get('CACHE') &&
