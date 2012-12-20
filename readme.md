@@ -1693,7 +1693,7 @@ This simple example sends an HTTP request to the page located at www.google.com 
 
 ``` php
 $host='localhost:5984';
-$web->request($host.'/_all_dbs),
+$web->request($host.'/_all_dbs'),
 $web->request($host.'/testdb/',array('method'=>'PUT'));
 ```
 
