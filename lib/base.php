@@ -798,10 +798,10 @@ class Base {
 					}
 				}
 				error_log('- '.$addr.' '.$line);
-				//$line=$this->encode($line);
 				$out.='&bull; '.nl2br(
 					($css?$this->highlight($addr):$addr).' '.
-					($css?$this->highlight($line):$line)).'<br />'.$eol;
+					($css?$this->highlight($line):$line)).
+					'<br />'.$eol;
 			}
 		}
 		$this->hive['ERROR']=array(
@@ -1261,8 +1261,8 @@ class Base {
 				$out.='<span class="t_php'.
 					(is_array($token)?
 						(' '.strtolower(array_search($token[0],$tokens)).'">'.
-							$token[1].''):
-						('">'.$token)).'</span>';
+							$this->encode($token[1]).''):
+						('">'.$this->encode($token))).'</span>';
 		}
 		return $out?:$text;
 	}
