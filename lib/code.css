@@ -2,14 +2,14 @@
 .t_php {
 	font-family:Consolas,Monaco,monospace;
 	font-size:0.8em;
-	color:#000;
+	color:black;
 }
 
 /* Comments */
-.t_comment,.t_doc_comment,.t_ml_comment { color:#ccc; }
+.t_comment,.t_doc_comment,.t_ml_comment { color:lightsteelblue; }
 
 /* Variables */
-.t_variable { color:#f0c; }
+.t_variable { color:orange; }
 
 /* Constants */
 .t_const,
@@ -22,14 +22,14 @@
 .t_line,
 .t_method_c,
 .t_ns_c,
-.t_ns_separator { color:#0c6; }
+.t_ns_separator { color:limegreen; }
 
 /* Identifiers */
-.t_string { color:#666; }
+.t_string { color:dimgray; }
 
 /* Numbers */
 .t_lnumber,
-.t_dnumber { color:#f00; }
+.t_dnumber { color:red; }
 
 /* Operators */
 .t_and_equal,
@@ -61,7 +61,7 @@
 .t_start_heredoc,
 .t_end_heredoc,
 .t_object_operator,
-.t_paamayim_nekudotayim { color:#909; }
+.t_paamayim_nekudotayim { color:mediumorchid; }
 
 /* Keywords */
 .t_abstract,
@@ -120,8 +120,8 @@
 .t_unset,
 .t_use,
 .t_var,
-.t_while { color:#00c; }
+.t_while { color:royalblue; }
 
 .t_open_tag,
 .t_open_tag_with_echo,
-.t_close_tag { color:#f60; font-weight:bold; }
+.t_close_tag { color:gold; }
