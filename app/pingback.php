@@ -23,6 +23,10 @@ class Pingback extends Controller {
 			'Reply from pingback server'
 		);
 		$test->expect(
+			$pingback->log(),
+			'Transaction log available'
+		);
+		$test->expect(
 			$f3->read($file)==
 				\View::instance()->render('pingback/client.htm'),
 			'Read source contents'
@@ -48,7 +52,6 @@ class Pingback extends Controller {
 				$f3->write($f3->get('TEMP').$f3->hash($source).'.htm',$text);
 			}
 		);
-		die;
 	}
 
 }
