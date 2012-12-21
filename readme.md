@@ -1988,6 +1988,9 @@ Once you get the hang of testing the smallest units of your application, you can
 `array HEADERS`
 * HTTP request headers received by the server.
 
+`bool HIGHLIGHT`
+* Enable/disable syntax highlighting of stack traces. Default value: TRUE (requires `code.css` stylesheet).
+
 `string HOST`
 * Server host name. If `$_SERVER['SERVER_NAME']` is not available, return value of `gethostname()` is used.
 

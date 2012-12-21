@@ -778,7 +778,7 @@ class Base {
 		$eol="\n";
 		if (!$trace)
 			$trace=array_slice(debug_backtrace(FALSE),1);
-		$css=is_file($file=__DIR__.'/'.self::CSS);
+		$css=$this->hive['HIGHLIGHT'] && is_file($file=__DIR__.'/'.self::CSS);
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';
@@ -1391,6 +1391,7 @@ class Base {
 			'ESCAPE'=>TRUE,
 			'EXEMPT'=>NULL,
 			'HEADERS'=>$headers,
+			'HIGHLIGHT'=>TRUE,
 			'HOST'=>$_SERVER['SERVER_NAME'],
 			'IP'=>isset($headers['Client-IP'])?
 				$headers['Client-IP']:
