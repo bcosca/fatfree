@@ -147,6 +147,7 @@ class SQL extends \PDO {
 				else
 					$this->rows=$result=$query->rowcount();
 				$query->closecursor();
+				unset($query);
 			}
 			else {
 				$error=$this->errorinfo();
@@ -259,6 +260,14 @@ class SQL extends \PDO {
 	**/
 	function driver() {
 		return $this->engine;
+	}
+
+	/**
+		Return server version
+		@return string
+	**/
+	function version() {
+		return parent::getattribute(parent::ATTR_SERVER_VERSION);
 	}
 
 	/**

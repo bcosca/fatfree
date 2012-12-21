@@ -23,7 +23,7 @@ class Mongo extends Controller {
 			}
 			$test->expect(
 				$db,
-				'DB wrapper initialized'
+				'DB wrapper initialized (Version '.\Mongo::VERSION.')'
 			);
 			if ($db) {
 				$db->drop();
