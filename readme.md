@@ -2247,4 +2247,4 @@ Special thanks to the selfless others who expressed their desire to remain anony
 Copyright (c) 2009-2012 F3::Factory/Bong Cosca
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)
-[![statcounter.com tracking](http://c.statcounter.com/5666392/0/fd7c8312/1/ "statcounter.com")](http://statcounter.com/")
+[![statcounter.com tracking](http://c.statcounter.com/5666392/0/fd7c8312/1 "statcounter.com")](http://statcounter.com/)
