@@ -125,10 +125,12 @@ class Base {
 	**/
 	function &ref($key,$add=TRUE) {
 		$parts=$this->cut($key);
-		if ($parts[0]=='SESSION')
+		if ($parts[0]=='SESSION') {
 			if (!session_id()) {
 				session_start();
-			$this->sync('SESSION');
+				session_regenerate_id(TRUE);
+				$this->sync('SESSION');
+			}
 		}
 		if ($add)
 			$var=&$this->hive;
@@ -269,7 +271,6 @@ class Base {
 		elseif ($parts[0]=='SESSION') {
 			if (!session_id())
 				session_start();
-			$this->sync('SESSION');
 			if (empty($parts[1])) {
 				// End session
 				session_unset();
@@ -277,6 +278,7 @@ class Base {
 				unset($_COOKIE[session_name()]);
 				header_remove('Set-Cookie');
 			}
+			$this->sync('SESSION');
 		}
 		elseif (preg_match('/^(GET|POST|COOKIE)\b(.+)/',$key,$expr)) {
 			$this->clear('REQUEST'.$expr[2]);
@@ -1740,9 +1742,11 @@ class View extends Prefab {
 		$fw=Base::instance();
 		foreach ($fw->split($fw->get('UI')) as $dir)
 			if (is_file($this->view=$fw->fixslashes($dir.$file))) {
-				if (!session_id() && isset($_COOKIE[session_name()]))
+				if (!session_id() && isset($_COOKIE[session_name()])) {
 					session_start();
-				$fw->sync('SESSION');
+					session_regenerate_id();
+					$fw->sync('SESSION');
+				}
 				if (!$hive)
 					$hive=$fw->hive();
 				$this->hive=$fw->get('ESCAPE')?$hive=$fw->esc($hive):$hive;
