@@ -12,7 +12,7 @@ class Pingback extends Controller {
 			'No errors expected at this point'
 		);
 		$pingback=new \Web\Pingback;
-		$source=$f3->get('BASE').'pingback2?page=pingback/client';
+		$source=$f3->get('BASE').'/pingback2?page=pingback/client';
 		$test->expect(
 			$f3->read($f3->get('UI').'pingback/server.htm'),
 			'Read permalink contents'
@@ -23,7 +23,8 @@ class Pingback extends Controller {
 			'Reply from pingback server'
 		);
 		$test->expect(
-			$f3->read($file)==$f3->read($f3->get('UI').'pingback/client.htm'),
+			$f3->read($file)==
+				\View::instance()->render('pingback/client.htm'),
 			'Read source contents'
 		);
 		$f3->unlink($file);
@@ -32,7 +33,7 @@ class Pingback extends Controller {
 			!is_file($file),
 			'External source'
 		);
-		$source=$f3->get('BASE').'pingback2?page=pingback/invalid';
+		$source=$f3->get('BASE').'/pingback2?page=pingback/invalid';
 		$pingback->inspect($source);
 		$test->expect(
 			!is_file($file=$f3->get('TEMP').$f3->hash($source).'.htm'),

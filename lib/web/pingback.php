@@ -64,8 +64,8 @@ class Pingback extends \Prefab {
 				foreach ($links as $link) {
 					$permalink=$link->getattribute('href');
 					// Find pingback-enabled resources
-					if ($permalink && $found=$this->enabled($permalink)) {
-						$req=$web->request($found,
+					if ($permalink && $found=$this->enabled($permalink))
+						$web->request($found,
 							array(
 								'method'=>'POST',
 								'header'=>'Content-Type: text/xml',
@@ -76,7 +76,6 @@ class Pingback extends \Prefab {
 								)
 							)
 						);
-					}
 				}
 			}
 			unset($doc);
