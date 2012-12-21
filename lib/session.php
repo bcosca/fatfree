@@ -92,9 +92,7 @@ class Session {
 		@param $id string
 	**/
 	function ip($id=NULL) {
-		if (!$id)
-			$id=session_id();
-		return Cache::instance()->exists($id.'.@',$data)?
+		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
 			$data['ip']:FALSE;
 	}
 
@@ -104,9 +102,7 @@ class Session {
 		@param $id string
 	**/
 	function stamp($id=NULL) {
-		if (!$id)
-			$id=session_id();
-		return Cache::instance()->exists($id.'.@',$data)?
+		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
 			$data['stamp']:FALSE;
 	}
 
@@ -116,9 +112,7 @@ class Session {
 		@param $id string
 	**/
 	function agent($id=NULL) {
-		if (!$id)
-			$id=session_id();
-		return Cache::instance()->exists($id.'.@',$data)?
+		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
 			$data['agent']:FALSE;
 	}
 
