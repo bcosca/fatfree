@@ -182,10 +182,15 @@ class Mongo extends Controller {
 					$agent=$session->agent(),
 					'User agent: '.$agent
 				);
+				$id=session_id();
 				$_SESSION=array();
 				$test->expect(
 					$f3->get('SESSION.foo')=='hello world',
 					'Session variable retrieved from database'
+				);
+				$test->expect(
+					$id!=session_id(),
+					'New session id'
 				);
 				session_unset();
 				$test->expect(
