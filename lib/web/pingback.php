@@ -135,7 +135,10 @@ class Pingback extends \Prefab {
 		return xml_rpc_encode_request(NULL,0x31);
 	}
 
-	//! Instantiate class
+	/**
+		Instantiate class
+		@return object
+	**/
 	function __construct() {
 		// Suppress errors caused by invalid HTML structures
 		libxml_use_internal_errors(TRUE);

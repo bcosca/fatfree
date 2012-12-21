@@ -189,7 +189,10 @@ abstract class Cursor extends \Magic {
 		$this->ptr=0;
 	}
 
-	//! Reset cursor
+	/**
+		Reset cursor
+		@return NULL
+	**/
 	function reset() {
 		$this->query=array();
 		$this->ptr=0;

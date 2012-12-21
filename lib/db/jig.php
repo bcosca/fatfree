@@ -70,7 +70,10 @@ class Jig {
 		return $fw->write($this->dir.$file,$out);
 	}
 
-	//! Clean storage
+	/**
+		Clean storage
+		@return NULL
+	**/
 	function drop() {
 		$fw=\Base::instance();
 		foreach (glob($this->dir.'/*',GLOB_NOSORT) as $file)

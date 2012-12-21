@@ -122,7 +122,10 @@ class Session {
 			$data['agent']:FALSE;
 	}
 
-	//! Instantiate class
+	/**
+		Instantiate class
+		@return object
+	**/
 	function __construct() {
 		session_set_save_handler(
 			array($this,'open'),

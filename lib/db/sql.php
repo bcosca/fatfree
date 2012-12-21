@@ -30,19 +30,28 @@ class SQL extends \PDO {
 		//! SQL log
 		$log;
 
-	//! Begin SQL transaction
+	/**
+		Begin SQL transaction
+		@return NULL
+	**/
 	function begin() {
 		parent::begintransaction();
 		$this->trans=TRUE;
 	}
 
-	//! Rollback SQL transaction
+	/**
+		Rollback SQL transaction
+		@return NULL
+	**/
 	function rollback() {
 		parent::rollback();
 		$this->trans=FALSE;
 	}
 
-	//! Commit SQL transaction
+	/**
+		Commit SQL transaction
+		@return NULL
+	**/
 	function commit() {
 		parent::commit();
 		$this->trans=FALSE;

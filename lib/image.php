@@ -396,7 +396,10 @@ class Image {
 		return imagesy($this->data);
 	}
 
-	//! Send image to HTTP client
+	/**
+		Send image to HTTP client
+		@return NULL
+	**/
 	function render() {
 		$args=func_get_args();
 		$format=$args?array_shift($args):'png';
@@ -485,7 +488,10 @@ class Image {
 		}
 	}
 
-	//! Wrap-up
+	/**
+		Wrap-up
+		@return NULL
+	**/
 	function __destruct() {
 		if (is_resource($this->data)) {
 			imagedestroy($this->data);

@@ -92,7 +92,7 @@ class Base {
 		$hive,
 		//! Default settings
 		$defaults,
-		//! Languages
+		//! Language lookup sequence
 		$languages,
 		//! NULL reference
 		$null=NULL;
@@ -1295,7 +1295,10 @@ class Base {
 			}
 	}
 
-	//! Execute framework/application shutdown sequence
+	/**
+		Execute framework/application shutdown sequence
+		@return NULL
+	**/
 	function unload() {
 		if (($error=error_get_last()) &&
 			in_array($error['type'],
@@ -1443,7 +1446,10 @@ class Base {
 		register_shutdown_function(array($this,'unload'));
 	}
 
-	//! Wrap-up
+	/**
+		Wrap-up
+		@return NULL
+	**/
 	function __destruct() {
 		Registry::clear(__CLASS__);
 	}
@@ -1670,7 +1676,10 @@ class Cache {
 		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
 	}
 
-	//! Wrap-up
+	/**
+		Wrap-up
+		@return NULL
+	**/
 	function __destruct() {
 		Registry::clear(__CLASS__);
 	}
@@ -1690,7 +1699,10 @@ abstract class Prefab {
 		return Registry::get($class);
 	}
 
-	//! Wrap-up
+	/**
+		Wrap-up
+		@return NULL
+	**/
 	function __destruct() {
 		Registry::clear(get_called_class());
 	}

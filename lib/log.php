@@ -38,7 +38,10 @@ class Log {
 		);
 	}
 
-	//! Erase log
+	/**
+		Erase log
+		@return NULL
+	**/
 	function erase() {
 		Base::instance()->unlink($this->file);
 	}

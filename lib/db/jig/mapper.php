@@ -285,7 +285,10 @@ class Mapper extends \DB\Cursor {
 		return TRUE;
 	}
 
-	//! Reset cursor
+	/**
+		Reset cursor
+		@return NULL
+	**/
 	function reset() {
 		$this->document=array();
 		parent::reset();
