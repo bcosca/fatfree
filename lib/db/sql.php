@@ -146,6 +146,7 @@ class SQL extends \PDO {
 				}
 				else
 					$this->rows=$result=$query->rowcount();
+				$query->closecursor();
 			}
 			else {
 				$error=$this->errorinfo();
