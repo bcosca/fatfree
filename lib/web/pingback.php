@@ -126,20 +126,20 @@ class Pingback extends \Prefab {
 							call_user_func_array($func,
 								array($source,$req['body']));
 							// Success
-							return xmlrpc_encode_request(NULL,$source);
+							die(xmlrpc_encode_request(NULL,$source));
 						}
 					}
 					// No link to local page
-					return xmlrpc_encode_request(NULL,0x11);
+					die(xmlrpc_encode_request(NULL,0x11));
 				}
 				// Source failure
-				return xmlrpc_encode_request(NULL,0x10);
+				die(xmlrpc_encode_request(NULL,0x10));
 			}
 			// Doesn't exist (or not pingback-enabled)
-			return xmlrpc_encode_request(NULL,0x21);
+			die(xmlrpc_encode_request(NULL,0x21));
 		}
 		// Access denied
-		return xml_rpc_encode_request(NULL,0x31);
+		die(xml_rpc_encode_request(NULL,0x31));
 	}
 
 	/**
