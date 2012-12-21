@@ -70,7 +70,7 @@ class Base {
 		//! Mapped PHP globals
 		GLOBALS='GET|POST|COOKIE|REQUEST|SESSION|FILES|SERVER|ENV',
 		//! HTTP verbs
-		VERBS='GET|HEAD|POST|PUT|DELETE|CONNECT',
+		VERBS='GET|HEAD|POST|PUT|PATCH|DELETE|CONNECT',
 		//! Default directory permissions
 		MODE=0755,
 		//! Fallback language
