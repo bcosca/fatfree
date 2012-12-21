@@ -322,8 +322,8 @@ class Template extends View {
 				if (isset($_COOKIE[session_name()]) && !session_id()) {
 					session_start();
 					session_regenerate_id();
-					$fw->sync('SESSION');
 				}
+				$fw->sync('SESSION');
 				if (!$hive)
 					$hive=$fw->hive();
 				$this->hive=$fw->get('ESCAPE')?$fw->esc($hive):$hive;

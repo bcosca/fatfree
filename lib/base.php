@@ -129,8 +129,8 @@ class Base {
 			if (!session_id()) {
 				session_start();
 				session_regenerate_id(TRUE);
-				$this->sync('SESSION');
 			}
+			$this->sync('SESSION');
 		}
 		if ($add)
 			$var=&$this->hive;
@@ -1745,8 +1745,8 @@ class View extends Prefab {
 				if (!session_id() && isset($_COOKIE[session_name()])) {
 					session_start();
 					session_regenerate_id();
-					$fw->sync('SESSION');
 				}
+				$fw->sync('SESSION');
 				if (!$hive)
 					$hive=$fw->hive();
 				$this->hive=$fw->get('ESCAPE')?$hive=$fw->esc($hive):$hive;
