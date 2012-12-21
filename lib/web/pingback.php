@@ -58,8 +58,6 @@ class Pingback extends \Prefab {
 			$parts['host']==$fw->get('HOST')) {
 			$req=$web->request($source);
 			$doc=new \DOMDocument('1.0',$fw->get('ENCODING'));
-			// Suppress errors caused by invalid HTML structures
-			libxml_use_internal_errors(TRUE);
 			if ($req && $doc->loadhtml($req['body'])) {
 				// Parse anchor tags
 				$links=$doc->getelementsbytagname('a');
@@ -102,8 +100,6 @@ class Pingback extends \Prefab {
 		if ($method=='pingback.ping' && isset($args[0],$args[1])) {
 			list($source,$permalink)=$args;
 			$doc=new \DOMDocument('1.0',$fw->get('ENCODING'));
-			// Suppress errors caused by invalid HTML structures
-			libxml_use_internal_errors(TRUE);
 			// Check local page if pingback-enabled
 			$parts=parse_url($permalink);
 			if ((empty($parts['scheme']) ||
@@ -137,6 +133,12 @@ class Pingback extends \Prefab {
 		}
 		// Access denied
 		return xml_rpc_encode_request(NULL,0x31);
+	}
+
+	//! Instantiate class
+	function __construct() {
+		// Suppress errors caused by invalid HTML structures
+		libxml_use_internal_errors(TRUE);
 	}
 
 }
