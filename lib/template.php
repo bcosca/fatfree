@@ -319,9 +319,10 @@ class Template extends View {
 					unset($stack);
 					$fw->write($this->view,$this->build($tree));
 				}
-				if (isset($_COOKIE[session_name()]) && !session_id()) {
+				if (isset($_COOKIE[session_name()]) &&
+					session_status()!=PHP_SESSION_ACTIVE) {
 					session_start();
-					session_regenerate_id();
+					session_regenerate_id(TRUE);
 				}
 				$fw->sync('SESSION');
 				if (!$hive)

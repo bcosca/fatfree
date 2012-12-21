@@ -168,7 +168,7 @@ class Mongo extends Controller {
 					session_start(),
 					'Database-managed session started'
 				);
-				$_SESSION['foo']='hello world';
+				$f3->set('SESSION.foo','hello world');
 				session_commit();
 				$test->expect(
 					$ip=$session->ip(),
@@ -182,18 +182,16 @@ class Mongo extends Controller {
 					$agent=$session->agent(),
 					'User agent: '.$agent
 				);
-				session_unset();
 				$_SESSION=array();
+				$test->expect(
+					$f3->get('SESSION.foo')=='hello world',
+					'Session variable retrieved from database'
+				);
+				session_unset();
 				$test->expect(
 					empty($_SESSION['foo']),
 					'Session cleared'
 				);
-				session_start();
-				$test->expect(
-					isset($_SESSION['foo']) && $_SESSION['foo']=='hello world',
-					'Session variable retrieved from database'
-				);
-				session_unset();
 				session_destroy();
 				header_remove('Set-Cookie');
 				unset($_COOKIE[session_name()]);

@@ -126,7 +126,7 @@ class Base {
 	function &ref($key,$add=TRUE) {
 		$parts=$this->cut($key);
 		if ($parts[0]=='SESSION') {
-			if (!session_id()) {
+			if (session_status()!=PHP_SESSION_ACTIVE) {
 				session_start();
 				session_regenerate_id(TRUE);
 			}
@@ -269,7 +269,7 @@ class Base {
 			// Clear cache contents
 			$cache->reset();
 		elseif ($parts[0]=='SESSION') {
-			if (!session_id())
+			if (session_status()!=PHP_SESSION_ACTIVE)
 				session_start();
 			if (empty($parts[1])) {
 				// End session
@@ -893,7 +893,7 @@ class Base {
 	**/
 	function reroute($uri) {
 		if (PHP_SAPI!='cli') {
-			if (session_id())
+			if (session_status()==PHP_SESSION_ACTIVE)
 				session_commit();
 			header('Location: '.(preg_match('/^https?:\/\//',$uri)?
 				$uri:($this->hive['BASE'].$uri)));
@@ -1742,9 +1742,10 @@ class View extends Prefab {
 		$fw=Base::instance();
 		foreach ($fw->split($fw->get('UI')) as $dir)
 			if (is_file($this->view=$fw->fixslashes($dir.$file))) {
-				if (!session_id() && isset($_COOKIE[session_name()])) {
+				if (session_status()!=PHP_SESSION_ACTIVE &&
+					isset($_COOKIE[session_name()])) {
 					session_start();
-					session_regenerate_id();
+					session_regenerate_id(TRUE);
 				}
 				$fw->sync('SESSION');
 				if (!$hive)
