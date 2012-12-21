@@ -187,6 +187,7 @@ class Mapper extends \DB\Cursor {
 			$sql.=' WHERE '.$filter;
 		}
 		if ($options['group']) {
+			$params=array();
 			if (is_array($options['group']))
 				list($options['group'],$params)=$options['group'];
 			$args+=is_array($params)?$params:array($params);
@@ -358,6 +359,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function erase($filter=NULL) {
 		if ($filter) {
+			$params=array();
 			if (is_array($filter)) {
 				$params=isset($filter[1]) && is_array($filter[1])?
 					$filter[1]:
