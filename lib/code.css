@@ -1,14 +1,15 @@
 /* PHP */
 .t_php {
 	font-family:Consolas,Monaco,monospace;
-	font-size:0.9em;
+	font-size:0.8em;
+	color:#999;
 }
 
 /* Comments */
-.t_comment,.t_doc_comment,.t_ml_comment { color:#c0c0c0; }
+.t_comment,.t_doc_comment,.t_ml_comment { color:#ccc; }
 
 /* Variables */
-.t_variable { color:#ff00cc; }
+.t_variable { color:#f0c; }
 
 /* Constants */
 .t_const,
@@ -21,14 +22,14 @@
 .t_line,
 .t_method_c,
 .t_ns_c,
-.t_ns_separator { color:#00a0c0; }
+.t_ns_separator { color:#09c; }
 
 /* Identifiers */
-.t_string { color:303030; }
+.t_string { color:#666; }
 
 /* Numbers */
 .t_lnumber,
-.t_dnumber { color:#ff0000; }
+.t_dnumber { color:#f00; }
 
 /* Operators */
 .t_and_equal,
@@ -60,7 +61,7 @@
 .t_start_heredoc,
 .t_end_heredoc,
 .t_object_operator,
-.t_paamayim_nekudotayim { color:#b000b0; }
+.t_paamayim_nekudotayim { color:#909; }
 
 /* Keywords */
 .t_abstract,
@@ -119,8 +120,8 @@
 .t_unset,
 .t_use,
 .t_var,
-.t_while { color:#606060; font-weight:bold; }
+.t_while { color:#0c6; }
 
 .t_open_tag,
 .t_open_tag_with_echo,
-.t_close_tag { color:#ff0000; }
+.t_close_tag { color:#f60; font-weight:bold; }
