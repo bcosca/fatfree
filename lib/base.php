@@ -438,7 +438,7 @@ class Base {
 				if (method_exists($arg,'__tostring'))
 					return stripslashes($arg);
 				$str='';
-				if (get_class($arg)!=__CLASS__)
+				if ($this->hive['DEBUG']>2 || get_class($arg)!=__CLASS__)
 					foreach ((array)$arg as $key=>$val)
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
@@ -1254,15 +1254,16 @@ class Base {
 		}
 		$ref=new ReflectionExtension('tokenizer');
 		$tokens=$ref->getconstants();
-		foreach (token_get_all($text) as $token) {
+		foreach (token_get_all(addcslashes($text,'\\')) as $token) {
 			if ($pre)
 				$pre=FALSE;
 			else
 				$out.='<span class="t_php'.
 					(is_array($token)?
 						(' '.strtolower(array_search($token[0],$tokens)).'">'.
-							$this->encode($token[1]).''):
-						('">'.$this->encode($token))).'</span>';
+							$this->encode(stripcslashes($token[1])).''):
+						('">'.$this->encode(stripcslashes($token)))).
+					'</span>';
 		}
 		return $out?:$text;
 	}

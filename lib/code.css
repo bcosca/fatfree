@@ -2,7 +2,7 @@
 .t_php {
 	font-family:Consolas,Monaco,monospace;
 	font-size:0.8em;
-	color:#999;
+	color:#000;
 }
 
 /* Comments */
@@ -25,7 +25,7 @@
 .t_ns_separator { color:#09c; }
 
 /* Identifiers */
-.t_string { color:#666; }
+.t_string { color:#999; }
 
 /* Numbers */
 .t_lnumber,
@@ -120,7 +120,7 @@
 .t_unset,
 .t_use,
 .t_var,
-.t_while { color:#0c6; }
+.t_while { color:#903; }
 
 .t_open_tag,
 .t_open_tag_with_echo,

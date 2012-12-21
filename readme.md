@@ -561,7 +561,7 @@ ERROR.trace - stack trace
 While developing your application, it's best to set the debug level to maximum so you can trace all errors to their root cause:-
 
 ``` php
-$f3->set('DEBUG',2);
+$f3->set('DEBUG',3);
 ```
 
 Just insert the command in your application's bootstrap sequence.
@@ -574,7 +574,7 @@ $f3->set('DEBUG',0);
 
 This will suppress the stack trace output in any system-generated HTML error page (because it's not meant to be seen by your site visitors).
 
-`DEBUG` can have values ranging from 0 (stack trace suppressed) to 2 (most verbose).
+`DEBUG` can have values ranging from 0 (stack trace suppressed) to 3 (most verbose).
 
 Don't forget! Stack traces may contain paths, file names, database commands, user names and passwords. You might expose your Web site to unnecessary security risks if you fail to set the `DEBUG` global variable to 0 in a production environment.
 
@@ -1965,7 +1965,7 @@ Once you get the hang of testing the smallest units of your application, you can
 * Framework equivalents of PHP globals. Variables may be used throughout an application. However, direct use in templates is not advised due to security risks.
 
 `integer DEBUG`
-* Stack trace verbosity. Assign values 1 to 2 for increasing verbosity levels. Zero (0) suppresses the stack trace. This is the default value and it should be the assigned setting on a production server.
+* Stack trace verbosity. Assign values 1 to 3 for increasing verbosity levels. Zero (0) suppresses the stack trace. This is the default value and it should be the assigned setting on a production server.
 
 `string DNSBL`
 * Comma-separated list of DNS blacklist servers. Framework generates a `403 Forbidden` error if the user's IPv4 address is listed on the specified server(s).
