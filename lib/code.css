@@ -22,10 +22,10 @@
 .t_line,
 .t_method_c,
 .t_ns_c,
-.t_ns_separator { color:#09c; }
+.t_ns_separator { color:#0c6; }
 
 /* Identifiers */
-.t_string { color:#999; }
+.t_string { color:#666; }
 
 /* Numbers */
 .t_lnumber,
@@ -120,7 +120,7 @@
 .t_unset,
 .t_use,
 .t_var,
-.t_while { color:#903; }
+.t_while { color:#00c; }
 
 .t_open_tag,
 .t_open_tag_with_echo,

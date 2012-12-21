@@ -74,7 +74,9 @@ class Base {
 		//! Default directory permissions
 		MODE=0755,
 		//! Fallback language
-		FALLBACK='en';
+		FALLBACK='en',
+		//! Syntax highlighting stylesheet
+		CSS='code.css';
 
 	//@{ Error messages
 	const
@@ -776,7 +778,7 @@ class Base {
 		$eol="\n";
 		if (!$trace)
 			$trace=array_slice(debug_backtrace(FALSE),1);
-		$css=is_file($file=__DIR__.'/code.css');
+		$css=is_file($file=__DIR__.'/'.self::CSS);
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';
@@ -822,8 +824,8 @@ class Base {
 				'</head>'.$eol.
 				'<body>'.$eol.
 					'<h1>'.$header.'</h1>'.$eol.
-					'<p><big><i>'.
-						$this->encode($text?:$req).'</i></big></p>'.$eol.
+					'<p>'.
+						$this->encode($text?:$req).'</p>'.$eol.
 					($out && $this->hive['DEBUG']?
 						('<p>'.$eol.$out.'</p>'.$eol):'').
 				'</body>'.$eol.
