@@ -18,6 +18,10 @@ namespace Web;
 //! Pingback 1.0 protocol implementation
 class Pingback extends \Prefab {
 
+	private
+		//! Transaction history
+		$log;
+
 	/**
 		Return TRUE if URL points to a pingback-enabled resource
 		@return bool
@@ -64,8 +68,8 @@ class Pingback extends \Prefab {
 				foreach ($links as $link) {
 					$permalink=$link->getattribute('href');
 					// Find pingback-enabled resources
-					if ($permalink && $found=$this->enabled($permalink))
-						$web->request($found,
+					if ($permalink && $found=$this->enabled($permalink)) {
+						$req=$web->request($found,
 							array(
 								'method'=>'POST',
 								'header'=>'Content-Type: text/xml',
@@ -76,6 +80,9 @@ class Pingback extends \Prefab {
 								)
 							)
 						);
+						if ($req && $req['body'])
+							$this->log.=$req['body'];
+					}
 				}
 			}
 			unset($doc);
@@ -132,6 +139,14 @@ class Pingback extends \Prefab {
 		}
 		// Access denied
 		return xml_rpc_encode_request(NULL,0x31);
+	}
+
+	/**
+		Return transaction history
+		@return string
+	**/
+	function log() {
+		return $this->log;
 	}
 
 	/**
