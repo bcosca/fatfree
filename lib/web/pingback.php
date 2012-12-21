@@ -81,7 +81,8 @@ class Pingback extends \Prefab {
 							)
 						);
 						if ($req && $req['body'])
-							$this->log.=$req['body'];
+							$this->log.=date('r').
+								$permalink.':'."\n".$req['body']."\n";
 					}
 				}
 			}
