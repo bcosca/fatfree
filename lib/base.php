@@ -435,9 +435,23 @@ class Base {
 	function stringify($arg) {
 		switch (gettype($arg)) {
 			case 'object':
-				return method_exists($arg,'__tostring')?
-					stripslashes($arg):
-					get_class($arg).'::__set_state()';
+				if (method_exists($arg,'__tostring'))
+					return stripslashes($arg);
+				$ref=new ReflectionClass($arg);
+				$str='';
+				foreach ($ref->getproperties() as $prop) {
+					$vis='public';
+					if ($prop->isprotected())
+						$vis='protected';
+					elseif ($prop->isprivate())
+						$vis='private';
+					$str.=($str?',':'').
+						$this->stringify($prop->getname()).
+						($prop->ispublic()?
+							('=>'.$this->stringify($prop->getvalue())):
+							(':'.$vis));
+				}
+				return get_class($arg).'::__set_state('.$str.')';
 			case 'array':
 				$str='';
 				foreach ($arg as $key=>$val)
@@ -1252,12 +1266,22 @@ class Base {
 			if ($pre)
 				$pre=FALSE;
 			else
-				$out.=is_array($token)?
-					('<span class="t_php '.
-						strtolower(array_search($token[0],$tokens)).'">'.
-						$token[1].'</span>'):$token;
+				$out.='<span class="t_php'.
+					(is_array($token)?
+						(' '.strtolower(array_search($token[0],$tokens)).'">'.
+							$token[1].''):
+						('">'.$token)).'</span>';
 		}
 		return $out?:$text;
+	}
+
+	/**
+		Dump expression with syntax highlighting
+		@return NULL
+		@param $expr mixed
+	**/
+	function dump($expr) {
+		echo $this->highlight($this->stringify($expr));
 	}
 
 	/**
