@@ -437,20 +437,11 @@ class Base {
 			case 'object':
 				if (method_exists($arg,'__tostring'))
 					return stripslashes($arg);
-				$ref=new ReflectionClass($arg);
 				$str='';
-				foreach ($ref->getproperties() as $prop) {
-					$vis='public';
-					if ($prop->isprotected())
-						$vis='protected';
-					elseif ($prop->isprivate())
-						$vis='private';
-					$str.=($str?',':'').
-						$this->stringify($prop->getname()).
-						($prop->ispublic()?
-							('=>'.$this->stringify($prop->getvalue())):
-							(':'.$vis));
-				}
+				foreach ((array)$arg as $key=>$val)
+					$str.=($str?',':'').$this->stringify(
+						preg_replace('/[\x00-\x1F]/','',$key)).'=>'.
+						$this->stringify($val);
 				return get_class($arg).'::__set_state('.$str.')';
 			case 'array':
 				$str='';
