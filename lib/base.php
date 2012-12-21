@@ -438,10 +438,11 @@ class Base {
 				if (method_exists($arg,'__tostring'))
 					return stripslashes($arg);
 				$str='';
-				foreach ((array)$arg as $key=>$val)
-					$str.=($str?',':'').$this->stringify(
-						preg_replace('/[\x00-\x1F]/','',$key)).'=>'.
-						$this->stringify($val);
+				if (get_class($arg)!=__CLASS__)
+					foreach ((array)$arg as $key=>$val)
+						$str.=($str?',':'').$this->stringify(
+							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
+							$this->stringify($val);
 				return get_class($arg).'::__set_state('.$str.')';
 			case 'array':
 				$str='';
