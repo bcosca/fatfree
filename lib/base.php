@@ -1076,7 +1076,8 @@ class Base {
 					new $parts[1];
 			$func=array($parts[1],$parts[3]);
 		}
-		if (!is_callable($func))
+		if (!is_callable($func) && $hooks=='beforeroute,afterroute')
+			// No route handler
 			$this->error(404);
 		$oo=FALSE;
 		if (is_array($func)) {
