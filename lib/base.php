@@ -866,9 +866,8 @@ class Base {
 		@param $handler callback
 		@param $ttl int
 		@param $kbps int
-		@param $auth string
 	**/
-	function route($pattern,$handler,$ttl=0,$kbps=0,$auth=NULL) {
+	function route($pattern,$handler,$ttl=0,$kbps=0) {
 		$parts=preg_split('/\s+/',$pattern,2,PREG_SPLIT_NO_EMPTY);
 		if (count($parts)<2)
 			user_error(sprintf(self::E_Pattern,$pattern));
@@ -877,7 +876,7 @@ class Base {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
 			$this->hive['ROUTES'][$url]
-				[strtoupper($verb)]=array($handler,$ttl,$kbps,$auth);
+				[strtoupper($verb)]=array($handler,$ttl,$kbps);
 		}
 	}
 
@@ -903,13 +902,11 @@ class Base {
 		@param $class string
 		@param $ttl int
 		@param $kbps int
-		@param $auth string
 	**/
-	function map($url,$class,$ttl=0,$kbps=0,$auth=NULL) {
+	function map($url,$class,$ttl=0,$kbps=0) {
 		foreach (explode('|',self::VERBS) as $method)
-			$this->route(
-				$method.' '.$url,$class.'->'.strtolower($method),
-				$ttl,$kbps,$auth);
+			$this->route($method.' '.
+				$url,$class.'->'.strtolower($method),$ttl,$kbps);
 	}
 
 	/**
@@ -959,7 +956,7 @@ class Base {
 					$this->reroute(substr($path,0,-1).
 						($query?('?'.$query):''));
 				}
-				list($handler,$ttl,$kbps,$auth)=$route[$this->hive['VERB']];
+				list($handler,$ttl,$kbps)=$route[$this->hive['VERB']];
 				if (is_bool(strpos($url,'/*')))
 					foreach (array_keys($args) as $key)
 						if (is_numeric($key) && $key)
