@@ -18,7 +18,6 @@ class SQL extends Controller {
 			if (!is_dir('tmp/'))
 				mkdir('tmp/',\Base::MODE,TRUE);
 			$db=new \DB\SQL('sqlite:tmp/sqlite.db');
-			//$db=new \DB\SQL('mysql:host=localhost');
 			$engine=$db->driver();
 			$test->expect(
 				is_object($db),

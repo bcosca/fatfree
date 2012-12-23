@@ -110,7 +110,8 @@ class SMTP extends Magic {
 	**/
 	protected function dialog($cmd=NULL,$log=FALSE) {
 		$socket=&$this->socket;
-		fputs($socket,$cmd."\r\n");
+		if (!is_null($cmd))
+			fputs($socket,$cmd."\r\n");
 		$reply='';
 		while (!feof($socket) && ($info=stream_get_meta_data($socket)) &&
 			!$info['timed_out'] && $str=fgets($socket,4096)) {
@@ -152,12 +153,11 @@ class SMTP extends Magic {
 			return;
 		}
 		stream_set_blocking($socket,TRUE);
-		stream_set_timeout($socket,ini_get('default_socket_timeout'));
 		// Get server's initial response
-		$this->log=str_replace("\r",'',fgets($socket,4096));
-		// Indicate presence
+		$this->dialog();
+		// Announce presence
 		$this->dialog('EHLO '.$fw->get('HOST'),TRUE);
-		if (strtoupper($this->scheme)=='tls') {
+		if (strtolower($this->scheme)=='tls') {
 			$this->dialog('STARTTLS',TRUE);
 			stream_socket_enable_crypto(
 				$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
@@ -259,7 +259,7 @@ class SMTP extends Magic {
 			'Content-Transfer-Encoding'=>'8bit'
 		);
 		$this->host=$host;
-		if (strtoupper($this->scheme=strtolower($scheme))=='ssl')
+		if (strtolower($this->scheme=strtolower($scheme))=='ssl')
 			$this->host='ssl://'.$host;
 		$this->port=$port;
 		$this->user=$user;

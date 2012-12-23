@@ -14,7 +14,7 @@
 */
 
 //! Base structure
-final class Base {
+class Base {
 
 	//@{ Framework details
 	const
@@ -771,7 +771,7 @@ final class Base {
 		$prior=$this->hive['ERROR'];
 		$header=$this->status($code);
 		$req=$this->hive['VERB'].' '.$this->hive['URI'];
-		error_log($text=$text?:($header.' ('.$req.')'));
+		error_log($text=$text?:('HTTP '.$code.' '.$header.' ('.$req.')'));
 		$out='';
 		$eol="\n";
 		if (!$trace)
@@ -1453,7 +1453,7 @@ final class Base {
 }
 
 //! Cache engine
-final class Cache {
+class Cache {
 
 	private
 		//! Cache DSN
@@ -2119,7 +2119,7 @@ class ISO extends Prefab {
 }
 
 //! Container for singular object instances
-final class Registry {
+class Registry {
 
 	private static
 		//! Object catalog
