@@ -14,7 +14,7 @@
 */
 
 //! Base structure
-class Base {
+final class Base {
 
 	//@{ Framework details
 	const
@@ -1453,7 +1453,7 @@ class Base {
 }
 
 //! Cache engine
-class Cache {
+final class Cache {
 
 	private
 		//! Cache DSN
@@ -2119,7 +2119,7 @@ class ISO extends Prefab {
 }
 
 //! Container for singular object instances
-class Registry {
+final class Registry {
 
 	private static
 		//! Object catalog
