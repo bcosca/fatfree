@@ -298,7 +298,7 @@ class Web extends Prefab {
 				stream_set_blocking($socket,1);
 				fputs($socket,$options['method'].' '.$parts['path'].
 					($parts['query']?('?'.$parts['query']):'').' '.
-					'HTTP/1.0'.$eol
+					'HTTP/1.1'.$eol
 				);
 				fputs($socket,
 					'Content-Length: '.strlen($parts['query']).$eol.
