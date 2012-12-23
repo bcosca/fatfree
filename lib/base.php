@@ -445,7 +445,7 @@ class Base {
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
 							$this->stringify($val);
-				return get_class($arg).'::__set_state('.$str.')';
+				return addslashes(get_class($arg)).'::__set_state('.$str.')';
 			case 'array':
 				$str='';
 				foreach ($arg as $key=>$val)
@@ -453,7 +453,8 @@ class Base {
 						$this->stringify($key).'=>'.$this->stringify($val);
 				return 'array('.$str.')';
 			default:
-				return var_export($arg,TRUE);
+				return var_export(
+					is_string($arg)?addcslashes($arg,'\''):$arg,TRUE);
 		}
 	}
 
@@ -1250,16 +1251,15 @@ class Base {
 			$pre=TRUE;
 		}
 		$ref=new ReflectionExtension('tokenizer');
-		$tokens=$ref->getconstants();
-		foreach (token_get_all(addcslashes($text,'\\')) as $token)
+		foreach (token_get_all($text) as $token)
 			if ($pre)
 				$pre=FALSE;
 			else
 				$out.='<span class="php'.
 					(is_array($token)?
 						(' '.substr(strtolower(token_name($token[0])),2).'">'.
-							$this->encode(stripcslashes($token[1])).''):
-						('">'.$this->encode(stripcslashes($token)))).
+							$this->encode($token[1]).''):
+						('">'.$this->encode($token))).
 					'</span>';
 		return $out?:$text;
 	}
