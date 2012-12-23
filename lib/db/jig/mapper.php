@@ -163,32 +163,11 @@ class Mapper extends \DB\Cursor {
 				function($_) use($_expr,$_args,$_self) {
 					extract($_);
 					$_ctr=0;
-					echo 'return '.
-						preg_replace_callback(
-							'/(\:\w+)|(\?)/',
-							function($token) use($_args,$_self,&$_ctr) {
-								// Parameterized query
-								if ($token[1])
-									// Named
-									$key=$token[1];
-								else {
-									// Positional
-									$_ctr++;
-									$key=$_ctr;
-								}
-								// Add slashes to prevent code injection
-								return \Base::instance()->stringify(
-									is_string($_args[$key])?
-										addcslashes($_args[$key],'\''):
-										$_args[$key]);
-							},
-							$_self->token($_expr)
-						).';';
 					// Evaluate user code
 					return eval('return '.
 						preg_replace_callback(
 							'/(\:\w+)|(\?)/',
-							function($token) use($_args,$_self,$_ctr) {
+							function($token) use($_args,$_self,&$_ctr) {
 								// Parameterized query
 								if ($token[1])
 									// Named
