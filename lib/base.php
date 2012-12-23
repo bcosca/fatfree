@@ -14,7 +14,7 @@
 */
 
 //! Base structure
-class Base {
+final class Base {
 
 	//@{ Framework details
 	const
@@ -1408,7 +1408,8 @@ class Base {
 			'PORT'=>isset($_SERVER['SERVER_PORT'])?
 				$_SERVER['SERVER_PORT']:NULL,
 			'QUIET'=>FALSE,
-			'REALM'=>$_SERVER['SERVER_NAME'],
+			'REALM'=>$scheme.'://'.
+				$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'],
 			'RESPONSE'=>'',
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>array(),
@@ -1452,7 +1453,7 @@ class Base {
 }
 
 //! Cache engine
-class Cache {
+final class Cache {
 
 	private
 		//! Cache DSN
@@ -2118,7 +2119,7 @@ class ISO extends Prefab {
 }
 
 //! Container for singular object instances
-class Registry {
+final class Registry {
 
 	private static
 		//! Object catalog
