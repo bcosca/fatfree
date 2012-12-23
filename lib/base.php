@@ -675,21 +675,18 @@ class Base {
 		$this->languages=array(self::FALLBACK);
 		// Use Accept-Language header, if available
 		$headers=$this->hive['HEADERS'];
-		if (!$code && isset($headers['HEADERS']['Accept-Language']))
+		if (!$code && isset($headers['Accept-Language']))
 			$code=str_replace('-','_',$headers['Accept-Language']);
 		// Validate string/header
-		if (preg_match('/^(\w{2})(?:_(\w{2}))?\b/',$code,$parts)) {
-			if ($parts[1]!=self::FALLBACK)
-				// Generic language
-				array_unshift($this->languages,$parts[1]);
-			if (isset($parts[2]))
-				// Specific language
-				array_unshift($this->languages,$parts[0]);
-			$code=$parts[0];
-		}
-		else
-			$code=self::FALLBACK;
-		return $code;
+		if (!preg_match('/^(\w{2})(?:_(\w{2}))?\b/',$code,$parts))
+			return self::FALLBACK;
+		if ($parts[1]!=self::FALLBACK)
+			// Generic language
+			array_unshift($this->languages,$parts[1]);
+		if (isset($parts[2]))
+			// Specific language
+			array_unshift($this->languages,$parts[0]);
+		return $parts[0];
 	}
 
 	/**
@@ -800,10 +797,9 @@ class Base {
 					}
 				}
 				error_log('- '.$addr.' '.$line);
-				$out.='&bull; '.nl2br(
+				$out.='&bull; '.
 					($css?$this->highlight($addr):$addr).' '.
-					($css?$this->highlight($line):$line)).
-					'<br />'.$eol;
+					($css?$this->highlight($line):$line).$eol;
 			}
 		}
 		$this->hive['ERROR']=array(
@@ -827,7 +823,7 @@ class Base {
 					'<p>'.
 						$this->encode($text?:$req).'</p>'.$eol.
 					($out && $this->hive['DEBUG']?
-						('<p>'.$eol.$out.'</p>'.$eol):'').
+						('<p>'.$eol.nl2br($out).'</p>'.$eol):'').
 				'</body>'.$eol.
 				'</html>';
 	}
@@ -901,7 +897,7 @@ class Base {
 	}
 
 	/**
-		Provide REST interface by mapping HTTP verb to class method
+		Provide ReST interface by mapping HTTP verb to class method
 		@param $url string
 		@param $class string
 		@param $ttl int
@@ -1256,17 +1252,16 @@ class Base {
 		}
 		$ref=new ReflectionExtension('tokenizer');
 		$tokens=$ref->getconstants();
-		foreach (token_get_all(addcslashes($text,'\\')) as $token) {
+		foreach (token_get_all(addcslashes($text,'\\')) as $token)
 			if ($pre)
 				$pre=FALSE;
 			else
-				$out.='<span class="t_php'.
+				$out.='<span class="php'.
 					(is_array($token)?
-						(' '.strtolower(array_search($token[0],$tokens)).'">'.
+						(' '.substr(strtolower(token_name($token[0])),2).'">'.
 							$this->encode(stripcslashes($token[1])).''):
 						('">'.$this->encode(stripcslashes($token)))).
 					'</span>';
-		}
 		return $out?:$text;
 	}
 

@@ -158,7 +158,8 @@ class SQL extends \PDO {
 					user_error('PDO: '.$error[2]);
 				}
 			}
-			$this->log.=date('r').' '.preg_replace($keys,$vals,$cmd,1)."\n";
+			$this->log.=date('r').' '.
+				preg_replace($keys,$vals,$cmd,1).PHP_EOL;
 		}
 		if ($this->trans && $auto)
 			$this->commit();

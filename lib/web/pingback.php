@@ -82,7 +82,7 @@ class Pingback extends \Prefab {
 						);
 						if ($req && $req['body'])
 							$this->log.=date('r').' '.
-								$permalink.':'."\n".$req['body']."\n";
+								$permalink.':'.PHP_EOL.$req['body'].PHP_EOL;
 					}
 				}
 			}

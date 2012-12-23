@@ -33,7 +33,7 @@ class Log {
 			date($format).
 				(isset($_SERVER['REMOTE_ADDR'])?
 					(' ['.$_SERVER['REMOTE_ADDR'].']'):'').' '.
-			trim($text)."\n",
+			trim($text).PHP_EOL,
 			TRUE
 		);
 	}
