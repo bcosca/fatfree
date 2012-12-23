@@ -431,7 +431,8 @@ class Image {
 		if (!is_dir($dir=$fw->get('TEMP')))
 			mkdir($dir,Base::MODE,TRUE);
 		$this->count++;
-		$fw->write($dir.'/'.$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+		$fw->write($dir.'/'.
+			$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash($this->file).'-'.$this->count.'.png',
 			$this->dump());
 		return $this;

@@ -215,7 +215,7 @@ class Base {
 							'(.+?)[[:blank:]]*=[[:blank:]]*'.
 							'((?:\\\\[[:blank:]\r]*\n|[^\n])*)'.
 							'(?=\n|$)/',
-							$this->read($file),$matches,PREG_SET_ORDER);
+							file_get_contents($file),$matches,PREG_SET_ORDER);
 						if ($matches)
 							foreach ($matches as $match)
 								if (isset($match[1]))
@@ -816,7 +816,7 @@ class Base {
 				'<html>'.$eol.
 				'<head>'.
 					'<title>'.$code.' '.$header.'</title>'.
-					($css?('<style>'.$this->read($file).'</style>'):'').
+					($css?('<style>'.file_get_contents($file).'</style>'):'').
 				'</head>'.$eol.
 				'<body>'.$eol.
 					'<h1>'.$header.'</h1>'.$eol.
@@ -863,11 +863,12 @@ class Base {
 		Bind handler to route pattern
 		@return NULL
 		@param $pattern string
-		@param $handler string|callback
+		@param $handler callback
 		@param $ttl int
 		@param $kbps int
+		@param $auth string
 	**/
-	function route($pattern,$handler,$ttl=0,$kbps=0) {
+	function route($pattern,$handler,$ttl=0,$kbps=0,$auth=NULL) {
 		$parts=preg_split('/\s+/',$pattern,2,PREG_SPLIT_NO_EMPTY);
 		if (count($parts)<2)
 			user_error(sprintf(self::E_Pattern,$pattern));
@@ -876,7 +877,7 @@ class Base {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
 			$this->hive['ROUTES'][$url]
-				[strtoupper($verb)]=array($handler,$ttl,$kbps);
+				[strtoupper($verb)]=array($handler,$ttl,$kbps,$auth);
 		}
 	}
 
@@ -902,12 +903,13 @@ class Base {
 		@param $class string
 		@param $ttl int
 		@param $kbps int
+		@param $auth string
 	**/
-	function map($url,$class,$ttl=0,$kbps=0) {
+	function map($url,$class,$ttl=0,$kbps=0,$auth=NULL) {
 		foreach (explode('|',self::VERBS) as $method)
 			$this->route(
 				$method.' '.$url,$class.'->'.strtolower($method),
-				$ttl,$kbps);
+				$ttl,$kbps,$auth);
 	}
 
 	/**
@@ -957,7 +959,7 @@ class Base {
 					$this->reroute(substr($path,0,-1).
 						($query?('?'.$query):''));
 				}
-				list($handler,$ttl,$kbps)=$route[$this->hive['VERB']];
+				list($handler,$ttl,$kbps,$auth)=$route[$this->hive['VERB']];
 				if (is_bool(strpos($url,'/*')))
 					foreach (array_keys($args) as $key)
 						if (is_numeric($key) && $key)
@@ -1055,7 +1057,7 @@ class Base {
 	/**
 		Execute callback/hooks (supports 'class->method' format)
 		@return mixed|FALSE
-		@param $func string|callback
+		@param $func callback
 		@param $args array
 		@param $hooks string
 	**/
@@ -1123,7 +1125,7 @@ class Base {
 			'(.+?)[[:blank:]]*=[[:blank:]]*'.
 			'((?:\\\\[[:blank:]\r]*\n|.+?)*)'.
 			'(?=\r?\n|$)/',
-			$this->read($file),$matches,PREG_SET_ORDER);
+			file_get_contents($file),$matches,PREG_SET_ORDER);
 		if ($matches) {
 			$sec='globals';
 			foreach ($matches as $match)
@@ -1409,6 +1411,7 @@ class Base {
 			'PORT'=>isset($_SERVER['SERVER_PORT'])?
 				$_SERVER['SERVER_PORT']:NULL,
 			'QUIET'=>FALSE,
+			'REALM'=>$_SERVER['SERVER_NAME'],
 			'RESPONSE'=>'',
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>array(),

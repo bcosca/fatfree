@@ -218,7 +218,7 @@ class SMTP extends Magic {
 					'filename="'.basename($attachment).'"'.$eol;
 				$out.=$eol;
 				$out.=chunk_split(
-					base64_encode($fw->read($attachment))).$eol;
+					base64_encode(file_get_contents($attachment))).$eol;
 			}
 			$out.=$eol;
 			$out.='--'.$hash.'--'.$eol;
