@@ -159,17 +159,15 @@ This example shows how we can specify a token `@count` to represent part of a UR
 
 Notice that Fat-Free understands array dot-notation. You can certainly use `@PARAMS['count']` regular notation, which is prone to typo errors and unbalanced braces. The framework also permits `@PARAMS.count` which is somehow similar to Javascript. This feature is limited to arrays in F3 templates. Take note that `@foo.@bar` is a string concatenation, whereas `@foo.bar` translates to `@foo['bar']`.
 
-The optimal code for the example above is:-
+Here's another way to access tokens in a request pattern:-
 
 ``` php
 $f3->route('GET /brew/@count',
-    function($f3,$args) {
-        echo $args['count'].' bottles of beer on the wall.';
+    function($f3,$params) {
+        echo $params['count'].' bottles of beer on the wall.';
     }
 );
 ```
-
-F3 passes two arguments to all route handlers: the framework object instance and captured values of tokens in the URI pattern.
 
 You can use the asterisk (`*`) to accept any URL after the `/brew` route - if you don't really care about the rest of the path:-
 
@@ -525,7 +523,7 @@ css/
 js/
 lib/ (you can store base.php here)
 tmp/ (TEMP, used by the framework)
-    cache/ (CACHE)
+   cache/ (CACHE)
 ```
 
 Feel free to organize your files and directories any way you want. Just set the appropriate F3 global variables. If you want a really secure site, Fat-Free even allows you to store all your files in a non-Web-accessible directory. The only requirement is that you leave `index.php`, `.htaccess` and your public files, like CSS, JavaScript, images, etc. in a path visible to your browser.
@@ -534,10 +532,10 @@ Feel free to organize your files and directories any way you want. Just set the 
 
 Fat-Free generates its own HTML error pages, with stack traces to help you with debugging. Here's an example:-
 
->###Internal Server Error  
->*The configuration file test.cfg was not found*  
+> ### Internal Server Error
+> *The configuration file test.cfg was not found*
 
->&bull; var/html/dev/index.php:16 Base::config('test.cfg')
+> &bull; var/html/dev/index.php:16 Base::config('test.cfg')
 
 If you feel it's a bit too plain or wish to do other things when the error occurs, you may create your own custom error handler:-
 
@@ -545,7 +543,7 @@ If you feel it's a bit too plain or wish to do other things when the error occur
 $f3->set('ONERROR',
     function() {
         // custom error handler code goes here
-        // use this if u want to display errors in a
+        // use this if you want to display errors in a
         // format consistent with your site's theme
     }
 );
@@ -563,7 +561,7 @@ ERROR.trace - stack trace
 While developing your application, it's best to set the debug level to maximum so you can trace all errors to their root cause:-
 
 ``` php
-$f3->set('DEBUG',2);
+$f3->set('DEBUG',3);
 ```
 
 Just insert the command in your application's bootstrap sequence.
@@ -576,7 +574,7 @@ $f3->set('DEBUG',0);
 
 This will suppress the stack trace output in any system-generated HTML error page (because it's not meant to be seen by your site visitors).
 
-`DEBUG` can have values ranging from 0 (stack trace suppressed) to 2 (most verbose).
+`DEBUG` can have values ranging from 0 (stack trace suppressed) to 3 (most verbose).
 
 Don't forget! Stack traces may contain paths, file names, database commands, user names and passwords. You might expose your Web site to unnecessary security risks if you fail to set the `DEBUG` global variable to 0 in a production environment.
 
@@ -1116,7 +1114,7 @@ In the case of PHP templates:-
 As an addition to auto-escaping of F3 variables, the framework also gives you a free hand at sanitizing user input from HTML forms:-
 
 ``` php
-$f3->scrub($_GET,'p; br; span; div; a);
+$f3->scrub($_GET,'p; br; span; div; a');
 ```
 
 This command will strip all tags (except those specified in the second argument) and unsafe characters from the specified variable. If the variable contains an array, each element in the array is sanitized recursively. If an asterisk (*) is passed as the second argument, `$f3->scrub()` permits all HTML tags to pass through untouched and simply remove unsafe control characters.
@@ -1459,6 +1457,22 @@ ORDER BY userID DESC
 LIMIT 3 OFFSET 5;
 ```
 
+This is one way of presenting data in small chunks. Here's another way of paginating results:-
+
+``` php
+$page=$user->paginate(2,5,array('visits>?',3));
+```
+
+In the above scenario, F3 will retrieve records that match the criteria `'visits>3'`. It will then limit the results to 5 records (per page) starting at page offset 2 (0-based). The framework will return an array consisting of the following elements:-
+
+```
+[subset] array of mapper objects that match the criteria
+[count] number of of subsets available
+[pos] actual subset position
+```
+
+The actual subset position returned will be NULL if the first argument of `paginate()` is a negative number or exceeeds the number of subsets found.
+
 ### Virtual Fields
 
 There are instances when you need to retrieve a computed value of a field, or a cross-referenced value from another table. Enter virtual fields. The SQL mini-ORM allows you to work on data derived from existing fields.
@@ -1507,7 +1521,7 @@ $item->load();
 echo $item->supplierName;
 ```
 
-Every time you load a record from the products table, the ORM cross-references the `supplierID` in the `products` table with the `supplierID` in the `suppliers` table.
+Every time you load a record from the products table, the ORM cross-references the `supplerID` in the `products` table with the `supplierID` in the `suppliers` table.
 
 To destroy a virtual field, use `unset($item->totalPrice);`. The `isset($item->totalPrice)` expression returns TRUE if the `totalPrice` virtual field was defined, or FALSE if otherwise.
 
@@ -1533,7 +1547,7 @@ The equivalent code using the MongoDB mapper:-
 $frequentUsers=$user->find(array('visits'=>array('$gt'=>3)),array('userID'=>1));
 ```
 
-The `find()` method searches the `users` table for records that match the criteria `visits>3`, sorts the result by `userID` and returns the result as an array of mapper objects. `find('visits>3')` is different from `load('visits>3')`. The latter refers to the current `$user` object. `find()` does not have any effect on `skip()`.
+The `find()` method searches the `users` table for records that match the criteria, sorts the result by `userID` and returns the result as an array of mapper objects. `find('visits>3')` is different from `load('visits>3')`. The latter refers to the current `$user` object. `find()` does not have any effect on `skip()`.
 
 Important: Declaring an empty condition, NULL, or a zero-length string as the first argument of `find()` or `load()` will retrieve all records. Be sure you know what you're doing - you might exceed PHP's memory_limit on large tables or collections.
 
@@ -1604,16 +1618,16 @@ class Vendor extends DB\SQL\Mapper {
         parent::__construct($db,'vendors');
     }
 
-    // Some plain vanilla SQL query
+    // Specialized query
     function listByCity() {
-        return $this->db->exec(
-            'SELECT vendorID,name,city FROM vendors '.
-            'ORDER BY city DESC;'
-        );
+        return $this->select(
+            'vendorID,name,city',array('order'=>'city DESC'));
         /*
-            We could have done the the same thing without SQL:-
-            return $this->select(
-                'vendorID,name,city',array('order'=>'city DESC'));
+            We could have done the the same thing with plain vanilla SQL:-
+            return $this->db->exec(
+                'SELECT vendorID,name,city FROM vendors '.
+                'ORDER BY city DESC;'
+            );
         */
     }
 
@@ -1640,8 +1654,8 @@ Consider this SQL view created inside your database engine:-
 ``` sql
 CREATE VIEW combined AS
     SELECT
-    projects.project_id AS project,
-    users.name AS name
+        projects.project_id AS project,
+        users.name AS name
     FROM projects
     LEFT OUTER JOIN users ON
         projects.project_id=users.project_id AND
@@ -1679,7 +1693,7 @@ This simple example sends an HTTP request to the page located at www.google.com 
 
 ``` php
 $host='localhost:5984';
-$web->request($host.'/_all_dbs),
+$web->request($host.'/_all_dbs'),
 $web->request($host.'/testdb/',array('method'=>'PUT'));
 ```
 
@@ -1690,18 +1704,18 @@ $web->request(
     'https://www.example.com:443?'.
     http_build_query(
         array(
-        'key1'=>'value1',
-        'key2'=>'value2'
+            'key1'=>'value1',
+            'key2'=>'value2'
         )
     ),
     array(
-    'headers'=>array(
-        'Accept: text/html,application/xhtml+xml,application/xml',
-        'Accept-Language: en-us'
-    ),
-    'follow_location'=>FALSE,
-    'max_redirects'=>30,
-    'ignore_errors'=>TRUE
+        'headers'=>array(
+            'Accept: text/html,application/xhtml+xml,application/xml',
+            'Accept-Language: en-us'
+        ),
+        'follow_location'=>FALSE,
+        'max_redirects'=>30,
+        'ignore_errors'=>TRUE
     )
 );
 ```
@@ -1788,7 +1802,7 @@ Fat-Free also has a Javascript and CSS compressor available in the Web plug-in. 
 
 ``` html
 <link rel="stylesheet" type="text/css"
-    href="/minify/css?files=typo.css,grid.css" />
+	href="/minify/css?files=typo.css,grid.css" />
 ```
 
 Do the same with your Javascript files:-
@@ -1810,7 +1824,7 @@ $f3->route('GET /minify/@type',
 );
 ```
 
-And that's all there is to it! `minify()` reads each file (`typo.css` and `grid.css` in our CSS example, `underscore.js` in our Javascript example), strips off all unnecessary whitespaces and comments, combines all of the related items as a single Web page component, and attaches a far-future expiry date so the user's Web browser can cache the data.
+And that's all there is to it! `minify()` reads each file (`typo.css` and `grid.css` in our CSS example, `underscore.js` in our Javascript example), strips off all unnecessary whitespaces and comments, combines all of the related items as a single Web page component, and attaches a far-future expiry date so the user's Web browser can cache the data. It's important that the `PARAMS.type` variable base points to the correct path. Otherwise, the URL rewriting mechanism inside the compressor won't find the CSS/Javascript files.
 
 Note: Like other Javascript/CSS compression engines, Fat-Free will not go to the trouble of compressing CSS files defined by the `@import` directive.
 
@@ -1846,7 +1860,7 @@ $f3->route('GET /downloads/@filename',
         // send() method returns FALSE if file doesn't exist
         if (!Web::instance()->send('/real/path/'.$args['filename']))
             // Generate an HTTP 404
-            $f3->error(404);
+        $f3->error(404);
     }
 );
 ```
@@ -1902,14 +1916,13 @@ $test->expect(
     'String length is 13'
 );
 
-// Display the results
+// Display the results; not MVC but let's keep it simple
 foreach ($test->results() as $result) {
-    echo $test['text'].'<br/>';
+    echo $test['text'].'<br />';
     if ($test['status'])
-    echo 'Pass';
+        echo 'Pass';
     else
-    echo 'Fail ('.$test['source'].')';
-    // Not MVC, but let's keep it simple
+        echo 'Fail ('.$test['source'].')';
     echo '<br />';
 }
 ```
@@ -1931,175 +1944,212 @@ Once you get the hang of testing the smallest units of your application, you can
 ### System Variables
 
 `bool AJAX`
->TRUE if an XML HTTP request is detected, FALSE otherwise.
+* TRUE if an XML HTTP request is detected, FALSE otherwise.
 
 `string AUTOLOAD`
->Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+* Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
 
 `string BASE`
->Path to the index.php main/front controller.
+* Path to the index.php main/front controller.
 
 `string BODY`
->HTTP request body for ReSTful post-processing.
+* HTTP request body for ReSTful post-processing.
 
 `bool/string CACHE`
->Cache backend. Unless assigned a value like 'memcache=localhost' (and the PHP memcache module is present), F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a FALSE value.
+* Cache backend. Unless assigned a value like 'memcache=localhost' (and the PHP memcache module is present), F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a FALSE value.
 
 `bool CASELESS`
->Pattern matching of routes against incoming URIs is case-insensitive by default. Set to `FALSE` to make it case-sensitive.
+* Pattern matching of routes against incoming URIs is case-insensitive by default. Set to `FALSE` to make it case-sensitive.
 
 `array COOKIE, GET, POST, REQUEST, SESSION, FILES, SERVER, ENV`
->Framework equivalents of PHP globals. Variables may be used throughout an application. However, direct use in templates is not advised due to security risks.
+* Framework equivalents of PHP globals. Variables may be used throughout an application. However, direct use in templates is not advised due to security risks.
 
 `integer DEBUG`
->Stack trace verbosity. Assign values 1 to 2 for increasing verbosity levels. Zero (0) suppresses the stack trace. This is the default value and it should be the assigned setting on a production server.
+* Stack trace verbosity. Assign values 1 to 3 for increasing verbosity levels. Zero (0) suppresses the stack trace. This is the default value and it should be the assigned setting on a production server.
+
+`string DNSBL`
+* Comma-separated list of DNS blacklist servers. Framework generates a `403 Forbidden` error if the user's IPv4 address is listed on the specified server(s).
 
 `array DIACRITICS`
->Key-value pairs for foreign-to-ASCII character translations.
-
->string DNSBL`
->Comma-separated list of DNS blacklist servers for blocking spammers.
+* Key-value pairs for foreign-to-ASCII character translations.
 
 `string ENCODING`
->Character set used for document encoding. Default value is `UTF-8`.
+* Character set used for document encoding. Default value is `UTF-8`.
 
 `array ERROR`
->Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.title` contains a brief description of the error. `ERROR.text` provides greater detail. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
+* Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.title` contains a brief description of the error. `ERROR.text` provides greater detail. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
 
 `bool ESCAPE`
->Used to enable/disable auto-escaping.
+* Used to enable/disable auto-escaping.
 
 `string EXEMPT`
->Comma-separated list of IPv4 addresses exempt from DNSBL lookups.
+* Comma-separated list of IPv4 addresses exempt from DNSBL lookups.
 
 `array HEADERS`
->HTTP request headers received by the server.
+* HTTP request headers received by the server.
 
 `bool HIGHLIGHT`
->Enable/disable syntax highlighting of stack traces.
+* Enable/disable syntax highlighting of stack traces. Default value: TRUE (requires `code.css` stylesheet).
 
 `string HOST`
->Server name derived from either $_SERVER['SERVER_NAME'] or `gethostname()`.
+* Server host name. If `$_SERVER['SERVER_NAME']` is not available, return value of `gethostname()` is used.
 
 `string IP`
->Remote IP address. The framework derives the address from headers if HTTP client is behind a proxy server.
+* Remote IP address. The framework derives the address from headers if HTTP client is behind a proxy server.
 
 `array JAR`
->Default cookie parameters.
+* Default cookie parameters.
 
 `string LANGUAGE`
->Current active language. Value is used to load the appropriate language translation file in the folder pointed to by LOCALES. If set to NULL, language is auto-detected from the HTTP Accept-Language request header.
+* Current active language. Value is used to load the appropriate language translation file in the folder pointed to by LOCALES. If set to NULL, language is auto-detected from the HTTP Accept-Language request header.
 
 `string LOCALES`
->Location of the language dictionaries.
+* Location of the language dictionaries.
 
 `string LOGS`
->Location of custom logs.
+* Location of custom logs.
 
 `mixed ONERROR`
->Callback function to use as custom error handler.
+* Callback function to use as custom error handler.
 
 `string PACKAGE`
->Framework name.
+* Framework name.
 
 `array PARAMS`
->Captured values of tokens defined in a `route()` pattern. `PARAMS.0` contains the captured URL relative to the Web root.
+* Captured values of tokens defined in a `route()` pattern. `PARAMS.0` contains the captured URL relative to the Web root.
 
 `string PATTERN`
->Contains the routing pattern that matches the current request URI.
+* Contains the routing pattern that matches the current request URI.
 
 `string PLUGINS`
->Location of F3 plugins. Default value is the folder where the framework code resides, i.e. the path to `base.php`.
+* Location of F3 plugins. Default value is the folder where the framework code resides, i.e. the path to `base.php`.
 
 `int PORT`
->HTTP port used by the Web server.
+* HTTP port used by the Web server.
 
 `bool QUIET`
->Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
+* Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
 
 `string REALM`
->Full canonical URL.
+* Full canonical URL.
 
 `string RESPONSE`
->The body of the last HTTP response. F3 populates this variable regardless of the QUIET setting.
+* The body of the last HTTP response. F3 populates this variable regardless of the QUIET setting.
 
 `string ROOT`
->Absolute path to document root folder.
+* Absolute path to document root folder.
 
 `array ROUTES`
->Contains the defined application routes. This is a read-only variable.
+* Contains the defined application routes. This is a read-only variable.
 
 `string SCHEME`
->Server protocol, i.e. `http` or `https`.
+* Server protocol, i.e. `http` or `https`.
 
 `string SERIALIZER`
->Default serializer. Normally set to `php`, unless the `igbinary` extension is auto-detected. F3 also recognizes data serialization using `json`.
+* Default serializer. Normally set to `php`, unless PHP `igbinary` extension is auto-detected. Assign `json` if desired.
 
 `string TEMP`
->Temporary folder for cache, filesystem locks, compiled F3 templates, etc. Default is the `tmp/` folder inside the Web root. Adjust accordingly to conform to your site's security policies.
+* Temporary folder for cache, filesystem locks, compiled F3 templates, etc. Default is the `tmp/` folder inside the Web root. Adjust accordingly to conform to your site's security policies.
 
 `string TZ`
->Default timezone. Changing this value automatically calls the underlying `date_default_timezone_set()` function. 
+* Default timezone. Changing this value automatically calls the underlying `date_default_timezone_set()` function.
 
 `string UI`
->Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+* Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
 
 `callback UNLOAD`
->Executed by framework on script shutdown.
+* Executed by framework on script shutdown.
 
 `string UPLOADS`
->Directory where file uploads are saved.
+* Directory where file uploads are saved.
 
 `string URI`
->Current HTTP request URI.
+* Current HTTP request URI.
 
 `string VERB`
->Current HTTP request method.
+* Current HTTP request method.
 
 `string VERSION`
->Framework version.
+* Framework version.
 
 ### Template Directives
 
-`@token`
->Replace `@token` with value of equivalent F3 variable.
+```
+@token
+```
+* Replace `@token` with value of equivalent F3 variable.
 
-`{{ mixed expr }}`
->Evaluate `expr`. `expr` may include template tokens, constants, operators (unary, arithmetic, ternary and relational), parentheses, data type converters, and functions.
+```
+{{ mixed expr }}
+```
+* Evaluate. `expr` may include template tokens, constants, operators (unary, arithmetic, ternary and relational), parentheses, data type converters, and functions. If not an attribute of a template directive, result is echoed.
 
-`{{ string expr | raw }}`
->Render unescaped `expr`. F3 auto-escapes strings by default.
+```
+{{ string expr | raw }}
+```
+* Render unescaped `expr`. F3 auto-escapes strings by default.
 
-`{{ string expr | esc }}`
->Render escaped `expr`. This is the default framework behavior. The `| esc` suffix is only necessary if `ESCAPE` global variable is set to `FALSE`.
+```
+{{ string expr | esc }}
+```
+* Render escaped `expr`. This is the default framework behavior. The `| esc` suffix is only necessary if `ESCAPE` global variable is set to `FALSE`.
 
-`{{ string expr | args | format }}`
->Render an ICU-formatted `expr` and pass the comma-separated `args`.
+```
+{{ string expr | args | format }}
+```
+* Render an ICU-formatted `expr` and pass the comma-separated `args`.
 
-`<include [ if="{{ bool condition }}" ] href="{{ string subtemplate }}" />`
->Get contents of `subtemplate` and insert at current position in template if optional condition is `TRUE`.
+```
+<include
+    [ if="{{ bool condition }}" ]
+    href="{{ string subtemplate }}"
+/>
+```
+* Get contents of `subtemplate` and insert at current position in template if optional condition is `TRUE`.
 
-`<exclude>text-block</exclude>`
->Remove `text-block` at runtime. Used for embedding comments in templates.
+```
+<exclude>text-block</exclude>
+```
+* Remove `text-block` at runtime. Used for embedding comments in templates.
 
-`<check if="{{ bool condition }}">  
-<true>true-block</true>  
-<false>false-block</false>  
-</check>`
->Evaluate condition. If `TRUE`, then `true-block` is rendered. Otherwise, `false-block` is used.
+```
+<ignore>text-block</ignore>
+```
+* Display `text-block` as-is, without interpretation/modification by the template engine.
 
-`<loop from="{{ statement }}" to="{{ bool expr }}" [ step="{{ statement }}" ]>  
-text-block  
-</loop>`
->Evaluate `from` statement once. Check if the expression in the `to` attribute is `TRUE`, render `text-block` and evaluate `step` statement. Repeat iteration until `to` expression is `FALSE`.
+```
+<check if="{{ bool condition }}">
+    <true>true-block</true>
+    <false>false-block</false>
+</check>
+```
+* Evaluate condition. If `TRUE`, then `true-block` is rendered. Otherwise, `false-block` is used.
 
-`<repeat group="{{ array @group|expr }}" [ key="{{ scalar @key }}" ] value="{{ mixed @value }} [ counter="{{ scalar @key }}" ]>  
-text-block  
-</repeat>`
->Repeat `text-block` as many times as there are elements in the array variable `@group` or the expression `expr`. `@key` and `@value` function in the same manner as the key-value pair in the equivalent PHP `foreach()` statement. Variable represented by `key` in `counter` attribute increments by `1` with every iteration.
+```
+<loop
+    from="{{ statement }}"
+    to="{{ bool expr }}"
+    [ step="{{ statement }}" ]>
+    text-block
+</loop>
+```
+* Evaluate `from` statement once. Check if the expression in the `to` attribute is `TRUE`, render `text-block` and evaluate `step` statement. Repeat iteration until `to` expression is `FALSE`.
 
-`{{* text-block *}}`
->Alias for `<exclude>`.
+```
+<repeat
+    group="{{ array @group|expr }}"
+    [ key="{{ scalar @key }}" ]
+    value="{{ mixed @value }}
+    [ counter="{{ scalar @key }}" ]>
+    text-block
+</repeat>
+```
+* Repeat `text-block` as many times as there are elements in the array variable `@group` or the expression `expr`. `@key` and `@value` function in the same manner as the key-value pair in the equivalent PHP `foreach()` statement. Variable represented by `key` in `counter` attribute increments by `1` with every iteration.
+
+```
+{{* text-block *}}
+```
+* Alias for `<exclude>`.
 
 ### API Documentation
 
@@ -2196,3 +2246,8 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
 [![Donate](https://raw.github.com/bcosca/fatfree/master/ui/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
+
+Copyright (c) 2009-2012 F3::Factory/Bong Cosca
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)
+[![statcounter.com tracking](http://c.statcounter.com/5666392/0/fd7c8312/1 "statcounter.com")](http://statcounter.com/)
