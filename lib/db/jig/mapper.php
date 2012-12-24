@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 namespace DB\Jig;
 
 //! Flat-file DB mapper
@@ -154,7 +167,7 @@ class Mapper extends \DB\Cursor {
 					return eval('return '.
 						preg_replace_callback(
 							'/(\:\w+)|(\?)/',
-							function($token) use($_args,$_self,$_ctr) {
+							function($token) use($_args,$_self,&$_ctr) {
 								// Parameterized query
 								if ($token[1])
 									// Named
@@ -167,7 +180,7 @@ class Mapper extends \DB\Cursor {
 								// Add slashes to prevent code injection
 								return \Base::instance()->stringify(
 									is_string($_args[$key])?
-										addslashes($_args[$key]):
+										addcslashes($_args[$key],'\''):
 										$_args[$key]);
 							},
 							$_self->token($_expr)
@@ -272,7 +285,10 @@ class Mapper extends \DB\Cursor {
 		return TRUE;
 	}
 
-	//! Reset cursor
+	/**
+		Reset cursor
+		@return NULL
+	**/
 	function reset() {
 		$this->document=array();
 		parent::reset();

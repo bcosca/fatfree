@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 //! Template engine
 class Template extends View {
 
@@ -7,7 +20,7 @@ class Template extends View {
 		//! MIME type
 		$mime,
 		//! Template tags
-		$tags='set|include|exclude|loop|repeat|check|true|false',
+		$tags='set|include|exclude|ignore|loop|repeat|check|true|false',
 		//! Custom tag handlers
 		$custom=array();
 
@@ -85,6 +98,15 @@ class Template extends View {
 	}
 
 	/**
+		Template -ignore- tag handler
+		@return string
+		@param $node array
+	**/
+	protected function _ignore(array $node) {
+		return $node[0];
+	}
+
+	/**
 		Template -loop- tag handler
 		@return string
 		@param $node array
@@ -137,7 +159,7 @@ class Template extends View {
 				$true=array($pos,$block);
 			elseif (isset($block['false']))
 				$false=array($pos,$block);
-		if (isset($true) && isset($false) && $true[0]>$false[0])
+		if (isset($true,$false) && $true[0]>$false[0])
 			// Reverse <true> and <false> blocks
 			list($node[$true[0]],$node[$false[0]])=array($false[1],$true[1]);
 		return
@@ -297,8 +319,8 @@ class Template extends View {
 					unset($stack);
 					$fw->write($this->view,$this->build($tree));
 				}
-				if (isset($_COOKIE[session_name()]) && !session_id())
-					session_start();
+				if (isset($_COOKIE[session_name()]))
+					@session_start();
 				$fw->sync('SESSION');
 				if (!$hive)
 					$hive=$fw->hive();

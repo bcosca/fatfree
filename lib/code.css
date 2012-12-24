@@ -1,0 +1,127 @@
+/* PHP */
+.php {
+	font-family:Consolas,Monaco,monospace;
+	font-size:0.8em;
+	color:black;
+}
+
+/* Comments */
+.comment,.doc_comment,.ml_comment { color:lightsteelblue; }
+
+/* Variables */
+.variable { color:orange; }
+
+/* Constants */
+.const,
+.constant_encapsed_string,
+.class_c,
+.dir,
+.file,
+.func_c,
+.halt_compiler,
+.line,
+.method_c,
+.ns_c,
+.ns_separator { color:limegreen; }
+
+/* Identifiers */
+.string { color:dimgray; }
+
+/* Numbers */
+.lnumber,
+.dnumber { color:red; }
+
+/* Operators */
+.and_equal,
+.boolean_and,
+.boolean_or,
+.concat_equal,
+.dec,
+.div_equal,
+.inc,
+.is_equal,
+.is_greater_or_equal,
+.is_identical,
+.is_not_equal,
+.is_not_identical,
+.is_smaller_or_equal,
+.logical_and,
+.logical_or,
+.logical_xor,
+.minus_equal,
+.mod_equal,
+.mul_equal,
+.or_equal,
+.plus_equal,
+.sl,
+.sl_equal,
+.sr,
+.sr_equal,
+.xor_equal,
+.start_heredoc,
+.end_heredoc,
+.object_operator,
+.paamayim_nekudotayim { color:mediumorchid; }
+
+/* Keywords */
+.abstract,
+.array,
+.array_cast,
+.as,
+.break,
+.case,
+.catch,
+.class,
+.clone,
+.continue,
+.declare,
+.default,
+.do,
+.echo,
+.else,
+.elseif,
+.empty
+.enddeclare,
+.endfor,
+.endforach,
+.endif,
+.endswitch,
+.endwhile,
+.eval,
+.exit,
+.extends,
+.final,
+.for,
+.foreach,
+.function,
+.global,
+.goto,
+.if,
+.implements,
+.include,
+.include_once,
+.instanceof,
+.interface,
+.isset,
+.list,
+.namespace,
+.new,
+.print,
+.private,
+.public,
+.protected,
+.require,
+.require_once,
+.return,
+.static,
+.switch,
+.throw,
+.try,
+.unset,
+.use,
+.var,
+.while { color:royalblue; }
+
+.open_tag,
+.open_tag_with_echo,
+.close_tag { color:gold; }

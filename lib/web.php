@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 //! Wrapper for various HTTP utilities
 class Web extends Prefab {
 
@@ -168,25 +181,34 @@ class Web extends Prefab {
 	function request($url,array $options=NULL) {
 		if (!is_array($options))
 			$options=array();
+		$fw=Base::instance();
 		$parts=parse_url($url);
-		if (empty($parts['scheme']))
-			$parts['scheme']='http';
+		if (empty($parts['scheme'])) {
+			// Local URL
+			$url=$fw->get('SCHEME').'://'.
+				$fw->get('HOST').
+				($url[0]!='/'?($fw->get('BASE')?:'/'):'').$url;
+			$parts=parse_url($url);
+		}
 		elseif (!preg_match('/https?/',$parts['scheme']))
 			return FALSE;
+		if (isset($options['header']) && is_string($options['header']))
+			$options['header']=array($options['header']);
 		$options+=array(
 			'method'=>'GET',
 			'header'=>array(
 				'Host: '.$parts['host'],
 				'User-Agent: Mozilla/5.0 (compatible; '.php_uname('s').')',
-				'Content-Type: application/x-www-form-urlencoded',
 				'Connection: close',
 			),
 			'follow_location'=>TRUE,
 			'max_redirects'=>20,
 			'ignore_errors'=>TRUE
 		);
+		if ($options['method']!='GET')
+			$options['header']+=
+				array('Content-Type: application/x-www-form-urlencoded');
 		$eol="\r\n";
-		$fw=Base::instance();
 		if ($fw->get('CACHE') &&
 			preg_match('/GET|HEAD/',$options['method'])) {
 			$cache=Cache::instance();
@@ -211,6 +233,10 @@ class Web extends Prefab {
 				curl_setopt($curl,CURLOPT_USERAGENT,$options['user_agent']);
 			if (isset($options['content']))
 				curl_setopt($curl,CURLOPT_POSTFIELDS,$options['content']);
+			curl_setopt($curl,CURLOPT_CONNECTTIMEOUT,
+				isset($options['timeout'])?
+					$options['timeout']:
+					ini_get('default_socket_timeout'));
 			$headers=array();
 			curl_setopt($curl,CURLOPT_HEADERFUNCTION,
 				function($curl,$line) use(&$headers) {
@@ -223,8 +249,6 @@ class Web extends Prefab {
 			ob_start();
 			$out=curl_exec($curl);
 			curl_close($curl);
-			if (!$out)
-				return FALSE;
 			$result=array(
 				'body'=>ob_get_clean(),
 				'headers'=>$headers,
@@ -238,13 +262,11 @@ class Web extends Prefab {
 		elseif (ini_get('allow_url_fopen')) {
 			// Use stream wrapper
 			$options['header']=implode($eol,$options['header']);
-			$out=file_get_contents($url,FALSE,
+			$out=@file_get_contents($url,FALSE,
 				stream_context_create(array('http'=>$options)));
-			if (!$out)
-				return FALSE;
 			$result=array(
 				'body'=>$out,
-				'headers'=>$http_response_header,
+				'headers'=>$out?$http_response_header:array(),
 				'engine'=>'stream-wrapper',
 				'cached'=>FALSE
 			);
@@ -254,7 +276,7 @@ class Web extends Prefab {
 			$headers=array();
 			$body='';
 			for ($i=0;$i<$options['max_redirects'];$i++) {
-				if (isset($parts['user']) && isset($parts['pass']))
+				if (isset($parts['user'],$parts['pass']))
 					$options['header']+=array(
 						'Authorization: Basic '.
 							base64_encode($parts['user'].':'.$parts['pass'])
@@ -276,7 +298,7 @@ class Web extends Prefab {
 				stream_set_blocking($socket,1);
 				fputs($socket,$options['method'].' '.$parts['path'].
 					($parts['query']?('?'.$parts['query']):'').' '.
-					'HTTP/1.0'.$eol
+					'HTTP/1.1'.$eol
 				);
 				fputs($socket,
 					'Content-Length: '.strlen($parts['query']).$eol.
@@ -465,8 +487,10 @@ class Web extends Prefab {
 	function rss($url,$max=10,$tags=NULL) {
 		if (!$data=$this->request($url))
 			return FALSE;
+		// Suppress errors caused by invalid XML structures
+		libxml_use_internal_errors(TRUE);
 		$xml=simplexml_load_string($data['body'],
-			NULL,LIBXML_NOCDATA|LIBXML_ERR_FATAL);
+			NULL,LIBXML_NOBLANKS|LIBXML_NOERROR);
 		if (!is_object($xml))
 			return FALSE;
 		$out=array();
@@ -523,7 +547,7 @@ class Web extends Prefab {
 				'Ť'=>'T','ť'=>'t','Ù'=>'U','Ú'=>'U','Û'=>'U','Ü'=>'U',
 				'Ů'=>'U','ù'=>'u','ú'=>'u','û'=>'u','ü'=>'u','ů'=>'u',
 				'Ý'=>'Y','Ÿ'=>'Y','ý'=>'y','ÿ'=>'y','Ž'=>'Z','ž'=>'z'
-			))))));
+			))))),'-');
 	}
 
 }

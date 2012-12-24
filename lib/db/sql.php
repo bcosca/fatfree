@@ -2,6 +2,19 @@
 
 namespace DB;
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 //! PDO wrapper
 class SQL extends \PDO {
 
@@ -17,19 +30,28 @@ class SQL extends \PDO {
 		//! SQL log
 		$log;
 
-	//! Begin SQL transaction
+	/**
+		Begin SQL transaction
+		@return NULL
+	**/
 	function begin() {
 		parent::begintransaction();
 		$this->trans=TRUE;
 	}
 
-	//! Rollback SQL transaction
+	/**
+		Rollback SQL transaction
+		@return NULL
+	**/
 	function rollback() {
 		parent::rollback();
 		$this->trans=FALSE;
 	}
 
-	//! Commit SQL transaction
+	/**
+		Commit SQL transaction
+		@return NULL
+	**/
 	function commit() {
 		parent::commit();
 		$this->trans=FALSE;
@@ -124,6 +146,8 @@ class SQL extends \PDO {
 				}
 				else
 					$this->rows=$result=$query->rowcount();
+				$query->closecursor();
+				unset($query);
 			}
 			else {
 				$error=$this->errorinfo();
@@ -134,7 +158,8 @@ class SQL extends \PDO {
 					user_error('PDO: '.$error[2]);
 				}
 			}
-			$this->log.=preg_replace($keys,$vals,$cmd,1)."\n";
+			$this->log.=date('r').' '.
+				preg_replace($keys,$vals,$cmd,1).PHP_EOL;
 		}
 		if ($this->trans && $auto)
 			$this->commit();
@@ -236,6 +261,14 @@ class SQL extends \PDO {
 	**/
 	function driver() {
 		return $this->engine;
+	}
+
+	/**
+		Return server version
+		@return string
+	**/
+	function version() {
+		return parent::getattribute(parent::ATTR_SERVER_VERSION);
 	}
 
 	/**

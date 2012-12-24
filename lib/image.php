@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 //! Image manipulation tools
 class Image {
 
@@ -23,8 +36,6 @@ class Image {
 		$file,
 		//! Image resource
 		$data,
-		//! Background color
-		$bg=array(255,255,255),
 		//! Filter count
 		$count=0;
 
@@ -147,10 +158,8 @@ class Image {
 	function hflip() {
 		$tmp=imagecreatetruecolor(
 			$width=$this->width(),$height=$this->height());
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
 		imagesavealpha($tmp,TRUE);
-		imagefill($tmp,0,0,$bg);
+		imagefill($tmp,0,0,IMG_COLOR_TRANSPARENT);
 		imagecopyresampled($tmp,$this->data,
 			0,0,$width-1,0,$width,$height,-$width,$height);
 		imagedestroy($this->data);
@@ -165,24 +174,13 @@ class Image {
 	function vflip() {
 		$tmp=imagecreatetruecolor(
 			$width=$this->width(),$height=$this->height());
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
 		imagesavealpha($tmp,TRUE);
-		imagefill($tmp,0,0,$bg);
+		imagefill($tmp,0,0,IMG_COLOR_TRANSPARENT);
 		imagecopyresampled($tmp,$this->data,
 			0,0,0,$height-1,$width,$height,$width,-$height);
 		imagedestroy($this->data);
 		$this->data=$tmp;
 		return $this->save();
-	}
-
-	/**
-		Assign background color
-		@return object
-		@param $color int
-	**/
-	function background($color) {
-		$this->bg=$color;
 	}
 
 	/**
@@ -203,10 +201,8 @@ class Image {
 				$width=$height*$ratio;
 		// Create blank image
 		$tmp=imagecreatetruecolor($width,$height);
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($tmp,$r,$g,$b,127);
 		imagesavealpha($tmp,TRUE);
-		imagefill($tmp,0,0,$bg);
+		imagefill($tmp,0,0,IMG_COLOR_TRANSPARENT);
 		// Resize
 		if ($crop) {
 			if ($width/$ratio<=$height) {
@@ -234,9 +230,7 @@ class Image {
 		@param $angle int
 	**/
 	function rotate($angle) {
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
-		$this->data=imagerotate($this->data,$angle,$bg);
+		$this->data=imagerotate($this->data,$angle,IMG_COLOR_TRANSPARENT);
 		imagesavealpha($this->data,TRUE);
 		return $this->save();
 	}
@@ -305,16 +299,14 @@ class Image {
 		$this->data=imagecreatetruecolor($size,$size);
 		list($r,$g,$b)=$this->rgb(mt_rand(0x333,0xCCC));
 		$fg=imagecolorallocate($this->data,$r,$g,$b);
-		list($r,$g,$b)=$this->bg;
-		$bg=imagecolorallocatealpha($this->data,$r,$g,$b,127);
-		imagefill($this->data,0,0,$bg);
+		imagefill($this->data,0,0,IMG_COLOR_TRANSPARENT);
 		$hash=md5($str);
 		$ctr=count($sprites);
 		$dim=$blocks*(int)($size/$blocks)*2/$blocks;
 		for ($j=0,$y=ceil($blocks/2);$j<$y;$j++)
 			for ($i=$j,$x=$blocks-1-$j;$i<$x;$i++) {
 				$sprite=imagecreatetruecolor($dim,$dim);
-				imagefill($sprite,0,0,$bg);
+				imagefill($sprite,0,0,IMG_COLOR_TRANSPARENT);
 				if ($block=$sprites[
 					hexdec($hash[($j*$blocks+$i)*2])%$ctr]) {
 					for ($k=0,$pts=count($block);$k<$pts;$k++)
@@ -322,16 +314,70 @@ class Image {
 					imagefilledpolygon($sprite,$block,$pts/2,$fg);
 				}
 				$sprite=imagerotate($sprite,
-					90*(hexdec($hash[($j*$blocks+$i)*2+1])%4),$bg);
+					90*(hexdec($hash[($j*$blocks+$i)*2+1])%4),
+					IMG_COLOR_TRANSPARENT);
 				for ($k=0;$k<4;$k++) {
 					imagecopyresampled($this->data,$sprite,
 						$i*$dim/2,$j*$dim/2,0,0,$dim/2,$dim/2,$dim,$dim);
-					$this->data=imagerotate($this->data,90,$bg);
+					$this->data=imagerotate($this->data,90,
+						IMG_COLOR_TRANSPARENT);
 				}
 				imagedestroy($sprite);
 			}
 		imagesavealpha($this->data,TRUE);
 		return $this->save();
+	}
+
+	/**
+		Generate CAPTCHA image
+		@return object|FALSE
+		@param $font string
+		@param $size int
+		@param $len int
+		@param $key string
+	**/
+	function captcha($font,$size=24,$len=5,$key=NULL) {
+		$fw=Base::instance();
+		foreach ($fw->split($fw->get('UI')) as $dir)
+			if (is_file($path=$dir.$font)) {
+				$seed=strtoupper(substr(uniqid(),-$len));
+				$block=$size*3;
+				$tmp=array();
+				for ($i=0,$width=0,$height=0;$i<$len;$i++) {
+					// Process at 2x magnification
+					$box=imagettfbbox($size*2,0,$path,$seed[$i]);
+					$w=$box[2]-$box[0];
+					$h=$box[1]-$box[5];
+					$char=imagecreatetruecolor($block,$block);
+					imagefill($char,0,0,0);
+					imagettftext($char,$size*2,0,
+						($block-$w)/2,$block-($block-$h)/2,
+						0xFFFFFF,$path,$seed[$i]);
+					$char=imagerotate($char,
+						mt_rand(-30,30),IMG_COLOR_TRANSPARENT);
+					// Reduce to normal size
+					$tmp[$i]=imagecreatetruecolor(
+						($w=imagesx($char))/2,($h=imagesy($char))/2);
+					imagefill($tmp[$i],0,0,IMG_COLOR_TRANSPARENT);
+					imagecopyresampled($tmp[$i],$char,0,0,0,0,$w/2,$h/2,$w,$h);
+					imagedestroy($char);
+					$width+=$i+1<$len?$block/2:$w/2;
+					$height=max($height,$h/2);
+				}
+				$this->data=imagecreatetruecolor($width,$height);
+				imagefill($this->data,0,0,IMG_COLOR_TRANSPARENT);
+				for ($i=0;$i<$len;$i++) {
+					imagecopy($this->data,$tmp[$i],
+						$i*$block/2,($height-imagesy($tmp[$i]))/2,0,0,
+						imagesx($tmp[$i]),imagesy($tmp[$i]));
+					imagedestroy($tmp[$i]);
+				}
+				imagesavealpha($this->data,TRUE);
+				if ($key)
+					$fw->set($key,$seed);
+				return $this->save();
+			}
+		return FALSE;
 	}
 
 	/**
@@ -350,7 +396,10 @@ class Image {
 		return imagesy($this->data);
 	}
 
-	//! Send image to HTTP client
+	/**
+		Send image to HTTP client
+		@return NULL
+	**/
 	function render() {
 		$args=func_get_args();
 		$format=$args?array_shift($args):'png';
@@ -382,7 +431,8 @@ class Image {
 		if (!is_dir($dir=$fw->get('TEMP')))
 			mkdir($dir,Base::MODE,TRUE);
 		$this->count++;
-		$fw->write($dir.'/'.$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+		$fw->write($dir.'/'.
+			$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash($this->file).'-'.$this->count.'.png',
 			$this->dump());
 		return $this;
@@ -434,12 +484,15 @@ class Image {
 				if (is_file($dir.$file)) {
 					$this->data=imagecreatefromstring($fw->read($dir.$file));
 					imagesavealpha($this->data,TRUE);
+					$this->save();
 				}
-			$this->save();
 		}
 	}
 
-	//! Wrap-up
+	/**
+		Wrap-up
+		@return NULL
+	**/
 	function __destruct() {
 		if (is_resource($this->data)) {
 			imagedestroy($this->data);

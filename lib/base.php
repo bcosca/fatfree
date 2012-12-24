@@ -1,12 +1,25 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 //! Base structure
-class Base {
+final class Base {
 
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.0.1 Release';
+		VERSION='3.0.2-dev';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -57,11 +70,13 @@ class Base {
 		//! Mapped PHP globals
 		GLOBALS='GET|POST|COOKIE|REQUEST|SESSION|FILES|SERVER|ENV',
 		//! HTTP verbs
-		VERBS='GET|HEAD|POST|PUT|DELETE|CONNECT',
+		VERBS='GET|HEAD|POST|PUT|PATCH|DELETE|CONNECT',
 		//! Default directory permissions
 		MODE=0755,
 		//! Fallback language
-		FALLBACK='en';
+		FALLBACK='en',
+		//! Syntax highlighting stylesheet
+		CSS='code.css';
 
 	//@{ Error messages
 	const
@@ -77,10 +92,10 @@ class Base {
 		$hive,
 		//! Default settings
 		$defaults,
+		//! Language lookup sequence
+		$languages,
 		//! NULL reference
-		$null=NULL,
-		//! Languages
-		$languages;
+		$null=NULL;
 
 	/**
 		Sync PHP global with corresponding hive key
@@ -110,9 +125,10 @@ class Base {
 	**/
 	function &ref($key,$add=TRUE) {
 		$parts=$this->cut($key);
-		if ($parts[0]=='SESSION')
-			if (!session_id()) {
-				session_start();
+		if ($parts[0]=='SESSION') {
+			@session_start();
+			if (empty($parts[1]))
+				session_regenerate_id(TRUE);
 			$this->sync('SESSION');
 		}
 		if ($add)
@@ -195,11 +211,11 @@ class Base {
 					elseif (is_file($file=$base.'.ini')) {
 						preg_match_all(
 							'/(?<=^|\n)'.
-							'(?:;.+?)|(?:<\?php.+\?>?)|'.
+							'(?:;.*?)|(?:<\?php.+\?>?)|'.
 							'(.+?)[[:blank:]]*=[[:blank:]]*'.
 							'((?:\\\\[[:blank:]\r]*\n|[^\n])*)'.
 							'(?=\n|$)/',
-							$this->read($file),$matches,PREG_SET_ORDER);
+							file_get_contents($file),$matches,PREG_SET_ORDER);
 						if ($matches)
 							foreach ($matches as $match)
 								if (isset($match[1]))
@@ -233,7 +249,7 @@ class Base {
 			return $this->format($val,$args);
 		if (is_null($val)) {
 			// Attempt to retrieve from cache
-			if (Cache::instance()->exists($hash=$this->hash($key),$data))
+			if (Cache::instance()->exists($this->hash($key),$data))
 				return $data;
 		}
 		return $val;
@@ -252,9 +268,7 @@ class Base {
 			// Clear cache contents
 			$cache->reset();
 		elseif ($parts[0]=='SESSION') {
-			if (!session_id())
-				session_start();
-			$this->sync('SESSION');
+			@session_start();
 			if (empty($parts[1])) {
 				// End session
 				session_unset();
@@ -262,22 +276,23 @@ class Base {
 				unset($_COOKIE[session_name()]);
 				header_remove('Set-Cookie');
 			}
+			$this->sync('SESSION');
 		}
-		elseif (!isset($parts[1]) &&
+		elseif (preg_match('/^(GET|POST|COOKIE)\b(.+)/',$key,$expr)) {
+			$this->clear('REQUEST'.$expr[2]);
+			if ($expr[1]=='COOKIE') {
+				$parts=$this->cut($key);
+				$jar=$this->hive['JAR'];
+				$jar['expire']=strtotime('-1 year');
+				call_user_func_array('setcookie',
+					array($parts[1],'')+$jar);
+			}
+		}
+		if (!isset($parts[1]) &&
 			array_key_exists($parts[0],$this->defaults))
 			// Reset global to default value
 			$this->hive[$parts[0]]=$this->defaults[$parts[0]];
 		else {
-			if (preg_match('/^(GET|POST|COOKIE)\b(.+)/',$key,$expr)) {
-				$this->clear('REQUEST'.$expr[2]);
-				if ($expr[1]=='COOKIE') {
-					$parts=$this->cut($key);
-					$jar=$this->hive['JAR'];
-					$jar['expire']=strtotime('-1 year');
-					call_user_func_array('setcookie',
-						array($parts[1],'')+$jar);
-				}
-			}
 			$out='';
 			$obj=FALSE;
 			foreach ($parts as $part)
@@ -422,9 +437,15 @@ class Base {
 	function stringify($arg) {
 		switch (gettype($arg)) {
 			case 'object':
-				return method_exists($arg,'__tostring')?
-					stripslashes($arg):
-					get_class($arg).'::__set_state()';
+				if (method_exists($arg,'__tostring'))
+					return stripslashes($arg);
+				$str='';
+				if ($this->hive['DEBUG']>2 || get_class($arg)!=__CLASS__)
+					foreach ((array)$arg as $key=>$val)
+						$str.=($str?',':'').$this->stringify(
+							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
+							$this->stringify($val);
+				return addslashes(get_class($arg)).'::__set_state('.$str.')';
 			case 'array':
 				$str='';
 				foreach ($arg as $key=>$val)
@@ -432,7 +453,8 @@ class Base {
 						$this->stringify($key).'=>'.$this->stringify($val);
 				return 'array('.$str.')';
 			default:
-				return var_export($arg,TRUE);
+				return var_export(
+					is_string($arg)?addcslashes($arg,'\''):$arg,TRUE);
 		}
 	}
 
@@ -653,22 +675,19 @@ class Base {
 	function language($code=NULL) {
 		$this->languages=array(self::FALLBACK);
 		// Use Accept-Language header, if available
-		$req=$this->hive['HEADERS'];
-		if (!$code && isset($req['HEADERS']['Accept-Language']))
-			$code=str_replace('-','_',$req['Accept-Language']);
+		$headers=$this->hive['HEADERS'];
+		if (!$code && isset($headers['Accept-Language']))
+			$code=str_replace('-','_',$headers['Accept-Language']);
 		// Validate string/header
-		if (preg_match('/^(\w{2})(?:_(\w{2}))?\b/',$code,$parts)) {
-			if ($parts[1]!=self::FALLBACK)
-				// Generic language
-				array_unshift($this->languages,$parts[1]);
-			if (isset($parts[2]))
-				// Specific language
-				array_unshift($this->languages,$parts[0]);
-			$code=$parts[0];
-		}
-		else
-			$code=self::FALLBACK;
-		return $code;
+		if (!preg_match('/^(\w{2})(?:_(\w{2}))?\b/',$code,$parts))
+			return self::FALLBACK;
+		if ($parts[1]!=self::FALLBACK)
+			// Generic language
+			array_unshift($this->languages,$parts[1]);
+		if (isset($parts[2]))
+			// Specific language
+			array_unshift($this->languages,$parts[0]);
+		return $parts[0];
 	}
 
 	/**
@@ -728,9 +747,9 @@ class Base {
 				header('Expires: '.gmdate('r',$time+$secs));
 				header('Cache-Control: max-age='.$secs);
 				header('Last-Modified: '.gmdate('r'));
-				$req=$this->hive['HEADERS'];
-				if (isset($req['If-Modified-Since']) &&
-					strtotime($req['If-Modified-Since'])+$secs>$time) {
+				$headers=$this->hive['HEADERS'];
+				if (isset($headers['If-Modified-Since']) &&
+					strtotime($headers['If-Modified-Since'])+$secs>$time) {
 					$this->status(304);
 					die;
 				}
@@ -752,11 +771,12 @@ class Base {
 		$prior=$this->hive['ERROR'];
 		$header=$this->status($code);
 		$req=$this->hive['VERB'].' '.$this->hive['URI'];
-		error_log($text=$text?:($header.' ('.$req.')'));
+		error_log($text=$text?:('HTTP '.$code.' '.$header.' ('.$req.')'));
 		$out='';
 		$eol="\n";
 		if (!$trace)
 			$trace=array_slice(debug_backtrace(FALSE),1);
+		$css=$this->hive['HIGHLIGHT'] && is_file($file=__DIR__.'/'.self::CSS);
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';
@@ -777,9 +797,10 @@ class Base {
 						$line.=')';
 					}
 				}
-				$str=$addr.' '.$line;
-				error_log('- '.$str);
-				$out.='&bull; '.nl2br($this->encode($str)).'<br />'.$eol;
+				error_log('- '.$addr.' '.$line);
+				$out.='&bull; '.
+					($css?$this->highlight($addr):$addr).' '.
+					($css?$this->highlight($line):$line).$eol;
 			}
 		}
 		$this->hive['ERROR']=array(
@@ -789,17 +810,21 @@ class Base {
 		);
 		if ($this->hive['ONERROR'])
 			// Execute custom error handler
-			$this->call($this->hive['ONERROR']);
+			$this->call($this->hive['ONERROR'],array($this));
 		elseif (!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo
 				'<!DOCTYPE html>'.
 				'<html>'.$eol.
-				'<head><title>'.$code.' '.$header.'</title></head>'.$eol.
+				'<head>'.
+					'<title>'.$code.' '.$header.'</title>'.
+					($css?('<style>'.file_get_contents($file).'</style>'):'').
+				'</head>'.$eol.
 				'<body>'.$eol.
 					'<h1>'.$header.'</h1>'.$eol.
-					'<p>'.$this->encode($text?:$req).'</p>'.$eol.
+					'<p>'.
+						$this->encode($text?:$req).'</p>'.$eol.
 					($out && $this->hive['DEBUG']?
-						('<p><i>'.$eol.$out.'</i></p>'.$eol):'').
+						('<p>'.$eol.nl2br($out).'</p>'.$eol):'').
 				'</body>'.$eol.
 				'</html>';
 	}
@@ -839,7 +864,7 @@ class Base {
 		Bind handler to route pattern
 		@return NULL
 		@param $pattern string
-		@param $handler string|callback
+		@param $handler callback
 		@param $ttl int
 		@param $kbps int
 	**/
@@ -863,8 +888,7 @@ class Base {
 	**/
 	function reroute($uri) {
 		if (PHP_SAPI!='cli') {
-			if (session_id())
-				session_commit();
+			@session_commit();
 			header('Location: '.(preg_match('/^https?:\/\//',$uri)?
 				$uri:($this->hive['BASE'].$uri)));
 			$this->status($this->hive['VERB']=='GET'?301:303);
@@ -874,7 +898,7 @@ class Base {
 	}
 
 	/**
-		Provide REST interface by mapping HTTP verb to class method
+		Provide ReST interface by mapping HTTP verb to class method
 		@param $url string
 		@param $class string
 		@param $ttl int
@@ -882,9 +906,8 @@ class Base {
 	**/
 	function map($url,$class,$ttl=0,$kbps=0) {
 		foreach (explode('|',self::VERBS) as $method)
-			$this->route(
-				$method.' '.$url,$class.'->'.strtolower($method),
-				$ttl,$kbps);
+			$this->route($method.' '.
+				$url,$class.'->'.strtolower($method),$ttl,$kbps);
 	}
 
 	/**
@@ -892,6 +915,20 @@ class Base {
 		@return NULL
 	**/
 	function run() {
+		if ($this->hive['DNSBL'] && !in_array($this->hive['IP'],
+			is_array($this->hive['EXEMPT'])?
+				$this->hive['EXEMPT']:
+				$this->split($this->hive['EXEMPT']))) {
+			// Reverse IPv4 dotted quad
+			$rev=implode('.',array_reverse(explode('.',$this->hive['IP'])));
+			foreach (is_array($this->hive['DNSBL'])?
+				$this->hive['DNSBL']:
+				$this->split($this->hive['DNSBL']) as $server)
+				// DNSBL lookup
+				if (gethostbyname($host=$rev.'.'.$server)!=$host)
+					// Spammer detected
+					$this->error(403);
+		}
 		if (!$this->hive['ROUTES'])
 			// No routes defined
 			user_error(self::E_Routes);
@@ -942,15 +979,15 @@ class Base {
 				if (preg_match('/GET|HEAD/',$this->hive['VERB']) &&
 					isset($ttl)) {
 					// Only GET and HEAD requests are cacheable
-					$req=$this->hive['HEADERS'];
+					$headers=$this->hive['HEADERS'];
 					$cache=Cache::instance();
 					$cached=$cache->exists(
 						$hash=$this->hash($this->hive['VERB'].' '.
 							$this->hive['URI']).'.url',$data);
 					if ($cached && $cached+$ttl>$now) {
-						if (empty($req['If-Modified-Since']) ||
+						if (empty($headers['If-Modified-Since']) ||
 							floor($cached)>
-								strtotime($req['If-Modified-Since'])) {
+								strtotime($headers['If-Modified-Since'])) {
 							// Retrieve from cache backend
 							list($headers,$body)=$data;
 							if (PHP_SAPI!='cli')
@@ -969,7 +1006,8 @@ class Base {
 						$this->expire($ttl);
 						// Call route handler
 						ob_start();
-						$this->call($handler,NULL,'beforeroute,afterroute');
+						$this->call($handler,array($this,$args),
+							'beforeroute,afterroute');
 						$body=ob_get_clean();
 						if (!error_get_last())
 							// Save to cache backend
@@ -981,7 +1019,8 @@ class Base {
 					$this->expire(0);
 					// Call route handler
 					ob_start();
-					$this->call($handler,NULL,'beforeroute,afterroute');
+					$this->call($handler,array($this,$args),
+						'beforeroute,afterroute');
 					$body=ob_get_clean();
 				}
 				if ($this->hive['RESPONSE']=$body) {
@@ -1016,7 +1055,7 @@ class Base {
 	/**
 		Execute callback/hooks (supports 'class->method' format)
 		@return mixed|FALSE
-		@param $func string|callback
+		@param $func callback
 		@param $args array
 		@param $hooks string
 	**/
@@ -1027,16 +1066,14 @@ class Base {
 			// Convert string to executable PHP callback
 			if (!class_exists($parts[1]))
 				$this->error(404);
-			$func=array(
-				$parts[2]=='->'?
-					(is_subclass_of($parts[1],'Prefab')?
-						call_user_func($parts[1].'::instance'):
-						new $parts[1]):
-					$parts[1],
-				$parts[3]
-			);
+			if ($parts[2]=='->')
+				$parts[1]=is_subclass_of($parts[1],'Prefab')?
+					call_user_func($parts[1].'::instance'):
+					new $parts[1];
+			$func=array($parts[1],$parts[3]);
 		}
-		if (!is_callable($func))
+		if (!is_callable($func) && $hooks=='beforeroute,afterroute')
+			// No route handler
 			$this->error(404);
 		$oo=FALSE;
 		if (is_array($func)) {
@@ -1046,7 +1083,7 @@ class Base {
 		// Execute pre-route hook if any
 		if ($oo && $hooks && in_array($hook='beforeroute',$hooks) &&
 			method_exists($func[0],$hook) &&
-			call_user_func(array($func[0],$hook))===FALSE)
+			call_user_func_array(array($func[0],$hook),$args)===FALSE)
 			return FALSE;
 		// Execute callback
 		$out=call_user_func_array($func,$args?:array());
@@ -1055,8 +1092,21 @@ class Base {
 		// Execute post-route hook if any
 		if ($oo && $hooks && in_array($hook='afterroute',$hooks) &&
 			method_exists($func[0],$hook) &&
-			call_user_func(array($func[0],$hook))===FALSE)
+			call_user_func_array(array($func[0],$hook),$args)===FALSE)
 			return FALSE;
+		return $out;
+	}
+
+	/**
+		Execute specified callbacks in succession
+		@return array
+		@param $funcs array|string
+		@param $args array
+	**/
+	function chain($funcs,array $args=NULL) {
+		$out=array();
+		foreach (is_array($funcs)?$funcs:$this->split($funcs) as $func)
+			$out[]=$this->call($func,$args);
 		return $out;
 	}
 
@@ -1068,12 +1118,12 @@ class Base {
 	function config($file) {
 		preg_match_all(
 			'/(?<=^|\n)'.
-			'(?:;.+?)|(?:<\?php.+\?>?)|'.
+			'(?:;.*?)|(?:<\?php.+\?>?)|'.
 			'(?:\[(.+?)\])|'.
 			'(.+?)[[:blank:]]*=[[:blank:]]*'.
 			'((?:\\\\[[:blank:]\r]*\n|.+?)*)'.
 			'(?=\r?\n|$)/',
-			$this->read($file),$matches,PREG_SET_ORDER);
+			file_get_contents($file),$matches,PREG_SET_ORDER);
 		if ($matches) {
 			$sec='globals';
 			foreach ($matches as $match)
@@ -1189,6 +1239,41 @@ class Base {
 	}
 
 	/**
+		Apply syntax highlighting
+		@return string
+		@param $text string
+	**/
+	function highlight($text) {
+		$out='';
+		$pre=FALSE;
+		if (!preg_match('/<\?php/',$text)) {
+			$text='<?php '.$text;
+			$pre=TRUE;
+		}
+		$ref=new ReflectionExtension('tokenizer');
+		foreach (token_get_all($text) as $token)
+			if ($pre)
+				$pre=FALSE;
+			else
+				$out.='<span class="php'.
+					(is_array($token)?
+						(' '.substr(strtolower(token_name($token[0])),2).'">'.
+							$this->encode($token[1]).''):
+						('">'.$this->encode($token))).
+					'</span>';
+		return $out?:$text;
+	}
+
+	/**
+		Dump expression with syntax highlighting
+		@return NULL
+		@param $expr mixed
+	**/
+	function dump($expr) {
+		echo $this->highlight($this->stringify($expr));
+	}
+
+	/**
 		Namespace-aware class autoloader
 		@return NULL
 		@param $class string
@@ -1204,7 +1289,10 @@ class Base {
 			}
 	}
 
-	//! Execute framework/application shutdown sequence
+	/**
+		Execute framework/application shutdown sequence
+		@return NULL
+	**/
 	function unload() {
 		if (($error=error_get_last()) &&
 			in_array($error['type'],
@@ -1252,20 +1340,23 @@ class Base {
 					throw new ErrorException($text);
 			}
 		);
+		if (!isset($_SERVER['SERVER_NAME']))
+			$_SERVER['SERVER_NAME']=gethostname();
 		if (PHP_SAPI=='cli') {
 			// Emulate HTTP request
 			if (isset($_SERVER['argc']) && $_SERVER['argc']<2) {
 				$_SERVER['argc']++;
 				$_SERVER['argv'][1]='/';
 			}
-			$_SERVER['SERVER_NAME']=gethostname();
 			$_SERVER['REQUEST_METHOD']='GET';
 			$_SERVER['REQUEST_URI']=$_SERVER['argv'][1];
 		}
-		$req=getallheaders();
+		$headers=getallheaders();
+		if (isset($headers['X-HTTP-Method-Override']))
+			$_SERVER['REQUEST_METHOD']=$headers['X-HTTP-Method-Override'];
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
-			isset($req['X-Forwarded-Proto']) &&
-			$req['X-Forwarded-Proto']=='https'?'https':'http';
+			isset($headers['X-Forwarded-Proto']) &&
+			$headers['X-Forwarded-Proto']=='https'?'https':'http';
 		$base=implode('/',array_map('urlencode',
 			explode('/',$this->fixslashes(
 			preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME'])))));
@@ -1273,8 +1364,7 @@ class Base {
 			$jar=array(
 				'expire'=>0,
 				'path'=>$base?:'/',
-				'domain'=>isset($_SERVER['SERVER_NAME']) &&
-					is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
+				'domain'=>is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
 					!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
 					$_SERVER['SERVER_NAME']:'',
 				'secure'=>($scheme=='https'),
@@ -1283,8 +1373,8 @@ class Base {
 		);
 		// Default configuration
 		$this->hive=array(
-			'AJAX'=>isset($req['X-Requested-With']) &&
-				$req['X-Requested-With']=='XMLHttpRequest',
+			'AJAX'=>isset($headers['X-Requested-With']) &&
+				$headers['X-Requested-With']=='XMLHttpRequest',
 			'AUTOLOAD'=>'./',
 			'BASE'=>$base,
 			'BODY'=>file_get_contents('php://input'),
@@ -1292,14 +1382,18 @@ class Base {
 			'CASELESS'=>TRUE,
 			'DEBUG'=>0,
 			'DIACRITICS'=>array(),
+			'DNSBL'=>'',
 			'ENCODING'=>$charset,
 			'ERROR'=>NULL,
 			'ESCAPE'=>TRUE,
-			'HEADERS'=>$req,
-			'IP'=>isset($req['Client-IP'])?
-				$req['Client-IP']:
-				(isset($req['X-Forwarded-For'])?
-					current(explode(',',$req['X-Forwarded-For'])):
+			'EXEMPT'=>NULL,
+			'HEADERS'=>$headers,
+			'HIGHLIGHT'=>TRUE,
+			'HOST'=>$_SERVER['SERVER_NAME'],
+			'IP'=>isset($headers['Client-IP'])?
+				$headers['Client-IP']:
+				(isset($headers['X-Forwarded-For'])?
+					current(explode(',',$headers['X-Forwarded-For'])):
 					(isset($_SERVER['REMOTE_ADDR'])?
 						$_SERVER['REMOTE_ADDR']:'')),
 			'JAR'=>$jar,
@@ -1314,6 +1408,8 @@ class Base {
 			'PORT'=>isset($_SERVER['SERVER_PORT'])?
 				$_SERVER['SERVER_PORT']:NULL,
 			'QUIET'=>FALSE,
+			'REALM'=>$scheme.'://'.
+				$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'],
 			'RESPONSE'=>'',
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>array(),
@@ -1346,7 +1442,10 @@ class Base {
 		register_shutdown_function(array($this,'unload'));
 	}
 
-	//! Wrap-up
+	/**
+		Wrap-up
+		@return NULL
+	**/
 	function __destruct() {
 		Registry::clear(__CLASS__);
 	}
@@ -1354,7 +1453,7 @@ class Base {
 }
 
 //! Cache engine
-class Cache {
+final class Cache {
 
 	private
 		//! Cache DSN
@@ -1573,7 +1672,10 @@ class Cache {
 		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
 	}
 
-	//! Wrap-up
+	/**
+		Wrap-up
+		@return NULL
+	**/
 	function __destruct() {
 		Registry::clear(__CLASS__);
 	}
@@ -1593,7 +1695,10 @@ abstract class Prefab {
 		return Registry::get($class);
 	}
 
-	//! Wrap-up
+	/**
+		Wrap-up
+		@return NULL
+	**/
 	function __destruct() {
 		Registry::clear(get_called_class());
 	}
@@ -1631,8 +1736,8 @@ class View extends Prefab {
 		$fw=Base::instance();
 		foreach ($fw->split($fw->get('UI')) as $dir)
 			if (is_file($this->view=$fw->fixslashes($dir.$file))) {
-				if (!session_id() && isset($_COOKIE[session_name()]))
-					session_start();
+				if (isset($_COOKIE[session_name()]))
+					@session_start();
 				$fw->sync('SESSION');
 				if (!$hive)
 					$hive=$fw->hive();
@@ -2014,7 +2119,7 @@ class ISO extends Prefab {
 }
 
 //! Container for singular object instances
-class Registry {
+final class Registry {
 
 	private static
 		//! Object catalog
@@ -2163,12 +2268,12 @@ if (!function_exists('getallheaders')) {
 	function getallheaders() {
 		if (PHP_SAPI=='cli')
 			return FALSE;
-		$req=array();
+		$headers=array();
 		foreach ($_SERVER as $key=>$val)
 			if (substr($key,0,5)=='HTTP_')
-				$req[strtr(ucwords(strtolower(
+				$headers[strtr(ucwords(strtolower(
 					strtr(substr($key,5),'_',' '))),' ','-')]=$val;
-		return $req;
+		return $headers;
 	}
 
 }

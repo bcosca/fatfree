@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 namespace DB;
 
 //! Flat-file DB wrapper
@@ -57,7 +70,10 @@ class Jig {
 		return $fw->write($this->dir.$file,$out);
 	}
 
-	//! Clean storage
+	/**
+		Clean storage
+		@return NULL
+	**/
 	function drop() {
 		$fw=\Base::instance();
 		foreach (glob($this->dir.'/*',GLOB_NOSORT) as $file)

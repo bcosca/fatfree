@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 //! Cache-based session handler
 class Session {
 
@@ -38,13 +51,14 @@ class Session {
 	**/
 	function write($id,$data) {
 		$fw=Base::instance();
-		$req=$fw->get('HEADERS');
+		$headers=$fw->get('HEADERS');
 		$jar=session_get_cookie_params();
 		Cache::instance()->set($id.'.@',
 			array(
 				'data'=>$data,
 				'ip'=>$fw->get('IP'),
-				'agent'=>isset($req['User-Agent'])?$req['User-Agent']:'',
+				'agent'=>isset($headers['User-Agent'])?
+					$headers['User-Agent']:'',
 				'stamp'=>time()
 			),
 			$jar['lifetime']
@@ -78,9 +92,7 @@ class Session {
 		@param $id string
 	**/
 	function ip($id=NULL) {
-		if (!$id)
-			$id=session_id();
-		return Cache::instance()->exists($id.'.@',$data)?
+		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
 			$data['ip']:FALSE;
 	}
 
@@ -90,9 +102,7 @@ class Session {
 		@param $id string
 	**/
 	function stamp($id=NULL) {
-		if (!$id)
-			$id=session_id();
-		return Cache::instance()->exists($id.'.@',$data)?
+		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
 			$data['stamp']:FALSE;
 	}
 
@@ -102,13 +112,14 @@ class Session {
 		@param $id string
 	**/
 	function agent($id=NULL) {
-		if (!$id)
-			$id=session_id();
-		return Cache::instance()->exists($id.'.@',$data)?
+		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
 			$data['agent']:FALSE;
 	}
 
-	//! Instantiate class
+	/**
+		Instantiate class
+		@return object
+	**/
 	function __construct() {
 		session_set_save_handler(
 			array($this,'open'),

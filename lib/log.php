@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 //! Custom logger
 class Log {
 
@@ -20,12 +33,15 @@ class Log {
 			date($format).
 				(isset($_SERVER['REMOTE_ADDR'])?
 					(' ['.$_SERVER['REMOTE_ADDR'].']'):'').' '.
-			trim($text)."\n",
+			trim($text).PHP_EOL,
 			TRUE
 		);
 	}
 
-	//! Erase log
+	/**
+		Erase log
+		@return NULL
+	**/
 	function erase() {
 		Base::instance()->unlink($this->file);
 	}

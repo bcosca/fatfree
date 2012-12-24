@@ -1,8 +1,21 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 namespace Web;
 
-//! OpenID plugin
+//! OpenID consumer
 class OpenID extends \Magic {
 
 	//@{ Error messages
@@ -120,7 +133,7 @@ class OpenID extends \Magic {
 	**/
 	function auth($proxy=NULL) {
 		$fw=\Base::instance();
-		$root=$fw->get('SCHEME').'://'.$_SERVER['SERVER_NAME'];
+		$root=$fw->get('SCHEME').'://'.$fw->get('HOST');
 		if (empty($this->args['trust_root']))
 			$this->args['trust_root']=$root.($fw->get('BASE')?:'/');
 		if (empty($this->args['return_to']))

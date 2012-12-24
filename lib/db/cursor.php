@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 namespace DB;
 
 //! Simple cursor implementation
@@ -83,6 +96,28 @@ abstract class Cursor extends \Magic {
 	}
 
 	/**
+		Return array containing subset of records matching criteria,
+		number of subsets available, and actual subset position
+		@return array
+		@param $pos int
+		@param $size int
+		@param $filter string|array
+		@param $options array
+	**/
+	function paginate($pos=0,$size=10,$filter=NULL,array $options=NULL) {
+		return array(
+			'subset'=>$this->find($filter,
+				array_merge(
+					$options?:array(),
+					array('limit'=>$size,'offset'=>$pos*$size)
+				)
+			),
+			'count'=>($count=ceil($this->count($filter,$options)/$size)),
+			'pos'=>($pos && $pos<$count?$pos:NULL)
+		);
+	}
+
+	/**
 		Map to first record that matches criteria
 		@return array|FALSE
 		@param $filter string|array
@@ -93,9 +128,20 @@ abstract class Cursor extends \Magic {
 			$this->skip(0)?$this->query[$this->ptr=0]:FALSE;
 	}
 
-	//! Move pointer to first record in cursor
-	function rewind() {
-		$this->ptr=0;
+	/**
+		Move pointer to first record in cursor
+		@return mixed
+	**/
+	function first() {
+		return $this->query[$this->ptr=0];
+	}
+
+	/**
+		Move pointer to last record in cursor
+		@return mixed
+	**/
+	function last() {
+		return $this->query[$this->ptr=($ctr=count($this->query))?$ctr-1:0];
 	}
 
 	/**
@@ -143,7 +189,10 @@ abstract class Cursor extends \Magic {
 		$this->ptr=0;
 	}
 
-	//! Reset cursor
+	/**
+		Reset cursor
+		@return NULL
+	**/
 	function reset() {
 		$this->query=array();
 		$this->ptr=0;

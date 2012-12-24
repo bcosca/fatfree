@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 namespace Web;
 
 //! Geo plugin
@@ -36,9 +49,8 @@ class Geo extends \Prefab {
 		$public=filter_var($ip,FILTER_VALIDATE_IP,
 			FILTER_FLAG_IPV4|FILTER_FLAG_IPV6|
 			FILTER_FLAG_NO_RES_RANGE|FILTER_FLAG_NO_PRIV_RANGE);
-		if ($public && function_exists('geoip_db_avail') &&
+		if (function_exists('geoip_db_avail') &&
 			geoip_db_avail(GEOIP_CITY_EDITION_REV1) &&
-			geoip_db_avail(GEOIP_COUNTRY_EDITION) &&
 			$out=@geoip_record_by_name($ip)) {
 			$out['request']=$ip;
 			$out['region_code']=$out['region'];

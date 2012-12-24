@@ -1,8 +1,21 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 namespace DB\SQL;
 
-//! Custom SQL-managed session handler
+//! SQL-managed session handler
 class Session extends Mapper {
 
 	/**
@@ -41,12 +54,13 @@ class Session extends Mapper {
 	**/
 	function write($id,$data) {
 		$fw=\Base::instance();
-		$req=$fw->get('HEADERS');
+		$headers=$fw->get('HEADERS');
 		$this->load(array('session_id=?',$id));
 		$this->set('session_id',$id);
 		$this->set('data',$data);
 		$this->set('ip',$fw->get('IP'));
-		$this->set('agent',isset($req['User-Agent'])?$req['User-Agent']:'');
+		$this->set('agent',
+			isset($headers['User-Agent'])?$headers['User-Agent']:'');
 		$this->set('stamp',time());
 		$this->save();
 		return TRUE;
@@ -78,9 +92,7 @@ class Session extends Mapper {
 		@param $id string
 	**/
 	function ip($id=NULL) {
-		if (!$id)
-			$id=session_id();
-		$this->load(array('session_id=?',$id));
+		$this->load(array('session_id=?',$id?:session_id()));
 		return $this->dry()?FALSE:$this->get('ip');
 	}
 
@@ -90,9 +102,7 @@ class Session extends Mapper {
 		@param $id string
 	**/
 	function stamp($id=NULL) {
-		if (!$id)
-			$id=session_id();
-		$this->load(array('session_id=?',$id));
+		$this->load(array('session_id=?',$id?:session_id()));
 		return $this->dry()?FALSE:$this->get('stamp');
 	}
 
@@ -102,9 +112,7 @@ class Session extends Mapper {
 		@param $id string
 	**/
 	function agent($id=NULL) {
-		if (!$id)
-			$id=session_id();
-		$this->load(array('session_id=?',$id));
+		$this->load(array('session_id=?',$id?:session_id()));
 		return $this->dry()?FALSE:$this->get('agent');
 	}
 

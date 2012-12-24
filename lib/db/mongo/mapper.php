@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 namespace DB\Mongo;
 
 //! MongoDB mapper
@@ -94,10 +107,11 @@ class Mapper extends \DB\Cursor {
 			'offset'=>0
 		);
 		if ($options['group']) {
+			$fw=\Base::instance();
 			$this->db->selectcollection(
-				$temp=$_SERVER['SERVER_NAME'].'.'.
-					\Base::instance()->hash(uniqid()).'.tmp');
-			$this->db->$temp->batchinsert(
+				$tmp=$fw->get('HOST').'.'.$fw->get('BASE').'.'.
+					uniqid().'.tmp');
+			$this->db->$tmp->batchinsert(
 				$this->collection->group(
 					$options['group']['keys'],
 					$options['group']['initial'],
@@ -112,7 +126,7 @@ class Mapper extends \DB\Cursor {
 				array('safe'=>TRUE)
 			);
 			$filter=array();
-			$collection=$this->db->$temp;
+			$collection=$this->db->$tmp;
 		}
 		else {
 			$filter=$filter?:array();
@@ -126,7 +140,7 @@ class Mapper extends \DB\Cursor {
 		if ($options['offset'])
 			$cursor=$cursor->skip($options['offset']);
 		if ($options['group'])
-			$this->db->$temp->drop();
+			$this->db->$tmp->drop();
 		$result=iterator_to_array($cursor,FALSE);
 		$out=array();
 		foreach ($result as &$doc) {
@@ -212,7 +226,10 @@ class Mapper extends \DB\Cursor {
 		return $result;
 	}
 
-	//! Reset cursor
+	/**
+		Reset cursor
+		@return NULL
+	**/
 	function reset() {
 		$this->document=array();
 		parent::reset();

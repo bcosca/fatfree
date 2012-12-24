@@ -1,5 +1,18 @@
 <?php
 
+/*
+	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+
+	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+
+	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
+	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+	PURPOSE.
+
+	Please see the license.txt file for more information.
+*/
+
 //! SMTP plugin
 class SMTP extends Magic {
 
@@ -86,7 +99,7 @@ class SMTP extends Magic {
 		@return string
 	**/
 	function log() {
-		return $this->log;
+		return str_replace("\n",PHP_EOL,$this->log);
 	}
 
 	/**
@@ -97,7 +110,8 @@ class SMTP extends Magic {
 	**/
 	protected function dialog($cmd=NULL,$log=FALSE) {
 		$socket=&$this->socket;
-		fputs($socket,$cmd."\r\n");
+		if (!is_null($cmd))
+			fputs($socket,$cmd."\r\n");
 		$reply='';
 		while (!feof($socket) && ($info=stream_get_meta_data($socket)) &&
 			!$info['timed_out'] && $str=fgets($socket,4096)) {
@@ -139,16 +153,15 @@ class SMTP extends Magic {
 			return;
 		}
 		stream_set_blocking($socket,TRUE);
-		stream_set_timeout($socket,ini_get('default_socket_timeout'));
 		// Get server's initial response
-		$this->log=str_replace("\r",'',fgets($socket,4096));
-		// Indicate presence
-		$this->dialog('EHLO '.$_SERVER['SERVER_NAME'],TRUE);
-		if (strtoupper($this->scheme)=='tls') {
+		$this->dialog();
+		// Announce presence
+		$this->dialog('EHLO '.$fw->get('HOST'),TRUE);
+		if (strtolower($this->scheme)=='tls') {
 			$this->dialog('STARTTLS',TRUE);
 			stream_socket_enable_crypto(
 				$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
-			$this->dialog('EHLO '.$_SERVER['SERVER_NAME'],TRUE);
+			$this->dialog('EHLO '.$fw->get('HOST'),TRUE);
 		}
 		if ($this->user && $this->pw) {
 			// Authenticate
@@ -205,7 +218,7 @@ class SMTP extends Magic {
 					'filename="'.basename($attachment).'"'.$eol;
 				$out.=$eol;
 				$out.=chunk_split(
-					base64_encode($fw->read($attachment))).$eol;
+					base64_encode(file_get_contents($attachment))).$eol;
 			}
 			$out.=$eol;
 			$out.='--'.$hash.'--'.$eol;
@@ -246,7 +259,7 @@ class SMTP extends Magic {
 			'Content-Transfer-Encoding'=>'8bit'
 		);
 		$this->host=$host;
-		if (strtoupper($this->scheme=strtolower($scheme))=='ssl')
+		if (strtolower($this->scheme=strtolower($scheme))=='ssl')
 			$this->host='ssl://'.$host;
 		$this->port=$port;
 		$this->user=$user;
