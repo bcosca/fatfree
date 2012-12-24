@@ -280,7 +280,7 @@ So let's get back to coding. You can declare a page obsolete and redirect your v
 
 ``` php
 $f3->route('GET|HEAD /obsoletepage',
-	function() use($f3) {
+	function($f3) {
 		$f3->reroute('/newpage');
 	}
 );
@@ -670,7 +670,7 @@ To display this template, you can have PHP code that looks like this (saved in a
 ``` php
 $f3=require('lib/base.php');
 $f3->route('GET /',
-	function() use($f3) {
+	function($f3) {
 		$f3->set('name','world');
 		$view=new View;
 		echo $view->render('template.htm');
@@ -696,7 +696,7 @@ and the code needed to view this template:-
 ``` php
 $f3=require('lib/base.php');
 $f3->route('GET /',
-	function() use($f3) {
+	function($f3) {
 		$f3->set('name','world');
 		$template=new Template;
 		echo $template->render('template.htm');
@@ -1802,15 +1802,15 @@ Of course we need to set up a route so your application can handle the necessary
 
 ``` php
 $f3->route('GET /minify/@type',
-	function() use($f3) {
-		$f3->set('UI',$f3->get('PARAMS.type').'/');
+	function($f3,$args) {
+		$f3->set('UI',$args['type'].'/');
 		echo Web::instance()->minify($_GET['files']);
 	},
 	3600
 );
 ```
 
-And that's all there is to it! `minify()` reads each file (`typo.css` and `grid.css` in our CSS example, `underscore.js` in our Javascript example), strips off all unnecessary whitespaces and comments, combines all of the related items as a single Web page component, and attaches a far-future expiry date so the user's Web browser can cache the data. It's important that the `PARAMS.type` variable base points to the correct path. Otherwise, the URL rewriting mechanism inside the compressor won't find the CSS/Javascript files.
+And that's all there is to it! `minify()` reads each file (`typo.css` and `grid.css` in our CSS example, `underscore.js` in our Javascript example), strips off all unnecessary whitespaces and comments, combines all of the related items as a single Web page component, and attaches a far-future expiry date so the user's Web browser can cache the data.
 
 Note: Like other Javascript/CSS compression engines, Fat-Free will not go to the trouble of compressing CSS files defined by the `@import` directive.
 
@@ -1842,9 +1842,9 @@ F3 has a utility for sending files to an HTTP client, i.e. fulfilling download r
 
 ``` php
 $f3->route('GET /downloads/@filename',
-	function() {
+	function($f3,$args) {
 		// send() method returns FALSE if file doesn't exist
-		if (!Web::instance()->send('/real/path/'.$f3->get('PARAMS.filename')))
+		if (!Web::instance()->send('/real/path/'.$args['filename']))
 			// Generate an HTTP 404
 			$f3->error(404);
 	}
