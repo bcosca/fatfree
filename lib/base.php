@@ -440,7 +440,7 @@ final class Base {
 				if (method_exists($arg,'__tostring'))
 					return stripslashes($arg);
 				$str='';
-				if ($this->hive['DEBUG']>2 || get_class($arg)!=__CLASS__)
+				if ($this->hive['DEBUG']>2)
 					foreach ((array)$arg as $key=>$val)
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.

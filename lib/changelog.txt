@@ -1,0 +1,34 @@
+CHANGELOG
+
+3.0.2
+*	NEW: Syntax-highlighted stack traces via Base->highlight(); boolean
+	HIGHLIGHT global variable can be used to enable/disable this feature
+*	NEW: Template engine <ignore> tag
+*	NEW: Image->captcha()
+*	NEW: DNSBL-based spammer detection (ported from 2.x)
+*	NEW: paginate(), first(), and last() methods for data mappers
+*	NEW: X-HTTP-Method-Override header now recognized
+*	NEW: Base->chain() method for executing callbacks in succession
+*	NEW: HOST global variable; derived from either $_SERVER['SERVER_NAME'] or
+	gethostname()
+*	NEW: REALM global variable representing full canonical URI
+*	NEW: Auth plug-in
+*	NEW: Pingback plug-in (implements both Pingback 1.0 protocol client and
+	server)
+*	NEW: DEBUG verbosity can now reach up to level 3; Base->stringify() drills
+	down to object properties at this setting
+*	NEW: HTTP PATCH method added to recognized HTTP ReST methods
+*	Web->slug() now trims trailing dashes
+*	Web->request() now allows relative local URLs as argument
+*	Use of PARAMS in route handlers now unnecessary; framework now passes two
+	arguments to route handlers: the framework object instance and an array
+	containing the captured values of tokens in route patterns
+*	Standardized timeout settings among Web->request() backends
+*	Session IDs regenerated for additional security
+*	Automatic HTTP 404 responses by Base->call() now restricted to route
+	handlers
+*	Empty comments in ini-style files now parsed properly
+*	Use file_get_contents() in methods that don't involve high concurrency
+
+3.0.1
+*	Major rewrite of much of the framework's core features
