@@ -149,7 +149,7 @@ As a demonstration of Fat-Free's powerful domain-specific language (DSL), you ca
 
 ``` php
 $f3->route('GET /brew/@count',
-	function() use($f3) {
+	function($f3) {
 		echo $f3->get('PARAMS.count').' bottles of beer on the wall.';
 	}
 );
@@ -158,6 +158,18 @@ $f3->route('GET /brew/@count',
 This example shows how we can specify a token `@count` to represent part of a URL. The framework will serve any request URL that matches the `/brew/` prefix, like `/brew/99`, `/brew/98`, etc. This will display `'99 bottles of beer on the wall'` and `'98 bottles of beer on the wall'`, respectively. Fat-Free will also accept a page request for `/brew/unbreakable`. (Expect this to display `'unbreakable bottles of beer on the wall'`.) When such a dynamic route is specified, Fat-Free automagically populates the global `PARAMS` array variable with the value of the captured strings in the URL. The `$f3->get()` call inside the callback function retrieves the value of a framework variable. You can certainly apply this method in your code as part of the presentation or business logic. But we'll discuss that in greater detail later.
 
 Notice that Fat-Free understands array dot-notation. You can certainly use `@PARAMS['count']` regular notation, which is prone to typo errors and unbalanced braces. The framework also permits `@PARAMS.count` which is somehow similar to Javascript. This feature is limited to arrays in F3 templates. Take note that `@foo.@bar` is a string concatenation, whereas `@foo.bar` translates to `@foo['bar']`.
+
+The optimal code for the example above is:-
+
+``` php
+$f3->route('GET /brew/@count',
+	function($f3,$args) {
+		echo $args['count'].' bottles of beer on the wall.';
+	}
+);
+```
+
+F3 passes two arguments to all route handlers: the framework object instance and captured values of tokens in the URI pattern.
 
 You can use the asterisk (`*`) to accept any URL after the `/brew` route - if you don't really care about the rest of the path:-
 
@@ -1945,6 +1957,9 @@ Once you get the hang of testing the smallest units of your application, you can
 `array DIACRITICS`
 >Key-value pairs for foreign-to-ASCII character translations.
 
+>string DNSBL`
+>Comma-separated list of DNS blacklist servers for blocking spammers.
+
 `string ENCODING`
 >Character set used for document encoding. Default value is `UTF-8`.
 
@@ -1954,8 +1969,17 @@ Once you get the hang of testing the smallest units of your application, you can
 `bool ESCAPE`
 >Used to enable/disable auto-escaping.
 
+`string EXEMPT`
+>Comma-separated list of IPv4 addresses exempt from DNSBL lookups.
+
 `array HEADERS`
 >HTTP request headers received by the server.
+
+`bool HIGHLIGHT`
+>Enable/disable syntax highlighting of stack traces.
+
+`string HOST`
+>Server name derived from either $_SERVER['SERVER_NAME'] or `gethostname()`.
 
 `string IP`
 >Remote IP address. The framework derives the address from headers if HTTP client is behind a proxy server.
@@ -1993,6 +2017,9 @@ Once you get the hang of testing the smallest units of your application, you can
 `bool QUIET`
 >Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
 
+`string REALM`
+>Full canonical URL.
+
 `string RESPONSE`
 >The body of the last HTTP response. F3 populates this variable regardless of the QUIET setting.
 
@@ -2006,7 +2033,7 @@ Once you get the hang of testing the smallest units of your application, you can
 >Server protocol, i.e. `http` or `https`.
 
 `string SERIALIZER`
->Default serializer. Normally set to `default`, unless PHP `igbinary` extension is auto-detected. Assign `json` if desired.
+>Default serializer. Normally set to `php`, unless the `igbinary` extension is auto-detected. F3 also recognizes data serialization using `json`.
 
 `string TEMP`
 >Temporary folder for cache, filesystem locks, compiled F3 templates, etc. Default is the `tmp/` folder inside the Web root. Adjust accordingly to conform to your site's security policies.
