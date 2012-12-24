@@ -92,9 +92,9 @@ Time to start writing our first application:-
 ``` php
 $f3=require('path/to/base.php');
 $f3->route('GET /',
-    function() {
-        echo 'Hello, world!';
-    }
+	function() {
+		echo 'Hello, world!';
+	}
 );
 $f3->run();
 ```
@@ -119,9 +119,9 @@ Our first example wasn't too hard to swallow, was it? If you like a little more 
 
 ``` php
 $f3->route('GET /about',
-    function() {
-        echo 'Donations go to a local charity... us!';
-    }
+	function() {
+		echo 'Donations go to a local charity... us!';
+	}
 );
 ```
 
@@ -129,9 +129,9 @@ You don't want to clutter the global namespace with function names? Fat-Free rec
 
 ``` php
 class WebPage {
-    function display() {
-        echo 'I cannot object to an object';
-    }
+	function display() {
+		echo 'I cannot object to an object';
+	}
 }
 
 $f3->route('GET /about','WebPage->display');
@@ -149,9 +149,9 @@ As a demonstration of Fat-Free's powerful domain-specific language (DSL), you ca
 
 ``` php
 $f3->route('GET /brew/@count',
-    function($f3) {
-        echo $f3->get('PARAMS.count').' bottles of beer on the wall.';
-    }
+	function($f3) {
+		echo $f3->get('PARAMS.count').' bottles of beer on the wall.';
+	}
 );
 ```
 
@@ -159,23 +159,25 @@ This example shows how we can specify a token `@count` to represent part of a UR
 
 Notice that Fat-Free understands array dot-notation. You can certainly use `@PARAMS['count']` regular notation, which is prone to typo errors and unbalanced braces. The framework also permits `@PARAMS.count` which is somehow similar to Javascript. This feature is limited to arrays in F3 templates. Take note that `@foo.@bar` is a string concatenation, whereas `@foo.bar` translates to `@foo['bar']`.
 
-Here's another way to access tokens in a request pattern:-
+The optimal code for the example above is:-
 
 ``` php
 $f3->route('GET /brew/@count',
-    function($f3,$params) {
-        echo $params['count'].' bottles of beer on the wall.';
-    }
+	function($f3,$args) {
+		echo $args['count'].' bottles of beer on the wall.';
+	}
 );
 ```
+
+F3 passes two arguments to all route handlers: the framework object instance and captured values of tokens in the URI pattern.
 
 You can use the asterisk (`*`) to accept any URL after the `/brew` route - if you don't really care about the rest of the path:-
 
 ``` php
 $f3->route('GET /brew/*',
-    function() {
-        echo 'Enough beer! We always end up here.';
-    }
+	function() {
+		echo 'Enough beer! We always end up here.';
+	}
 );
 ```
 
@@ -206,10 +208,10 @@ You also need to set up Apache so it knows the physical location of `index.php` 
 ``` apache
 DocumentRoot "/var/www/html"
 <Directory "/var/www/html">
-    Options -Indexes FollowSymLinks Includes
-    AllowOverride All
-    Order allow,deny
-    Allow from All
+	Options -Indexes FollowSymLinks Includes
+	AllowOverride All
+	Order allow,deny
+	Allow from All
 </Directory>
 ```
 
@@ -218,24 +220,24 @@ If you're developing several applications simultaneously, a virtual host configu
 ``` apache
 NameVirtualHost *
 <VirtualHost *>
-    ServerName site1.com
-    DocumentRoot "/var/www/site1"
-    <Directory "/var/www/site1">
-        Options -Indexes FollowSymLinks Includes
-        AllowOverride All
-        Order allow,deny
-        Allow from All
-    </Directory>
+	ServerName site1.com
+	DocumentRoot "/var/www/site1"
+	<Directory "/var/www/site1">
+		Options -Indexes FollowSymLinks Includes
+		AllowOverride All
+		Order allow,deny
+		Allow from All
+	</Directory>
 </VirtualHost>
 <VirtualHost *>
-    ServerName site2.com
-    DocumentRoot "/var/www/site2"
-    <Directory "/var/www/site2">
-        Options -Indexes FollowSymLinks Includes
-        AllowOverride All
-        Order allow,deny
-        Allow from All
-    </Directory>
+	ServerName site2.com
+	DocumentRoot "/var/www/site2"
+	<Directory "/var/www/site2">
+		Options -Indexes FollowSymLinks Includes
+		AllowOverride All
+		Order allow,deny
+		Allow from All
+	</Directory>
 </VirtualHost>
 ```
 
@@ -247,17 +249,17 @@ For Nginx servers, here's the recommended configuration (replace ip_address:port
 
 ``` nginx
 server {
-    root /var/www/html;
-    location / {
-        index index.php index.html index.htm;
-        try_files $uri /index.php;
-    }
-    location ~ \.php$ {
-        fastcgi_pass ip_address:port;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
-        include fastcgi_params;
-    }
+	root /var/www/html;
+	location / {
+		index index.php index.html index.htm;
+		try_files $uri /index.php;
+	}
+	location ~ \.php$ {
+		fastcgi_pass ip_address:port;
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
+		include fastcgi_params;
+	}
 }
 ```
 
@@ -267,8 +269,8 @@ Lighttpd servers are configured in a similar manner:-
 
 ``` lighttpd
 $HTTP["host"] =~ "www\.example\.com$" {
-    url.rewrite-once = ( "^/(.*)$"=>"/index.php/$1" )
-    server.error-handler-404 = "/index.php"
+	url.rewrite-once = ( "^/(.*)$"=>"/index.php/$1" )
+	server.error-handler-404 = "/index.php"
 }
 ```
 
@@ -278,9 +280,9 @@ So let's get back to coding. You can declare a page obsolete and redirect your v
 
 ``` php
 $f3->route('GET|HEAD /obsoletepage',
-    function($f3) {
-        $f3->reroute('/newpage');
-    }
+	function() use($f3) {
+		$f3->reroute('/newpage');
+	}
 );
 ```
 
@@ -306,10 +308,10 @@ Fat-Free's architecture is based on the concept that HTTP URIs represent abstrac
 
 ``` php
 class Item {
-    function get() {}
-    function post() {}
-    function put() {}
-    function delete() {}
+	function get() {}
+	function post() {}
+	function put() {}
+	function delete() {}
 }
 
 $f3=require('lib/base.php');
@@ -429,10 +431,10 @@ To set several variables at once:
 
 ``` php
 $f3->mset(
-    array(
-        'foo'=>'bar',
-        'baz'=>123
-    )
+	array(
+		'foo'=>'bar',
+		'baz'=>123
+	)
 );
 ```
 
@@ -514,16 +516,16 @@ Unlike other frameworks that have rigid folder structures, F3 gives you a lot of
 ```
 / (your Web root, where index.php is located)
 app/ (application files)
-    dict/ (LOCALES, optional)
-    controllers/
-    logs/ (LOGS, optional)
-    models/
-    views/ (UI)
+	dict/ (LOCALES, optional)
+	controllers/
+	logs/ (LOGS, optional)
+	models/
+	views/ (UI)
 css/
 js/
 lib/ (you can store base.php here)
 tmp/ (TEMP, used by the framework)
-   cache/ (CACHE)
+	cache/ (CACHE)
 ```
 
 Feel free to organize your files and directories any way you want. Just set the appropriate F3 global variables. If you want a really secure site, Fat-Free even allows you to store all your files in a non-Web-accessible directory. The only requirement is that you leave `index.php`, `.htaccess` and your public files, like CSS, JavaScript, images, etc. in a path visible to your browser.
@@ -532,20 +534,20 @@ Feel free to organize your files and directories any way you want. Just set the 
 
 Fat-Free generates its own HTML error pages, with stack traces to help you with debugging. Here's an example:-
 
-> ### Internal Server Error
-> *The configuration file test.cfg was not found*
+>###Internal Server Error  
+>*The configuration file test.cfg was not found*  
 
-> &bull; var/html/dev/index.php:16 Base::config('test.cfg')
+>&bull; var/html/dev/index.php:16 Base::config('test.cfg')
 
 If you feel it's a bit too plain or wish to do other things when the error occurs, you may create your own custom error handler:-
 
 ``` php
 $f3->set('ONERROR',
-    function() {
-        // custom error handler code goes here
-        // use this if you want to display errors in a
-        // format consistent with your site's theme
-    }
+	function() {
+		// custom error handler code goes here
+		// use this if u want to display errors in a
+		// format consistent with your site's theme
+	}
 );
 ```
 
@@ -561,7 +563,7 @@ ERROR.trace - stack trace
 While developing your application, it's best to set the debug level to maximum so you can trace all errors to their root cause:-
 
 ``` php
-$f3->set('DEBUG',3);
+$f3->set('DEBUG',2);
 ```
 
 Just insert the command in your application's bootstrap sequence.
@@ -574,7 +576,7 @@ $f3->set('DEBUG',0);
 
 This will suppress the stack trace output in any system-generated HTML error page (because it's not meant to be seen by your site visitors).
 
-`DEBUG` can have values ranging from 0 (stack trace suppressed) to 3 (most verbose).
+`DEBUG` can have values ranging from 0 (stack trace suppressed) to 2 (most verbose).
 
 Don't forget! Stack traces may contain paths, file names, database commands, user names and passwords. You might expose your Web site to unnecessary security risks if you fail to set the `DEBUG` global variable to 0 in a production environment.
 
@@ -668,13 +670,13 @@ To display this template, you can have PHP code that looks like this (saved in a
 ``` php
 $f3=require('lib/base.php');
 $f3->route('GET /',
-    function($f3) {
-        $f3->set('name','world');
-        $view=new View;
-        echo $view->render('template.htm');
-        // Previous two lines can be shortened to:-
-        // echo View::instance()->render('template.htm');
-    }
+	function() use($f3) {
+		$f3->set('name','world');
+		$view=new View;
+		echo $view->render('template.htm');
+		// Previous two lines can be shortened to:-
+		// echo View::instance()->render('template.htm');
+	}
 );
 $f3->run();
 ```
@@ -694,13 +696,13 @@ and the code needed to view this template:-
 ``` php
 $f3=require('lib/base.php');
 $f3->route('GET /',
-    function($f3) {
-        $f3->set('name','world');
-        $template=new Template;
-        echo $template->render('template.htm');
-        // Above lines can be writtern as:-
-        echo Template::instance()->render('template.htm');
-    }
+	function() use($f3) {
+		$f3->set('name','world');
+		$template=new Template;
+		echo $template->render('template.htm');
+		// Above lines can be writtern as:-
+		echo Template::instance()->render('template.htm');
+	}
 );
 $f3->run();
 ```
@@ -748,9 +750,9 @@ Framework variables may also contain anonymous functions:
 
 ``` php
 $f3->set('func',
-    function($a,$b) {
-        return $a.', '.$b;
-    }
+	function($a,$b) {
+		return $a.', '.$b;
+	}
 );
 ```
 
@@ -801,7 +803,7 @@ During the course of writing/debugging F3-powered programs and designing templat
 
 ``` html
 <exclude>
-    <p>A chunk of HTML we don't want displayed at the moment</p>
+	<p>A chunk of HTML we don't want displayed at the moment</p>
 </exclude>
 ```
 
@@ -819,15 +821,15 @@ Another useful template feature is the `<check>` directive. It allows you to emb
 
 ``` html
 <check if="{{ @page=='Home' }}">
-    <false><span>Inserted if condition is false</span></false>
+	<false><span>Inserted if condition is false</span></false>
 </check>
 <check if="{{ @gender=='M' }}">
-    <true>
-        <div>Appears when condition is true</div>
-    </true>
-    <false>
-        <div>Appears when condition is false</div>
-    </false>
+	<true>
+		<div>Appears when condition is true</div>
+	</true>
+	<false>
+		<div>Appears when condition is false</div>
+	</false>
 </check>
 ```
 
@@ -837,7 +839,7 @@ An F3 expression inside an if attribute that equates to `NULL`, an empty string,
 
 ``` html
 <check if="{{ @loggedin }}">
-    <p>HTML chunk to be included if condition is true</p>
+	<p>HTML chunk to be included if condition is true</p>
 </check>
 ```
 
@@ -847,7 +849,7 @@ Fat-Free can also handle repetitive HTML blocks:-
 
 ``` html
 <repeat group="{{ @fruits }}" value="{{ @fruit }}">
-    <p>{{ trim(@fruit) }}</p>
+	<p>{{ trim(@fruit) }}</p>
 </repeat>
 ```
 
@@ -869,14 +871,14 @@ The framework allows unlimited nesting of `<repeat>` blocks:-
 
 ``` php
 <repeat group="{{ @div }}" key="{{ @ikey }}" value="{{ @idiv }}">
-    <div>
-        <p><span><b>{{ @ikey }}</b></span></p>
-        <p>
-        <repeat group="{{ @idiv }}" value="{{ @ispan }}">
-            <span>{{ @ispan }}</span>
-        </repeat>
-        </p>
-    </div>
+	<div>
+		<p><span><b>{{ @ikey }}</b></span></p>
+		<p>
+		<repeat group="{{ @idiv }}" value="{{ @ispan }}">
+			<span>{{ @ispan }}</span>
+		</repeat>
+		</p>
+	</div>
 </repeat>
 ```
 
@@ -884,10 +886,10 @@ Apply the following F3 command:-
 
 ``` php
 $f3->set('div',
-    array(
-        'coffee'=>array('arabica','barako','liberica','kopiluwak'),
-        'tea'=>array('darjeeling','pekoe','samovar')
-    )
+	array(
+		'coffee'=>array('arabica','barako','liberica','kopiluwak'),
+		'tea'=>array('darjeeling','pekoe','samovar')
+	)
 );
 ```
 
@@ -895,21 +897,21 @@ As a result, you get the following HTML fragment:-
 
 ``` html
 <div>
-    <p><span><b>coffee</b></span></p>
-    <p>
-        <span>arabica</span>
-        <span>barako</span>
-        <span>liberica</span>
-        <span>kopiluwak</span>
-    <p>
+	<p><span><b>coffee</b></span></p>
+	<p>
+		<span>arabica</span>
+		<span>barako</span>
+		<span>liberica</span>
+		<span>kopiluwak</span>
+	<p>
 </div>
 <div>
-    <p><span><b>tea</b></span></p>
-    <p>
-        <span>darjeeling</span>
-        <span>pekoe</span>
-        <span>samovar</span>
-    </p>
+	<p><span><b>tea</b></span></p>
+	<p>
+		<span>darjeeling</span>
+		<span>pekoe</span>
+		<span>samovar</span>
+	</p>
 </div>
 ```
 
@@ -921,7 +923,7 @@ The `<repeat>` template directive's `value` attribute returns the value of the c
 
 ``` html
 <repeat group="{{ @fruits }}" value="{{ @fruit }}" counter="{{ @ctr }}">
-    <p class="{{ @ctr%2?'odd':'even' }}">{{ trim(@fruit) }}</p>
+	<p class="{{ @ctr%2?'odd':'even' }}">{{ trim(@fruit) }}</p>
 </repeat>
 ```
 
@@ -933,9 +935,9 @@ If you have to insert F3 tokens inside a `<script>` or `<style>` section of your
 
 ``` html
 <script type="text/javascript">
-    function notify() {
-        alert('You are logged in as: {{ @userID }}');
-    }
+	function notify() {
+		alert('You are logged in as: {{ @userID }}');
+	}
 </script>
 ```
 
@@ -943,9 +945,9 @@ Embedding template directives inside your `<script>` or `<style>` tags requires 
 
 ``` html
 <script type="text/javascript">
-    <repeat group="{{ @rates }}" value="{{ @rate }}">
-        // whatever you want to repeat in Javascript
-    </repeat>
+	<repeat group="{{ @rates }}" value="{{ @rate }}">
+		// whatever you want to repeat in Javascript
+	</repeat>
 </script>
 ```
 
@@ -989,9 +991,9 @@ $f3->set('to','<slasher@throats.com>');
 $f3->set('subject','Welcome');
 ini_set('sendmail_from',$f3->get('from'));
 mail(
-    $f3->get('to'),
-    $f3->get('subject'),
-    Template::instance()->render('email.txt','text/html')
+	$f3->get('to'),
+	$f3->get('subject'),
+	Template::instance()->render('email.txt','text/html')
 );
 ```
 
@@ -1018,10 +1020,10 @@ First, create a dictionary file with the following structure (one file per langu
 ``` php
 <?php
 return array(
-    'love'=>'I love F3',
-    'today'=>'Today is {0,date}',
-    'pi'=>'{0,number}',
-    'money'=>'Amount remaining: {0,number,currency}'
+	'love'=>'I love F3',
+	'today'=>'Today is {0,date}',
+	'pi'=>'{0,number}',
+	'money'=>'Amount remaining: {0,number,currency}'
 );
 ```
 
@@ -1030,9 +1032,9 @@ Save it as `dict/en.php`. Let's create another dictionary, this time for German.
 ``` php
 <?php
 return array(
-    'love'=>'Ich liebe F3',
-    'today'=>'Heute ist {0,date}',
-    'money'=>'Restbetrag: {0,number,currency}'
+	'love'=>'Ich liebe F3',
+	'today'=>'Heute ist {0,date}',
+	'money'=>'Restbetrag: {0,number,currency}'
 );
 ```
 
@@ -1053,9 +1055,9 @@ And the longer version that utilizes PHP as a template engine:-
 <?php $f3=Base::instance(); ?>
 <h1><?php echo $f3->get('love'); ?></h1>
 <p>
-    <?php echo $f3->get('today',time()); ?>.<br />
-    <?php echo $f3->get('money',365.25); ?>
-    <?php echo $f3->get('pi'); ?>
+	<?php echo $f3->get('today',time()); ?>.<br />
+	<?php echo $f3->get('money',365.25); ?>
+	<?php echo $f3->get('pi'); ?>
 </p>
 ```
 
@@ -1114,7 +1116,7 @@ In the case of PHP templates:-
 As an addition to auto-escaping of F3 variables, the framework also gives you a free hand at sanitizing user input from HTML forms:-
 
 ``` php
-$f3->scrub($_GET,'p; br; span; div; a');
+$f3->scrub($_GET,'p; br; span; div; a);
 ```
 
 This command will strip all tags (except those specified in the second argument) and unsafe characters from the specified variable. If the variable contains an array, each element in the array is sanitized recursively. If an asterisk (*) is passed as the second argument, `$f3->scrub()` permits all HTML tags to pass through untouched and simply remove unsafe control characters.
@@ -1135,9 +1137,9 @@ Another example, this time with MySQL:-
 
 ``` php
 $db=new DB\SQL(
-    'mysql:host=localhost;port=3306;dbname=mysqldb',
-    'admin',
-    'p455w0rD'
+	'mysql:host=localhost;port=3306;dbname=mysqldb',
+	'admin',
+	'p455w0rD'
 );
 ```
 
@@ -1158,7 +1160,7 @@ This time we create an HTML template like `abc.htm` that has at a minimum the fo
 
 ``` html
 <repeat group="@result" value="@item">
-    <span>{{ @item.brandName  }}</span>
+	<span>{{ @item.brandName  }}</span>
 </repeat>
 ```
 
@@ -1170,11 +1172,11 @@ Here's another example. Instead of a single statement provided as an argument to
 
 ``` php
 $db->exec(
-    array(
-        'DELETE FROM diet WHERE food="cola"',
-        'INSERT INTO diet (food) VALUES ("carrot")',
-        'SELECT * FROM diet'
-    )
+	array(
+		'DELETE FROM diet WHERE food="cola"',
+		'INSERT INTO diet (food) VALUES ("carrot")',
+		'SELECT * FROM diet'
+	)
 );
 ```
 
@@ -1204,8 +1206,8 @@ Passing string arguments to SQL statements is fraught with danger. Consider this
 
 ``` php
 $db->exec(
-    'SELECT * FROM users '.
-    'WHERE username="'.$f3->get('POST.userID'.'"')
+	'SELECT * FROM users '.
+	'WHERE username="'.$f3->get('POST.userID'.'"')
 );
 ```
 
@@ -1219,8 +1221,8 @@ Luckily, parameterized queries help you mitigate these risks:-
 
 ``` php
 $db->exec(
-    'SELECT * FROM users WHERE userID=?',
-    $f3->get('POST.userID')
+	'SELECT * FROM users WHERE userID=?',
+	$f3->get('POST.userID')
 );
 ```
 
@@ -1230,16 +1232,16 @@ Our example in the previous section will be a lot safer from SQL injection if wr
 
 ``` php
 $db->exec(
-    array(
-        'DELETE FROM diet WHERE food=:name',
-        'INSERT INTO diet (food) VALUES (?)',
-        'SELECT * FROM diet'
-    ),
-    array(
-        array(':name'=>'cola'),
-        array(1=>'carrot'),
-        NULL
-    )
+	array(
+		'DELETE FROM diet WHERE food=:name',
+		'INSERT INTO diet (food) VALUES (?)',
+		'SELECT * FROM diet'
+	),
+	array(
+		array(':name'=>'cola'),
+		array(1=>'carrot'),
+		NULL
+	)
 );
 ```
 
@@ -1251,10 +1253,10 @@ Suppose you have an existing MySQL database containing a table of users of your 
 
 ``` sql
 CREATE TABLE users (
-    userID VARCHAR(30),
-    password VARCHAR(30),
-    visits INT,
-    PRIMARY KEY(userID)
+	userID VARCHAR(30),
+	password VARCHAR(30),
+	visits INT,
+	PRIMARY KEY(userID)
 );
 ```
 
@@ -1264,9 +1266,9 @@ Now back to SQL. First, we establish communication with our database.
 
 ``` php
 $db=new DB\SQL(
-    'mysql:host=localhost;port=3306;dbname=mysqldb',
-    'admin',
-    'wh4t3v3r'
+	'mysql:host=localhost;port=3306;dbname=mysqldb',
+	'admin',
+	'wh4t3v3r'
 );
 ```
 
@@ -1439,12 +1441,12 @@ The `load()` method accepts a second argument: an array of options containing ke
 
 ``` php
 $user->load(
-    array('visits>?',3),
-    array(
-        'order'=>'userID DESC'
-        'offset'=>5,
-        'limit'=>3
-    )
+	array('visits>?',3),
+	array(
+		'order'=>'userID DESC'
+		'offset'=>5,
+		'limit'=>3
+	)
 );
 ```
 
@@ -1457,22 +1459,6 @@ ORDER BY userID DESC
 LIMIT 3 OFFSET 5;
 ```
 
-This is one way of presenting data in small chunks. Here's another way of paginating results:-
-
-``` php
-$page=$user->paginate(2,5,array('visits>?',3));
-```
-
-In the above scenario, F3 will retrieve records that match the criteria `'visits>3'`. It will then limit the results to 5 records (per page) starting at page offset 2 (0-based). The framework will return an array consisting of the following elements:-
-
-```
-[subset] array of mapper objects that match the criteria
-[count] number of of subsets available
-[pos] actual subset position
-```
-
-The actual subset position returned will be NULL if the first argument of `paginate()` is a negative number or exceeeds the number of subsets found.
-
 ### Virtual Fields
 
 There are instances when you need to retrieve a computed value of a field, or a cross-referenced value from another table. Enter virtual fields. The SQL mini-ORM allows you to work on data derived from existing fields.
@@ -1481,12 +1467,12 @@ Suppose we have the following table defined as:-
 
 ``` sql
 CREATE TABLE products
-    productID VARCHAR(30),
-    desc VARCHAR(255),
-    supplierID VARCHAR(30),
-    unitprice DECIMAL(10,2),
-    quantity INT,
-    PRIMARY KEY(productID)
+	productID VARCHAR(30),
+	desc VARCHAR(255),
+	supplierID VARCHAR(30),
+	unitprice DECIMAL(10,2),
+	quantity INT,
+	PRIMARY KEY(productID)
 );
 ```
 
@@ -1515,13 +1501,13 @@ You can also derive a value from another table:-
 
 ``` php
 $item->supplierName=
-    'SELECT name FROM suppliers '.
-    'WHERE products.supplierID=suppliers.supplierID';
+	'SELECT name FROM suppliers '.
+	'WHERE products.supplierID=suppliers.supplierID';
 $item->load();
 echo $item->supplierName;
 ```
 
-Every time you load a record from the products table, the ORM cross-references the `supplerID` in the `products` table with the `supplierID` in the `suppliers` table.
+Every time you load a record from the products table, the ORM cross-references the `supplierID` in the `products` table with the `supplierID` in the `suppliers` table.
 
 To destroy a virtual field, use `unset($item->totalPrice);`. The `isset($item->totalPrice)` expression returns TRUE if the `totalPrice` virtual field was defined, or FALSE if otherwise.
 
@@ -1547,7 +1533,7 @@ The equivalent code using the MongoDB mapper:-
 $frequentUsers=$user->find(array('visits'=>array('$gt'=>3)),array('userID'=>1));
 ```
 
-The `find()` method searches the `users` table for records that match the criteria, sorts the result by `userID` and returns the result as an array of mapper objects. `find('visits>3')` is different from `load('visits>3')`. The latter refers to the current `$user` object. `find()` does not have any effect on `skip()`.
+The `find()` method searches the `users` table for records that match the criteria `visits>3`, sorts the result by `userID` and returns the result as an array of mapper objects. `find('visits>3')` is different from `load('visits>3')`. The latter refers to the current `$user` object. `find()` does not have any effect on `skip()`.
 
 Important: Declaring an empty condition, NULL, or a zero-length string as the first argument of `find()` or `load()` will retrieve all records. Be sure you know what you're doing - you might exceed PHP's memory_limit on large tables or collections.
 
@@ -1555,13 +1541,13 @@ The `find()` method has the following syntax:-
 
 ``` php
 find(
-    $criteria,
-    array(
-        'group'=>'foo',
-        'order'=>'foo,bar',
-        'limit'=>5,
-        'offset'=>0
-    )
+	$criteria,
+	array(
+		'group'=>'foo',
+		'order'=>'foo,bar',
+		'limit'=>5,
+		'offset'=>0
+	)
 );
 ```
 
@@ -1571,7 +1557,7 @@ find() returns an array of objects. Each object is a mapper to a record that mat
 $place=new DB\SQL\Mapper($db,'places');
 $list=$place->find('state="New York"');
 foreach ($list as $obj)
-    echo $obj->city.', '.$obj->country;
+	echo $obj->city.', '.$obj->country;
 ```
 
 If you need to convert a mapper object to an associative array, use the `cast()` method:-
@@ -1585,21 +1571,21 @@ To retrieve the number of records in a table that match a certain condition, use
 
 ``` php
 if (!$user->found(array('visits>?',10)))
-    echo 'We need a better ad campaign!';
+	echo 'We need a better ad campaign!';
 ```
 
 There's also a `select()` method that's similar to `find()` but provides more fine-grained control over fields returned. It has a SQL-like syntax:-
 
 ``` php
 select(
-    fields,
-    criteria,
-    array(
-        'group'=>...,
-        'order'=>...,
-        'limit'=>...,
-        'offset'=>...
-    )
+	fields,
+	criteria,
+	array(
+		'group'=>...,
+		'order'=>...,
+		'limit'=>...,
+		'offset'=>...
+	)
 );
 ```
 
@@ -1612,24 +1598,24 @@ In most cases, you can live by the comforts given by the data mapper methods we'
 ``` php
 class Vendor extends DB\SQL\Mapper {
 
-    // Instantiate mapper
-    function __construct(DB\SQL $db) {
-        // This is where the mapper and DB structure synchronization occurs
-        parent::__construct($db,'vendors');
-    }
+	// Instantiate mapper
+	function __construct(DB\SQL $db) {
+		// This is where the mapper and DB structure synchronization occurs
+		parent::__construct($db,'vendors');
+	}
 
-    // Specialized query
-    function listByCity() {
-        return $this->select(
-            'vendorID,name,city',array('order'=>'city DESC'));
-        /*
-            We could have done the the same thing with plain vanilla SQL:-
-            return $this->db->exec(
-                'SELECT vendorID,name,city FROM vendors '.
-                'ORDER BY city DESC;'
-            );
-        */
-    }
+	// Some plain vanilla SQL query
+	function listByCity() {
+		return $this->db->exec(
+			'SELECT vendorID,name,city FROM vendors '.
+			'ORDER BY city DESC;'
+		);
+		/*
+		    We could have done the the same thing without SQL:-
+		    return $this->select(
+		        'vendorID,name,city',array('order'=>'city DESC'));
+		*/
+	}
 
 }
 
@@ -1653,13 +1639,13 @@ Consider this SQL view created inside your database engine:-
 
 ``` sql
 CREATE VIEW combined AS
-    SELECT
-        projects.project_id AS project,
-        users.name AS name
-    FROM projects
-    LEFT OUTER JOIN users ON
-        projects.project_id=users.project_id AND
-        projects.user_id=users.user_id;
+	SELECT
+	projects.project_id AS project,
+	users.name AS name
+	FROM projects
+	LEFT OUTER JOIN users ON
+		projects.project_id=users.project_id AND
+		projects.user_id=users.user_id;
 ```
 
 Your application code becomes simple because it does not have to maintain two mapper objects (one for the projects table and another for users) just to retrieve data from two joined tables:-
@@ -1693,7 +1679,7 @@ This simple example sends an HTTP request to the page located at www.google.com 
 
 ``` php
 $host='localhost:5984';
-$web->request($host.'/_all_dbs'),
+$web->request($host.'/_all_dbs),
 $web->request($host.'/testdb/',array('method'=>'PUT'));
 ```
 
@@ -1701,22 +1687,22 @@ You may have noticed that you can pass an array of additional options to the `re
 
 ``` php
 $web->request(
-    'https://www.example.com:443?'.
-    http_build_query(
-        array(
-            'key1'=>'value1',
-            'key2'=>'value2'
-        )
-    ),
-    array(
-        'headers'=>array(
-            'Accept: text/html,application/xhtml+xml,application/xml',
-            'Accept-Language: en-us'
-        ),
-        'follow_location'=>FALSE,
-        'max_redirects'=>30,
-        'ignore_errors'=>TRUE
-    )
+	'https://www.example.com:443?'.
+	http_build_query(
+		array(
+		'key1'=>'value1',
+		'key2'=>'value2'
+		)
+	),
+	array(
+	'headers'=>array(
+		'Accept: text/html,application/xhtml+xml,application/xml',
+		'Accept-Language: en-us'
+	),
+	'follow_location'=>FALSE,
+	'max_redirects'=>30,
+	'ignore_errors'=>TRUE
+	)
 );
 ```
 
@@ -1816,11 +1802,11 @@ Of course we need to set up a route so your application can handle the necessary
 
 ``` php
 $f3->route('GET /minify/@type',
-    function($f3,$args) {
-        $f3->set('UI',$args['type'].'/');
-        echo Web::instance()->minify($_GET['files']);
-    },
-    3600
+	function() use($f3) {
+		$f3->set('UI',$f3->get('PARAMS.type').'/');
+		echo Web::instance()->minify($_GET['files']);
+	},
+	3600
 );
 ```
 
@@ -1856,12 +1842,12 @@ F3 has a utility for sending files to an HTTP client, i.e. fulfilling download r
 
 ``` php
 $f3->route('GET /downloads/@filename',
-    function($f3,$args) {
-        // send() method returns FALSE if file doesn't exist
-        if (!Web::instance()->send('/real/path/'.$args['filename']))
-            // Generate an HTTP 404
-        $f3->error(404);
-    }
+	function() {
+		// send() method returns FALSE if file doesn't exist
+		if (!Web::instance()->send('/real/path/'.$f3->get('PARAMS.filename')))
+			// Generate an HTTP 404
+			$f3->error(404);
+	}
 );
 ```
 
@@ -1879,7 +1865,7 @@ A unit (or test fixture) can be a function/method or a class. Let's have a simpl
 
 ``` php
 function hello() {
-    return 'Hello, World';
+	return 'Hello, World';
 }
 ```
 
@@ -1894,36 +1880,37 @@ include('hello.php');
 
 // This is where the tests begin
 $test->expect(
-    is_callable('hello'),
-    'hello() is a function'
+	is_callable('hello'),
+	'hello() is a function'
 );
 
 // Another test
 $test->expect(
-    !empty(hello()),
-    'Something was returned'
+	!empty(hello()),
+	'Something was returned'
 );
 
 // This test should succeed
 $test->expect
-    is_string(hello()),
-    'Return value is a string'
+	is_string(hello()),
+	'Return value is a string'
 );
 
 // This test is bound to fail
 $test->expect(
-    strlen(hello())==13,
-    'String length is 13'
+	strlen(hello())==13,
+	'String length is 13'
 );
 
-// Display the results; not MVC but let's keep it simple
+// Display the results
 foreach ($test->results() as $result) {
-    echo $test['text'].'<br />';
-    if ($test['status'])
-        echo 'Pass';
-    else
-        echo 'Fail ('.$test['source'].')';
-    echo '<br />';
+	echo $test['text'].'<br/>';
+	if ($test['status'])
+	echo 'Pass';
+	else
+	echo 'Fail ('.$test['source'].')';
+	// Not MVC, but let's keep it simple
+	echo '<br />';
 }
 ```
 
@@ -1944,209 +1931,175 @@ Once you get the hang of testing the smallest units of your application, you can
 ### System Variables
 
 `bool AJAX`
-* TRUE if an XML HTTP request is detected, FALSE otherwise.
+>TRUE if an XML HTTP request is detected, FALSE otherwise.
 
 `string AUTOLOAD`
-* Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+>Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
 
 `string BASE`
-* Path to the index.php main/front controller.
+>Path to the index.php main/front controller.
 
 `string BODY`
-* HTTP request body for ReSTful post-processing.
+>HTTP request body for ReSTful post-processing.
 
 `bool/string CACHE`
-* Cache backend. Unless assigned a value like 'memcache=localhost' (and the PHP memcache module is present), F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a FALSE value.
+>Cache backend. Unless assigned a value like 'memcache=localhost' (and the PHP memcache module is present), F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a FALSE value.
 
 `bool CASELESS`
-* Pattern matching of routes against incoming URIs is case-insensitive by default. Set to `FALSE` to make it case-sensitive.
+>Pattern matching of routes against incoming URIs is case-insensitive by default. Set to `FALSE` to make it case-sensitive.
 
 `array COOKIE, GET, POST, REQUEST, SESSION, FILES, SERVER, ENV`
-* Framework equivalents of PHP globals. Variables may be used throughout an application. However, direct use in templates is not advised due to security risks.
+>Framework equivalents of PHP globals. Variables may be used throughout an application. However, direct use in templates is not advised due to security risks.
 
 `integer DEBUG`
-* Stack trace verbosity. Assign values 1 to 3 for increasing verbosity levels. Zero (0) suppresses the stack trace. This is the default value and it should be the assigned setting on a production server.
-
-`string DNSBL`
-* Comma-separated list of DNS blacklist servers. Framework generates a `403 Forbidden` error if the user's IPv4 address is listed on the specified server(s).
+>Stack trace verbosity. Assign values 1 to 2 for increasing verbosity levels. Zero (0) suppresses the stack trace. This is the default value and it should be the assigned setting on a production server.
 
 `array DIACRITICS`
-* Key-value pairs for foreign-to-ASCII character translations.
+>Key-value pairs for foreign-to-ASCII character translations.
+
+>string DNSBL`
+>Comma-separated list of DNS blacklist servers for blocking spammers.
 
 `string ENCODING`
-* Character set used for document encoding. Default value is `UTF-8`.
+>Character set used for document encoding. Default value is `UTF-8`.
 
 `array ERROR`
-* Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.title` contains a brief description of the error. `ERROR.text` provides greater detail. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
+>Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.title` contains a brief description of the error. `ERROR.text` provides greater detail. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
 
 `bool ESCAPE`
-* Used to enable/disable auto-escaping.
+>Used to enable/disable auto-escaping.
 
 `string EXEMPT`
-* Comma-separated list of IPv4 addresses exempt from DNSBL lookups.
+>Comma-separated list of IPv4 addresses exempt from DNSBL lookups.
 
 `array HEADERS`
-* HTTP request headers received by the server.
+>HTTP request headers received by the server.
 
 `bool HIGHLIGHT`
-* Enable/disable syntax highlighting of stack traces. Default value: TRUE (requires `code.css` stylesheet).
+>Enable/disable syntax highlighting of stack traces.
 
 `string HOST`
-* Server host name. If `$_SERVER['SERVER_NAME']` is not available, return value of `gethostname()` is used.
+>Server name derived from either $_SERVER['SERVER_NAME'] or `gethostname()`.
 
 `string IP`
-* Remote IP address. The framework derives the address from headers if HTTP client is behind a proxy server.
+>Remote IP address. The framework derives the address from headers if HTTP client is behind a proxy server.
 
 `array JAR`
-* Default cookie parameters.
+>Default cookie parameters.
 
 `string LANGUAGE`
-* Current active language. Value is used to load the appropriate language translation file in the folder pointed to by LOCALES. If set to NULL, language is auto-detected from the HTTP Accept-Language request header.
+>Current active language. Value is used to load the appropriate language translation file in the folder pointed to by LOCALES. If set to NULL, language is auto-detected from the HTTP Accept-Language request header.
 
 `string LOCALES`
-* Location of the language dictionaries.
+>Location of the language dictionaries.
 
 `string LOGS`
-* Location of custom logs.
+>Location of custom logs.
 
 `mixed ONERROR`
-* Callback function to use as custom error handler.
+>Callback function to use as custom error handler.
 
 `string PACKAGE`
-* Framework name.
+>Framework name.
 
 `array PARAMS`
-* Captured values of tokens defined in a `route()` pattern. `PARAMS.0` contains the captured URL relative to the Web root.
+>Captured values of tokens defined in a `route()` pattern. `PARAMS.0` contains the captured URL relative to the Web root.
 
 `string PATTERN`
-* Contains the routing pattern that matches the current request URI.
+>Contains the routing pattern that matches the current request URI.
 
 `string PLUGINS`
-* Location of F3 plugins. Default value is the folder where the framework code resides, i.e. the path to `base.php`.
+>Location of F3 plugins. Default value is the folder where the framework code resides, i.e. the path to `base.php`.
 
 `int PORT`
-* HTTP port used by the Web server.
+>HTTP port used by the Web server.
 
 `bool QUIET`
-* Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
+>Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
+
+`string REALM`
+>Full canonical URL.
 
 `string RESPONSE`
-* The body of the last HTTP response. F3 populates this variable regardless of the QUIET setting.
+>The body of the last HTTP response. F3 populates this variable regardless of the QUIET setting.
 
 `string ROOT`
-* Absolute path to document root folder.
+>Absolute path to document root folder.
 
 `array ROUTES`
-* Contains the defined application routes. This is a read-only variable.
+>Contains the defined application routes. This is a read-only variable.
 
 `string SCHEME`
-* Server protocol, i.e. `http` or `https`.
+>Server protocol, i.e. `http` or `https`.
 
 `string SERIALIZER`
-* Default serializer. Normally set to `php`, unless PHP `igbinary` extension is auto-detected. Assign `json` if desired.
+>Default serializer. Normally set to `php`, unless the `igbinary` extension is auto-detected. F3 also recognizes data serialization using `json`.
 
 `string TEMP`
-* Temporary folder for cache, filesystem locks, compiled F3 templates, etc. Default is the `tmp/` folder inside the Web root. Adjust accordingly to conform to your site's security policies.
+>Temporary folder for cache, filesystem locks, compiled F3 templates, etc. Default is the `tmp/` folder inside the Web root. Adjust accordingly to conform to your site's security policies.
 
 `string TZ`
-* Default timezone. Changing this value automatically calls the underlying `date_default_timezone_set()` function.
+>Default timezone. Changing this value automatically calls the underlying `date_default_timezone_set()` function. 
 
 `string UI`
-* Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+>Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
 
 `callback UNLOAD`
-* Executed by framework on script shutdown.
+>Executed by framework on script shutdown.
 
 `string UPLOADS`
-* Directory where file uploads are saved.
+>Directory where file uploads are saved.
 
 `string URI`
-* Current HTTP request URI.
+>Current HTTP request URI.
 
 `string VERB`
-* Current HTTP request method.
+>Current HTTP request method.
 
 `string VERSION`
-* Framework version.
+>Framework version.
 
 ### Template Directives
 
-```
-@token
-```
-* Replace `@token` with value of equivalent F3 variable.
+`@token`
+>Replace `@token` with value of equivalent F3 variable.
 
-```
-{{ mixed expr }}
-```
-* Evaluate. `expr` may include template tokens, constants, operators (unary, arithmetic, ternary and relational), parentheses, data type converters, and functions. If not an attribute of a template directive, result is echoed.
+`{{ mixed expr }}`
+>Evaluate `expr`. `expr` may include template tokens, constants, operators (unary, arithmetic, ternary and relational), parentheses, data type converters, and functions.
 
-```
-{{ string expr | raw }}
-```
-* Render unescaped `expr`. F3 auto-escapes strings by default.
+`{{ string expr | raw }}`
+>Render unescaped `expr`. F3 auto-escapes strings by default.
 
-```
-{{ string expr | esc }}
-```
-* Render escaped `expr`. This is the default framework behavior. The `| esc` suffix is only necessary if `ESCAPE` global variable is set to `FALSE`.
+`{{ string expr | esc }}`
+>Render escaped `expr`. This is the default framework behavior. The `| esc` suffix is only necessary if `ESCAPE` global variable is set to `FALSE`.
 
-```
-{{ string expr | args | format }}
-```
-* Render an ICU-formatted `expr` and pass the comma-separated `args`.
+`{{ string expr | args | format }}`
+>Render an ICU-formatted `expr` and pass the comma-separated `args`.
 
-```
-<include
-    [ if="{{ bool condition }}" ]
-    href="{{ string subtemplate }}"
-/>
-```
-* Get contents of `subtemplate` and insert at current position in template if optional condition is `TRUE`.
+`<include [ if="{{ bool condition }}" ] href="{{ string subtemplate }}" />`
+>Get contents of `subtemplate` and insert at current position in template if optional condition is `TRUE`.
 
-```
-<exclude>text-block</exclude>
-```
-* Remove `text-block` at runtime. Used for embedding comments in templates.
+`<exclude>text-block</exclude>`
+>Remove `text-block` at runtime. Used for embedding comments in templates.
 
-```
-<ignore>text-block</ignore>
-```
-* Display `text-block` as-is, without interpretation/modification by the template engine.
+`<check if="{{ bool condition }}">  
+<true>true-block</true>  
+<false>false-block</false>  
+</check>`
+>Evaluate condition. If `TRUE`, then `true-block` is rendered. Otherwise, `false-block` is used.
 
-```
-<check if="{{ bool condition }}">
-    <true>true-block</true>
-    <false>false-block</false>
-</check>
-```
-* Evaluate condition. If `TRUE`, then `true-block` is rendered. Otherwise, `false-block` is used.
+`<loop from="{{ statement }}" to="{{ bool expr }}" [ step="{{ statement }}" ]>  
+text-block  
+</loop>`
+>Evaluate `from` statement once. Check if the expression in the `to` attribute is `TRUE`, render `text-block` and evaluate `step` statement. Repeat iteration until `to` expression is `FALSE`.
 
-```
-<loop
-    from="{{ statement }}"
-    to="{{ bool expr }}"
-    [ step="{{ statement }}" ]>
-    text-block
-</loop>
-```
-* Evaluate `from` statement once. Check if the expression in the `to` attribute is `TRUE`, render `text-block` and evaluate `step` statement. Repeat iteration until `to` expression is `FALSE`.
+`<repeat group="{{ array @group|expr }}" [ key="{{ scalar @key }}" ] value="{{ mixed @value }} [ counter="{{ scalar @key }}" ]>  
+text-block  
+</repeat>`
+>Repeat `text-block` as many times as there are elements in the array variable `@group` or the expression `expr`. `@key` and `@value` function in the same manner as the key-value pair in the equivalent PHP `foreach()` statement. Variable represented by `key` in `counter` attribute increments by `1` with every iteration.
 
-```
-<repeat
-    group="{{ array @group|expr }}"
-    [ key="{{ scalar @key }}" ]
-    value="{{ mixed @value }}
-    [ counter="{{ scalar @key }}" ]>
-    text-block
-</repeat>
-```
-* Repeat `text-block` as many times as there are elements in the array variable `@group` or the expression `expr`. `@key` and `@value` function in the same manner as the key-value pair in the equivalent PHP `foreach()` statement. Variable represented by `key` in `counter` attribute increments by `1` with every iteration.
-
-```
-{{* text-block *}}
-```
-* Alias for `<exclude>`.
+`{{* text-block *}}`
+>Alias for `<exclude>`.
 
 ### API Documentation
 
@@ -2243,8 +2196,3 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
 [![Donate](https://raw.github.com/bcosca/fatfree/master/ui/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
-
-Copyright (c) 2009-2012 F3::Factory/Bong Cosca
-
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)
-[![statcounter.com tracking](http://c.statcounter.com/5666392/0/fd7c8312/1 "statcounter.com")](http://statcounter.com/)
