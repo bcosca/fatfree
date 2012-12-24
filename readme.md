@@ -1,4 +1,4 @@
-[![Fat-Free Framework](https://raw.github.com/bcosca/fatfree/master/ui/logo.png)](http://fatfree.sf.net/)
+[![Fat-Free Framework](https://raw.github.com/bcosca/fatfree/master/ui/images/logo.png)](http://fatfree.sf.net/)
 
 *A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!*
 
@@ -1944,132 +1944,175 @@ Once you get the hang of testing the smallest units of your application, you can
 ### System Variables
 
 `bool AJAX`
+
 * TRUE if an XML HTTP request is detected, FALSE otherwise.
 
 `string AUTOLOAD`
+
 * Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
 
 `string BASE`
+
 * Path to the index.php main/front controller.
 
 `string BODY`
+
 * HTTP request body for ReSTful post-processing.
 
 `bool/string CACHE`
+
 * Cache backend. Unless assigned a value like 'memcache=localhost' (and the PHP memcache module is present), F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a FALSE value.
 
 `bool CASELESS`
+
 * Pattern matching of routes against incoming URIs is case-insensitive by default. Set to `FALSE` to make it case-sensitive.
 
 `array COOKIE, GET, POST, REQUEST, SESSION, FILES, SERVER, ENV`
+
 * Framework equivalents of PHP globals. Variables may be used throughout an application. However, direct use in templates is not advised due to security risks.
 
 `integer DEBUG`
+
 * Stack trace verbosity. Assign values 1 to 3 for increasing verbosity levels. Zero (0) suppresses the stack trace. This is the default value and it should be the assigned setting on a production server.
 
 `string DNSBL`
+
 * Comma-separated list of DNS blacklist servers. Framework generates a `403 Forbidden` error if the user's IPv4 address is listed on the specified server(s).
 
 `array DIACRITICS`
+
 * Key-value pairs for foreign-to-ASCII character translations.
 
 `string ENCODING`
+
 * Character set used for document encoding. Default value is `UTF-8`.
 
 `array ERROR`
+
 * Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.title` contains a brief description of the error. `ERROR.text` provides greater detail. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
 
 `bool ESCAPE`
+
 * Used to enable/disable auto-escaping.
 
 `string EXEMPT`
+
 * Comma-separated list of IPv4 addresses exempt from DNSBL lookups.
 
 `array HEADERS`
+
 * HTTP request headers received by the server.
 
 `bool HIGHLIGHT`
+
 * Enable/disable syntax highlighting of stack traces. Default value: TRUE (requires `code.css` stylesheet).
 
 `string HOST`
+
 * Server host name. If `$_SERVER['SERVER_NAME']` is not available, return value of `gethostname()` is used.
 
 `string IP`
+
 * Remote IP address. The framework derives the address from headers if HTTP client is behind a proxy server.
 
 `array JAR`
+
 * Default cookie parameters.
 
 `string LANGUAGE`
+
 * Current active language. Value is used to load the appropriate language translation file in the folder pointed to by LOCALES. If set to NULL, language is auto-detected from the HTTP Accept-Language request header.
 
 `string LOCALES`
+
 * Location of the language dictionaries.
 
 `string LOGS`
+
 * Location of custom logs.
 
 `mixed ONERROR`
+
 * Callback function to use as custom error handler.
 
 `string PACKAGE`
+
 * Framework name.
 
 `array PARAMS`
+
 * Captured values of tokens defined in a `route()` pattern. `PARAMS.0` contains the captured URL relative to the Web root.
 
 `string PATTERN`
+
 * Contains the routing pattern that matches the current request URI.
 
 `string PLUGINS`
+
 * Location of F3 plugins. Default value is the folder where the framework code resides, i.e. the path to `base.php`.
 
 `int PORT`
+
 * HTTP port used by the Web server.
 
 `bool QUIET`
+
 * Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
 
 `string REALM`
+
 * Full canonical URL.
 
 `string RESPONSE`
+
 * The body of the last HTTP response. F3 populates this variable regardless of the QUIET setting.
 
 `string ROOT`
+
 * Absolute path to document root folder.
 
 `array ROUTES`
+
 * Contains the defined application routes. This is a read-only variable.
 
 `string SCHEME`
+
 * Server protocol, i.e. `http` or `https`.
 
 `string SERIALIZER`
+
 * Default serializer. Normally set to `php`, unless PHP `igbinary` extension is auto-detected. Assign `json` if desired.
 
 `string TEMP`
+
 * Temporary folder for cache, filesystem locks, compiled F3 templates, etc. Default is the `tmp/` folder inside the Web root. Adjust accordingly to conform to your site's security policies.
 
 `string TZ`
+
 * Default timezone. Changing this value automatically calls the underlying `date_default_timezone_set()` function.
 
 `string UI`
+
 * Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
 
 `callback UNLOAD`
+
 * Executed by framework on script shutdown.
 
 `string UPLOADS`
+
 * Directory where file uploads are saved.
 
 `string URI`
+
 * Current HTTP request URI.
 
 `string VERB`
+
 * Current HTTP request method.
 
 `string VERSION`
+
 * Framework version.
 
 ### Template Directives
@@ -2245,9 +2288,8 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
-[![Donate](https://raw.github.com/bcosca/fatfree/master/ui/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
+[![Donate](https://raw.github.com/bcosca/fatfree/master/ui/images/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
 
 Copyright (c) 2009-2012 F3::Factory/Bong Cosca
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)
-[![statcounter.com tracking](http://c.statcounter.com/5666392/0/fd7c8312/1 "statcounter.com")](http://statcounter.com/)
