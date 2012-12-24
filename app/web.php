@@ -58,7 +58,7 @@ class Web extends Controller {
 			'Minify Javascript'
 		);
 		$test->expect(
-			$req=$web->request($url='http://www.google.com/'),
+			$req=$web->request($url='www.google.com/'),
 			'HTTP request ('.$url.') using '.$req['engine']
 		);
 		$test->expect(

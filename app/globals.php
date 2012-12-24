@@ -33,6 +33,10 @@ class Globals extends Controller {
 			'IP (Remote IP address): '.$f3->stringify($ip)
 		);
 		$test->expect(
+			$realm=$f3->get('REALM'),
+			'REALM (Full canonical URI): '.$f3->stringify($realm)
+		);
+		$test->expect(
 			($verb=$f3->get('VERB'))==$_SERVER['REQUEST_METHOD'],
 			'VERB (request method): '.$f3->stringify($verb)
 		);
