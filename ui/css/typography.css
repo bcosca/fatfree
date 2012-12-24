@@ -1,5 +1,5 @@
 body,input,button,select,textarea {
-	font:1em/1.5em "Lucida Grande","Lucida Sans Unicode",sans-serif;
+	font:11pt/1.5em "Lucida Grande","Lucida Sans Unicode",sans-serif;
 	font-size-adjust:none;
 	font-style:normal;
 	font-variant:normal;
@@ -29,22 +29,27 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 h1 {
+	color:#000;
 	font-size:2.125em;
 	margin:0.765em 0;
 }
 h2 {
+	color:#333;
 	font-size:1.9em;
 	margin:0.855em 0;
 }
 h3 {
+	color:#666;
 	font-size:1.7em;
 	margin:0.956em 0;
 }
 h4 {
+	color:#999;
 	font-size:1.4em;
 	margin:1.161em 0;
 }
 h5,h6 {
+	color:#ccc;
 	font-size:1.313em;
 	margin:1.238em 0;
 }

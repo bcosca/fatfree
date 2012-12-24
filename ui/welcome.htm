@@ -1,41 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<base href="<?php echo $SCHEME.'://'.$HOST.($BASE?:'/').$UI; ?>" />
 		<meta charset="<?php echo $ENCODING; ?>" />
 		<title>Powered by <?php echo $PACKAGE; ?></title
-		<link rel="stylesheet" href="reset.css" type="text/css" />
-		<link rel="stylesheet" href="typography.css" type="text/css" />
-		<style>
-			body {
-				margin:0 auto;
-				width:50%;
-			}
-			div.header {
-				text-align:center;
-				border-bottom:3px solid gray;
-			}
-			div.header h1 {
-				font-size:36pt;
-				line-height:1em;
-				margin:0.25em 0 0.5em 0;
-			}
-			div.header h4 {
-				margin-bottom:0;
-			}
-			div.footer {
-				text-align:center;
-				border-top:1px solid gray;
-			}
-			table {
-				border-top:3px solid gray;
-				border-bottom:3px solid gray;
-			}
-			tr {
-				border-top:1px solid gray;
-				border-bottom:1px solid gray;
-			}
-		</style>
+		<link rel="stylesheet" href="ui/css/reset.css" type="text/css" />
+		<link rel="stylesheet" href="ui/css/typography.css" type="text/css" />
+		<link rel="stylesheet" href="ui/css/theme.css" type="text/css" />
 	</head>
 </head>
 <body>
@@ -88,13 +58,14 @@
 		<h3>Need Help?</h3>
 		<p>If you have any questions regarding the framework, technical support is available at <code><a href="https://groups.google.com/forum/?fromgroups#!forum/f3-framework">https://groups.google.com/forum/?fromgroups#!forum/f3-framework</a></code></p>
 		<p>If you need live support, you can talk to the development team and the rest of the Fat-Free community via IRC. We're on the FreeNode <code>#fatfree</code> channel (<code>chat.freenode.net</code>).</p>
-		<p>The help file included in the distribution (<code>lib/f3.chm</code>) is at your disposal if you need to take a close look at the Fat-Free API. However, the online documentation at <code><a href="https://github.com/bcosca/fatfree" onclick="window.open(this.href); return false;">https://github.com/bcosca/fatfree</a></code> provides the latest and most comprehensive information about the framework.</p>
+		<p>The <a href="<?php echo $BASE; ?>/userref">User Reference</a> is designed to serve as a handbook and quick reference. However, the online documentation at <code><a href="https://github.com/bcosca/fatfree" onclick="window.open(this.href); return false;">https://github.com/bcosca/fatfree</a></code> provides the latest and most comprehensive information about the framework.</p>
+		<p>The help file included in the distribution (<code>lib/f3.chm</code>) is at your disposal if you need to take a close look at the Fat-Free API.</p>
 		<h3>Fair Licensing</h3>
 		<p>Fat-Free Framework is free and released as open source software covered by the terms of the GNU Public License (GPL v3). You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a fee.</p>
 		<p>If you feel that this software is one great weapon to have in your programming arsenal, it saves you a lot of time and money, use it for commercial gain or in your business organization, please consider making a donation to the project. A significant amount of time, effort, and money has been spent on this project. Your donations help keep this project alive and the development team motivated. Donors and sponsors get priority support (24-hour response time on business days).</p>
 		<h3>Support F3</h3>
 		<p>F3 is community-driven open-source software. Support the development of the Fat-Free Framework. Your contributions help keep this project alive.</p>
-		<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY"><img src="donate.png" title="Donate" /></a>
+		<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY"><img src="ui/images/donate.png" title="Donate" /></a>
 		<p/>
 	</div>
 	<div class="footer">

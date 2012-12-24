@@ -1,0 +1,53 @@
+body {
+	margin:0 auto;
+	width:50%;
+}
+div.header {
+	text-align:center;
+	border-bottom:3px solid gray;
+}
+div.header h1 {
+	font-size:36pt;
+	line-height:1em;
+	margin:0.25em 0 0.5em 0;
+}
+div.header h4 {
+	margin-bottom:0;
+}
+div.footer {
+	text-align:center;
+	border-top:1px solid gray;
+}
+table {
+	border-top:3px solid gray;
+	border-bottom:3px solid gray;
+}
+tr {
+	border-top:1px solid gray;
+	border-bottom:1px solid gray;
+}
+code, pre {
+	font-size:10.5pt;
+    border-radius: 3px;
+    background-color: #F8F8F8;
+    color: inherit;
+}
+
+code {
+    border: 1px solid #EAEAEA;
+    margin: 0 2px;
+    padding: 0 2px;
+}
+
+pre {
+    border: 1px solid #CCCCCC;
+    line-height: 1.25em;
+    overflow: auto;
+    padding: 3px 5px;
+}
+
+pre > code {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}

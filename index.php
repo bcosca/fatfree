@@ -5,7 +5,7 @@ $f3=require('lib/base.php');
 $f3->set('UI','ui/');
 
 $f3->route('GET /',
-	function() use($f3) {
+	function($f3) {
 		$classes=array(
 			'Base'=>
 				array(
@@ -57,6 +57,12 @@ $f3->route('GET /',
 		);
 		$f3->set('classes',$classes);
 		echo View::instance()->render('welcome.htm');
+	}
+);
+
+$f3->route('GET /userref',
+	function() {
+		echo View::instance()->render('userref.htm');
 	}
 );
 
