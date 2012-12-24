@@ -177,26 +177,6 @@ class Auth extends Prefab {
 	}
 
 	/**
-		HTTP basic auth mechanism
-		@return bool
-		@param $func callback
-	**/
-	function basic($func=NULL) {
-		$fw=Base::instance();
-		$realm=$fw->get('REALM');
-		if (isset($_SERVER['PHP_AUTH_DIGEST']) &&
-			$this->login(
-				$_SERVER['PHP_AUTH_USER'],
-				$func?
-					$func($_SERVER['PHP_AUTH_PW']):
-					$_SERVER['PHP_AUTH_PW'],
-				$realm
-			))
-			return TRUE;
-		header('WWW-Authenticate: Digest realm="'.$realm.'"');
-		$fw->error(401);
-	}
-	/**
 		Instantiate class
 		@return object
 		@param $storage string|object
