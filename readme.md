@@ -1041,8 +1041,8 @@ Dictionaries are nothing more than key-value pairs. F3 automatically instantiate
 ``` html
 <h1>{{ @love }}</h1>
 <p>
-{{ @today | time() | format }}.<br />
-{{ @money | 365.25 | format }}<br />
+{{ @today,time() | format }}.<br />
+{{ @money,365.25 | format }}<br />
 {{ @pi }}
 </p>
 ```
@@ -2138,9 +2138,9 @@ Once you get the hang of testing the smallest units of your application, you can
 * Render escaped `expr`. This is the default framework behavior. The `| esc` suffix is only necessary if `ESCAPE` global variable is set to `FALSE`.
 
 ```
-{{ string expr | args | format }}
+{{ string expr, arg1, ..., argN | format }}
 ```
-* Render an ICU-formatted `expr` and pass the comma-separated `args`.
+* Render an ICU-formatted `expr` and pass the comma-separated arguments.
 
 ```
 <include
