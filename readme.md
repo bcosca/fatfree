@@ -2028,7 +2028,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `string DNSBL`
 
-* Comma-separated list of DNS blacklist servers. Framework generates a `403 Forbidden` error if the user's IPv4 address is listed on the specified server(s).
+* Comma-separated list of [DNS blacklist servers](http://whatismyipaddress.com/blacklist-check). Framework generates a `403 Forbidden` error if the user's IPv4 address is listed on the specified server(s).
 
 `array DIACRITICS`
 
@@ -2257,7 +2257,9 @@ Technical support is available at: [https://groups.google.com/forum/#!forum/f3-f
 
 F3 uses Git for version control. To clone the Git code repository:-
 
-    git clone git://git@github.com:bcosca/Fat-Free-Framework.git
+``` bash
+git clone git://git@github.com:bcosca/Fat-Free-Framework.git
+```
 
 If you just want a zipball instead, grab it here.
 
