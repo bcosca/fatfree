@@ -13,7 +13,7 @@
 	Please see the license.txt file for more information.
 */
 
-//! SMTP plugin
+//! SMTP plug-in
 class SMTP extends Magic {
 
 	//@{ Locale-specific error/exception messages
@@ -116,7 +116,7 @@ class SMTP extends Magic {
 		while (!feof($socket) && ($info=stream_get_meta_data($socket)) &&
 			!$info['timed_out'] && $str=fgets($socket,4096)) {
 			$reply.=$str;
-			if (preg_match('/(?:^|\n)\d{3}\s.+?\r\n/s',$reply))
+			if (preg_match('/(?:^|\n)\d{3} .+?\r\n/s',$reply))
 				break;
 		}
 		if ($log) {
@@ -147,11 +147,9 @@ class SMTP extends Magic {
 		$fw=Base::instance();
 		// Connect to the server
 		$socket=&$this->socket;
-		$socket=@fsockopen($this->host,$this->port,$code,$text);
-		if (!$socket) {
-			user_error($text);
-			return;
-		}
+		$socket=@fsockopen($this->host,$this->port);
+		if (!$socket)
+			return FALSE;
 		stream_set_blocking($socket,TRUE);
 		// Get server's initial response
 		$this->dialog();
@@ -194,7 +192,7 @@ class SMTP extends Magic {
 		$this->dialog('DATA',TRUE);
 		if ($this->attachments) {
 			// Replace Content-Type
-			$hash=$fw->hash(mt_rand());
+			$hash=uniqid();
 			$type=$headers['Content-Type'];
 			$headers['Content-Type']='multipart/mixed; '.
 				'boundary="'.$hash.'"';

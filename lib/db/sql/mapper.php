@@ -31,7 +31,7 @@ class Mapper extends \DB\Cursor {
 		//! SQL table
 		$table,
 		//! Last insert ID
-		$id,
+		$_id,
 		//! Defined fields
 		$fields,
 		//! Adhoc fields
@@ -73,7 +73,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function get($key) {
 		if ($key=='_id')
-			return $this->id;
+			return $this->_id;
 		elseif (array_key_exists($key,$this->fields))
 			return $this->fields[$key]['value'];
 		elseif (array_key_exists($key,$this->adhoc))
@@ -178,21 +178,16 @@ class Mapper extends \DB\Cursor {
 		$args=array();
 		if ($filter) {
 			if (is_array($filter)) {
-				$params=isset($filter[1]) && is_array($filter[1])?
+				$args=isset($filter[1]) && is_array($filter[1])?
 					$filter[1]:
 					array_slice($filter,1,NULL,TRUE);
+				$args=is_array($args)?$args:array(1=>$args);
 				list($filter)=$filter;
-				$args+=is_array($params)?$params:array(1=>$params);
 			}
 			$sql.=' WHERE '.$filter;
 		}
-		if ($options['group']) {
-			$params=array();
-			if (is_array($options['group']))
-				list($options['group'],$params)=$options['group'];
-			$args+=is_array($params)?$params:array($params);
+		if ($options['group'])
 			$sql.=' GROUP BY '.$options['group'];
-		}
 		if ($options['order'])
 			$sql.=' ORDER BY '.$options['order'];
 		if ($options['limit'])
@@ -245,8 +240,10 @@ class Mapper extends \DB\Cursor {
 		@param $filter string|array
 	**/
 	function count($filter=NULL) {
-		list($out)=$this->select('COUNT(*) AS rows',$filter);
-		return $out->adhoc['rows']['value'];
+		list($result)=$this->select('COUNT(*) AS rows',$filter);
+		$out=$result->adhoc['rows']['value'];
+		unset($this->adhoc['rows']);
+		return $out;
 	}
 
 	/**
@@ -294,6 +291,7 @@ class Mapper extends \DB\Cursor {
 				'INSERT INTO '.$this->table.' ('.$fields.') '.
 				'VALUES ('.$values.');',$args
 			);
+		$pkeys=array();
 		$out=array();
 		$inc=array();
 		foreach ($this->fields as $key=>$field) {
@@ -306,20 +304,16 @@ class Mapper extends \DB\Cursor {
 					$inc[]=$key;
 			}
 		}
-		parent::reset();
+		$seq=NULL;
+		if ($this->engine=='pgsql')
+			$seq=$this->table.'_'.end($pkeys).'_seq';
+		$this->_id=$this->db->lastinsertid($seq);
 		$ctr=count($inc);
-		if ($ctr>1)
+		if ($ctr!=1)
 			return $out;
-		if ($ctr) {
-			// Reload to obtain default and auto-increment field values
-			$seq=NULL;
-			if ($this->engine=='pgsql')
-				$seq=$this->table.'_'.end($pkeys).'_seq';
-			return $this->load(
-				array($inc[0].'=?',$this->value(
-					$this->fields[$inc[0]]['pdo_type'],
-					$this->id=$this->db->lastinsertid($seq))));
-		}
+		// Reload to obtain default and auto-increment field values
+		return $this->load(array($inc[0].'=?',
+			$this->value($this->fields[$inc[0]]['pdo_type'],$this->_id)));
 	}
 
 	/**
@@ -359,14 +353,14 @@ class Mapper extends \DB\Cursor {
 	**/
 	function erase($filter=NULL) {
 		if ($filter) {
-			$params=array();
+			$args=array();
 			if (is_array($filter)) {
-				$params=isset($filter[1]) && is_array($filter[1])?
+				$args=isset($filter[1]) && is_array($filter[1])?
 					$filter[1]:
 					array_slice($filter,1,NULL,TRUE);
+				$args=is_array($args)?$args:array(1=>$args);
 				list($filter)=$filter;
 			}
-			$args=is_array($params)?$params:array(1=>$params);
 			return $this->db->
 				exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
 		}

@@ -97,7 +97,7 @@ class Mapper extends \DB\Cursor {
 		@param $filter array
 		@param $options array
 	**/
-	function select($fields,$filter=NULL,array $options=NULL) {
+	function select($fields=NULL,$filter=NULL,array $options=NULL) {
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -108,10 +108,9 @@ class Mapper extends \DB\Cursor {
 		);
 		if ($options['group']) {
 			$fw=\Base::instance();
-			$this->db->selectcollection(
-				$tmp=$fw->get('HOST').'.'.$fw->get('BASE').'.'.
-					uniqid().'.tmp');
-			$this->db->$tmp->batchinsert(
+			$tmp=$this->db->
+				{$fw->get('HOST').'.'.$fw->get('BASE').'.'.uniqid().'.tmp'};
+			$tmp->batchinsert(
 				$this->collection->group(
 					$options['group']['keys'],
 					$options['group']['initial'],
@@ -126,7 +125,7 @@ class Mapper extends \DB\Cursor {
 				array('safe'=>TRUE)
 			);
 			$filter=array();
-			$collection=$this->db->$tmp;
+			$collection=$tmp;
 		}
 		else {
 			$filter=$filter?:array();
@@ -140,13 +139,15 @@ class Mapper extends \DB\Cursor {
 		if ($options['offset'])
 			$cursor=$cursor->skip($options['offset']);
 		if ($options['group'])
-			$this->db->$tmp->drop();
+			$tmp->drop();
 		$result=iterator_to_array($cursor,FALSE);
 		$out=array();
 		foreach ($result as &$doc) {
-			foreach ($doc as &$val)
+			foreach ($doc as &$val) {
 				if (is_array($val))
 					$val=json_decode(json_encode($val));
+				unset($val);
+			}
 			$out[]=$this->factory($doc);
 			unset($doc);
 		}
@@ -264,7 +265,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function __construct(\DB\Mongo $db,$collection) {
 		$this->db=$db;
-		$this->collection=$db->selectcollection($collection);
+		$this->collection=$db->{$collection};
 		$this->reset();
 	}
 

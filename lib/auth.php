@@ -13,12 +13,11 @@
 	Please see the license.txt file for more information.
 */
 
-//! Authorization/authentication plugin
+//! Authorization/authentication plug-in
 class Auth extends Prefab {
 
 	//@{ Error messages
 	const
-		E_Storage='Invalid auth storage',
 		E_LDAP='LDAP connection failure',
 		E_SMTP='SMTP connection failure';
 	//@}
@@ -26,8 +25,151 @@ class Auth extends Prefab {
 	private
 		//! Auth storage
 		$storage,
+		//! Mapper object
+		$mapper,
 		//! Storage options
 		$args;
+
+	/**
+		Jig storage handler
+		@return bool
+		@param $id string
+		@param $pw string
+		@param $realm string
+	**/
+	protected function _jig($id,$pw,$realm) {
+		return (bool)
+			call_user_func_array(
+				array($this->mapper,'findone'),
+				array(
+					array_merge(
+						array(
+							'@'.$this->args['id'].'==? AND '.
+							'@'.$this->args['pw'].'==?'.
+							(isset($this->args['realm'])?
+								(' AND @'.$this->args['realm'].'==?'):''),
+							$id,$pw
+						),
+						(isset($this->args['realm'])?array($realm):array())
+					)
+				)
+			);
+	}
+
+	/**
+		MongoDB storage handler
+		@return bool
+		@param $id string
+		@param $pw string
+		@param $realm string
+	**/
+	protected function _mongo($id,$pw,$realm) {
+		return (bool)
+			$this->mapper->findone(
+				array(
+					$this->args['id']=>$id,
+					$this->args['pw']=>$pw
+				)+
+				(isset($this->args['realm'])?
+					array($this->args['realm']=>$realm):array())
+			);
+	}
+
+	/**
+		SQL storage handler
+		@return bool
+		@param $id string
+		@param $pw string
+		@param $realm string
+	**/
+	protected function _sql($id,$pw,$realm) {
+		return (bool)
+			call_user_func_array(
+				array($this->mapper,'findone'),
+				array(
+					array_merge(
+						array(
+							$this->args['id'].'=? AND '.
+							$this->args['pw'].'=?'.
+							(isset($this->args['realm'])?
+								(' AND '.$this->args['realm'].'=?'):''),
+							$id,$pw
+						),
+						(isset($this->args['realm'])?array($realm):array())
+					)
+				)
+			);
+	}
+
+	/**
+		LDAP storage handler
+		@return bool
+		@param $id string
+		@param $pw string
+	**/
+	protected function _ldap($id,$pw) {
+		$dc=@ldap_connect($this->args['dc']);
+		if ($dc &&
+			ldap_set_option($dc,LDAP_OPT_PROTOCOL_VERSION,3) &&
+			ldap_set_option($dc,LDAP_OPT_REFERRALS,0) &&
+			ldap_bind($dc,$this->args['rdn'],$this->args['pw']) &&
+			($result=ldap_search($dc,$this->args['base_dn'],
+				'uid='.$id)) &&
+			ldap_count_entries($dc,$result) &&
+			($info=ldap_get_entries($dc,$result)) &&
+			@ldap_bind($dc,$info[0]['dn'],$pw) &&
+			@ldap_close($dc)) {
+			return $info[0]['uid'][0]==$id;
+		}
+		user_error(self::E_LDAP);
+	}
+
+	/**
+		SMTP storage handler
+		@return bool
+		@param $id string
+		@param $pw string
+	**/
+	protected function _smtp($id,$pw) {
+		$socket=@fsockopen(
+			(strtolower($this->args['scheme'])=='ssl'?
+				'ssl://':'').$this->args['host'],
+				$this->args['port']);
+		$dialog=function($cmd=NULL) use($socket) {
+			if (!is_null($cmd))
+				fputs($socket,$cmd."\r\n");
+			$reply='';
+			while (!feof($socket) &&
+				($info=stream_get_meta_data($socket)) &&
+				!$info['timed_out'] && $str=fgets($socket,4096)) {
+				$reply.=$str;
+				if (preg_match('/(?:^|\n)\d{3} .+\r\n/s',
+					$reply))
+					break;
+			}
+			return $reply;
+		};
+		if ($socket) {
+			stream_set_blocking($socket,TRUE);
+			$dialog();
+			$fw=Base::instance();
+			$dialog('EHLO '.$fw->get('HOST'));
+			if (strtolower($this->args['scheme'])=='tls') {
+				$dialog('STARTTLS');
+				stream_socket_enable_crypto(
+					$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
+				$dialog('EHLO '.$fw->get('HOST'));
+			}
+			// Authenticate
+			$dialog('AUTH LOGIN');
+			$dialog(base64_encode($id));
+			$reply=$dialog(base64_encode($pw));
+			$dialog('QUIT');
+			fclose($socket);
+			return (bool)preg_match('/^235 /',$reply);
+		}
+		user_error(self::E_SMTP);
+	}
 
 	/**
 		Login auth mechanism
@@ -37,122 +179,7 @@ class Auth extends Prefab {
 		@param $realm string
 	**/
 	function login($id,$pw,$realm=NULL) {
-		if (is_object($this->storage)) {
-			$found=FALSE;
-			switch (get_class($this->storage)) {
-				case 'DB\Jig\Mapper':
-					return (bool)
-						call_user_func_array(
-							array($this->storage,'findone'),
-							array(
-								array_merge(
-									array(
-										'@'.$this->args['id'].'==? AND '.
-										'@'.$this->args['pw'].'==?'.
-										(isset($this->args['realm'])?
-											(' AND @'.
-												$this->args['realm'].'==?'):
-											''),
-										$id,$pw
-									),
-									(isset($this->args['realm'])?
-										array($realm):array())
-								)
-							)
-						);
-				case 'DB\Mongo\Mapper':
-					return (bool)
-						$this->storage->findone(
-							array(
-								$this->args['id']=>$id,
-								$this->args['pw']=>$pw
-							)+
-							(isset($this->args['realm'])?
-								array($this->args['realm']=>$realm):
-								array())
-						);
-				case 'DB\SQL\Mapper':
-					return (bool)
-						call_user_func_array(
-							array($this->storage,'findone'),
-							array(
-								array_merge(
-									array(
-										$this->args['id'].'=? AND '.
-										$this->args['pw'].'=?'.
-										(isset($this->args['realm'])?
-											(' AND '.
-												$this->args['realm'].'=?'):
-											''),
-										$id,$pw
-									),
-									(isset($this->args['realm'])?
-										array($realm):array())
-								)
-							)
-						);
-			}
-			return FALSE;
-		}
-		elseif (is_string($this->storage))
-			switch (strtoupper($this->storage)) {
-				case 'LDAP':
-					$dc=@ldap_connect($this->args['dc']);
-					if ($dc &&
-						ldap_set_option($dc,LDAP_OPT_PROTOCOL_VERSION,3) &&
-						ldap_set_option($dc,LDAP_OPT_REFERRALS,0) &&
-						ldap_bind($dc,$this->args['rdn'],$this->args['pw']) &&
-						($result=ldap_search($dc,$this->args['base_dn'],
-							'uid='.$id)) &&
-						ldap_count_entries($dc,$result) &&
-						($info=ldap_get_entries($dc,$result)) &&
-						@ldap_bind($dc,$info[0]['dn'],$pw) &&
-						@ldap_close($dc)) {
-						return $info[0]['uid'][0]==$id;
-					}
-					user_error(self::E_LDAP);
-				case 'SMTP':
-					$socket=@fsockopen(
-						(strtolower($this->args['scheme'])=='ssl'?
-							'ssl://':'').$this->args['host'],
-							$this->args['port'],
-						$code,$text);
-					$dialog=function($cmd=NULL) use($socket) {
-						if (!is_null($cmd))
-							fputs($socket,$cmd."\r\n");
-						$reply='';
-						while (!feof($socket) &&
-							($info=stream_get_meta_data($socket)) &&
-							!$info['timed_out'] && $str=fgets($socket,4096)) {
-							$reply.=$str;
-							if (preg_match('/(?:^|\n)\d{3}\s.+\r\n/s',
-								$reply))
-								break;
-						}
-						return $reply;
-					};
-					if ($socket) {
-						stream_set_blocking($socket,TRUE);
-						$dialog();
-						$fw=Base::instance();
-						$dialog('EHLO '.$fw->get('HOST'));
-						if (strtolower($this->args['scheme'])=='tls') {
-							$dialog('STARTTLS');
-							stream_socket_enable_crypto(
-								$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
-							$dialog('EHLO '.$fw->get('HOST'));
-						}
-						// Authenticate
-						$dialog('AUTH LOGIN');
-						$dialog(base64_encode($id));
-						$reply=$dialog(base64_encode($pw));
-						$dialog('QUIT');
-						fclose($socket);
-						return (bool)preg_match('/^235\s/',$reply);
-					}
-					user_error(self::E_SMTP);
-			}
-		user_error(self::E_Storage);
+		return $this->{'_'.$this->storage}($id,$pw,$realm);
 	}
 
 	/**
@@ -172,7 +199,8 @@ class Auth extends Prefab {
 				$realm
 			))
 			return TRUE;
-		header('WWW-Authenticate: Basic realm="'.$realm.'"');
+		if (PHP_SAPI!='cli')
+			header('WWW-Authenticate: Basic realm="'.$realm.'"');
 		$fw->error(401);
 	}
 
@@ -183,7 +211,14 @@ class Auth extends Prefab {
 		@param $args array
 	**/
 	function __construct($storage,array $args=NULL) {
-		$this->storage=$storage;
+		if (is_object($storage) && is_a($storage,'DB\Cursor')) {
+			$ref=new ReflectionClass(get_class($storage));
+			$this->storage=basename(dirname($ref->getfilename()));
+			$this->mapper=$storage;
+			unset($ref);
+		}
+		else
+			$this->storage=$storage;
 		$this->args=$args;
 	}
 

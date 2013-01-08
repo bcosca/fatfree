@@ -75,12 +75,12 @@ class OpenID extends \Magic {
 			// Parse document
 			while ($ptr<$len)
 				if (preg_match(
-					'/^<link\b((?:\s+\w+s*=\s*'.
-					'(?:"(?:.+?)"|\'(?:.+?)\'))*)\s*\/?>/is',
+					'/^<link\b((?:\h+\w+\h*=\h*'.
+					'(?:"(?:.+?)"|\'(?:.+?)\'))*)\h*\/?>/is',
 					substr($req['body'],$ptr),$parts)) {
 					if ($parts[1]) {
 						// Process attributes
-						preg_match_all('/\s+(rel|href)\s*=\s*'.
+						preg_match_all('/\b(rel|href)\h*=\h*'.
 							'(?:"(.+?)"|\'(.+?)\')/s',$parts[1],$attr,
 							PREG_SET_ORDER);
 						$node=array();
@@ -135,7 +135,7 @@ class OpenID extends \Magic {
 		$fw=\Base::instance();
 		$root=$fw->get('SCHEME').'://'.$fw->get('HOST');
 		if (empty($this->args['trust_root']))
-			$this->args['trust_root']=$root.($fw->get('BASE')?:'/');
+			$this->args['trust_root']=$root.$fw->get('BASE').'/';
 		if (empty($this->args['return_to']))
 			$this->args['return_to']=$root.$_SERVER['REQUEST_URI'];
 		$this->args['mode']='checkid_setup';

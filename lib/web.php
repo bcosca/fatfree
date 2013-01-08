@@ -16,6 +16,15 @@
 //! Wrapper for various HTTP utilities
 class Web extends Prefab {
 
+	//@{ Error messages
+	const
+		E_Request='No suitable HTTP request engine found';
+	//@}
+
+	private
+		//! HTTP request engine
+		$wrapper;
+
 	/**
 		Detect MIME type using file extension
 		@return string
@@ -141,12 +150,9 @@ class Web extends Prefab {
 					if (empty($file['name']))
 						return FALSE;
 					$base=basename($file['name']);
-					if ($slug) {
-						preg_match('/(.+?)(\.\w+)?$/',$base,$parts);
-						$dst=$dir.$this->slug($parts[1]).$parts[2];
-					}
-					else
-						$dst=$dir.$base;
+					$dst=$dir.
+						($slug && preg_match('/(.+)(\.\w+)?$/',$base,$parts)?
+							$this->slug($parts[1]).$parts[2]:$base);
 					if ($file['error'] ||
 						$file['type']!=$this->mime($file['name']) ||
 						$overwrite && file_exists($dst) ||
@@ -166,8 +172,180 @@ class Web extends Prefab {
 	**/
 	function progress($id) {
 		// ID returned by session.upload_progress.name
-		return ini_get('session.upload_progress.enabled')?
-			$_SESSION[$id]['bytes_processed']:FALSE;
+		return ini_get('session.upload_progress.enabled') &&
+			isset($_SESSION[$id]['bytes_processed'])?
+				$_SESSION[$id]['bytes_processed']:FALSE;
+	}
+
+	/**
+		HTTP request via cURL
+		@return array
+		@param $url string
+		@param $options array
+	**/
+	protected function _curl($url,$options) {
+		$curl=curl_init($url);
+		curl_setopt($curl,CURLOPT_FOLLOWLOCATION,
+			$options['follow_location']);
+		curl_setopt($curl,CURLOPT_MAXREDIRS,
+			$options['max_redirects']);
+		curl_setopt($curl,CURLOPT_CUSTOMREQUEST,$options['method']);
+		if (isset($options['header']))
+			curl_setopt($curl,CURLOPT_HTTPHEADER,$options['header']);
+		if (isset($options['user_agent']))
+			curl_setopt($curl,CURLOPT_USERAGENT,$options['user_agent']);
+		if (isset($options['content']))
+			curl_setopt($curl,CURLOPT_POSTFIELDS,$options['content']);
+		curl_setopt($curl,CURLOPT_ENCODING,'gzip,deflate');
+		$timeout=isset($options['timeout'])?
+			$options['timeout']:
+			ini_get('default_socket_timeout');
+		curl_setopt($curl,CURLOPT_CONNECTTIMEOUT,$timeout);
+		curl_setopt($curl,CURLOPT_TIMEOUT,$timeout);
+		$headers=array();
+		curl_setopt($curl,CURLOPT_HEADERFUNCTION,
+			// Callback for response headers
+			function($curl,$line) use(&$headers) {
+				if ($trim=trim($line))
+					$headers[]=$trim;
+				return strlen($line);
+			}
+		);
+		curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,FALSE);
+		ob_start();
+		curl_exec($curl);
+		curl_close($curl);
+		$body=ob_get_clean();
+		return array(
+			'body'=>$body,
+			'headers'=>$headers,
+			'engine'=>'cURL',
+			'cached'=>FALSE
+		);
+	}
+
+	/**
+		HTTP request via PHP stream wrapper
+		@return array
+		@param $url string
+		@param $options array
+	**/
+	protected function _stream($url,$options) {
+		$eol="\r\n";
+		$options['header']=implode($eol,$options['header']);
+		$body=@file_get_contents($url,FALSE,
+			stream_context_create(array('http'=>$options)));
+		$headers=isset($http_response_header)?
+			$http_response_header:array();
+		$match=NULL;
+		foreach ($headers as $header)
+			if (preg_match('/Content-Encoding: (.+)/',$header,$match))
+				break;
+		if ($match)
+			switch ($match[1]) {
+				case 'gzip':
+					$body=gzdecode($body);
+					break;
+				case 'deflate':
+					$body=gzuncompress($body);
+					break;
+			}
+		return array(
+			'body'=>$body,
+			'headers'=>$headers,
+			'engine'=>'stream',
+			'cached'=>FALSE
+		);
+	}
+
+	/**
+		HTTP request via low-level TCP/IP socket
+		@return array
+		@param $url string
+		@param $options array
+	**/
+	protected function _socket($url,$options) {
+		$eol="\r\n";
+		$headers=array();
+		$body='';
+		$parts=parse_url($url);
+		if ($parts['scheme']=='https') {
+			$parts['host']='ssl://'.$parts['host'];
+			$parts['port']=443;
+		}
+		else
+			$parts['port']=80;
+		if (empty($parts['path']))
+			$parts['path']='/';
+		if (empty($parts['query']))
+			$parts['query']='';
+		$socket=@fsockopen($parts['host'],$parts['port']);
+		if (!$socket)
+			return FALSE;
+		stream_set_blocking($socket,TRUE);
+		fputs($socket,$options['method'].' '.$parts['path'].
+			($parts['query']?('?'.$parts['query']):'').' HTTP/1.0'.$eol
+		);
+		fputs($socket,implode($eol,$options['header']).$eol.$eol);
+		if (isset($options['content']))
+			fputs($socket,$options['content'].$eol);
+		// Get response
+		$content='';
+		while (!feof($socket) &&
+			($info=stream_get_meta_data($socket)) &&
+			!$info['timed_out'] && $str=fgets($socket,4096))
+			$content.=$str;
+		fclose($socket);
+		$html=explode($eol.$eol,$content,2);
+		$body=isset($html[1])?$html[1]:'';
+		$headers=array_merge($headers,$current=explode($eol,$html[0]));
+		$match=NULL;
+		foreach ($current as $header)
+			if (preg_match('/Content-Encoding: (.+)/',$header,$match))
+				break;
+		if ($match)
+			switch ($match[1]) {
+				case 'gzip':
+					$body=gzdecode($body);
+					break;
+				case 'deflate':
+					$body=gzuncompress($body);
+					break;
+			}
+		if ($options['follow_location'] &&
+			preg_match('/Location: (.+?)'.preg_quote($eol).'/',
+			$html[0],$loc)) {
+			$options['max_redirects']--;
+			return $this->request($loc[1],$options);
+		}
+		return array(
+			'body'=>$body,
+			'headers'=>$headers,
+			'engine'=>'socket',
+			'cached'=>FALSE
+		);
+	}
+
+	/**
+		Specify the HTTP request engine to use; If not available,
+		fall back to an applicable substitute
+		@return string
+		@param $arg string
+	**/
+	function engine($arg='socket') {
+		$arg=strtolower($arg);
+		if ($arg=='curl' && ($curl=extension_loaded('curl')) ||
+			$arg=='stream' && ($stream=ini_get('allow_url_fopen')) ||
+			$arg=='socket' && ($socket=function_exists('fsockopen')))
+			$this->wrapper=$arg;
+		elseif ($socket)
+			$this->wrapper='socket';
+		elseif ($stream)
+			$this->wrapper='stream';
+		elseif ($curl)
+			$this->wrapper='curl';
+		else
+			user_error(E_Request);
 	}
 
 	/**
@@ -179,172 +357,78 @@ class Web extends Prefab {
 		@param $options array
 	**/
 	function request($url,array $options=NULL) {
-		if (!is_array($options))
-			$options=array();
 		$fw=Base::instance();
 		$parts=parse_url($url);
 		if (empty($parts['scheme'])) {
 			// Local URL
 			$url=$fw->get('SCHEME').'://'.
 				$fw->get('HOST').
-				($url[0]!='/'?($fw->get('BASE')?:'/'):'').$url;
+				($url[0]!='/'?($fw->get('BASE').'/'):'').$url;
 			$parts=parse_url($url);
 		}
 		elseif (!preg_match('/https?/',$parts['scheme']))
 			return FALSE;
-		if (isset($options['header']) && is_string($options['header']))
+		if (!is_array($options))
+			$options=array();
+		if (empty($options['header']))
+			$options['header']=array();
+		elseif (is_string($options['header']))
 			$options['header']=array($options['header']);
+		if (!$this->wrapper)
+			$this->engine();
+		if ($this->wrapper!='stream') {
+			// PHP streams can't cope with redirects when Host header is set
+			foreach ($options['header'] as &$header)
+				if (preg_match('/^Host:/',$header)) {
+					$header='Host: '.$parts['host'];
+					unset($header);
+					break;
+				}
+			array_push($options['header'],'Host: '.$parts['host']);
+		}
+		array_push($options['header'],
+			'Accept-Encoding: gzip,deflate',
+			'User-Agent: Mozilla/5.0 (compatible; '.php_uname('s').')',
+			'Connection: close'
+		);
+		if (isset($options['content']))
+			array_push($options['header'],
+				'Content-Type: application/x-www-form-urlencoded',
+				'Content-Length: '.strlen($options['content'])
+			);
+		if (isset($parts['user'],$parts['pass']))
+			array_push($options['header'],
+				'Authorization: Basic '.
+					base64_encode($parts['user'].':'.$parts['pass'])
+			);
+		$options['header']=array_unique($options['header']);
 		$options+=array(
 			'method'=>'GET',
-			'header'=>array(
-				'Host: '.$parts['host'],
-				'User-Agent: Mozilla/5.0 (compatible; '.php_uname('s').')',
-				'Connection: close',
-			),
+			'header'=>$options['header'],
 			'follow_location'=>TRUE,
 			'max_redirects'=>20,
-			'ignore_errors'=>TRUE
+			'ignore_errors'=>FALSE
 		);
-		if ($options['method']!='GET')
-			$options['header']+=
-				array('Content-Type: application/x-www-form-urlencoded');
 		$eol="\r\n";
 		if ($fw->get('CACHE') &&
 			preg_match('/GET|HEAD/',$options['method'])) {
 			$cache=Cache::instance();
 			if ($cache->exists(
 				$hash=$fw->hash($options['method'].' '.$url).'.url',$data)) {
-				if (preg_match('/Last-Modified:\s(.+?)'.preg_quote($eol).'/',
+				if (preg_match('/Last-Modified: (.+?)'.preg_quote($eol).'/',
 					implode($eol,$data['headers']),$mod))
-					$options['header']+=array('If-Modified-Since: '.$mod[1]);
+					array_push($options['header'],
+						'If-Modified-Since: '.$mod[1]);
 			}
 		}
-		if (extension_loaded('curl')) {
-			// Use cURL extension
-			$curl=curl_init($url);
-			curl_setopt($curl,CURLOPT_FOLLOWLOCATION,
-				$options['follow_location']);
-			curl_setopt($curl,CURLOPT_MAXREDIRS,
-				$options['max_redirects']);
-			curl_setopt($curl,CURLOPT_CUSTOMREQUEST,$options['method']);
-			if (isset($options['header']))
-				curl_setopt($curl,CURLOPT_HTTPHEADER,$options['header']);
-			if (isset($options['user_agent']))
-				curl_setopt($curl,CURLOPT_USERAGENT,$options['user_agent']);
-			if (isset($options['content']))
-				curl_setopt($curl,CURLOPT_POSTFIELDS,$options['content']);
-			curl_setopt($curl,CURLOPT_CONNECTTIMEOUT,
-				isset($options['timeout'])?
-					$options['timeout']:
-					ini_get('default_socket_timeout'));
-			$headers=array();
-			curl_setopt($curl,CURLOPT_HEADERFUNCTION,
-				function($curl,$line) use(&$headers) {
-					if ($trim=trim($line))
-						$headers[]=$trim;
-					return strlen($line);
-				}
-			);
-			curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,FALSE);
-			ob_start();
-			$out=curl_exec($curl);
-			curl_close($curl);
-			$result=array(
-				'body'=>ob_get_clean(),
-				'headers'=>$headers,
-				'engine'=>'cURL',
-				'cached'=>FALSE
-			);
-		}
-		elseif ($parts['scheme']=='https' && !extension_loaded('openssl'))
-			// short-circuit
-			return FALSE;
-		elseif (ini_get('allow_url_fopen')) {
-			// Use stream wrapper
-			$options['header']=implode($eol,$options['header']);
-			$out=@file_get_contents($url,FALSE,
-				stream_context_create(array('http'=>$options)));
-			$result=array(
-				'body'=>$out,
-				'headers'=>$out?$http_response_header:array(),
-				'engine'=>'stream-wrapper',
-				'cached'=>FALSE
-			);
-		}
-		else {
-			// Use low-level TCP/IP socket
-			$headers=array();
-			$body='';
-			for ($i=0;$i<$options['max_redirects'];$i++) {
-				if (isset($parts['user'],$parts['pass']))
-					$options['header']+=array(
-						'Authorization: Basic '.
-							base64_encode($parts['user'].':'.$parts['pass'])
-					);
-				if (isset($parts['scheme']) && $parts['scheme']=='https') {
-					$parts['host']='ssl://'.$parts['host'];
-					if (empty($parts['port']))
-						$parts['port']=443;
-				}
-				elseif (empty($parts['port']))
-					$parts['port']=80;
-				if (empty($parts['path']))
-					$parts['path']='/';
-				if (empty($parts['query']))
-					$parts['query']='';
-				$socket=@fsockopen($parts['host'],$parts['port'],$code,$text);
-				if (!$socket)
-					return FALSE;
-				stream_set_blocking($socket,1);
-				fputs($socket,$options['method'].' '.$parts['path'].
-					($parts['query']?('?'.$parts['query']):'').' '.
-					'HTTP/1.1'.$eol
-				);
-				fputs($socket,
-					'Content-Length: '.strlen($parts['query']).$eol.
-					'Accept-Encoding: gzip'.$eol
-				);
-				if (isset($options['header']))
-					fputs($socket,implode($eol,$options['header']).$eol);
-				if (isset($options['user_agent']))
-					fputs($socket,'User-Agent: '.$options['user_agent'].$eol);
-				fputs($socket,$eol);
-				if (isset($options['content']))
-					fputs($socket,$options['content'].$eol.$eol);
-				// Get response
-				$content='';
-				while (!feof($socket) &&
-					($info=stream_get_meta_data($socket)) &&
-					!$info['timed_out'] && $str=fgets($socket,4096))
-					$content.=$str;
-				fclose($socket);
-				$html=explode($eol.$eol,$content);
-				$headers=array_merge($headers,explode($eol,$html[0]));
-				$body=$html[1];
-				if (preg_match('/Content-Encoding:\s.*?gzip.*?'.
-					preg_quote($eol).'/',$html[0]))
-					$body=gzinflate(substr($body,10));
-				if (!$options['follow_location'] ||
-					!preg_match('/Location:\s(.+?)'.preg_quote($eol).'/',
-					$html[0],$loc))
-					break;
-				$url=$loc[1];
-				$parts=parse_url($url);
-			}
-			$result=array(
-				'body'=>$body,
-				'headers'=>$headers,
-				'engine'=>'sockets',
-				'cached'=>FALSE
-			);
-		}
+		$result=$this->{'_'.$this->wrapper}($url,$options);
 		if (isset($cache)) {
 			if (preg_match('/HTTP\/1\.\d 304/',
 				implode($eol,$result['headers']))) {
 				$result=$cache->get($hash);
 				$result['cached']=TRUE;
 			}
-			elseif (preg_match('/Cache-Control:\smax-age=(.+?)'.
+			elseif (preg_match('/Cache-Control: max-age=(.+?)'.
 				preg_quote($eol).'/',implode($eol,$result['headers']),$exp))
 				$cache->set($hash,$result,$exp[1]);
 		}
@@ -365,17 +449,18 @@ class Web extends Prefab {
 		if (!$mime)
 			$mime=$this->mime($files[0]);
 		preg_match('/\w+$/',$files[0],$ext);
-		if (!is_dir($tmp=$fw->get('TEMP')))
-			$fw->mkdir($tmp);
+		$cache=Cache::instance();
 		$dst='';
 		foreach ($fw->split($fw->get('UI')) as $dir)
 			foreach ($files as $file)
-				if (is_file($min=$fw->fixslashes($dir.$file))) {
-					if (!is_file($save=($tmp.'/'.
-						$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-						$fw->hash($min).'.'.$ext[0])) ||
-						filemtime($save)<filemtime($min)) {
-						$src=$fw->read($min);
+				if (is_file($save=$fw->fixslashes($dir.$file))) {
+					if ($fw->get('CACHE') &&
+						($cached=$cache->exists(
+							$hash=$fw->hash($save).'.'.$ext[0],$data)) &&
+						$cached>filemtime($save))
+						$dst=$data;
+					else {
+						$src=$fw->read($save);
 						for ($ptr=0,$len=strlen($src);$ptr<$len;) {
 							if ($src[$ptr]=='/') {
 								if (substr($src,$ptr+1,2)=='*@') {
@@ -401,15 +486,13 @@ class Web extends Prefab {
 									// Presume it's a regex pattern
 									$regex=TRUE;
 									// Backtrack and validate
-									$ofs=$ptr;
-									while ($ofs) {
-										$ofs--;
-										// Pattern should be preceded by open
-										// parenthesis,colon (object property)
-										// or operator
+									for ($ofs=$ptr;$ofs;$ofs--) {
+										// Pattern should be preceded by
+										// open parenthesis, colon,
+										// object property or operator
 										if (preg_match(
 											'/(return|[(:=!+\-*&|])$/',
-											substr($src,0,$ofs+1))) {
+											substr($src,0,$ofs))) {
 											$dst.='/';
 											$ptr++;
 											while ($ptr<$len) {
@@ -424,7 +507,7 @@ class Web extends Prefab {
 											}
 											break;
 										}
-										elseif (!ctype_space($src[$ofs])) {
+										elseif (!ctype_space($src[$ofs-1])) {
 											// Not a regex pattern
 											$regex=FALSE;
 											break;
@@ -466,11 +549,10 @@ class Web extends Prefab {
 							}
 							$dst.=$src[$ptr];
 							$ptr++;
+							if ($fw->get('CACHE'))
+								$cache->set($hash,$dst);
 						}
-						$fw->write($save,$dst);
 					}
-					else
-						$dst=$fw->read($save);
 				}
 		if (PHP_SAPI!='cli')
 			header('Content-Type: '.$mime.'; charset='.$fw->get('ENCODING'));
@@ -548,6 +630,29 @@ class Web extends Prefab {
 				'Ů'=>'U','ù'=>'u','ú'=>'u','û'=>'u','ü'=>'u','ů'=>'u',
 				'Ý'=>'Y','Ÿ'=>'Y','ý'=>'y','ÿ'=>'y','Ž'=>'Z','ž'=>'z'
 			))))),'-');
+	}
+
+}
+
+if (!function_exists('gzdecode')) {
+
+	/**
+		Decode gzip-compressed string
+		@param $data string
+		@param $len int
+	**/
+	function gzdecode($str,$len=0) {
+		$fw=Base::instance();
+		if (!is_dir($tmp=$fw->get('TEMP')))
+			mkdir($tmp,Base::MODE,TRUE);
+		file_put_contents($file=$tmp.'/'.
+			$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+			$fw->hash(uniqid()).'.gz',$str,LOCK_EX);
+		ob_start();
+		readgzfile($file);
+		$out=ob_get_clean();
+		@unlink($file);
+		return $out;
 	}
 
 }

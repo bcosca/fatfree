@@ -105,6 +105,7 @@ class SQL extends \PDO {
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
 		foreach (array_combine($cmds,$args) as $cmd=>$arg) {
+			$now=microtime(TRUE);
 			$keys=$vals=array();
 			if ($fw->get('CACHE') && $ttl && ($cached=$cache->exists(
 				$hash=$fw->hash($cmd.$fw->stringify($arg)).'.sql',
@@ -137,7 +138,7 @@ class SQL extends \PDO {
 					user_error('PDOStatement: '.$error[2]);
 				}
 				if (preg_match(
-					'/^\s*(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW)\s/i',$cmd)) {
+					'/\b(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW)\b/i',$cmd)) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);
 					$this->rows=count($result);
 					if ($fw->get('CACHE') && $ttl)
@@ -158,7 +159,8 @@ class SQL extends \PDO {
 					user_error('PDO: '.$error[2]);
 				}
 			}
-			$this->log.=date('r').' '.
+			$this->log.=date('r').' ('.
+				sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 				preg_replace($keys,$vals,$cmd,1).PHP_EOL;
 		}
 		if ($this->trans && $auto)
@@ -175,7 +177,7 @@ class SQL extends \PDO {
 	}
 
 	/**
-		Return SQL command history
+		Return SQL profiler results
 		@return string
 	**/
 	function log() {

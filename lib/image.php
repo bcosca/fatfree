@@ -36,6 +36,8 @@ class Image {
 		$file,
 		//! Image resource
 		$data,
+		//! Enable/disable history
+		$flag=FALSE,
 		//! Filter count
 		$count=0;
 
@@ -49,8 +51,10 @@ class Image {
 		if (($len=strlen($hex))>6)
 			user_error(sprintf(self::E_Color,'0x'.$hex));
 		$color=str_split($hex,$len/3);
-		foreach ($color as &$hue)
+		foreach ($color as &$hue) {
 			$hue=hexdec(str_repeat($hue,6/$len));
+			unset($hue);
+		}
 		return $color;
 	}
 
@@ -300,9 +304,9 @@ class Image {
 		list($r,$g,$b)=$this->rgb(mt_rand(0x333,0xCCC));
 		$fg=imagecolorallocate($this->data,$r,$g,$b);
 		imagefill($this->data,0,0,IMG_COLOR_TRANSPARENT);
-		$hash=md5($str);
+		$hash=sha1($str);
 		$ctr=count($sprites);
-		$dim=$blocks*(int)($size/$blocks)*2/$blocks;
+		$dim=$blocks*floor($size/$blocks)*2/$blocks;
 		for ($j=0,$y=ceil($blocks/2);$j<$y;$j++)
 			for ($i=$j,$x=$blocks-1-$j;$i<$x;$i++) {
 				$sprite=imagecreatetruecolor($dim,$dim);
@@ -428,13 +432,15 @@ class Image {
 	**/
 	function save() {
 		$fw=Base::instance();
-		if (!is_dir($dir=$fw->get('TEMP')))
-			mkdir($dir,Base::MODE,TRUE);
-		$this->count++;
-		$fw->write($dir.'/'.
-			$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-			$fw->hash($this->file).'-'.$this->count.'.png',
-			$this->dump());
+		if ($this->flag) {
+			if (!is_dir($dir=$fw->get('TEMP')))
+				mkdir($dir,Base::MODE,TRUE);
+			$this->count++;
+			$fw->write($dir.'/'.
+				$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+				$fw->hash($this->file).'-'.$this->count.'.png',
+				$this->dump());
+		}
 		return $this;
 	}
 
@@ -445,7 +451,7 @@ class Image {
 	**/
 	function restore($state=1) {
 		$fw=Base::instance();
-		if (is_file($file=($path=$fw->get('TEMP').
+		if ($this->flag && is_file($file=($path=$fw->get('TEMP').
 			$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash($this->file).'-').$state.'.png')) {
 			if (is_resource($this->data))
@@ -455,7 +461,7 @@ class Image {
 			foreach (glob($path.'*.png',GLOB_NOSORT) as $match)
 				if (preg_match('/-(\d+)\.png/',$match,$parts) &&
 					$parts[1]>$state)
-					$fw->unlink($match);
+					@unlink($match);
 			$this->count=$state;
 		}
 		return $this;
@@ -466,16 +472,21 @@ class Image {
 		@return object
 	**/
 	function undo() {
-		if ($this->count)
-			$this->count--;
-		return $this->restore($this->count);
+		if ($this->flag) {
+			if ($this->count)
+				$this->count--;
+			return $this->restore($this->count);
+		}
+		return $this;
 	}
 
 	/**
 		Instantiate image
 		@param $file string
+		@param $flag bool
 	**/
-	function __construct($file=NULL) {
+	function __construct($file=NULL,$flag=FALSE) {
+		$this->flag=$flag;
 		if ($file) {
 			$fw=Base::instance();
 			// Create image from file
@@ -502,7 +513,7 @@ class Image {
 				$fw->hash($this->file);
 			foreach (glob($path.'*.png',GLOB_NOSORT) as $match)
 				if (preg_match('/-(\d+)\.png/',$match))
-					$fw->unlink($match);
+					@unlink($match);
 		}
 	}
 

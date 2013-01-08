@@ -185,6 +185,16 @@ An important point to consider: You will get Fat-Free (and yourself) confused if
 
 Wait a second - in all the previous examples, we never really created any directory in our hard drive to store these routes. The short answer: we don't have to. All F3 routes are virtual. They don't mirror our hard disk folder structure. If you have programs or static files (images, CSS, etc.) that do not use the framework - as long as the paths to these files do not conflict with any route defined in your application - your Web server software will deliver them to the user's browser, provided the server is configured properly.
 
+### PHP 5.4's Built-In Web Server
+
+F3 works seamlessly with PHP's latest stable version has its own Web server. Start it up using the following configuration:-
+
+``` bash
+php -S localhost:80 -t /var/www/
+```
+
+The above command will start routing all requests to the Web root `/var/www`. If an imcoming HTTP request for a file or folder is received, PHP will look for it inside the Web root and send it over to the browser if found. Otherwise, PHP will load the default `index.php` (containing your F3-enabled code).
+
 ### Sample Apache Configuration
 
 If you're using Apache, make sure you activate the URL rewriting module (mod_rewrite) in your apache.conf (or httpd.conf) file. You should also create a .htaccess file containing the following:-
@@ -302,7 +312,9 @@ $f3->error(404);
 
 ### Representational State Transfer (ReST)
 
-Fat-Free's architecture is based on the concept that HTTP URIs represent abstract Web resources (not limited to HTML) and each resource can move from one application state to another. Here's an example of a ReST interface:-
+Fat-Free's architecture is based on the concept that HTTP URIs represent abstract Web resources (not limited to HTML) and each resource can move from one application state to another. For this reason, F3 does not have any restrictions on the way you structure your application. If you prefer to use the [Model-View-Controller](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) pattern, F3 can help you compartmentalize your application components to stick to this paradigm. On the other hand, the framework also supports the [Resource-Method-Representation](http://www.peej.co.uk/articles/rmr-architecture.html) pattern, and implementing it is more straightforward.
+
+Here's an example of a ReST interface:-
 
 ``` php
 class Item {
@@ -317,7 +329,7 @@ $f3->map('/cart/@item','Item');
 $f3->run();
 ```
 
-Fat-Free's `$f3->map()` method provides a ReST interface by mapping routes to the equivalent methods of an object or a PHP class. If your application receives an incoming HTTP request like `GET /cart/123`, Fat-Free will automatically transfer control to the object's or class' `get()` method. On the other hand, a `POST /cart/123` request will be routed to the `Item` class' `post()` method.
+Fat-Free's `$f3->map()` method provides a ReST interface by mapping HTTP methods in routes to the equivalent methods of an object or a PHP class. If your application receives an incoming HTTP request like `GET /cart/123`, Fat-Free will automatically transfer control to the object's or class' `get()` method. On the other hand, a `POST /cart/123` request will be routed to the `Item` class' `post()` method.
 
 Note: Browsers do not implement the HTTP `PUT` and `DELETE` methods in regular HTML forms. These and other ReST methods (`HEAD`, and `CONNECT`) are accessible only via AJAX calls to the server.
 
@@ -410,6 +422,19 @@ $f3->route('GET /public/@controller/@action','@controller->@action');
 ```
 
 F3 triggers an `HTTP 404 Not Found` error at runtime if it cannot transfer control to the class or method associated with the current route, i.e. an undefined class or method.
+
+### AJAX and Synchronous Requests
+
+Routing patterns may contain modifiers that direct the framework to base its routing decision on the type of HTTP request:-
+
+``` php
+$f3->route('GET /example [ajax]','Page->getFragment');
+$f3->route('GET /example [sync]','Page->getFull');
+```
+
+The first statement will route the HTTP request to `getFragment()` only if an `X-Requested-With: XMLHttpRequest` header is received. If an ordinary (synchronous) request was detected, F3 will simply drop down to the next matching pattern, and in this case it executes `getFull()`.
+
+If no modifiers are defined in a routing pattern, then both AJAX and synchronous request types are routed to the specified handler.
 
 ## Framework Variables
 
@@ -1592,18 +1617,28 @@ There's also a `select()` method that's similar to `find()` but provides more fi
 
 ``` php
 select(
-    fields,
-    criteria,
+    'foo, bar, MIN(baz) AS lowest',
+    'foo > ?,
     array(
-        'group'=>...,
-        'order'=>...,
-        'limit'=>...,
-        'offset'=>...
+        'group'=>'foo, bar',
+        'order'=>'baz ASC',
+        'limit'=>5,
+        'offset'=>3
     )
 );
 ```
 
 Much like the `find()` method, `select()` does not alter the mapper object's contents. It only serves as a convenience method for querying a mapped table. The return value of both methods is an array of mapper objects. Using `dry()` to determine whether a record was found by an of these methods is inappropriate. If no records match the `find()` or `select()` criteria, the return value is an empty array.
+
+### Profiling
+
+If you ever want to find out which SQL statements issued directly by your application (or indirectly thru mapper objects) are causing performance bottlenecks, you can do so with a simple:-
+
+``` php
+echo $db->log();
+```
+
+F3 keeps track of all commands issued to the underlying SQL database driver, as well as the time it takes for each statement to complete - just the right information you need to tweak application performance.
 
 ### Sometimes It Just Ain't Enough
 
@@ -1929,13 +1964,27 @@ foreach ($test->results() as $result) {
 
 Save it in a file called `test.php`. This way we can preserve the integrity of `hello.php`.
 
-### Expecting the Worst that can Happen
-
 Now here's the meat of our unit testing process.
 
 F3's built-in `Test` class keeps track of the result of each `expect()` call. The output of `$test->results()` is an array of arrays with the keys `text` (mirroring argument 2 of `expect()`), `status` (boolean representing the result of a test), and `source` (file name/line number of the specific test) to aid in debugging.
 
 Fat-Free gives you the freedom to display test results in any way you want. You can have the output in plain text or even a nice-looking HTML template. So how do we run our unit test? If you saved `test.php` in the document root folder, you can just open your browser and specify the address `http://localhost/test.php`. That's all there is to it.
+
+### Mocking HTTP Requests
+
+F3 gives you the ability to simulate HTTP requests from within your PHP program so you can test the behavior of a particular route. Here's a simple mock request:-
+
+``` php
+$f3->mock('GET /test?foo=bar');
+```
+
+To mock a POST request and submit a simulated HTML form:-
+
+``` php
+$f3->mock('POST /test',array('foo'=>'bar'));
+```
+
+### Expecting the Worst that can Happen
 
 Once you get the hang of testing the smallest units of your application, you can then move on to the bigger components, modules, and subsystems - checking along the way if the parts are correctly communicating with each other. Testing manageable chunks of code leads to more reliable programs that work as you expect, and weaves the testing process into the fabric of your development cycle. The question to ask yourself is:- Have I tested all possible scenarios? More often than not, those situations that have not been taken into consideration are the likely causes of bugs. Unit testing helps a lot in minimizing these occurrences. Even a few tests on each fixture can greatly reduce headaches. On the other hand, writing applications without unit testing at all invites trouble.
 
@@ -2214,7 +2263,7 @@ To file a bug report, visit [https://github.com/bcosca/fatfree/issues](https://g
 
 ### Fair Licensing
 
-Fat-Free Framework is free and released as open source software covered by the terms of the GNU Public License (GPL v3). You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a fee.
+Fat-Free Framework is free and released as open source software covered by the terms of the GNU Public License (GPL v3). You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a reasonable fee.
 If you feel that this software is one great weapon to have in your programming arsenal, it saves you a lot of time and money, use it for commercial gain or in your business organization, please consider making a donation to the project. A significant amount of time, effort, and money has been spent on this project. Your donations help keep this project alive and the development team motivated. Donors and sponsors get priority support (24-hour response time on business days).
 
 ### Credits

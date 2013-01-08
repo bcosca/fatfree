@@ -81,4 +81,21 @@ class Matrix extends Prefab {
 		$var=array_combine($keys,$vals);
 	}
 
+	/**
+		Return month calendar of specified date, with optional setting for
+		first day of week (0 for Sunday)
+		@return array
+		@param $date string
+		@param $first int
+	**/
+	function calendar($date='now',$first=0) {
+		$parts=getdate(strtotime($date));
+		$days=cal_days_in_month(CAL_GREGORIAN,$parts['mon'],$parts['year']);
+		$ref=date('w',strtotime(date('Y-m',$parts[0]).'-01'))+(7-$first)%7;
+		$out=array();
+		for ($i=0;$i<$days;$i++)
+			$out[floor(($ref+$i)/7)][($ref+$i)%7]=$i+1;
+		return $out;
+	}
+
 }

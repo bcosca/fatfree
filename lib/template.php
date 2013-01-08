@@ -198,7 +198,7 @@ class Template extends View {
 				'/{{(.+?)}}/s',
 				function($expr) use($self) {
 					$str=trim($self->token($expr[1]));
-					if (preg_match('/^(.+?)\s*\|\s*(raw|esc|format)$/',
+					if (preg_match('/^(.+?)\h*\|\h*(raw|esc|format)$/',
 						$str,$parts))
 						$str='Base::instance()->'.$parts[2].'('.$parts[1].')';
 					return '<?php echo '.$str.'; ?>';
@@ -257,12 +257,12 @@ class Template extends View {
 						$fw->read($view));
 					// Build tree structure
 					for ($ptr=0,$len=strlen($text),$tree=array(),$node=&$tree,
-						$stack=array(),$depth=0,$temp='';$ptr<$len;)
+						$stack=array(),$depth=0,$tmp='';$ptr<$len;)
 						if (preg_match('/^<(\/?)(?:F3:)?('.$this->tags.')\b'.
-							'((?:\s+\w+s*=\s*(?:"(?:.+?)"|\'(?:.+?)\'))*)\s*'.
-							'(\/?)>/is',substr($text,$ptr),$match)) {
-							if (strlen($temp))
-								$node[]=$temp;
+							'((?:\h+\w+\h*=\h*(?:"(?:.+?)"|\'(?:.+?)\'))*)'.
+							'\h*(\/?)>/is',substr($text,$ptr),$match)) {
+							if (strlen($tmp))
+								$node[]=$tmp;
 							// Element node
 							if ($match[1]) {
 								// Find matching start tag
@@ -290,8 +290,8 @@ class Template extends View {
 								if ($match[3]) {
 									// Process attributes
 									preg_match_all(
-										'/\s+(\w+)\s*='.
-										'\s*(?:"(.+?)"|\'(.+?)\')/s',
+										'/\b(\w+)\h*=\h*'.
+										'(?:"(.+?)"|\'(.+?)\')/s',
 										$match[3],$attr,PREG_SET_ORDER);
 									foreach ($attr as $kv)
 										$node['@attrib'][$kv[1]]=
@@ -303,17 +303,17 @@ class Template extends View {
 								else
 									$depth++;
 							}
-							$temp='';
+							$tmp='';
 							$ptr+=strlen($match[0]);
 						}
 						else {
 							// Text node
-							$temp.=$text[$ptr];
+							$tmp.=$text[$ptr];
 							$ptr++;
 						}
-					if (strlen($temp))
+					if (strlen($tmp))
 						// Append trailing text
-						$node[]=$temp;
+						$node[]=$tmp;
 					// Break references
 					unset($node);
 					unset($stack);

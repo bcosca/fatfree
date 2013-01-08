@@ -87,4 +87,43 @@ class Audit extends Prefab {
 			FILTER_FLAG_NO_PRIV_RANGE|FILTER_FLAG_NO_RES_RANGE);
 	}
 
+	/**
+		Return TRUE if specified ID has a valid (Luhn) Mod-10 check digit
+		@return bool
+		@param $id string
+	**/
+	function mod10($id) {
+		if (!ctype_digit($id))
+			return FALSE;
+		$id=strrev($id);
+		$sum=0;
+		for ($i=0,$l=strlen($id);$i<$l;$i++)
+			$sum+=$id[$i]+$i%2*(($id[$i]>4)*-4+$id[$i]%5);
+		return !($sum%10);
+	}
+
+	/**
+		Return credit card type if number is valid
+		@return string|FALSE
+		@param $id string
+	**/
+	function card($id) {
+		$id=preg_replace('/[^\d]/','',$id);
+		if ($this->mod10($id)) {
+			if (preg_match('/^3[47][0-9]{13}$/',$id))
+				return 'American Express';
+			if (preg_match('/^3(?:0[0-5]|[68][0-9])[0-9]{11}$/',$id))
+				return 'Diners Club';
+			if (preg_match('/^6(?:011|5[0-9][0-9])[0-9]{12}$/',$id))
+				return 'Discover';
+			if (preg_match('/^(?:2131|1800|35\d{3})\d{11}$/',$id))
+				return 'JCB';
+			if (preg_match('/^5[1-5][0-9]{14}$/',$id))
+				return 'MasterCard';
+			if (preg_match('/^4[0-9]{12}(?:[0-9]{3})?$/',$id))
+				return 'Visa';
+		}
+		return FALSE;
+	}
+
 }

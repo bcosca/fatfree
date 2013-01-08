@@ -135,8 +135,9 @@ class Mapper extends \DB\Cursor {
 		@return array|FALSE
 		@param $filter array
 		@param $options array
+		@param $log bool
 	**/
-	function find($filter=NULL,array $options=NULL) {
+	function find($filter=NULL,array $options=NULL,$log=TRUE) {
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -146,28 +147,28 @@ class Mapper extends \DB\Cursor {
 		);
 		$fw=\Base::instance();
 		$db=$this->db;
+		$now=microtime(TRUE);
 		$data=$db->read($this->file);
 		if ($filter) {
 			if (!is_array($filter))
 				return FALSE;
-			// Prefix variables to prevent conflict with user code
+			// Prefix local variables to avoid conflict with user code
 			$_self=$this;
-			$_args=array();
-			$params=isset($filter[1]) && is_array($filter[1])?
+			$_args=isset($filter[1]) && is_array($filter[1])?
 				$filter[1]:
 				array_slice($filter,1,NULL,TRUE);
-			list($filter)=$filter;
-			$_args+=is_array($params)?$params:array(1=>$params);
-			$_expr=$filter;
+			$_args=is_array($_args)?$_args:array(1=>$_args);
+			$keys=$vals=array();
+			list($_expr)=$filter;
 			$data=array_filter($data,
-				function($_) use($_expr,$_args,$_self) {
-					extract($_);
+				function($_row) use($_expr,$_args,$_self) {
+					extract($_row);
 					$_ctr=0;
-					// Evaluate user code
+					// Evaluate pseudo-SQL expression
 					return eval('return '.
 						preg_replace_callback(
 							'/(\:\w+)|(\?)/',
-							function($token) use($_args,$_self,&$_ctr) {
+							function($token) use($_args,&$_ctr) {
 								// Parameterized query
 								if ($token[1])
 									// Named
@@ -191,8 +192,8 @@ class Mapper extends \DB\Cursor {
 		}
 		if (isset($options['order']))
 			foreach (array_reverse($fw->split($options['order'])) as $col) {
-				$parts=explode(' ',$col);
-				$order=isset($parts[1])?constant($parts[1]):SORT_ASC;
+				$parts=explode(' ',$col,2);
+				$order=empty($parts[1])?SORT_ASC:constant($parts[1]);
 				uasort(
 					$data,
 					function($val1,$val2) use($col,$order) {
@@ -209,6 +210,16 @@ class Mapper extends \DB\Cursor {
 		foreach (array_slice($data,
 			$options['offset'],$options['limit']?:NULL,TRUE) as $id=>$doc)
 			$out[]=$this->factory($id,$doc);
+		if ($log) {
+			if ($filter)
+				foreach ($_args as $key=>$val) {
+					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
+					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
+				}
+			$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+				$this->file.' [find] '.
+				($filter?preg_replace($keys,$vals,$filter[0],1):''));
+		}
 		return $out;
 	}
 
@@ -218,7 +229,11 @@ class Mapper extends \DB\Cursor {
 		@param $filter array
 	**/
 	function count($filter=NULL) {
-		return count($this->find($filter));
+		$now=microtime(TRUE);
+		$out=count($this->find($filter,NULL,FALSE));
+		$this->db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+			$this->file.' [count] '.($filter?json_encode($filter):''));
+		return $out;
 	}
 
 	/**
@@ -239,13 +254,18 @@ class Mapper extends \DB\Cursor {
 	**/
 	function insert() {
 		$db=$this->db;
-		while (($id=dechex(microtime(TRUE)*100)) &&
-			($data=$db->read($this->file)) && isset($data[$id]))
+		$now=microtime(TRUE);
+		while (($id=uniqid()) &&
+			($data=$db->read($this->file)) && isset($data[$id]) &&
+			!connection_aborted())
 			usleep(mt_rand(0,100));
 		$this->id=$id;
 		$data[$id]=$this->document;
 		$db->write($this->file,$data);
 		parent::reset();
+		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+			$this->file.' [insert] '.
+			json_encode(array('_id'=>$this->id)+$this->document));
 		return $this->document;
 	}
 
@@ -255,9 +275,13 @@ class Mapper extends \DB\Cursor {
 	**/
 	function update() {
 		$db=$this->db;
+		$now=microtime(TRUE);
 		$data=$db->read($this->file);
 		$data[$this->id]=$this->document;
 		$db->write($this->file,$data);
+		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+			$this->file.' [update] '.
+			json_encode(array('_id'=>$this->id)+$this->document));
 		return $this->document;
 	}
 
@@ -268,9 +292,10 @@ class Mapper extends \DB\Cursor {
 	**/
 	function erase($filter=NULL) {
 		$db=$this->db;
+		$now=microtime(TRUE);
 		$data=$db->read($this->file);
 		if ($filter) {
-			$data=$this->find($filter);
+			$data=$this->find($filter,NULL,FALSE);
 			foreach (array_keys(array_reverse($data)) as $id)
 				unset($data[$id]);
 		}
@@ -282,6 +307,20 @@ class Mapper extends \DB\Cursor {
 		else
 			return FALSE;
 		$db->write($this->file,$data);
+		if ($filter) {
+			$_args=isset($filter[1]) && is_array($filter[1])?
+				$filter[1]:
+				array_slice($filter,1,NULL,TRUE);
+			$_args=is_array($_args)?$_args:array(1=>$_args);
+			foreach ($_args as $key=>$val) {
+				$vals[]=\Base::instance()->
+					stringify(is_array($val)?$val[0]:$val);
+				$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
+			}
+		}
+		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+			$this->file.' [erase] '.
+			($filter?preg_replace($keys,$vals,$filter[0],1):''));
 		return TRUE;
 	}
 
@@ -290,6 +329,7 @@ class Mapper extends \DB\Cursor {
 		@return NULL
 	**/
 	function reset() {
+		$this->id=NULL;
 		$this->document=array();
 		parent::reset();
 	}

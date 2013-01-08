@@ -48,4 +48,13 @@ class Test {
 			}
 	}
 
+	/**
+		Push message to test results
+		@return NULL
+		@param $text string
+	**/
+	function message($text) {
+		$this->expect(TRUE,$text);
+	}
+
 }

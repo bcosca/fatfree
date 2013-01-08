@@ -61,7 +61,7 @@ abstract class Cursor extends \Magic {
 		@return bool
 	**/
 	function dry() {
-		return !(bool)$this->query;
+		return empty($this->query[$this->ptr]);
 	}
 
 	/**
@@ -150,9 +150,9 @@ abstract class Cursor extends \Magic {
 		@param $ofs int
 	**/
 	function skip($ofs=1) {
-		$ofs+=$this->ptr;
-		return $ofs>-1 && $ofs<count($this->query)?
-			$this->query[$this->ptr=$ofs]:FALSE;
+		$this->ptr+=$ofs;
+		return $this->ptr>-1 && $this->ptr<count($this->query)?
+			$this->query[$this->ptr]:FALSE;
 	}
 
 	/**

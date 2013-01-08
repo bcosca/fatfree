@@ -61,7 +61,7 @@
 		<p>The <a href="<?php echo $BASE; ?>/userref">User Reference</a> is designed to serve as a handbook and quick reference. However, the online documentation at <code><a href="https://github.com/bcosca/fatfree" onclick="window.open(this.href); return false;">https://github.com/bcosca/fatfree</a></code> provides the latest and most comprehensive information about the framework.</p>
 		<p>The help file included in the distribution (<code>lib/f3.chm</code>) is at your disposal if you need to take a close look at the Fat-Free API.</p>
 		<h3>Fair Licensing</h3>
-		<p>Fat-Free Framework is free and released as open source software covered by the terms of the GNU Public License (GPL v3). You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a fee.</p>
+		<p>Fat-Free Framework is free and released as open source software covered by the terms of the GNU Public License (GPL v3). You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a reasonable fee.</p>
 		<p>If you feel that this software is one great weapon to have in your programming arsenal, it saves you a lot of time and money, use it for commercial gain or in your business organization, please consider making a donation to the project. A significant amount of time, effort, and money has been spent on this project. Your donations help keep this project alive and the development team motivated. Donors and sponsors get priority support (24-hour response time on business days).</p>
 		<h3>Support F3</h3>
 		<p>F3 is community-driven open-source software. Support the development of the Fat-Free Framework. Your contributions help keep this project alive.</p>
@@ -71,6 +71,7 @@
 	<div class="footer">
 		<p><small>Fat-Free Framework is licensed under the terms of the GPL v3<br />
 		Copyright &copy; 2009-2011 F3::Factory</small></p>
+		<pre><?php echo Base::instance()->format('Page rendered in {0} msecs / Memory usage {1} Kibytes',round(1e3*(microtime(TRUE)-$TIME),2),round(memory_get_usage(TRUE)/1e3,1)); ?></pre>
 	</div>
 </body>
 </html>
