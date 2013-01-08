@@ -432,9 +432,11 @@ $f3->route('GET /example [ajax]','Page->getFragment');
 $f3->route('GET /example [sync]','Page->getFull');
 ```
 
-The first statement will route the HTTP request to `getFragment()` only if an `X-Requested-With: XMLHttpRequest` header is received. If an ordinary (synchronous) request was detected, F3 will simply drop down to the next matching pattern, and in this case it executes `getFull()`.
+The first statement will route the HTTP request to the `Page->getFragment()` callback only if an `X-Requested-With: XMLHttpRequest` header (AJAX object) is received by the server. If an ordinary (synchronous) request is detected, F3 will simply drop down to the next matching pattern, and in this case it executes the `Page->getFull()` callback.
 
 If no modifiers are defined in a routing pattern, then both AJAX and synchronous request types are routed to the specified handler.
+
+Route pattern modifiers are also recognized by `$f3->map()`.
 
 ## Framework Variables
 
@@ -723,7 +725,7 @@ $f3->route('GET /',
         $f3->set('name','world');
         $template=new Template;
         echo $template->render('template.htm');
-        // Above lines can be writtern as:-
+        // Above lines can be written as:-
         echo Template::instance()->render('template.htm');
     }
 );
@@ -765,7 +767,7 @@ F3 allows you to embed expressions in templates. These expressions may take on v
 <option value="F" {{ @active?'selected="selected"':'' }}>Female</option>
 {{ (int)765.29+1.2e3 }}
 {{ var_dump(@xyz) }}
-You answered {{ (preg_match('/Yes/i',@response)?'posi':'nega') }}tively
+You answered {{ preg_match('/Yes/i',@response)?'posi':'nega' }}tively
 {{ @obj->property }}
 ```
 
