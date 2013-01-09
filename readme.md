@@ -1321,7 +1321,7 @@ With Jig, the syntax is similar to F3's template engine:-
 ``` php
 $db=new DB\Jig('db/data/',DB\Jig::FORMAT_JSON);
 $user=new DB\Jig\Mapper($db,'users');
-$user->load(array('@userID==?','tarzan'));
+$user->load(array('@userID=?','tarzan'));
 ```
 
 ### The Smart SQL ORM
@@ -1380,7 +1380,7 @@ Jig's query syntax would be slightly similar:-
 
 ``` php
 $user=new DB\Jig\Mapper($db,'users');
-$user->load(array('@userID==? AND @password==?','cheetah','chimp'));
+$user->load(array('@userID=? AND @password=?','cheetah','chimp'));
 $user->erase();
 ```
 
