@@ -148,11 +148,11 @@ class Mapper extends \DB\Cursor {
 		$fw=\Base::instance();
 		$db=$this->db;
 		$now=microtime(TRUE);
+		// Prefix variables to avoid conflict with user code
 		$data=$db->read($this->file);
 		if ($filter) {
 			if (!is_array($filter))
 				return FALSE;
-			// Prefix local variables to avoid conflict with user code
 			$_self=$this;
 			$_args=isset($filter[1]) && is_array($filter[1])?
 				$filter[1]:
@@ -160,6 +160,10 @@ class Mapper extends \DB\Cursor {
 			$_args=is_array($_args)?$_args:array(1=>$_args);
 			$keys=$vals=array();
 			list($_expr)=$filter;
+			foreach ($data as $key=>&$val) {
+				$val['_id']=$key;
+				unset($val);
+			}
 			$data=array_filter($data,
 				function($_row) use($_expr,$_args,$_self) {
 					extract($_row);
@@ -308,11 +312,11 @@ class Mapper extends \DB\Cursor {
 			return FALSE;
 		$db->write($this->file,$data);
 		if ($filter) {
-			$_args=isset($filter[1]) && is_array($filter[1])?
+			$args=isset($filter[1]) && is_array($filter[1])?
 				$filter[1]:
 				array_slice($filter,1,NULL,TRUE);
-			$_args=is_array($_args)?$_args:array(1=>$_args);
-			foreach ($_args as $key=>$val) {
+			$args=is_array($args)?$args:array(1=>$args);
+			foreach ($args as $key=>$val) {
 				$vals[]=\Base::instance()->
 					stringify(is_array($val)?$val[0]:$val);
 				$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
