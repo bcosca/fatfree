@@ -21,7 +21,7 @@ class Jig extends Controller {
 			is_object($movie),
 			'Mapper instantiated'
 		);
-		$movie->load(array('@title==?','The Hobbit'));
+		$movie->load(array('@title=?','The Hobbit'));
 		$test->expect(
 			$movie->dry(),
 			'Mapper is dry'
@@ -34,7 +34,7 @@ class Jig extends Controller {
 			$db->log(),
 			'Jig profiler active'
 		);
-		$movie->load(array('@title==?','Donnie Brasco'));
+		$movie->load(array('@title=?','Donnie Brasco'));
 		$test->expect(
 			$movie->count()==1 &&
 			$movie->get('title')=='Donnie Brasco' &&
@@ -59,7 +59,7 @@ class Jig extends Controller {
 		$movie->save();
 		$movie->load(
 			array(
-				'@title==? AND @director==?',
+				'@title=? AND @director=?',
 				'The River Murders',
 				'Rich Cowan'
 			)
@@ -72,7 +72,7 @@ class Jig extends Controller {
 		);
 		$movie->load(
 			array(
-				'@title==? AND @director==?',
+				'@title=? AND @director=?',
 				array(
 					1=>'The River Murders',
 					2=>'Rich Cowan'
@@ -87,7 +87,7 @@ class Jig extends Controller {
 		);
 		$movie->load(
 			array(
-				'@title==:title && @director==:director',
+				'@title=:title && @director=:director',
 				':title'=>'The River Murders',
 				':director'=>'Rich Cowan'
 			)
@@ -100,7 +100,7 @@ class Jig extends Controller {
 		);
 		$movie->load(
 			array(
-				'@title==:title && @director==:director',
+				'@title=:title && @director=:director',
 				array(
 					':title'=>'The River Murders',
 					':director'=>'Rich Cowan'
@@ -205,7 +205,7 @@ class Jig extends Controller {
 			!$movie->next() && $movie->dry(),
 			'Navigation beyond cursor limit'
 		);
-		$obj=$movie->findone(array('@title==?','Zodiac'));
+		$obj=$movie->findone(array('@title=?','Zodiac'));
 		$class=get_class($obj);
 		$test->expect(
 			$class=='DB\Jig\Mapper' &&
@@ -214,7 +214,7 @@ class Jig extends Controller {
 			$obj->get('year')==2007,
 			'Object returned by findone(): '.$class
 		);
-		$array=$movie->afindone(array('@title==?','Zodiac'));
+		$array=$movie->afindone(array('@title=?','Zodiac'));
 		$test->expect(
 			$array['title']=='Zodiac' &&
 			$array['director']=='David Fincher' &&
