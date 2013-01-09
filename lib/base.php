@@ -840,7 +840,7 @@ final class Base {
 					'<h1>'.$header.'</h1>'.$eol.
 					'<p>'.
 						$this->encode($text?:$req).'</p>'.$eol.
-					'<pre>'.$eol.$out.'</pre>'.$eol.
+					($debug?('<pre>'.$eol.$out.'</pre>'.$eol):'').
 				'</body>'.$eol.
 				'</html>';
 	}
