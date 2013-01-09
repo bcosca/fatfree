@@ -34,7 +34,7 @@ class Jig extends Controller {
 			$db->log(),
 			'Jig profiler active'
 		);
-		$movie->load(array('@title=?','Donnie Brasco'));
+		$movie->load(array('preg_match(?,@title)','/Donnie Brasco/'));
 		$test->expect(
 			$movie->count()==1 &&
 			$movie->get('title')=='Donnie Brasco' &&
