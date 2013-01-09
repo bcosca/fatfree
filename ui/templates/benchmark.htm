@@ -1,0 +1,9 @@
+<div>
+	<repeat group="{{ @div }}" key="{{ @dkey }}" value="{{ @dval }}">
+	<p><span>{{ @dkey }}</span>
+		<repeat group="{{ @dval }}" key="{{ @skey }}" value="{{ @sval }}">
+		<span>{{ @skey }}: {{ @sval }}</span>
+		</repeat>
+	</p>
+	</repeat>
+</div>
