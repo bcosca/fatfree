@@ -106,7 +106,7 @@ class Mapper extends \DB\Cursor {
 		$self=$this;
 		$str=preg_replace_callback(
 			'/(?<!\w)@(\w(?:[\w\.\[\]])*)/',
-			function($var) use($self) {
+			function($token) use($self) {
 				// Convert from JS dot notation to PHP array notation
 				return '$'.preg_replace_callback(
 					'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
@@ -122,7 +122,7 @@ class Mapper extends \DB\Cursor {
 									$mix)).
 							']';
 					},
-					$var[1]
+					$token[1]
 				);
 			},
 			$str
@@ -148,11 +148,15 @@ class Mapper extends \DB\Cursor {
 		$fw=\Base::instance();
 		$db=$this->db;
 		$now=microtime(TRUE);
-		// Prefix variables to avoid conflict with user code
 		$data=$db->read($this->file);
+		foreach ($data as $key=>&$val) {
+			$val['_id']=$key;
+			unset($val);
+		}
 		if ($filter) {
 			if (!is_array($filter))
 				return FALSE;
+			// Prefix variables to avoid conflict with user code
 			$_self=$this;
 			$_args=isset($filter[1]) && is_array($filter[1])?
 				$filter[1]:
@@ -160,16 +164,17 @@ class Mapper extends \DB\Cursor {
 			$_args=is_array($_args)?$_args:array(1=>$_args);
 			$keys=$vals=array();
 			list($_expr)=$filter;
-			foreach ($data as $key=>&$val) {
-				$val['_id']=$key;
-				unset($val);
-			}
+			preg_match_all('/(?<!\w)@(\w(?:[\w\.\[\]])*)/',
+				$_expr,$matches,PREG_SET_ORDER);
+			$_pre='';
+			foreach ($matches as $match)
+				$_pre.='isset($'.$match[1].') && ';
 			$data=array_filter($data,
-				function($_row) use($_expr,$_args,$_self) {
+				function($_row) use($_pre,$_expr,$_args,$_self) {
 					extract($_row);
 					$_ctr=0;
 					// Evaluate pseudo-SQL expression
-					return eval('return '.
+					return eval('return '.$_pre.
 						preg_replace_callback(
 							'/(\:\w+)|(\?)/',
 							function($token) use($_args,&$_ctr) {
