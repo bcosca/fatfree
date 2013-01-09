@@ -87,7 +87,7 @@ class Jig extends Controller {
 		);
 		$movie->load(
 			array(
-				'@title=:title && @director=:director',
+				'@title=:title AND @director=:director',
 				':title'=>'The River Murders',
 				':director'=>'Rich Cowan'
 			)
@@ -100,7 +100,7 @@ class Jig extends Controller {
 		);
 		$movie->load(
 			array(
-				'@title=:title && @director=:director',
+				'@title=:title AND @director=:director',
 				array(
 					':title'=>'The River Murders',
 					':director'=>'Rich Cowan'
