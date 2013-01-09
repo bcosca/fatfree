@@ -158,6 +158,7 @@ class Mapper extends \DB\Cursor {
 				return FALSE;
 			// Prefix variables to avoid conflict with user code
 			$_self=$this;
+			$filter[0]=preg_replace('/(?<!=)=(?!=)/','==',$filter[0]);
 			$_args=isset($filter[1]) && is_array($filter[1])?
 				$filter[1]:
 				array_slice($filter,1,NULL,TRUE);
