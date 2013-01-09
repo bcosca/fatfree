@@ -188,6 +188,7 @@ class SQL extends Controller {
 			$movie->set('director','Rich Cowan');
 			$movie->set('year',2011);
 			$movie->save();
+			$movie->save(); /* Intentional */
 			$movie->load(
 				array(
 					'title=? AND director=?',
@@ -299,6 +300,7 @@ class SQL extends Controller {
 			$movie->set('director','David Fincher');
 			$movie->set('year',2007);
 			$movie->save();
+			$movie->save(); /* Intentional */
 			$movie->load();
 			$movie->next();
 			$test->expect(
@@ -367,6 +369,7 @@ class SQL extends Controller {
 			$ticket=new \DB\SQL\Mapper($db,'tickets');
 			$ticket->set('title','The River Murders');
 			$ticket->save();
+			$ticket->save(); /* Intentional */
 			$test->expect(
 				($num=$ticket->get('ticketno')) && is_int($num),
 				'New mapper instantiated; auto-increment: '.($first=$num)

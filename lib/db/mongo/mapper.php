@@ -197,8 +197,9 @@ class Mapper extends \DB\Cursor {
 		@return array
 	**/
 	function insert() {
+		if (isset($this->document['_id']))
+			return $this->update();
 		$this->collection->insert($this->document);
-		parent::reset();
 		return $this->document;
 	}
 

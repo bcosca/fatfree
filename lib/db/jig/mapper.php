@@ -156,47 +156,58 @@ class Mapper extends \DB\Cursor {
 		if ($filter) {
 			if (!is_array($filter))
 				return FALSE;
-			// Prefix variables to avoid conflict with user code
-			$_self=$this;
-			$filter[0]=preg_replace('/(?<!=)=(?!=)/','==',$filter[0]);
-			$_args=isset($filter[1]) && is_array($filter[1])?
+			// Normalize equality operator
+			$expr=preg_replace('/(?<!=)=(?!=)/','==',$filter[0]);
+			// Prepare query arguments
+			$args=isset($filter[1]) && is_array($filter[1])?
 				$filter[1]:
 				array_slice($filter,1,NULL,TRUE);
-			$_args=is_array($_args)?$_args:array(1=>$_args);
+			$args=is_array($args)?$args:array(1=>$args);
 			$keys=$vals=array();
-			list($_expr)=$filter;
 			preg_match_all('/(?<!\w)@(\w(?:[\w\.\[\]])*)/',
-				$_expr,$matches,PREG_SET_ORDER);
-			$_pre='';
-			foreach ($matches as $match)
-				$_pre.='isset($'.$match[1].') && ';
+				$expr,$matches,PREG_SET_ORDER);
+			foreach (array_reverse($matches) as $match)
+				$expr='isset(@'.$match[1].') && '.$expr;
+			$tokens=array_slice(
+				token_get_all('<?php '.$this->token($expr)),1);
 			$data=array_filter($data,
-				function($_row) use($_pre,$_expr,$_args,$_self) {
+				function($_row) use($fw,$args,$tokens) {
+					$_expr='';
+					$ctr=0;
+					$named=FALSE;
+					foreach ($tokens as $token) {
+						if (is_string($token))
+							if ($token=='?') {
+								// Positional
+								$ctr++;
+								$key=$ctr;
+							}
+							else {
+								if ($token==':')
+									$named=TRUE;
+								else
+									$_expr.=$token;
+								continue;
+							}
+						elseif ($named &&
+							token_name($token[0])=='T_STRING') {
+							$key=':'.$token[1];
+							$named=FALSE;
+						}
+						else {
+							$_expr.=$token[1];
+							continue;
+						}
+						$_expr.=$fw->stringify(
+							is_string($args[$key])?
+								addcslashes($args[$key],'\''):
+								$args[$key]);
+					}
+					// Avoid conflict with user code
+					unset($fw,$tokens,$args,$ctr,$token,$key,$named);
 					extract($_row);
-					$_ctr=0;
 					// Evaluate pseudo-SQL expression
-					return eval('return '.$_pre.
-						preg_replace_callback(
-							'/(\:\w+)|(\?)/',
-							function($token) use($_args,&$_ctr) {
-								// Parameterized query
-								if ($token[1])
-									// Named
-									$key=$token[1];
-								else {
-									// Positional
-									$_ctr++;
-									$key=$_ctr;
-								}
-								// Add slashes to prevent code injection
-								return \Base::instance()->stringify(
-									is_string($_args[$key])?
-										addcslashes($_args[$key],'\''):
-										$_args[$key]);
-							},
-							$_self->token($_expr)
-						).';'
-					);
+					return eval('return '.$_expr.';');
 				}
 			);
 		}
@@ -222,7 +233,7 @@ class Mapper extends \DB\Cursor {
 			$out[]=$this->factory($id,$doc);
 		if ($log) {
 			if ($filter)
-				foreach ($_args as $key=>$val) {
+				foreach ($args as $key=>$val) {
 					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
 					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
 				}
@@ -263,6 +274,8 @@ class Mapper extends \DB\Cursor {
 		@return array
 	**/
 	function insert() {
+		if ($this->id)
+			return $this->update();
 		$db=$this->db;
 		$now=microtime(TRUE);
 		while (($id=uniqid()) &&

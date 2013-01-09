@@ -292,28 +292,36 @@ class Mapper extends \DB\Cursor {
 				'VALUES ('.$values.');',$args
 			);
 		$pkeys=array();
-		$out=array();
-		$inc=array();
-		foreach ($this->fields as $key=>$field) {
-			$out+=array($key=>$field['value']);
+		$inc=NULL;
+		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
 				$pkeys[]=$key;
-				$field['previous']=$field['value'];
-				if ($field['pdo_type']==\PDO::PARAM_INT &&
+				if (!$inc && $field['pdo_type']==\PDO::PARAM_INT &&
 					is_null($field['value']) && !$field['nullable'])
-					$inc[]=$key;
+					$inc=$key;
 			}
+			$field['previous']=$field['value'];
+			$field['changed']=FALSE;
 		}
 		$seq=NULL;
 		if ($this->engine=='pgsql')
 			$seq=$this->table.'_'.end($pkeys).'_seq';
 		$this->_id=$this->db->lastinsertid($seq);
-		$ctr=count($inc);
-		if ($ctr!=1)
-			return $out;
+		if (!$inc) {
+			$ctr=0;
+			$query='';
+			$args='';
+			foreach ($pkeys as $pkey) {
+				$query.=($query?' AND ':'').$pkey.'=?';
+				$args[$ctr+1]=$this->fields[$pkey]['value'];
+				$ctr++;
+			}
+			$x=$this->load($query,$args);
+			return $x;
+		}
 		// Reload to obtain default and auto-increment field values
-		return $this->load(array($inc[0].'=?',
-			$this->value($this->fields[$inc[0]]['pdo_type'],$this->_id)));
+		return $this->load(array($inc.'=?',
+			$this->value($this->fields[$inc]['pdo_type'],$this->_id)));
 	}
 
 	/**
