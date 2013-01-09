@@ -157,7 +157,7 @@ class Mapper extends \DB\Cursor {
 			if (!is_array($filter))
 				return FALSE;
 			// Normalize equality operator
-			$expr=preg_replace('/(?<!=)=(?!=)/','==',$filter[0]);
+			$expr=preg_replace('/(?<=[^=<>!])=(?=[^=<>!])/','==',$filter[0]);
 			// Prepare query arguments
 			$args=isset($filter[1]) && is_array($filter[1])?
 				$filter[1]:
