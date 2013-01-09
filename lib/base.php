@@ -11,6 +11,7 @@
 	PURPOSE.
 
 	Please see the license.txt file for more information.
+	Please see the license.txt file for more information.
 */
 
 //! Base structure
@@ -651,18 +652,22 @@ final class Base {
 	**/
 	function language($code) {
 		$this->languages=array(self::FALLBACK);
-		// Validate string/header
-		foreach (explode(',',$code) as $language) {
-			if (!preg_match('/^(\w{2})(?:_(\w{2}))?\b/',
-				strtolower($language),$parts))
+		$out='';
+		foreach (array_reverse(explode(',',$code)) as $language) {
+			if (!preg_match('/^(\w{2})(?:_(\w{2}))?\b/i',
+				$language,$parts))
 				return self::FALLBACK;
 			if ($parts[1]!=self::FALLBACK)
 				// Generic language
 				array_unshift($this->languages,$parts[1]);
-			if (isset($parts[2]))
+			if (isset($parts[2])) {
 				// Specific language
+				$parts[0]=$parts[1].'_'.($parts[2]=strtoupper($parts[2]));
 				array_unshift($this->languages,$parts[0]);
+				$out=$parts[0];
+			}
 		}
+		$this->languages=array_unique($this->languages);
 		$this->locales=array();
 		$windows=preg_match('/^win/i',PHP_OS);
 		foreach ($this->languages as $locale) {
@@ -676,7 +681,7 @@ final class Base {
 			$this->locales[]=$locale;
 			$this->locales[]=$locale.'.'.$this->hive['ENCODING'];
 		}
-		return $parts[0];
+		return $out;
 	}
 
 	/**
