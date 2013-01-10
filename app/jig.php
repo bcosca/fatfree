@@ -57,7 +57,7 @@ class Jig extends Controller {
 		$movie->set('director','Rich Cowan');
 		$movie->set('year',2011);
 		$movie->save();
-		$movie->save(); /* Intentional */
+		$movie->save(); // intentional
 		$movie->load(
 			array(
 				'@title=? AND @director=?',
@@ -169,7 +169,7 @@ class Jig extends Controller {
 		$movie->set('director','David Fincher');
 		$movie->set('year',2007);
 		$movie->save();
-		$movie->save(); /* Intentional */
+		$movie->save(); // intentional
 		$movie->load();
 		$movie->next();
 		$test->expect(
