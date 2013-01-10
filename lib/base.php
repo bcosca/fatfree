@@ -523,7 +523,8 @@ final class Base {
 		@param $str string
 	**/
 	function encode($str) {
-		return @htmlentities($str,ENT_COMPAT,$this->hive['ENCODING'],FALSE);
+		return @htmlentities($str,ENT_COMPAT,$this->hive['ENCODING'],FALSE)?:
+			$this->scrub($str);
 	}
 
 	/**
@@ -820,8 +821,8 @@ final class Base {
 			if (isset($frame['class']))
 				$line.=$frame['class'].$frame['type'];
 			if (isset($frame['function']))
-				$line.=$frame['function'].
-					'('.$this->csv($frame['args']).')';
+				$line.=$frame['function'].'('.(isset($frame['args'])?
+					$this->csv($frame['args']):'').')';
 			error_log('- '.$line);
 			$out.='&bull; '.($css?$this->highlight($line):$line).$eol;
 		}
