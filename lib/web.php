@@ -441,8 +441,9 @@ class Web extends Prefab {
 		@return string
 		@param $files string|array
 		@param $mime string
+		@param $header bool
 	**/
-	function minify($files,$mime=NULL) {
+	function minify($files,$mime=NULL,$header=TRUE) {
 		$fw=Base::instance();
 		if (is_string($files))
 			$files=$fw->split($files);
@@ -462,6 +463,17 @@ class Web extends Prefab {
 					else {
 						$src=$fw->read($save);
 						for ($ptr=0,$len=strlen($src);$ptr<$len;) {
+							if (preg_match('/^@import\h+url'.
+								'\(\h*([\'"])(.+?)\1\h*\)\h*;/',
+								substr($src,$ptr),$parts)) {
+								$path=dirname($file);
+								$dst.=$this->minify(
+									($path?($path.'/'):'').$parts[2],
+									$mime,$header
+								);
+								$ptr+=strlen($parts[0]);
+								continue;
+							}
 							if ($src[$ptr]=='/') {
 								if (substr($src,$ptr+1,2)=='*@') {
 									// Conditional block
@@ -554,7 +566,7 @@ class Web extends Prefab {
 						}
 					}
 				}
-		if (PHP_SAPI!='cli')
+		if (PHP_SAPI!='cli' && $header)
 			header('Content-Type: '.$mime.'; charset='.$fw->get('ENCODING'));
 		return $dst;
 	}
