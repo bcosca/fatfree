@@ -1958,11 +1958,11 @@ $test->expect(
 
 // Display the results; not MVC but let's keep it simple
 foreach ($test->results() as $result) {
-    echo $test['text'].'<br />';
-    if ($test['status'])
+    echo $result['text'].'<br />';
+    if ($result['status'])
         echo 'Pass';
     else
-        echo 'Fail ('.$test['source'].')';
+        echo 'Fail ('.$result['source'].')';
     echo '<br />';
 }
 ```
