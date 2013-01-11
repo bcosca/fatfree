@@ -639,9 +639,8 @@ if (!function_exists('gzdecode')) {
 	/**
 		Decode gzip-compressed string
 		@param $data string
-		@param $len int
 	**/
-	function gzdecode($str,$len=0) {
+	function gzdecode($str) {
 		$fw=Base::instance();
 		if (!is_dir($tmp=$fw->get('TEMP')))
 			mkdir($tmp,Base::MODE,TRUE);
