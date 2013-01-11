@@ -849,6 +849,7 @@ final class Base {
 					($debug?('<pre>'.$eol.$out.'</pre>'.$eol):'').
 				'</body>'.$eol.
 				'</html>';
+		die;
 	}
 
 	/**
