@@ -186,7 +186,7 @@ class Basket {
 	function checkout() {
 		if (isset($_SESSION[$this->key])) {
 			$out=$_SESSION[$this->key];
-			unset($id,$item,$_SESSION[$this->key]);
+			unset($_SESSION[$this->key]);
 			return $out;
 		}
 		return array();

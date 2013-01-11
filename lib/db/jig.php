@@ -59,9 +59,8 @@ class Jig {
 		@return int
 		@param $file string
 		@param $data array
-		@param $frame string
 	**/
-	function write($file,array $data=NULL,$frame=NULL) {
+	function write($file,array $data=NULL) {
 		$fw=\Base::instance();
 		switch ($this->format) {
 			case self::FORMAT_JSON:
