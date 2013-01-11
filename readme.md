@@ -1938,20 +1938,21 @@ $test->expect(
 );
 
 // Another test
+$hello=hello();
 $test->expect(
-    !empty(hello()),
+    !empty($hello),
     'Something was returned'
 );
 
 // This test should succeed
 $test->expect
-    is_string(hello()),
+    is_string($hello),
     'Return value is a string'
 );
 
 // This test is bound to fail
 $test->expect(
-    strlen(hello())==13,
+    strlen($hello)==13,
     'String length is 13'
 );
 
@@ -2340,6 +2341,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Mirosystems
 * Aurélien Botermans
 * Philipp Hirsch
+* Christian Treptow
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
