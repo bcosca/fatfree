@@ -2053,6 +2053,10 @@ Once you get the hang of testing the smallest units of your application, you can
 
 * Comma-separated list of IPv4 addresses exempt from DNSBL lookups.
 
+`string FALLBACK`
+
+* Language (and dictionary) to use if no translation is available.
+
 `array HEADERS`
 
 * HTTP request headers received by the server.
