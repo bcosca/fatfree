@@ -840,19 +840,11 @@ final class Base {
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';
-			if (isset($frame['function'])) {
-				$file=file($frame['file']);
-				$frag=array_slice($file,0,$frame['line']);
-				for ($i=count($frag);$i;$i--) {
-					$frame['line']=$i;
-					$line=trim($frag[$i-1]).$line;
-					if (empty($frame['function']) || preg_match('/<\?php|'.
-						(isset($frame['type'])?
-							preg_quote($frame['type'],'/'):'').
-						$frame['function'].'/',$frag[$i-1]))
-						break;
-				}
-			}
+			if (isset($frame['class']))
+				$line.=$frame['class'].$frame['type'];
+			if (isset($frame['function']))
+				$line.=$frame['function'].'('.(isset($frame['args'])?
+					$this->csv($frame['args']):'').')';
 			$src=$this->fixslashes($frame['file']).':'.$frame['line'].' ';
 			error_log('- '.$src.$line);
 			$out.='&bull; '.($highlight?
@@ -880,7 +872,7 @@ final class Base {
 					'<h1>'.$header.'</h1>'.$eol.
 					'<p>'.
 						$this->encode($text?:$req).'</p>'.$eol.
-					($debug?('<pre>'.$eol.$out.'</pre>'.$eol):'').
+					($debug?(nl2br($out).$eol):'').
 				'</body>'.$eol.
 				'</html>';
 		die;
