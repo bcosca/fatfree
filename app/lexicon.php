@@ -44,6 +44,29 @@ class Lexicon extends Controller {
 				$template->render('templates/lexicon.htm')),
 			'en (fallback)'
 		);
+		$f3->set('foo',
+			'{0, plural,'.
+				'zero {There\'s nothing on the table.},'.
+				'one {A book is on the table.},'.
+				'other {There are # books on the table.}'.
+			'}'
+		);
+		$test->expect(
+			$f3->get('foo',0)=='There\'s nothing on the table.',
+			'Pluralization - zero'
+		);
+		$test->expect(
+			$f3->get('foo',1)=='A book is on the table.',
+			'Pluralization - one'
+		);
+		$test->expect(
+			$f3->get('foo',2)=='There are 2 books on the table.',
+			'Pluralization - two'
+		);
+		$test->expect(
+			$f3->get('foo',9)=='There are 9 books on the table.',
+			'Pluralization - other'
+		);
 		$f3->set('results',$test->results());
 	}
 
