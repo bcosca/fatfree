@@ -12,6 +12,10 @@ class Lexicon extends Controller {
 		);
 		$f3->set('LOCALES','dict/');
 		$test->expect(
+			$language=$f3->get('FALLBACK'),
+			'FALLBACK: '.$language
+		);
+		$test->expect(
 			$language=$f3->get('LANGUAGE'),
 			'LANGUAGE: '.$language.' auto-detected'
 		);

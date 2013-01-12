@@ -74,8 +74,6 @@ final class Base {
 		VERBS='GET|HEAD|POST|PUT|PATCH|DELETE|CONNECT',
 		//! Default directory permissions
 		MODE=0755,
-		//! Fallback language
-		FALLBACK='en',
 		//! Syntax highlighting stylesheet
 		CSS='code.css';
 
@@ -103,6 +101,8 @@ final class Base {
 		$languages,
 		//! Equivalent Locales
 		$locales,
+		//! Default fallback language
+		$fallback='en',
 		//! NULL reference
 		$null=NULL;
 
@@ -211,8 +211,12 @@ final class Base {
 			case 'JAR':
 				call_user_func_array('session_set_cookie_params',$val);
 				break;
+			case 'FALLBACK':
+				$this->fallback=$val;
+				$lang=$this->language($this->hive['LANGUAGE']);
 			case 'LANGUAGE':
-				$val=$this->language($val);
+				if (isset($lang) || $lang=$this->language($val))
+					$val=$this->language($val);
 				$lex=$this->lexicon($this->hive['LOCALES']);
 			case 'LOCALES':
 				if (isset($lex) || $lex=$this->lexicon($val))
@@ -601,7 +605,7 @@ final class Base {
 		// Get formatting rules
 		$conv=localeconv();
 		$out=preg_replace_callback(
-			'/{(\d+)(?:,(\w+)(?:,(\w+))?)?}/',
+			'/{(\d+)(?:,(\w+)(?:,([^}]+))?)?}/',
 			function($expr) use($args,$conv) {
 				if (empty($args[$expr[1]]))
 					return $expr[0];
@@ -651,23 +655,27 @@ final class Base {
 		@return string
 		@param $code string
 	**/
-	function language($code) {
-		$this->languages=array(self::FALLBACK);
-		$out='';
-		foreach (array_reverse(explode(',',$code)) as $language) {
-			if (!preg_match('/^(\w{2})(?:_(\w{2}))?\b/i',
-				$language,$parts))
-				return self::FALLBACK;
-			if ($parts[1]!=self::FALLBACK)
+	function language($code=NULL) {
+		if (!$code) {
+			$code=$this->fallback;
+			if (isset($headers['Accept-Language']))
+				$code=str_replace('-','_',preg_replace(
+					'/;q=.+?(?=,|$)/','',$headers['Accept-Language']));
+		}
+		$this->languages=array($this->fallback);
+		$out=$this->fallback;
+		foreach (array_reverse(explode(',',$code)) as $lang)
+			if (preg_match('/^(\w{2})(?:_(\w{2}))?\b/i',$lang,$parts) &&
+				$parts[1]!=$this->fallback) {
 				// Generic language
 				array_unshift($this->languages,$parts[1]);
-			if (isset($parts[2])) {
-				// Specific language
-				$parts[0]=$parts[1].'_'.($parts[2]=strtoupper($parts[2]));
-				array_unshift($this->languages,$parts[0]);
-				$out=$parts[0];
+				if (isset($parts[2])) {
+					// Specific language
+					$parts[0]=$parts[1].'_'.($parts[2]=strtoupper($parts[2]));
+					array_unshift($this->languages,$parts[0]);
+					$out=$parts[0].','.$out;
+				}
 			}
-		}
 		$this->languages=array_unique($this->languages);
 		$this->locales=array();
 		$windows=preg_match('/^win/i',PHP_OS);
@@ -692,8 +700,8 @@ final class Base {
 	**/
 	function lexicon($path) {
 		$lex=array();
-		foreach ($this->languages as $language) {
-			if ((is_file($file=($base=$path.$language).'.php') ||
+		foreach ($this->languages as $lang) {
+			if ((is_file($file=($base=$path.$lang).'.php') ||
 				is_file($file=$base.'.php')) &&
 				is_array($dict=require($file)))
 				$lex+=$dict;
@@ -1002,7 +1010,7 @@ final class Base {
 			if (isset($route[$this->hive['VERB']])) {
 				$parts=parse_url($req);
 				if ($this->hive['VERB']=='GET' &&
-					preg_match('/.+?\/$/',$parts['path']))
+					preg_match('/.+\/$/',$parts['path']))
 					$this->reroute(substr($parts['path'],0,-1).
 						(isset($parts['query'])?('?'.$parts['query']):''));
 				list($handler,$ttl,$kbps)=$route[$this->hive['VERB']];
@@ -1270,7 +1278,8 @@ final class Base {
 	function highlight($text) {
 		$out='';
 		$pre=FALSE;
-		if (!preg_match('/<\?php/',$text)) {
+		$text=trim($text);
+		if (!preg_match('/^<\?php/',$text)) {
 			$text='<?php '.$text;
 			$pre=TRUE;
 		}
@@ -1393,10 +1402,6 @@ final class Base {
 				'httponly'=>TRUE
 			)
 		);
-		$language=self::FALLBACK;
-		if (isset($headers['Accept-Language']))
-			$language=str_replace('-','_',preg_replace(
-				'/;q=.+?(?=,|$)/','',$headers['Accept-Language']));
 		// Default configuration
 		$this->hive=array(
 			'AJAX'=>isset($headers['X-Requested-With']) &&
@@ -1413,6 +1418,7 @@ final class Base {
 			'ERROR'=>NULL,
 			'ESCAPE'=>TRUE,
 			'EXEMPT'=>NULL,
+			'FALLBACK'=>$this->fallback,
 			'HEADERS'=>$headers,
 			'HIGHLIGHT'=>TRUE,
 			'HOST'=>$_SERVER['SERVER_NAME'],
@@ -1424,7 +1430,7 @@ final class Base {
 					(isset($_SERVER['REMOTE_ADDR'])?
 						$_SERVER['REMOTE_ADDR']:'')),
 			'JAR'=>$jar,
-			'LANGUAGE'=>$this->language($language),
+			'LANGUAGE'=>$this->language(),
 			'LOCALES'=>'./',
 			'LOGS'=>'./',
 			'ONERROR'=>NULL,
@@ -1652,9 +1658,9 @@ final class Cache {
 		@param $dsn bool|string
 	**/
 	function load($dsn) {
-		if ($dsn) {
+		if ($dsn=trim($dsn)) {
 			$fw=Base::instance();
-			if (preg_match('/memcache=(.+)/',$dsn,$parts) &&
+			if (preg_match('/^memcache=(.+)/',$dsn,$parts) &&
 				extension_loaded('memcache'))
 				foreach ($fw->split($parts[1]) as $server) {
 					$port=11211;
@@ -1668,14 +1674,14 @@ final class Cache {
 					else
 						memcache_add_server($this->ref,$host,$port);
 				}
-			if (empty($this->ref) && !preg_match('/folder\h*=/',$dsn))
+			if (empty($this->ref) && !preg_match('/^folder\h*=/',$dsn))
 				$dsn=($grep=preg_grep('/^(apc|wincache|xcache)/',
 					array_map('strtolower',get_loaded_extensions())))?
 						// Auto-detect
 						current($grep):
 						// Use filesystem as fallback
 						('folder='.$fw->get('TEMP').'cache/');
-			if (preg_match('/folder\h*=\h*(.+)/',$dsn,$parts) &&
+			if (preg_match('/^folder\h*=\h*(.+)/',$dsn,$parts) &&
 				!is_dir($parts[1]))
 				mkdir($parts[1],Base::MODE,TRUE);
 		}
