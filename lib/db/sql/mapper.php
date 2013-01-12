@@ -136,9 +136,12 @@ class Mapper extends \DB\Cursor {
 	protected function factory($row) {
 		$mapper=clone($this);
 		$mapper->reset();
-		foreach ($row as $key=>$val)
-			$mapper->{array_key_exists($key,$this->fields)?'fields':'adhoc'}
-				[$key]['value']=$val;
+		foreach ($row as $key=>$val) {
+			$var=array_key_exists($key,$this->fields)?'fields':'adhoc';
+			$mapper->{$var}[$key]['value']=$val;
+			if ($var=='fields' && $mapper->{$var}[$key]['pkey'])
+				$mapper->{$var}[$key]['previous']=$val;
+		}
 		return $mapper;
 	}
 
@@ -240,10 +243,20 @@ class Mapper extends \DB\Cursor {
 		@param $filter string|array
 	**/
 	function count($filter=NULL) {
-		list($result)=$this->select('COUNT(*) AS rows',$filter);
-		$out=$result->adhoc['rows']['value'];
-		unset($this->adhoc['rows']);
-		return $out;
+		$sql='SELECT COUNT(*) AS rows FROM '.$this->table;
+		$args=array();
+		if ($filter) {
+			if (is_array($filter)) {
+				$args=isset($filter[1]) && is_array($filter[1])?
+					$filter[1]:
+					array_slice($filter,1,NULL,TRUE);
+				$args=is_array($args)?$args:array(1=>$args);
+				list($filter)=$filter;
+			}
+			$sql.=' WHERE '.$filter;
+		}
+		$result=$this->db->exec($sql.';',$args);
+		return $result[0]['rows'];
 	}
 
 	/**
@@ -296,12 +309,13 @@ class Mapper extends \DB\Cursor {
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
 				$pkeys[]=$key;
+				$field['previous']=$field['value'];
 				if (!$inc && $field['pdo_type']==\PDO::PARAM_INT &&
 					is_null($field['value']) && !$field['nullable'])
 					$inc=$key;
 			}
-			$field['previous']=$field['value'];
 			$field['changed']=FALSE;
+			unset($field);
 		}
 		$seq=NULL;
 		if ($this->engine=='pgsql')
@@ -316,8 +330,7 @@ class Mapper extends \DB\Cursor {
 				$args[$ctr+1]=$this->fields[$pkey]['value'];
 				$ctr++;
 			}
-			$x=$this->load($query,$args);
-			return $x;
+			return $this->load(array($query,$args));
 		}
 		// Reload to obtain default and auto-increment field values
 		return $this->load(array($inc.'=?',
