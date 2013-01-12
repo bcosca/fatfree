@@ -18,22 +18,26 @@ class Lexicon extends Controller {
 		$template=\Template::instance();
 		$f3->set('LANGUAGE','fr_FR');
 		$test->expect(
-			$template->render('templates/lexicon.htm'),
+			substr_count($f3->decode($template->render('templates/lexicon.htm')),
+			'Les naïfs ægithales hâtifs pondant à Noël où il gèle sont sûrs d\'être déçus et de voir leurs drôles d\'œufs abîmés.'),
 			'fr_FR'
 		);
 		$f3->set('LANGUAGE','en_US');
 		$test->expect(
-			$template->render('templates/lexicon.htm'),
+			substr_count($f3->decode($template->render('templates/lexicon.htm')),
+			'The quick brown fox jumps over the lazy dog.'),
 			'en_US'
 		);
 		$f3->set('LANGUAGE','es_CL');
 		$test->expect(
-			$template->render('templates/lexicon.htm'),
-			'es_AR'
+			substr_count($f3->decode($template->render('templates/lexicon.htm')),
+			'El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro.'),
+			'es_CL'
 		);
 		$f3->set('LANGUAGE','en');
 		$test->expect(
-			$template->render('templates/lexicon.htm'),
+			preg_match('/I love Fat-Free!/',
+				$template->render('templates/lexicon.htm')),
 			'en (fallback)'
 		);
 		$f3->set('results',$test->results());
