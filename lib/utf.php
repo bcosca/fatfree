@@ -33,7 +33,7 @@ class UTF extends Prefab {
 		@param $str string
 	**/
 	function strlen($str) {
-		preg_match_all('/./us',$str,$parts);
+		preg_match_all('/./u',$str,$parts);
 		return count($parts[0]);
 	}
 
@@ -46,7 +46,7 @@ class UTF extends Prefab {
 		@param $case bool
 	**/
 	function strpos($stack,$needle,$ofs=0,$case=FALSE) {
-		preg_match('/^(.*?)'.preg_quote($needle,'/').'/us'.($case?'i':''),
+		preg_match('/^(.*?)'.preg_quote($needle,'/').'/u'.($case?'i':''),
 			$this->substr($stack,$ofs),$match);
 		return isset($match[1])?$this->strlen($match[1]):FALSE;
 	}
@@ -77,7 +77,7 @@ class UTF extends Prefab {
 		for ($ptr=$ofs;$ptr<$len;$ptr+=$this->strlen($match[0])) {
 			$sub=$this->substr($stack,$ptr);
 			if (!$sub || !preg_match('/^(.*?)'.
-				preg_quote($needle,'/').'/us'.($case?'i':''),$sub,$match))
+				preg_quote($needle,'/').'/u'.($case?'i':''),$sub,$match))
 				break;
 			$ofs=$ptr+$this->strlen($match[1]);
 		}
@@ -108,7 +108,7 @@ class UTF extends Prefab {
 	function strstr($stack,$needle,$before=FALSE,$case=FALSE) {
 		if (!$needle)
 			return FALSE;
-		preg_match('/^(.*?)'.preg_quote($needle,'/').'/us'.($case?'i':''),
+		preg_match('/^(.*?)'.preg_quote($needle,'/').'/u'.($case?'i':''),
 			$stack,$match);
 		return isset($match[1])?
 			($before?
@@ -131,7 +131,7 @@ class UTF extends Prefab {
 		}
 		if (!$len)
 			$len=$this->strlen($str)-$start;
-		return preg_match('/^.{'.$start.'}(.{0,'.$len.'})/us',$str,$match)?
+		return preg_match('/^.{'.$start.'}(.{0,'.$len.'})/u',$str,$match)?
 			$match[1]:FALSE;
 	}
 
@@ -142,7 +142,7 @@ class UTF extends Prefab {
 		@param $needle string
 	**/
 	function substr_count($stack,$needle) {
-		preg_match_all('/'.preg_quote($needle,'/').'/us',$stack,
+		preg_match_all('/'.preg_quote($needle,'/').'/u',$stack,
 			$matches,PREG_SET_ORDER);
 		return count($matches);
 	}
