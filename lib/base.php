@@ -823,7 +823,7 @@ final class Base {
 		$out='';
 		$eol="\n";
 		if (!$trace)
-			$trace=array_slice(debug_backtrace(FALSE),1);
+			$trace=array_slice(debug_backtrace(0),1);
 		$debug=$this->hive['DEBUG'];
 		$trace=array_filter(
 			$trace,
@@ -838,15 +838,19 @@ final class Base {
 		$css=$this->hive['HIGHLIGHT'] && is_file($file=__DIR__.'/'.self::CSS);
 		// Analyze stack trace
 		foreach ($trace as $frame) {
-			$line=$this->fixslashes($frame['file']).':'.
-				$frame['line'].' ';
-			if (isset($frame['class']))
-				$line.=$frame['class'].$frame['type'];
-			if (isset($frame['function']))
-				$line.=$frame['function'].'('.(isset($frame['args'])?
-					$this->csv($frame['args']):'').')';
-			error_log('- '.$line);
-			$out.='&bull; '.($css?$this->highlight($line):$line).$eol;
+			$line='';
+			$frag=array_slice(file($frame['file']),0,$frame['line']);
+			for ($i=count($frag);$i;$i--) {
+				$frame['line']=$i;
+				$line=trim($frag[$i-1]).$line;
+				if (preg_match('/<\?php|'.
+					(isset($frame['type'])?preg_quote($frame['type'],'/'):'').
+					preg_quote($frame['function'],'/').'/',$frag[$i-1]))
+					break;
+			}
+			$src=$this->fixslashes($frame['file']).':'.$frame['line'].' ';
+			error_log('- '.$src.$line);
+			$out.='&bull; '.$src.($css?$this->highlight($line):$line).$eol;
 		}
 		$this->hive['ERROR']=array(
 			'code'=>$code,
