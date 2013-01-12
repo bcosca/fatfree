@@ -40,7 +40,7 @@ class Mongo extends Controller {
 				$movie->set('director','Mike Newell');
 				$movie->set('year',1997);
 				$movie->save();
-				$movie->save(); /* Intentional */
+				$movie->save(); // intentional
 				$test->expect(
 					$db->log(),
 					'MongoDB profiler active'
@@ -68,7 +68,7 @@ class Mongo extends Controller {
 				$movie->set('director','Rich Cowan');
 				$movie->set('year',2011);
 				$movie->save();
-				$movie->save(); /* Intentional */
+				$movie->save(); // intentional
 				$movie->load();
 				$test->expect(
 					$movie->count()==2,
@@ -124,7 +124,7 @@ class Mongo extends Controller {
 				$movie->set('director','David Fincher');
 				$movie->set('year',2007);
 				$movie->save();
-				$movie->save(); /* Intentional */
+				$movie->save(); // intentional
 				$movie->load();
 				$movie->next();
 				$test->expect(

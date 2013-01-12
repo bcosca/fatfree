@@ -19,6 +19,7 @@ class SQL extends Controller {
 				mkdir('tmp/',\Base::MODE,TRUE);
 			$db=new \DB\SQL('sqlite:tmp/sqlite.db');
 			//$db=new \DB\SQL('mysql:host=localhost');
+			//$db=new \DB\SQL('pgsql:host=pg.ikkez.de;port=5432;dbname=fatfree.test;user=postgres;password=postgres');
 			$engine=$db->driver();
 			$test->expect(
 				is_object($db),
@@ -51,14 +52,14 @@ class SQL extends Controller {
 			);
 			$db->exec(
 				'INSERT INTO movies (title,director,year) '.
-				'VALUES ("Reservoir Dogs","Quentin Tarantino",1992);'
+				'VALUES (\'Reservoir Dogs\',\'Quentin Tarantino\',1992);'
 			);
 			$db->begin();
 			$db->exec(
 				array (
 					'INSERT INTO movies (title,director,year) '.
-					'VALUES ("Fight Club","David Fincher",1999);',
-					'DELETE FROM movies WHERE title="Reservoir Dogs";'
+					'VALUES (\'Fight Club\',\'David Fincher\',1999);',
+					'DELETE FROM movies WHERE title=\'Reservoir Dogs\';'
 				)
 			);
 			$db->rollback();
@@ -77,8 +78,8 @@ class SQL extends Controller {
 			$db->exec(
 				array (
 					'INSERT INTO movies (title,director,year) '.
-					'VALUES ("Fight Club","David Fincher",1999);',
-					'DELETE FROM movies WHERE title="Reservoir Dogs";'
+					'VALUES (\'Fight Club\',\'David Fincher\',1999);',
+					'DELETE FROM movies WHERE title=\'Reservoir Dogs\';'
 				)
 			);
 			$db->commit();
@@ -96,8 +97,8 @@ class SQL extends Controller {
 			$db->exec(
 				array (
 					'INSERT INTO movies (title,director,year) '.
-					'VALUES ("Donnie Brasco","Mike Newell",1997);',
-					'DELETE FROM movies WHERE title="Fight Club";'
+					'VALUES (\'Donnie Brasco\',\'Mike Newell\',1997);',
+					'DELETE FROM movies WHERE title=\'Fight Club\';'
 				)
 			);
 			$test->expect(
@@ -113,7 +114,7 @@ class SQL extends Controller {
 			);
 			@$db->exec(
 				'INSERT INTO movies (title,director,year) '.
-				'VALUES ("Donnie Brasco","Mike Newell",1997);'
+				'VALUES (\'Donnie Brasco\',\'Mike Newell\',1997);'
 			);
 			$test->expect(
 				$db->exec('SELECT * FROM movies;')==
@@ -188,7 +189,7 @@ class SQL extends Controller {
 			$movie->set('director','Rich Cowan');
 			$movie->set('year',2011);
 			$movie->save();
-			$movie->save(); /* Intentional */
+			$movie->save(); // intentional
 			$movie->load(
 				array(
 					'title=? AND director=?',
@@ -300,7 +301,7 @@ class SQL extends Controller {
 			$movie->set('director','David Fincher');
 			$movie->set('year',2007);
 			$movie->save();
-			$movie->save(); /* Intentional */
+			$movie->save(); // intentional
 			$movie->load();
 			$movie->next();
 			$test->expect(
@@ -354,14 +355,22 @@ class SQL extends Controller {
 				$array['year']==2007,
 				'Associative array returned by afindone()'
 			);
+			switch ($engine) {
+				case 'mysql':
+					$inc='INT NOT NULL AUTO_INCREMENT';
+					break;
+				case 'pgsql':
+					$inc='SERIAL';
+					break;
+				default:
+					$inc='INTEGER NOT NULL';
+					break;
+			}
 			$db->exec(
 				array(
 					'DROP TABLE IF EXISTS tickets;',
 					'CREATE TABLE tickets ('.
-						'ticketno '.
-						($engine=='mysql'?
-							'INT AUTO_INCREMENT':
-							'INTEGER').' NOT NULL PRIMARY KEY,'.
+						'ticketno '.$inc.' PRIMARY KEY,'.
 						'title VARCHAR(128) NOT NULL'.
 					');'
 				)
@@ -369,7 +378,7 @@ class SQL extends Controller {
 			$ticket=new \DB\SQL\Mapper($db,'tickets');
 			$ticket->set('title','The River Murders');
 			$ticket->save();
-			$ticket->save(); /* Intentional */
+			$ticket->save(); // intentional
 			$test->expect(
 				($num=$ticket->get('ticketno')) && is_int($num),
 				'New mapper instantiated; auto-increment: '.($first=$num)
@@ -421,43 +430,45 @@ class SQL extends Controller {
 				!$ticket->dry(),
 				'SQL injection-safe'
 			);
-			$db->exec('DROP TABLE IF EXISTS sessions;');
-			$session=new \DB\SQL\Session($db);
-			$test->expect(
-				session_start(),
-				'Database-managed session started'
-			);
-			$f3->set('SESSION.foo','hello world');
-			session_commit();
-			$test->expect(
-				$ip=$session->ip(),
-				'IP address: '.$ip
-			);
-			$test->expect(
-				$stamp=$session->stamp(),
-				'Timestamp: '.date('r',$stamp)
-			);
-			$test->expect(
-				$agent=$session->agent(),
-				'User agent: '.$agent
-			);
-			$_SESSION=array();
-			$test->expect(
-				$f3->get('SESSION.foo')=='hello world',
-				'Session variable retrieved from database'
-			);
-			session_unset();
-			$test->expect(
-				empty($_SESSION['foo']),
-				'Session cleared'
-			);
-			session_destroy();
-			header_remove('Set-Cookie');
-			unset($_COOKIE[session_name()]);
-			$test->expect(
-				empty($_SESSION['foo']),
-				'Session destroyed'
-			);
+			if ($engine!='pgsql') { // PostgreSQL not supported (yet)
+				$db->exec('DROP TABLE IF EXISTS sessions;');
+				$session=new \DB\SQL\Session($db);
+				$test->expect(
+					session_start(),
+					'Database-managed session started'
+				);
+				$f3->set('SESSION.foo','hello world');
+				session_commit();
+				$test->expect(
+					$ip=$session->ip(),
+					'IP address: '.$ip
+				);
+				$test->expect(
+					$stamp=$session->stamp(),
+					'Timestamp: '.date('r',$stamp)
+				);
+				$test->expect(
+					$agent=$session->agent(),
+					'User agent: '.$agent
+				);
+				$_SESSION=array();
+				$test->expect(
+					$f3->get('SESSION.foo')=='hello world',
+					'Session variable retrieved from database'
+				);
+				session_unset();
+				$test->expect(
+					empty($_SESSION['foo']),
+					'Session cleared'
+				);
+				session_destroy();
+				header_remove('Set-Cookie');
+				unset($_COOKIE[session_name()]);
+				$test->expect(
+					empty($_SESSION['foo']),
+					'Session destroyed'
+				);
+			}
 		}
 		$f3->set('results',$test->results());
 	}
