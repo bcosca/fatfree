@@ -840,20 +840,18 @@ final class Base {
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';
-			$file=file($frame['file']);
-			$frag=array_slice($file,0,$frame['line']);
-			for ($i=$frame['line'],$len=count($file);$i<$len;$i++) {
-				array_push($frag,$file[$i-1]);
-				if (preg_match('/;\h*$/',$file[$i-1]))
-					break;
-			}
-			for ($i=count($frag);$i;$i--) {
-				$frame['line']=$i;
-				$line=trim($frag[$i-1]).$line;
-				if (empty($frame['function']) || preg_match('/<\?php|'.
-					(isset($frame['type'])?preg_quote($frame['type'],'/'):'').
-					$frame['function'].'/',$frag[$i-1]))
-					break;
+			if (isset($frame['function'])) {
+				$file=file($frame['file']);
+				$frag=array_slice($file,0,$frame['line']);
+				for ($i=count($frag);$i;$i--) {
+					$frame['line']=$i;
+					$line=trim($frag[$i-1]).$line;
+					if (empty($frame['function']) || preg_match('/<\?php|'.
+						(isset($frame['type'])?
+							preg_quote($frame['type'],'/'):'').
+						$frame['function'].'/',$frag[$i-1]))
+						break;
+				}
 			}
 			$src=$this->fixslashes($frame['file']).':'.$frame['line'].' ';
 			error_log('- '.$src.$line);
