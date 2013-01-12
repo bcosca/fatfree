@@ -240,7 +240,7 @@ final class Base {
 		@param $args string|array
 	**/
 	function get($key,$args=NULL) {
-		if (is_string($val=$this->ref($key,FALSE)) && !is_nulL($args))
+		if (is_string($val=$this->ref($key,FALSE)) && !is_null($args))
 			return call_user_func_array(
 				array($this,'format'),
 				array_merge(array($val),is_array($args)?$args:array($args))
