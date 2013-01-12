@@ -835,22 +835,29 @@ final class Base {
 						'__call|call_user_func)/',$frame['function']));
 			}
 		);
-		$css=$this->hive['HIGHLIGHT'] && is_file($file=__DIR__.'/'.self::CSS);
+		$highlight=$this->hive['HIGHLIGHT'] &&
+			is_file($css=__DIR__.'/'.self::CSS);
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';
-			$frag=array_slice(file($frame['file']),0,$frame['line']);
+			$file=file($frame['file']);
+			$frag=array_slice($file,0,$frame['line']);
+			for ($i=$frame['line'],$len=count($file);$i<$len;$i++) {
+				array_push($frag,$file[$i-1]);
+				if (preg_match('/;\h*$/',$file[$i-1]))
+					break;
+			}
 			for ($i=count($frag);$i;$i--) {
 				$frame['line']=$i;
 				$line=trim($frag[$i-1]).$line;
-				if (preg_match('/<\?php|'.
+				if (empty($frame['function']) || preg_match('/<\?php|'.
 					(isset($frame['type'])?preg_quote($frame['type'],'/'):'').
 					$frame['function'].'/',$frag[$i-1]))
 					break;
 			}
 			$src=$this->fixslashes($frame['file']).':'.$frame['line'].' ';
 			error_log('- '.$src.$line);
-			$out.='&bull; '.($css?
+			$out.='&bull; '.($highlight?
 				($this->highlight($src).' '.$this->highlight($line)):
 				($src.$line)).$eol;
 		}
@@ -868,7 +875,8 @@ final class Base {
 				'<html>'.$eol.
 				'<head>'.
 					'<title>'.$code.' '.$header.'</title>'.
-					($css?('<style>'.file_get_contents($file).'</style>'):'').
+					($highlight?
+						('<style>'.file_get_contents($css).'</style>'):'').
 				'</head>'.$eol.
 				'<body>'.$eol.
 					'<h1>'.$header.'</h1>'.$eol.
