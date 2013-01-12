@@ -47,6 +47,8 @@ class OpenID extends \Magic {
 		// HTML-based discovery of OpenID provider
 		$req=\Web::instance()->
 			request($this->args['identity'],array('proxy'=>$proxy));
+		if (!$req)
+			return FALSE;
 		$type=array_values(preg_grep('/Content-Type:/',$req['headers']));
 		if ($type &&
 			preg_match('/application\/xrds\+xml|text\/xml/',$type[0]) &&
