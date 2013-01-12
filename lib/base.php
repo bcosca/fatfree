@@ -850,7 +850,9 @@ final class Base {
 			}
 			$src=$this->fixslashes($frame['file']).':'.$frame['line'].' ';
 			error_log('- '.$src.$line);
-			$out.='&bull; '.$src.($css?$this->highlight($line):$line).$eol;
+			$out.='&bull; '.($css?
+				($this->highlight($src).' '.$this->highlight($line)):
+				($src.$line)).$eol;
 		}
 		$this->hive['ERROR']=array(
 			'code'=>$code,
