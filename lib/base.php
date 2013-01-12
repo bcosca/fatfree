@@ -845,7 +845,7 @@ final class Base {
 				$line=trim($frag[$i-1]).$line;
 				if (preg_match('/<\?php|'.
 					(isset($frame['type'])?preg_quote($frame['type'],'/'):'').
-					preg_quote($frame['function'],'/').'/',$frag[$i-1]))
+					$frame['function'].'/',$frag[$i-1]))
 					break;
 			}
 			$src=$this->fixslashes($frame['file']).':'.$frame['line'].' ';
