@@ -11,7 +11,6 @@
 	PURPOSE.
 
 	Please see the license.txt file for more information.
-	Please see the license.txt file for more information.
 */
 
 //! Base structure
@@ -241,7 +240,8 @@ final class Base {
 		@param $args string|array
 	**/
 	function get($key,$args=NULL) {
-		if (is_string($val=$this->ref($key,FALSE)))
+		if (is_string($val=$this->ref($key,FALSE)) &&
+			preg_match('/\{.+?\}/',$val))
 			return call_user_func_array(
 				array($this,'format'),
 				array_merge(array($val),is_array($args)?$args:array($args))
@@ -654,8 +654,10 @@ final class Base {
 								$args[$pos]);
 						case 'time':
 							return strftime('%X',$args[$pos]);
+						default:
+							return $expr[0];
 					}
-				return $expr[0];
+				return $args[$pos];
 			},
 			$val
 		);
