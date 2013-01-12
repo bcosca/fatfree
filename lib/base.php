@@ -241,7 +241,7 @@ final class Base {
 		@param $args string|array
 	**/
 	function get($key,$args=NULL) {
-		if (is_string($val=$this->ref($key,FALSE)) && $args)
+		if (is_string($val=$this->ref($key,FALSE)))
 			return call_user_func_array(
 				array($this,'format'),
 				array_merge(array($val),is_array($args)?$args:array($args))
@@ -605,44 +605,57 @@ final class Base {
 		// Get formatting rules
 		$conv=localeconv();
 		$out=preg_replace_callback(
-			'/{(\d+)(?:,(\w+)(?:,([^}]+))?)?}/',
+			'/\{(?P<pos>\d+)\s*(?:,\s*(?P<type>\w+)\s*'.
+			'(?:,(?P<mod>(?:\s*\w+(?:\s+\{.+?\}\s*,?)?)*))?)?\}/',
 			function($expr) use($args,$conv) {
-				if (empty($args[$expr[1]]))
+				extract($expr);
+				if (!array_key_exists($pos,$args))
 					return $expr[0];
-				if (isset($expr[2]))
-					switch ($expr[2]) {
+				if (isset($type))
+					switch ($type) {
+						case 'plural':
+							preg_match_all('/(?<tag>\w+)'.
+								'(?:\s+\{(?<data>.+?)\})/',
+								$mod,$matches,PREG_SET_ORDER);
+							$ord=array('zero','one','two');
+							foreach ($matches as $match) {
+								extract($match);
+								if (isset($ord[$args[$pos]]) &&
+									$tag==$ord[$args[$pos]] || $tag=='other')
+									return str_replace('#',$args[$pos],$data);
+							}
 						case 'number':
-							if (isset($expr[3]))
-								switch ($expr[3]) {
+							if (isset($mod))
+								switch ($mod) {
 									case 'integer':
 										return
 											number_format(
-												$args[$expr[1]],0,'',
+												$args[$pos],0,'',
 												$conv['thousands_sep']);
 									case 'currency':
 										return
 											$conv['currency_symbol'].
 											number_format(
-												$args[$expr[1]],
+												$args[$pos],
 												$conv['frac_digits'],
 												$conv['decimal_point'],
 												$conv['thousands_sep']);
 									case 'percent':
 										return
 											number_format(
-												$args[$expr[1]]*100,0,
+												$args[$pos]*100,0,
 												$conv['decimal_point'],
 												$conv['thousands_sep']).'%';
 								}
 							break;
 						case 'date':
-							return strftime(empty($expr[3]) ||
-								$expr[3]=='short'?'%x':'%A, %d %B %Y',
-								$args[$expr[1]]);
+							return strftime(empty($mod) ||
+								$mod=='short'?'%x':'%A, %d %B %Y',
+								$args[$pos]);
 						case 'time':
-							return strftime('%X',$args[$expr[1]]);
+							return strftime('%X',$args[$pos]);
 					}
-				return $args[$expr[1]];
+				return $expr[0];
 			},
 			$val
 		);
