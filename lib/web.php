@@ -422,7 +422,7 @@ class Web extends Prefab {
 			}
 		}
 		$result=$this->{'_'.$this->wrapper}($url,$options);
-		if (isset($cache)) {
+		if ($result && isset($cache)) {
 			if (preg_match('/HTTP\/1\.\d 304/',
 				implode($eol,$result['headers']))) {
 				$result=$cache->get($hash);
