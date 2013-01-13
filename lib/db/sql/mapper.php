@@ -171,9 +171,13 @@ class Mapper extends \DB\Cursor {
 	function select($fields,$filter=NULL,array $options=NULL) {
 		if (!$options)
 			$options=array();
+		$pkeys=array();
+		foreach (array_keys($this->fields) as $key)
+			if ($this->fields[$key]['pkey'])
+				$pkeys[]=$key;
 		$options+=array(
 			'group'=>NULL,
-			'order'=>NULL,
+			'order'=>$pkeys?implode(',',$pkeys):NULL,
 			'limit'=>0,
 			'offset'=>0
 		);
