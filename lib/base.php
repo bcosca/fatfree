@@ -847,7 +847,7 @@ final class Base {
 					$this->csv($frame['args']):'').')';
 			$src=$this->fixslashes($frame['file']).':'.$frame['line'].' ';
 			error_log('- '.$src.$line);
-			$out.='&bull; '.($highlight?
+			$out.='• '.($highlight?
 				($this->highlight($src).' '.$this->highlight($line)):
 				($src.$line)).$eol;
 		}
@@ -870,9 +870,8 @@ final class Base {
 				'</head>'.$eol.
 				'<body>'.$eol.
 					'<h1>'.$header.'</h1>'.$eol.
-					'<p>'.
-						$this->encode($text?:$req).'</p>'.$eol.
-					($debug?(nl2br($out).$eol):'').
+					'<p>'.$this->encode($text?:$req).'</p>'.$eol.
+					($debug?('<pre>'.$out.'</pre>'.$eol):'').
 				'</body>'.$eol.
 				'</html>';
 		die;
