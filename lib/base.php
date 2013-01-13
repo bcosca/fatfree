@@ -672,6 +672,7 @@ final class Base {
 	function language($code=NULL) {
 		if (!$code) {
 			$code=$this->fallback;
+			$headers=getallheaders();
 			if (isset($headers['Accept-Language']))
 				$code=str_replace('-','_',preg_replace(
 					'/;q=.+?(?=,|$)/','',$headers['Accept-Language']));
