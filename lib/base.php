@@ -671,26 +671,24 @@ final class Base {
 	**/
 	function language($code=NULL) {
 		if (!$code) {
-			$code=$this->fallback;
-			$headers=getallheaders();
+			$headers=$this->hive['HEADERS'];
 			if (isset($headers['Accept-Language']))
-				$code=str_replace('-','_',preg_replace(
-					'/;q=.+?(?=,|$)/','',$headers['Accept-Language']));
+				$code=$headers['Accept-Language'];
 		}
-		$this->languages=array($this->fallback);
-		$out=$this->fallback;
-		foreach (array_reverse(explode(',',$code)) as $lang)
-			if (preg_match('/^(\w{2})(?:_(\w{2}))?\b/i',$lang,$parts) &&
-				$parts[1]!=$this->fallback) {
+		$code=str_replace('-','_',preg_replace('/;q=.+?(?=,|$)/','',$code));
+		$code.=($code?',':'').$this->fallback;
+		$this->languages=array();
+		foreach (array_reverse(explode(',',$code)) as $lang) {
+			if (preg_match('/^(\w{2})(?:_(\w{2}))?\b/i',$lang,$parts)) {
 				// Generic language
 				array_unshift($this->languages,$parts[1]);
 				if (isset($parts[2])) {
 					// Specific language
 					$parts[0]=$parts[1].'_'.($parts[2]=strtoupper($parts[2]));
 					array_unshift($this->languages,$parts[0]);
-					$out=$parts[0].','.$out;
 				}
 			}
+		}
 		$this->languages=array_unique($this->languages);
 		$this->locales=array();
 		$windows=preg_match('/^win/i',PHP_OS);
@@ -705,7 +703,7 @@ final class Base {
 			$this->locales[]=$locale;
 			$this->locales[]=$locale.'.'.$this->hive['ENCODING'];
 		}
-		return $out;
+		return implode(',',$this->languages);
 	}
 
 	/**
@@ -1448,7 +1446,8 @@ final class Base {
 					(isset($_SERVER['REMOTE_ADDR'])?
 						$_SERVER['REMOTE_ADDR']:'')),
 			'JAR'=>$jar,
-			'LANGUAGE'=>$this->language(),
+			'LANGUAGE'=>isset($headers['Accept-Language'])?
+				$this->language($headers['Accept-Language']):$this->fallback,
 			'LOCALES'=>'./',
 			'LOGS'=>'./',
 			'ONERROR'=>NULL,
