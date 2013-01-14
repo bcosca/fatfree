@@ -164,10 +164,16 @@ class Mapper extends \DB\Cursor {
 				array_slice($filter,1,NULL,TRUE);
 			$args=is_array($args)?$args:array(1=>$args);
 			$keys=$vals=array();
-			preg_match_all('/(?<!\w)@(\w(?:[\w\.\[\]])*)/',
-				$expr,$matches,PREG_SET_ORDER);
-			foreach (array_reverse($matches) as $match)
-				$expr='isset(@'.$match[1].') && '.$expr;
+			// append conditions with fields existence check
+			$parts = preg_split("/(\)|\()+/", $expr, -1,
+				PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+			foreach($parts as &$part) {
+				preg_match_all('/(?<!\w)@(\w(?:[\w\.\[\]])*)/',
+					$part, $matches, PREG_SET_ORDER);
+				foreach (array_reverse($matches) as $match)
+					$part = 'isset(@'.$match[1].') && '.$part;
+			}
+			$expr = implode($parts);
 			$tokens=array_slice(
 				token_get_all('<?php '.$this->token($expr)),1);
 			$data=array_filter($data,
