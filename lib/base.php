@@ -984,7 +984,7 @@ final class Base {
 				$this->hive['DNSBL']:
 				$this->split($this->hive['DNSBL']) as $server)
 				// DNSBL lookup
-				if (gethostbyname($host=$rev.'.'.$server)!=$host)
+				if (checkdnsrr($rev.'.'.$server,'A'))
 					return TRUE;
 		}
 		return FALSE;
