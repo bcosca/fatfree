@@ -113,7 +113,7 @@ abstract class Cursor extends \Magic {
 				)
 			),
 			'count'=>($count=ceil($this->count($filter,$options)/$size)),
-			'pos'=>($pos && $pos<$count?$pos:NULL)
+			'pos'=>$pos<$count?$pos:0
 		);
 	}
 
