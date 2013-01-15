@@ -169,7 +169,7 @@ class Mapper extends \DB\Cursor {
 			$_add=array();
 			foreach ($matches as $match)
 				if (!in_array($match[1],$_add))
-					$_add[]=$match[1];
+					$_add[$match[1]]=NULL;
 			$tokens=array_slice(
 				token_get_all('<?php '.$this->token($expr)),1);
 			$data=array_filter($data,
