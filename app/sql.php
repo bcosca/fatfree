@@ -18,6 +18,12 @@ class SQL extends Controller {
 			if (!is_dir('tmp/'))
 				mkdir('tmp/',\Base::MODE,TRUE);
 			$db=new \DB\SQL('sqlite:tmp/sqlite.db');
+			$db->exec(
+				array(
+					'PRAGMA temp_store=MEMORY;',
+					'PRAGMA journal_mode=MEMORY;'
+				)
+			);
 			//$db=new \DB\SQL('mysql:host=localhost');
 			//$db=new \DB\SQL('pgsql:host=pg.ikkez.de;port=5432;dbname=fatfree.test;user=postgres;password=postgres');
 			$engine=$db->driver();
