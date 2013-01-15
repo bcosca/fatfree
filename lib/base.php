@@ -550,8 +550,8 @@ final class Base {
 		if (is_string($var)) {
 			if ($tags)
 				$tags='<'.implode('><',$this->split($tags)).'>';
-			$var=preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/','',
-				($tags=='*')?$var:strip_tags($var,$tags));
+			$var=trim(preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/','',
+				($tags=='*')?$var:strip_tags($var,$tags)));
 		}
 		elseif (is_array($var))
 			foreach ($var as &$val) {
