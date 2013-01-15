@@ -105,6 +105,7 @@ abstract class Cursor extends \Magic {
 		@param $options array
 	**/
 	function paginate($pos=0,$size=10,$filter=NULL,array $options=NULL) {
+		$pos=max(0,$pos);
 		return array(
 			'subset'=>$this->find($filter,
 				array_merge(
