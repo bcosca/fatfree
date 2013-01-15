@@ -859,8 +859,9 @@ final class Base {
 			// Execute custom error handler
 			$this->call($this->hive['ONERROR'],$this);
 		elseif (!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
-			echo
-				'<!DOCTYPE html>'.
+			echo $this->hive['AJAX']?
+				json_encode($this->hive['ERROR']):
+				('<!DOCTYPE html>'.
 				'<html>'.$eol.
 				'<head>'.
 					'<title>'.$code.' '.$header.'</title>'.
@@ -872,7 +873,7 @@ final class Base {
 					'<p>'.$this->encode($text?:$req).'</p>'.$eol.
 					($debug?('<pre>'.$out.'</pre>'.$eol):'').
 				'</body>'.$eol.
-				'</html>';
+				'</html>');
 		die;
 	}
 
