@@ -808,7 +808,8 @@ final class Base {
 
 	/**
 		Log error; Execute ONERROR handler if defined, else display
-		default error page
+		default error page (HTML for synchronous requests, JSON string
+		for AJAX requests)
 		@return NULL
 		@param $code int
 		@param $text string
