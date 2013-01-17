@@ -819,7 +819,9 @@ final class Base {
 		$prior=$this->hive['ERROR'];
 		$header=$this->status($code);
 		$req=$this->hive['VERB'].' '.$this->hive['URI'];
-		error_log($text=$text?:('HTTP '.$code.' ('.$req.')'));
+		if (!$text)
+			$text='HTTP '.$code.' ('.$req.')';
+		error_log($text);
 		$out='';
 		$eol="\n";
 		if (!$trace)
