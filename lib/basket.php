@@ -199,10 +199,7 @@ class Basket {
 	**/
 	function __construct($key='basket') {
 		$this->key=$key;
-		$id=session_id();
 		@session_start();
-		if (!$id)
-			session_regenerate_id(TRUE);
 		Base::instance()->sync('SESSION');
 		$this->reset();
 	}
