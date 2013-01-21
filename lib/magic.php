@@ -14,7 +14,7 @@
 */
 
 //! PHP magic wrapper
-abstract class Magic {
+abstract class Magic implements ArrayAccess {
 
 	/**
 		Return TRUE if key is not empty
@@ -65,8 +65,17 @@ abstract class Magic {
 		@return mixed
 		@param $key string
 	**/
-	function __isset($key) {
+	function offsetexists($key) {
 		return $this->visible($key)?isset($this->$key):$this->exists($key);
+	}
+
+	/**
+		Alias for offsetexists()
+		@return mixed
+		@param $key string
+	**/
+	function __isset($key) {
+		return $this->offsetexists($key);
 	}
 
 	/**
@@ -75,8 +84,18 @@ abstract class Magic {
 		@param $key string
 		@param $val scalar
 	**/
-	function __set($key,$val) {
+	function offsetset($key,$val) {
 		return $this->visible($key)?($this->key=$val):$this->set($key,$val);
+	}
+
+	/**
+		Alias for offsetset()
+		@return mixed
+		@param $key string
+		@param $val scalar
+	**/
+	function __set($key,$val) {
+		return $this->offsetset($key,$val);
 	}
 
 	/**
@@ -84,20 +103,38 @@ abstract class Magic {
 		@return mixed
 		@param $key string
 	**/
-	function __get($key) {
+	function offsetget($key) {
 		return $this->visible($key)?$this->$key:$this->get($key);
 	}
 
 	/**
-		Convenience method for checking property value
+		Alias for offsetget()
 		@return mixed
 		@param $key string
 	**/
-	function __unset($key) {
+	function __get($key) {
+		return $this->offsetget($key);
+	}
+
+	/**
+		Convenience method for checking property value
+		@return NULL
+		@param $key string
+	**/
+	function offsetunset($key) {
 		if ($this->visible($key))
 			unset($this->$key);
 		else
 			$this->clear($key);
+	}
+
+	/**
+		Alias for offsetunset()
+		@return NULL
+		@param $key string
+	**/
+	function __unset($key) {
+		$this->offsetunset($key);
 	}
 
 }

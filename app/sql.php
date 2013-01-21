@@ -354,12 +354,11 @@ class SQL extends Controller {
 				$obj->get('year')==2007,
 				'Object returned by findone(): '.$class
 			);
-			$array=$movie->afindone(array('title=?','Zodiac'));
 			$test->expect(
-				$array['title']=='Zodiac' &&
-				$array['director']=='David Fincher' &&
-				$array['year']==2007,
-				'Associative array returned by afindone()'
+				$obj['title']=='Zodiac' &&
+				$obj['director']=='David Fincher' &&
+				$obj['year']==2007,
+				'Associative array access'
 			);
 			switch ($engine) {
 				case 'mysql':
