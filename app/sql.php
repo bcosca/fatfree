@@ -25,7 +25,6 @@ class SQL extends Controller {
 				)
 			);
 			//$db=new \DB\SQL('mysql:host=localhost');
-			//$db=new \DB\SQL('pgsql:host=pg.ikkez.de;port=5432;dbname=fatfree.test;user=postgres;password=postgres');
 			$engine=$db->driver();
 			$test->expect(
 				is_object($db),
