@@ -111,7 +111,7 @@ class Mapper extends \DB\Cursor {
 				return '$'.preg_replace_callback(
 					'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
 					function($expr) use($self) {
-						$fw=Base::instance();
+						$fw=\Base::instance();
 						return 
 							'['.
 							($expr[1]?
@@ -223,7 +223,7 @@ class Mapper extends \DB\Cursor {
 					function($val1,$val2) use($col,$order) {
 						list($v1,$v2)=array($val1[$col],$val2[$col]);
 						$out=is_numeric($v1) && is_numeric($v2)?
-							Base::instance()->sign($v1-$v2):strcmp($v1,$v2);
+							\Base::instance()->sign($v1-$v2):strcmp($v1,$v2);
 						if ($order==SORT_DESC)
 							$out=-$out;
 						return $out;
