@@ -443,9 +443,10 @@ final class Base {
 				$num=isset($arg[0]) &&
 					ctype_digit(implode('',array_keys($arg)));
 				foreach ($arg as $key=>$val)
-					$str.=($str?',':'').
-						($num?'':($this->stringify($key).'=>')).
-						$this->stringify($val);
+					if ($val!=$GLOBALS)
+						$str.=($str?',':'').
+							($num?'':($this->stringify($key).'=>')).
+							$this->stringify($val);
 				return 'array('.$str.')';
 			default:
 				return var_export(
@@ -819,8 +820,6 @@ final class Base {
 		if (!$text)
 			$text='HTTP '.$code.' ('.$req.')';
 		error_log($text);
-		$out='';
-		$eol="\n";
 		if (!$trace)
 			$trace=array_slice(debug_backtrace(0),1);
 		$debug=$this->hive['DEBUG'];
@@ -836,6 +835,8 @@ final class Base {
 		);
 		$highlight=$this->hive['HIGHLIGHT'] &&
 			is_file($css=__DIR__.'/'.self::CSS);
+		$out='';
+		$eol="\n";
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';
@@ -1376,8 +1377,6 @@ final class Base {
 		ini_set('magic_quotes_gpc',0);
 		ini_set('register_globals',0);
 		// Abort on startup error
-		if (error_get_last())
-			die;
 		// Intercept errors/exceptions; PHP5.3-compatible
 		error_reporting(E_ALL|E_STRICT);
 		$fw=$this;
@@ -1494,6 +1493,10 @@ final class Base {
 				$global=>preg_match('/SERVER|ENV/',$global)?$sync:array()
 			);
 		}
+		if ($error=error_get_last())
+			// Error detected
+			$this->error(500,sprintf(self::E_Fatal,$error['message']),
+				array($error));
 		// Register framework autoloader
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler
