@@ -443,10 +443,9 @@ final class Base {
 				$num=isset($arg[0]) &&
 					ctype_digit(implode('',array_keys($arg)));
 				foreach ($arg as $key=>$val)
-					if ($val!=$GLOBALS)
-						$str.=($str?',':'').
-							($num?'':($this->stringify($key).'=>')).
-							$this->stringify($val);
+					$str.=($str?',':'').
+						($num?'':($this->stringify($key).'=>')).
+						($val==$GLOBALS?'*RECURSION*':$this->stringify($val));
 				return 'array('.$str.')';
 			default:
 				return var_export(
