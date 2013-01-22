@@ -214,26 +214,24 @@ class Mapper extends \DB\Cursor {
 			);
 		}
 		if (isset($options['order']))
-			foreach (array_reverse($fw->split($options['order'])) as $col) {
-				$parts=explode(' ',$col,2);
-				$order=empty($parts[1])?SORT_ASC:constant($parts[1]);
-				$col=$parts[0];
-				uasort(
-					$data,
-					function($val1,$val2) use($col,$order) {
+			uasort(
+				$data,
+				function($val1,$val2) use($fw,$options) {
+					foreach ($fw->split($options['order']) as $col) {
+						$parts=explode(' ',$col,2);
+						$order=empty($parts[1])?SORT_ASC:constant($parts[1]);
+						$col=$parts[0];
 						if (!array_key_exists($col,$val1))
 							$val1[$col]=NULL;
 						if (!array_key_exists($col,$val2))
 							$val2[$col]=NULL;
 						list($v1,$v2)=array($val1[$col],$val2[$col]);
-						$out=is_numeric($v1) && is_numeric($v2)?
-							\Base::instance()->sign($v1-$v2):strcmp($v1,$v2);
-						if ($order==SORT_DESC)
-							$out=-$out;
-						return $out;
+						if ($out=strnatcmp($v1,$v2)*(($order==SORT_ASC)*2-1))
+							return $out;
 					}
-				);
-			}
+					return 0;
+				}
+			);
 		$out=array();
 		foreach (array_slice($data,
 			$options['offset'],$options['limit']?:NULL,TRUE) as $id=>$doc)
