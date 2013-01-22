@@ -1375,6 +1375,9 @@ final class Base {
 		// Deprecated directives
 		ini_set('magic_quotes_gpc',0);
 		ini_set('register_globals',0);
+		// Abort on startup error
+		if (error_get_last())
+			die;
 		// Intercept errors/exceptions; PHP5.3-compatible
 		error_reporting(E_ALL|E_STRICT);
 		$fw=$this;
