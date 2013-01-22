@@ -561,9 +561,9 @@ class Web extends Prefab {
 							}
 							$dst.=$src[$ptr];
 							$ptr++;
-							if ($fw->get('CACHE'))
-								$cache->set($hash,$dst);
 						}
+						if ($fw->get('CACHE'))
+							$cache->set($hash,$dst);
 					}
 				}
 		if (PHP_SAPI!='cli' && $header)
