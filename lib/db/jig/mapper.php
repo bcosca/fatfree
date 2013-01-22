@@ -213,11 +213,12 @@ class Mapper extends \DB\Cursor {
 				}
 			);
 		}
-		if (isset($options['order']))
+		if (isset($options['order'])) {
+			$cols=$fw->split($options['order']);
 			uasort(
 				$data,
-				function($val1,$val2) use($fw,$options) {
-					foreach ($fw->split($options['order']) as $col) {
+				function($val1,$val2) use($cols) {
+					foreach ($cols as $col) {
 						$parts=explode(' ',$col,2);
 						$order=empty($parts[1])?SORT_ASC:constant($parts[1]);
 						$col=$parts[0];
@@ -232,6 +233,7 @@ class Mapper extends \DB\Cursor {
 					return 0;
 				}
 			);
+		}
 		$out=array();
 		foreach (array_slice($data,
 			$options['offset'],$options['limit']?:NULL,TRUE) as $id=>$doc)
