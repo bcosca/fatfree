@@ -459,7 +459,7 @@ class Web extends Prefab {
 						($cached=$cache->exists(
 							$hash=$fw->hash($save).'.'.$ext[0],$data)) &&
 						$cached>filemtime($save))
-						$dst=$data;
+						$dst.=$data;
 					else {
 						$src=$fw->read($save);
 						for ($ptr=0,$len=strlen($src);$ptr<$len;) {
