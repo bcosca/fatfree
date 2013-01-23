@@ -461,13 +461,14 @@ class Web extends Prefab {
 						$cached>filemtime($save))
 						$dst.=$data;
 					else {
+						$data='';
 						$src=$fw->read($save);
 						for ($ptr=0,$len=strlen($src);$ptr<$len;) {
 							if (preg_match('/^@import\h+url'.
 								'\(\h*([\'"])(.+?)\1\h*\)[^;]*;/',
 								substr($src,$ptr),$parts)) {
 								$path=dirname($file);
-								$dst.=$this->minify(
+								$data.=$this->minify(
 									($path?($path.'/'):'').$parts[2],
 									$mime,$header
 								);
@@ -479,7 +480,7 @@ class Web extends Prefab {
 									// Conditional block
 									$str=strstr(
 										substr($src,$ptr+3),'@*/',TRUE);
-									$dst.='/*@'.$str.$src[$ptr].'@*/';
+									$data.='/*@'.$str.$src[$ptr].'@*/';
 									$ptr+=strlen($str)+6;
 								}
 								elseif ($src[$ptr+1]=='*') {
@@ -505,13 +506,13 @@ class Web extends Prefab {
 										if (preg_match(
 											'/(return|[(:=!+\-*&|])$/',
 											substr($src,0,$ofs))) {
-											$dst.='/';
+											$data.='/';
 											$ptr++;
 											while ($ptr<$len) {
-												$dst.=$src[$ptr];
+												$data.=$src[$ptr];
 												$ptr++;
 												if ($src[$ptr-1]=='\\') {
-													$dst.=$src[$ptr];
+													$data.=$src[$ptr];
 													$ptr++;
 												}
 												elseif ($src[$ptr-1]=='/')
@@ -527,7 +528,7 @@ class Web extends Prefab {
 									}
 									if (!$regex) {
 										// Division operator
-										$dst.=$src[$ptr];
+										$data.=$src[$ptr];
 										$ptr++;
 									}
 								}
@@ -535,14 +536,14 @@ class Web extends Prefab {
 							}
 							if (in_array($src[$ptr],array('\'','"'))) {
 								$match=$src[$ptr];
-								$dst.=$match;
+								$data.=$match;
 								$ptr++;
 								// String literal
 								while ($ptr<$len) {
-									$dst.=$src[$ptr];
+									$data.=$src[$ptr];
 									$ptr++;
 									if ($src[$ptr-1]=='\\') {
-										$dst.=$src[$ptr];
+										$data.=$src[$ptr];
 										$ptr++;
 									}
 									elseif ($src[$ptr-1]==$match)
@@ -554,16 +555,17 @@ class Web extends Prefab {
 								if ($ptr+1<strlen($src) &&
 									preg_match('/([\w'.($ext[0]=='css'?
 										'#\.+\-*()\[\]':'\$').']){2}/',
-										substr($dst,-1).$src[$ptr+1]))
-									$dst.=' ';
+										substr($data,-1).$src[$ptr+1]))
+									$data.=' ';
 								$ptr++;
 								continue;
 							}
-							$dst.=$src[$ptr];
+							$data.=$src[$ptr];
 							$ptr++;
 						}
 						if ($fw->get('CACHE'))
-							$cache->set($hash,$dst);
+							$cache->set($hash,$data);
+						$dst.=$data;
 					}
 				}
 		if (PHP_SAPI!='cli' && $header)
