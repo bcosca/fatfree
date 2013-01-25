@@ -2194,6 +2194,11 @@ Once you get the hang of testing the smallest units of your application, you can
 * Render an ICU-formatted `expr` and pass the comma-separated arguments.
 
 ```
+{{ string expr,[date|time|number,[integer|currency|percent]] ... }}
+```
+* Renders the `expr` according to the given format. When using `number` further specification is possible.
+
+```
 <include
     [ if="{{ bool condition }}" ]
     href="{{ string subtemplate }}"
