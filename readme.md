@@ -277,7 +277,7 @@ Lighttpd servers are configured in a similar manner:-
 
 ``` lighttpd
 $HTTP["host"] =~ "www\.example\.com$" {
-    url.rewrite-once = ( "^/(.*)$"=>"/index.php/$1" )
+    url.rewrite-once = ( "^/(.*?)(\?.+)?$"=>"/index.php/$1?$2" )
     server.error-handler-404 = "/index.php"
 }
 ```
@@ -2198,7 +2198,7 @@ Once you get the hang of testing the smallest units of your application, you can
 ```
 {{ string expr, arg1, ..., argN | format }}
 ```
-* Render an ICU-formatted `expr` and pass the comma-separated arguments.
+* Render an ICU-formatted `expr` and pass the comma-separated arguments, where `arg1, ..., argn` is one of:- `date`, `time`, `number, integer`, `number, currency`, or `number, percent`.
 
 ```
 <include
@@ -2258,7 +2258,7 @@ The framework API documentation is contained in `lib/api.chm` of the distributio
 
 ## Support and Licensing
 
-Technical support is available at: [https://groups.google.com/forum/#!forum/f3-framework](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit ][http://webchat.freenode.net/](http://webchat.freenode.net/) to join the conversation. You can also download the Firefox Chatzilla add-on if you don't have an IRC client so you can participate in the live chat.
+Technical support is available at: [https://groups.google.com/forum/#!forum/f3-framework](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit [http://webchat.freenode.net/](http://webchat.freenode.net/) to join the conversation. You can also download the Firefox Chatzilla add-on if you don't have an IRC client so you can participate in the live chat.
 
 ### Nightly Builds
 
