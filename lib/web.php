@@ -151,8 +151,9 @@ class Web extends Prefab {
 						return FALSE;
 					$base=basename($file['name']);
 					$dst=$dir.
-						($slug && preg_match('/(.+)(\.\w+)?$/',$base,$parts)?
-							$this->slug($parts[1]).$parts[2]:$base);
+						($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
+							$this->slug($parts[1]).
+							(isset($parts[2])?$parts[2]:''):$base);
 					if ($file['error'] ||
 						$file['type']!=$this->mime($file['name']) ||
 						$overwrite && file_exists($dst) ||
