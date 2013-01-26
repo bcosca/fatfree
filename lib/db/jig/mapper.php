@@ -177,7 +177,9 @@ class Mapper extends \DB\Cursor {
 					$_expr='';
 					$ctr=0;
 					$named=FALSE;
-					foreach ($tokens as $token) {
+					$_prev_expr='';
+					for($i=0,$max=count($tokens);$i<$max;$i++) {
+						$token = $tokens[$i];
 						if (is_string($token))
 							if ($token=='?') {
 								// Positional
@@ -197,6 +199,17 @@ class Mapper extends \DB\Cursor {
 							$named=FALSE;
 						}
 						else {
+							// check field existence
+							if($token[1][0]=='$') {
+								$chk='isset('.$token[1].')';
+								if ($_prev_expr=='preg_match') {
+									$_expr.=$token[1].$tokens[++$i].' && '.$chk;
+									$_prev_expr='';
+									continue;
+								} else
+									$_expr.=$chk.' && ';
+							}
+							$_prev_expr=$token[1];
 							$_expr.=$token[1];
 							continue;
 						}
