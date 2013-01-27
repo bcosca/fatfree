@@ -174,6 +174,8 @@ class Mapper extends \DB\Cursor {
 				token_get_all('<?php '.$this->token($expr)),1);
 			$data=array_filter($data,
 				function($_row) use($_add,$fw,$args,$tokens) {
+					if (array_diff_key($_add,$_row))
+						return FALSE;
 					$_expr='';
 					$ctr=0;
 					$named=FALSE;
