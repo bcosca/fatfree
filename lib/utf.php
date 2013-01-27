@@ -174,4 +174,12 @@ class UTF extends Prefab {
 		return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u','',$str);
 	}
 
+	/**
+		Return UTF-8 byte order mark
+		@return string
+	**/
+	function bom() {
+		return chr(0xef).chr(0xbb).chr(0xbf);
+	}
+
 }
