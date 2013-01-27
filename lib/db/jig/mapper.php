@@ -166,16 +166,10 @@ class Mapper extends \DB\Cursor {
 			$keys=$vals=array();
 			preg_match_all('/(?<!\w)@(\w(?:[\w\.\[\]])*)/',
 				$expr,$matches,PREG_SET_ORDER);
-			$_add=array();
-			foreach ($matches as $match)
-				if (!in_array($match[1],$_add))
-					$_add[$match[1]]=NULL;
 			$tokens=array_slice(
 				token_get_all('<?php '.$this->token($expr)),1);
 			$data=array_filter($data,
-				function($_row) use($_add,$fw,$args,$tokens) {
-					if (array_diff_key($_add,$_row))
-						return FALSE;
+				function($_row) use($fw,$args,$tokens) {
 					$_expr='';
 					$ctr=0;
 					$named=FALSE;
@@ -209,7 +203,7 @@ class Mapper extends \DB\Cursor {
 					}
 					// Avoid conflict with user code
 					unset($fw,$tokens,$args,$ctr,$token,$key,$named);
-					extract($_row+$_add);
+					extract($_row);
 					// Evaluate pseudo-SQL expression
 					return eval('return '.$_expr.';');
 				}
