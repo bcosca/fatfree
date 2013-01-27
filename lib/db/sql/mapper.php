@@ -458,6 +458,14 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
+		Return schema
+		@return array
+	**/
+	function schema() {
+		return $this->fields;
+	}
+
+	/**
 		Instantiate class
 		@param $db object
 		@param $table string
