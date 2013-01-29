@@ -1,0 +1,87 @@
+html {
+	height:100%;
+	overflow-y:scroll;
+}
+body {
+	font-family:Ubuntu,Tahoma,sans-serif;
+	background:#eee;
+	margin:0;
+	min-height:100%;
+	overflow:hidden;
+}
+h1 {
+	font-size:18pt;
+	margin:0 0 8pt 0;
+}
+#sidebar {
+	text-align:right;
+	color:#fc3;
+	background:#000;
+	padding:2% 2% 9999px 2%;
+	margin-bottom:-9999px;
+	width:21%;
+	float:left;
+}
+#sidebar h1 {
+	color:#fff;
+}
+#sidebar ul {
+	font-size:12.5pt;
+	text-transform:lowercase;
+	margin:10pt 0;
+}
+#sidebar li {
+	list-style-type:none;
+	line-height:1.5em;
+}
+#sidebar a {
+	color:#999;
+	text-decoration:none;
+}
+#sidebar a:hover { color:#fff; }
+#main {
+	color:#000;
+	padding:2% 2% 9999px 2%;
+	margin-bottom:-9999px;
+	width:71%;
+	float:left;
+}
+#main h1 {
+	-webkit-text-stroke:1px;
+	color:#666;
+}
+#main p {
+	font-size:9pt;
+	line-height:1.6em;
+}
+#main p.stats {
+	color:#666;
+}
+#main span.status {
+	font-size:8pt;
+	font-weight:bold;
+	text-align:center;
+	margin:0.15em 0;
+	display:block;
+	float:left;
+	width:2em;
+}
+#main span.text {
+	margin:0.15em 0.5em;
+	display:block;
+	float:left;
+}
+#main span.pass {
+	color:#fff;
+	background:#090;
+}
+#main span.fail {
+	color:#fff;
+	background:#c00;
+}
+#main img {
+	border:0;
+}
+#main br {
+	clear:both;
+}

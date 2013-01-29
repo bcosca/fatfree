@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<base href="<?php echo $SCHEME.'://'.$HOST.$BASE.'/'.$UI; ?>" />
+		<meta charset="<?php echo $ENCODING; ?>" />
+		<title><?php echo $PACKAGE; ?>: <?php echo $active; ?></title>
+		<link rel="stylesheet" type="text/css" href="css/theme.css" />
+		<style>
+			<?php if ($ERROR) echo file_get_contents('lib/code.css'); ?>
+		</style>
+	</head>
+	<body>
+		<div id="sidebar">
+			<h1>Unit Tests</h1>
+			<ul>
+				<?php foreach ($menu as $url=>$desc): ?>
+				<li><?php if ($active==$desc): ?><?php echo $desc; ?><?php else: ?><a href="<?php echo $BASE.$url; ?>"><?php echo $desc; ?></a><?php endif; ?></li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+		<div id="main">
+			<h1><?php echo $active; ?></h1>
+			<p>
+				<?php foreach ($results as $i=>$result): ?>
+				<span class="status <?php echo $result['status']?'pass':'fail'; ?>"><?php echo $i+1; ?></span> <span class="text"><?php echo $result['text']; ?> <?php if (!$result['status'] && $result['source']) echo '('.$result['source'].')'; ?></span><br/>
+				<?php endforeach; ?>
+			</p>
+			<p><a href="http://fatfree.sf.net/"><img src="images/powered.png" title="Fat-Free Framework" /></a><br />
+			<p class="stats"><?php echo Base::instance()->format('Page rendered in {0} msecs / Memory usage {1} Kibytes',round(1e3*(microtime(TRUE)-$TIME),2),round(memory_get_usage(TRUE)/1e3,1)); ?></p>
+		</div>
+	</body>
+</html>
