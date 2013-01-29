@@ -85,13 +85,14 @@ class Web extends Prefab {
 		@param $file string
 		@param $mime string
 		@param $kbps int
+		@param $force bool
 	**/
-	function send($file,$mime=NULL,$kbps=0) {
+	function send($file,$mime=NULL,$kbps=0,$force=TRUE) {
 		if (!is_file($file))
 			return FALSE;
 		if (PHP_SAPI!='cli') {
 			header('Content-Type: '.$mime?:$this->mime($file));
-			if ($mime=='application/octet-stream')
+			if ($force)
 				header('Content-Disposition: attachment; '.
 					'filename='.basename($file));
 			header('Accept-Ranges: bytes');
