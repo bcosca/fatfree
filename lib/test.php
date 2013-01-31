@@ -43,17 +43,17 @@ class Test {
 	**/
 	function expect($cond,$text=NULL) {
 		if (($out=(bool)$cond) &&
-			($this->level==self::FLAG_True || $this->level==self::FLAG_Both))
+			($this->level==self::FLAG_True ||
+				$this->level==self::FLAG_Both)) {
+			$data=array('status'=>$out,'text'=>$text,'source'=>NULL);
 			foreach (debug_backtrace() as $frame)
 				if (isset($frame['file'])) {
-					$this->data[]=array(
-						'status'=>$out,
-						'text'=>$text,
-						'source'=>Base::instance()->
-							fixslashes($frame['file']).':'.$frame['line']
-					);
+					$data['source']=Base::instance()->
+						fixslashes($frame['file']).':'.$frame['line'];
 					break;
 				}
+			$this->data[]=$data;
+		}
 	}
 
 	/**
