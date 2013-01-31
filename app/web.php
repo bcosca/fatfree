@@ -26,7 +26,7 @@ class Web extends Controller {
 		$now=microtime(TRUE);
 		$file=$f3->get('UI').'images/wallpaper.jpg';
 		ob_start();
-		$web->send($file,NULL,$kbps=256);
+		$web->send($file,NULL,$kbps=256,FALSE);
 		$out=ob_get_clean();
 		$test->expect(
 			($elapsed=microtime(TRUE)-$now)>
