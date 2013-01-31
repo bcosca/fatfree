@@ -215,7 +215,8 @@ final class Base {
 					$val=$this->language($val);
 				$lex=$this->lexicon($this->hive['LOCALES']);
 			case 'LOCALES':
-				if (isset($lex) || $lex=$this->lexicon($val))
+				if (isset($lex) ||
+					$this->languages && $lex=$this->lexicon($val))
 					$this->mset($lex,NULL,$ttl);
 				break;
 			case 'TZ':
@@ -833,8 +834,8 @@ final class Base {
 						'__call|call_user_func)/',$frame['function']));
 			}
 		);
-		$highlight=$this->hive['HIGHLIGHT'] &&
-			is_file($css=__DIR__.'/'.self::CSS);
+		$highlight=PHP_SAPI!='cli' &&
+			$this->hive['HIGHLIGHT'] && is_file($css=__DIR__.'/'.self::CSS);
 		$out='';
 		$eol="\n";
 		// Analyze stack trace
@@ -863,7 +864,7 @@ final class Base {
 		elseif (!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo $this->hive['AJAX']?
 				json_encode($this->hive['ERROR']):
-				('<!DOCTYPE html>'.
+				('<!DOCTYPE html>'.$eol.
 				'<html>'.$eol.
 				'<head>'.
 					'<title>'.$code.' '.$header.'</title>'.
