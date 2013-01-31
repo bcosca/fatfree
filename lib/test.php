@@ -16,6 +16,13 @@
 //! Unit test kit
 class Test {
 
+	//@{ Reporting level
+	const
+		FLAG_False=0,
+		FLAG_True=1,
+		FLAG_Both=2;
+	//@}
+
 	private
 		//! Test results
 		$data=array();
@@ -35,17 +42,18 @@ class Test {
 		@param $text string
 	**/
 	function expect($cond,$text=NULL) {
-		$out=(bool)$cond;
-		foreach (debug_backtrace() as $frame)
-			if (isset($frame['file'])) {
-				$this->data[]=array(
-					'status'=>$out,
-					'text'=>$text,
-					'source'=>Base::instance()->
-						fixslashes($frame['file']).':'.$frame['line']
-				);
-				break;
-			}
+		if (($out=(bool)$cond) &&
+			($this->level==self::FLAG_True || $this->level==self::FLAG_Both))
+			foreach (debug_backtrace() as $frame)
+				if (isset($frame['file'])) {
+					$this->data[]=array(
+						'status'=>$out,
+						'text'=>$text,
+						'source'=>Base::instance()->
+							fixslashes($frame['file']).':'.$frame['line']
+					);
+					break;
+				}
 	}
 
 	/**
@@ -55,6 +63,15 @@ class Test {
 	**/
 	function message($text) {
 		$this->expect(TRUE,$text);
+	}
+
+	/**
+		Class constructor
+		@return NULL
+		@param $level int
+	**/
+	function __construct($level=self::FLAG_Both) {
+		$this->level=$level;
 	}
 
 }
