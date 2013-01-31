@@ -215,8 +215,7 @@ final class Base {
 					$val=$this->language($val);
 				$lex=$this->lexicon($this->hive['LOCALES']);
 			case 'LOCALES':
-				if (isset($lex) ||
-					$this->languages && $lex=$this->lexicon($val))
+				if (isset($lex) || $lex=$this->lexicon($val))
 					$this->mset($lex,NULL,$ttl);
 				break;
 			case 'TZ':
@@ -712,7 +711,7 @@ final class Base {
 	**/
 	function lexicon($path) {
 		$lex=array();
-		foreach ($this->languages as $lang) {
+		foreach ($this->languages?:array($this->fallback) as $lang) {
 			if ((is_file($file=($base=$path.$lang).'.php') ||
 				is_file($file=$base.'.php')) &&
 				is_array($dict=require($file)))
