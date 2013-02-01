@@ -42,6 +42,8 @@ The philosophy behind the framework and its approach to software architecture is
 * [Quick Reference](#quick-reference)
 * [Support and Licensing](#support-and-licensing)
 
+[![Twitter](ui/images/twitter.png)](https://twitter.com/phpfatfree)
+
 ### Version 3.0 Is Finally Here!
 
 The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that took several months to develop and refine, version 3.0 is finally available for download. The code base has been rewritten from the ground up to provide enterprise-class architecture and performance but with the same user-friendly features and lightweight footprint.
@@ -1326,7 +1328,7 @@ $user->load(array('@userID=?','tarzan'));
 
 ### The Smart SQL ORM
 
-The framework automatically maps the field `visits` in our table to an data mapper property during object instantiation, i.e. `$user=new DB\SQL\Mapper($db,'users');`. Once the object is created, `$user->password` and `$user->userID` would map to the `password` and `userID` fields in our table, respectively.
+The framework automatically maps the field `visits` in our table to a data mapper property during object instantiation, i.e. `$user=new DB\SQL\Mapper($db,'users');`. Once the object is created, `$user->password` and `$user->userID` would map to the `password` and `userID` fields in our table, respectively.
 
 You can't add or delete a mapped field, or change a table's structure using the ORM. You must do this in MySQL, or whatever database engine you're using. After you make the changes in your database engine, Fat-Free will automatically synchronize the new table structure with your data mapper object when you run your application.
 
