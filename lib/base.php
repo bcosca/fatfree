@@ -1220,6 +1220,7 @@ final class Base {
 						array_merge(array($match[2]),str_getcsv($match[3])));
 				}
 				else {
+					var_dump($match[3]);
 					$args=array_map(
 						function($val) {
 							$quote=(isset($val[0]) && $val[0]=="\x00");
@@ -1231,9 +1232,9 @@ final class Base {
 							return preg_replace(
 								'/\\\\\h*\r?\n/','',$val);
 						},
-						str_getcsv(
-							// Mark quoted strings with 0x00 whitespace
-							preg_replace('/"(.+?)"/',"\x00\\1",$match[3]))
+						// Mark quoted strings with 0x00 whitespace
+						str_getcsv(preg_replace(
+							'/(")(.+?)\1/',"\\1\x00\\2\\1",$match[3]))
 					);
 					call_user_func_array(array($this,'set'),
 						array_merge(
