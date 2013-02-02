@@ -1220,7 +1220,6 @@ final class Base {
 						array_merge(array($match[2]),str_getcsv($match[3])));
 				}
 				else {
-					var_dump($match[3]);
 					$args=array_map(
 						function($val) {
 							$quote=(isset($val[0]) && $val[0]=="\x00");
