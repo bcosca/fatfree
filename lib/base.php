@@ -432,11 +432,12 @@ final class Base {
 		switch (gettype($arg)) {
 			case 'object':
 				$str='';
-				if ($this->hive['DEBUG']>2)
-					foreach ((array)$arg as $key=>$val)
+				if ($this->hive['DEBUG']>2 && get_class($arg)!='Closure')
+					foreach ((array)$arg as $key=>$val) {
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
 							$this->stringify($val);
+					}
 				return addslashes(get_class($arg)).'::__set_state('.$str.')';
 			case 'array':
 				$str='';
@@ -821,7 +822,7 @@ final class Base {
 			$text='HTTP '.$code.' ('.$req.')';
 		error_log($text);
 		if (!$trace)
-			$trace=array_slice(debug_backtrace(0),1);
+			$trace=array_slice(debug_backtrace(FALSE),1);
 		$debug=$this->hive['DEBUG'];
 		$trace=array_filter(
 			$trace,
