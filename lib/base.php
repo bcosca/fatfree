@@ -1004,6 +1004,16 @@ final class Base {
 		if (!$this->hive['ROUTES'])
 			// No routes defined
 			user_error(self::E_Routes);
+		
+		// Support servers not using url rewriting
+		// translate /folder/index.php/worker/main to /worker/main
+		if (!$this->hive['REWRITE']){
+			$script=$_SERVER['SCRIPT_NAME'];
+			if(substr($_SERVER['REQUEST_URI'], 0,strlen($script))==$script){
+				$_SERVER['REQUEST_URI']=substr($_SERVER['REQUEST_URI'], strlen($script));
+			}
+		}
+
 		// Match specific routes first
 		krsort($this->hive['ROUTES']);
 		// Convert to BASE-relative URL
@@ -1465,6 +1475,7 @@ final class Base {
 			'REALM'=>$scheme.'://'.
 				$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'],
 			'RESPONSE'=>'',
+			'REWRITE'=>true,
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>array(),
 			'SCHEME'=>$scheme,
