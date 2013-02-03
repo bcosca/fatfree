@@ -42,9 +42,10 @@ class Test {
 		@param $text string
 	**/
 	function expect($cond,$text=NULL) {
-		if (($out=(bool)$cond) &&
-			($this->level==self::FLAG_True ||
-				$this->level==self::FLAG_Both)) {
+		$out=(bool)$cond;
+		if ($this->level==self::FLAG_True && $out ||
+			$this->level==self::FLAG_False && !$out ||
+			$this->level==self::FLAG_Both) {
 			$data=array('status'=>$out,'text'=>$text,'source'=>NULL);
 			foreach (debug_backtrace() as $frame)
 				if (isset($frame['file'])) {
