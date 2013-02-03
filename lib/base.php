@@ -966,9 +966,13 @@ final class Base {
 		@param $kbps int
 	**/
 	function map($url,$class,$ttl=0,$kbps=0) {
+		$fluid=preg_match('/@\w+/',$url);
 		foreach (explode('|',self::VERBS) as $method)
-			$this->route($method.' '.
-				$url,$class.'->'.strtolower($method),$ttl,$kbps);
+			if ($fluid ||
+				method_exists($class,$method) ||
+				method_exists($class,'__call'))
+				$this->route($method.' '.
+					$url,$class.'->'.strtolower($method),$ttl,$kbps);
 	}
 
 	/**

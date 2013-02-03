@@ -20,3 +20,13 @@ class Controller {
 	}
 
 }
+
+class Map {
+
+	function get() {
+	}
+
+	function post() {
+	}
+
+}
