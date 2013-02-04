@@ -478,14 +478,7 @@ class Web extends Prefab {
 								continue;
 							}
 							if ($src[$ptr]=='/') {
-								if (substr($src,$ptr+1,2)=='*@') {
-									// Conditional block
-									$str=strstr(
-										substr($src,$ptr+3),'@*/',TRUE);
-									$data.='/*@'.$str.$src[$ptr].'@*/';
-									$ptr+=strlen($str)+6;
-								}
-								elseif ($src[$ptr+1]=='*') {
+								if ($src[$ptr+1]=='*') {
 									// Multiline comment
 									$str=strstr(
 										substr($src,$ptr+2),'*/',TRUE);
