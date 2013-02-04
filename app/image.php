@@ -122,7 +122,7 @@ class Image extends Controller {
 				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
-			$src=$f3->base64($img->restore()->resize(90,100)->dump(),'image/png'),
+			$src=$f3->base64($img->restore()->resize(150,90)->dump(),'image/png'),
 			'Resize/crop vertical<br />'.
 			'<img src="'.$src.'" '.
 				'title="'.$img->width().'x'.$img->height().'" />'
