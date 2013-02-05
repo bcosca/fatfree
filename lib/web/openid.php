@@ -80,11 +80,11 @@ class OpenID extends \Magic {
 					'/^<link\b((?:\h+\w+\h*=\h*'.
 					'(?:"(?:.+?)"|\'(?:.+?)\'))*)\h*\/?>/is',
 					substr($req['body'],$ptr),$parts)) {
-					if ($parts[1]) {
+					if ($parts[1] &&
 						// Process attributes
 						preg_match_all('/\b(rel|href)\h*=\h*'.
 							'(?:"(.+?)"|\'(.+?)\')/s',$parts[1],$attr,
-							PREG_SET_ORDER);
+							PREG_SET_ORDER)) {
 						$node=array();
 						foreach ($attr as $kv)
 							$node[$kv[1]]=isset($kv[2])?$kv[2]:$kv[3];
