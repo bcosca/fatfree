@@ -161,6 +161,12 @@ class Image extends Controller {
 			'<img src="'.$src.'" '.
 				'title="'.$img->width().'x'.$img->height().'" />'
 		);
+		$test->expect(
+			$src=$f3->base64($img->restore()->dump('png',NULL,9,PNG_ALL_FILTERS),'image/png'),
+			'Dump with additional arguments<br />'.
+			'<img src="'.$src.'" '.
+				'title="'.$img->width().'x'.$img->height().'" />'
+		);
 		unset($img);
 		$f3->set('ESCAPE',FALSE);
 		$f3->set('results',$test->results());
