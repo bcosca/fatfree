@@ -164,8 +164,6 @@ class Mapper extends \DB\Cursor {
 				array_slice($filter,1,NULL,TRUE);
 			$args=is_array($args)?$args:array(1=>$args);
 			$keys=$vals=array();
-			preg_match_all('/(?<!\w)@(\w(?:[\w\.\[\]])*)/',
-				$expr,$matches,PREG_SET_ORDER);
 			$tokens=array_slice(
 				token_get_all('<?php '.$this->token($expr)),1);
 			$data=array_filter($data,
