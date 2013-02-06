@@ -827,7 +827,7 @@ final class Base {
 		$trace=array_filter(
 			$trace,
 			function($frame) use($debug) {
-				return isset($frame['file']) &&
+				return $debug && isset($frame['file']) &&
 					($frame['file']!=__FILE__ || $debug>1) &&
 					(empty($frame['function']) ||
 					!preg_match('/^(?:(?:trigger|user)_error|'.
