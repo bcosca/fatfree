@@ -167,8 +167,9 @@ class Mapper extends \DB\Cursor {
 		@param $fields string
 		@param $filter string|array
 		@param $options array
+		@param $ttl int
 	**/
-	function select($fields,$filter=NULL,array $options=NULL) {
+	function select($fields,$filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -197,7 +198,7 @@ class Mapper extends \DB\Cursor {
 			$sql.=' LIMIT '.$options['limit'];
 		if ($options['offset'])
 			$sql.=' OFFSET '.$options['offset'];
-		$result=$this->db->exec($sql.';',$args);
+		$result=$this->db->exec($sql.';',$args,$ttl);
 		$out=array();
 		foreach ($result as &$row) {
 			foreach ($row as $field=>&$val) {
@@ -221,8 +222,9 @@ class Mapper extends \DB\Cursor {
 		@return array
 		@param $filter string|array
 		@param $options array
+		@param $ttl int
 	**/
-	function find($filter=NULL,array $options=NULL) {
+	function find($filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -234,7 +236,7 @@ class Mapper extends \DB\Cursor {
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
 			$adhoc.=','.$field['expr'].' AS '.$key;
-		return $this->select('*'.$adhoc,$filter,$options);
+		return $this->select('*'.$adhoc,$filter,$options,$ttl);
 	}
 
 	/**
