@@ -32,7 +32,6 @@ class Mongo extends \MongoDB {
 		@return string
 	**/
 	function log() {
-		$fw=\Base::instance();
 		$cursor=$this->selectcollection('system.profile')->find();
 		foreach (iterator_to_array($cursor) as $frame)
 			if (!preg_match('/\.system\..+$/',$frame['ns']))

@@ -36,9 +36,8 @@ class Jig {
 		Read data from file
 		@return array
 		@param $file string
-		@param $frame string
 	**/
-	function read($file,$frame=NULL) {
+	function read($file) {
 		$fw=\Base::instance();
 		if (!is_file($dst=$this->dir.$file))
 			return array();
