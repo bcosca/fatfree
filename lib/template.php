@@ -16,8 +16,10 @@
 //! Template engine
 class Template extends View {
 
+	//@{ Error messages
 	const
 		E_Method='Call to undefined method %s()';
+	//@}
 
 	protected
 		//! MIME type
