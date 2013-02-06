@@ -135,9 +135,10 @@ class Mapper extends \DB\Cursor {
 		@return array|FALSE
 		@param $filter array
 		@param $options array
+		@param $ttl int
 		@param $log bool
 	**/
-	function find($filter=NULL,array $options=NULL,$log=TRUE) {
+	function find($filter=NULL,array $options=NULL,$ttl=0,$log=TRUE) {
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -146,91 +147,103 @@ class Mapper extends \DB\Cursor {
 			'offset'=>0
 		);
 		$fw=\Base::instance();
+		$cache=\Cache::instance();
 		$db=$this->db;
 		$now=microtime(TRUE);
-		$data=$db->read($this->file);
-		foreach ($data as $key=>&$val) {
-			$val['_id']=$key;
-			unset($val);
-		}
-		if ($filter) {
-			if (!is_array($filter))
-				return FALSE;
-			// Normalize equality operator
-			$expr=preg_replace('/(?<=[^<>!=])=(?!=)/','==',$filter[0]);
-			// Prepare query arguments
-			$args=isset($filter[1]) && is_array($filter[1])?
-				$filter[1]:
-				array_slice($filter,1,NULL,TRUE);
-			$args=is_array($args)?$args:array(1=>$args);
-			$keys=$vals=array();
-			$tokens=array_slice(
-				token_get_all('<?php '.$this->token($expr)),1);
-			$data=array_filter($data,
-				function($_row) use($fw,$args,$tokens) {
-					$_expr='';
-					$ctr=0;
-					$named=FALSE;
-					foreach ($tokens as $token) {
-						if (is_string($token))
-							if ($token=='?') {
-								// Positional
-								$ctr++;
-								$key=$ctr;
+		if (!$fw->get('CACHE') || !$ttl || !($cached=$cache->exists(
+			$hash=$fw->hash($fw->stringify(array($filter,$options))).'.jig',
+				$data)) || $cached+$ttl<microtime(TRUE)) {
+			$data=$db->read($this->file);
+			foreach ($data as $key=>&$val) {
+				$val['_id']=$key;
+				unset($val);
+			}
+			if ($filter) {
+				if (!is_array($filter))
+					return FALSE;
+				// Normalize equality operator
+				$expr=preg_replace('/(?<=[^<>!=])=(?!=)/','==',$filter[0]);
+				// Prepare query arguments
+				$args=isset($filter[1]) && is_array($filter[1])?
+					$filter[1]:
+					array_slice($filter,1,NULL,TRUE);
+				$args=is_array($args)?$args:array(1=>$args);
+				$keys=$vals=array();
+				$tokens=array_slice(
+					token_get_all('<?php '.$this->token($expr)),1);
+				$data=array_filter($data,
+					function($_row) use($fw,$args,$tokens) {
+						$_expr='';
+						$ctr=0;
+						$named=FALSE;
+						foreach ($tokens as $token) {
+							if (is_string($token))
+								if ($token=='?') {
+									// Positional
+									$ctr++;
+									$key=$ctr;
+								}
+								else {
+									if ($token==':')
+										$named=TRUE;
+									else
+										$_expr.=$token;
+									continue;
+								}
+							elseif ($named &&
+								token_name($token[0])=='T_STRING') {
+								$key=':'.$token[1];
+								$named=FALSE;
 							}
 							else {
-								if ($token==':')
-									$named=TRUE;
-								else
-									$_expr.=$token;
+								$_expr.=$token[1];
 								continue;
 							}
-						elseif ($named &&
-							token_name($token[0])=='T_STRING') {
-							$key=':'.$token[1];
-							$named=FALSE;
+							$_expr.=$fw->stringify(
+								is_string($args[$key])?
+									addcslashes($args[$key],'\''):
+									$args[$key]);
 						}
-						else {
-							$_expr.=$token[1];
-							continue;
+						// Avoid conflict with user code
+						unset($fw,$tokens,$args,$ctr,$token,$key,$named);
+						extract($_row);
+						// Evaluate pseudo-SQL expression
+						return eval('return '.$_expr.';');
+					}
+				);
+			}
+			if (isset($options['order'])) {
+				$cols=$fw->split($options['order']);
+				uasort(
+					$data,
+					function($val1,$val2) use($cols) {
+						foreach ($cols as $col) {
+							$parts=explode(' ',$col,2);
+							$order=empty($parts[1])?
+								SORT_ASC:
+								constant($parts[1]);
+							$col=$parts[0];
+							if (!array_key_exists($col,$val1))
+								$val1[$col]=NULL;
+							if (!array_key_exists($col,$val2))
+								$val2[$col]=NULL;
+							list($v1,$v2)=array($val1[$col],$val2[$col]);
+							if ($out=strnatcmp($v1,$v2)*
+								(($order==SORT_ASC)*2-1))
+								return $out;
 						}
-						$_expr.=$fw->stringify(
-							is_string($args[$key])?
-								addcslashes($args[$key],'\''):
-								$args[$key]);
+						return 0;
 					}
-					// Avoid conflict with user code
-					unset($fw,$tokens,$args,$ctr,$token,$key,$named);
-					extract($_row);
-					// Evaluate pseudo-SQL expression
-					return eval('return '.$_expr.';');
-				}
-			);
-		}
-		if (isset($options['order'])) {
-			$cols=$fw->split($options['order']);
-			uasort(
-				$data,
-				function($val1,$val2) use($cols) {
-					foreach ($cols as $col) {
-						$parts=explode(' ',$col,2);
-						$order=empty($parts[1])?SORT_ASC:constant($parts[1]);
-						$col=$parts[0];
-						if (!array_key_exists($col,$val1))
-							$val1[$col]=NULL;
-						if (!array_key_exists($col,$val2))
-							$val2[$col]=NULL;
-						list($v1,$v2)=array($val1[$col],$val2[$col]);
-						if ($out=strnatcmp($v1,$v2)*(($order==SORT_ASC)*2-1))
-							return $out;
-					}
-					return 0;
-				}
-			);
+				);
+			}
+			$data=array_slice($data,
+				$options['offset'],$options['limit']?:NULL,TRUE);
+			if ($fw->get('CACHE') && $ttl)
+				// Save to cache backend
+				$cache->set($hash,$data,$ttl);
 		}
 		$out=array();
-		foreach (array_slice($data,
-			$options['offset'],$options['limit']?:NULL,TRUE) as $id=>$doc)
+		foreach ($data as $id=>$doc)
 			$out[]=$this->factory($id,$doc);
 		if ($log) {
 			if ($filter)

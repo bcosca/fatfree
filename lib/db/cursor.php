@@ -62,9 +62,10 @@ abstract class Cursor extends \Magic {
 		@return object|FALSE
 		@param $filter string|array
 		@param $options array
+		@param $ttl int
 	**/
-	function findone($filter=NULL,array $options=NULL) {
-		return ($data=$this->find($filter,$options))?$data[0]:FALSE;
+	function findone($filter=NULL,array $options=NULL,$ttl=0) {
+		return ($data=$this->find($filter,$options,$ttl))?$data[0]:FALSE;
 	}
 
 	/**
