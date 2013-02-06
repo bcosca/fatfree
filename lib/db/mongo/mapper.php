@@ -96,8 +96,9 @@ class Mapper extends \DB\Cursor {
 		@param $fields string
 		@param $filter array
 		@param $options array
+		@param $ttl int
 	**/
-	function select($fields=NULL,$filter=NULL,array $options=NULL) {
+	function select($fields=NULL,$filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -106,41 +107,50 @@ class Mapper extends \DB\Cursor {
 			'limit'=>0,
 			'offset'=>0
 		);
-		if ($options['group']) {
-			$fw=\Base::instance();
-			$tmp=$this->db->
-				{$fw->get('HOST').'.'.$fw->get('BASE').'.'.uniqid().'.tmp'};
-			$tmp->batchinsert(
-				$this->collection->group(
-					$options['group']['keys'],
-					$options['group']['initial'],
-					$options['group']['reduce'],
-					array(
-						'condition'=>array(
-							$filter,
-							$options['group']['finalize']
+		$fw=\Base::instance();
+		$cache=\Cache::instance();
+		if (!$fw->get('CACHE') || !$ttl || !($cached=$cache->exists(
+			$hash=$fw->hash($fw->stringify(array($fields,$filter,$options))).
+				'.mongo',$result)) || $cached+$ttl<microtime(TRUE)) {
+			if ($options['group']) {
+				$tmp=$this->db->selectcollection(
+					$fw->get('HOST').'.'.$fw->get('BASE').'.'.uniqid().'.tmp'
+				);
+				$tmp->batchinsert(
+					$this->collection->group(
+						$options['group']['keys'],
+						$options['group']['initial'],
+						$options['group']['reduce'],
+						array(
+							'condition'=>array(
+								$filter,
+								$options['group']['finalize']
+							)
 						)
-					)
-				),
-				array('safe'=>TRUE)
-			);
-			$filter=array();
-			$collection=$tmp;
+					),
+					array('safe'=>TRUE)
+				);
+				$filter=array();
+				$collection=$tmp;
+			}
+			else {
+				$filter=$filter?:array();
+				$collection=$this->collection;
+			}
+			$cursor=$collection->find($filter,$fields?:array());
+			if ($options['order'])
+				$cursor=$cursor->sort($options['order']);
+			if ($options['limit'])
+				$cursor=$cursor->limit($options['limit']);
+			if ($options['offset'])
+				$cursor=$cursor->skip($options['offset']);
+			if ($options['group'])
+				$tmp->drop();
+			$result=iterator_to_array($cursor,FALSE);
+			if ($fw->get('CACHE') && $ttl)
+				// Save to cache backend
+				$cache->set($hash,$result,$ttl);
 		}
-		else {
-			$filter=$filter?:array();
-			$collection=$this->collection;
-		}
-		$cursor=$collection->find($filter,$fields?:array());
-		if ($options['order'])
-			$cursor=$cursor->sort($options['order']);
-		if ($options['limit'])
-			$cursor=$cursor->limit($options['limit']);
-		if ($options['offset'])
-			$cursor=$cursor->skip($options['offset']);
-		if ($options['group'])
-			$tmp->drop();
-		$result=iterator_to_array($cursor,FALSE);
 		$out=array();
 		foreach ($result as &$doc) {
 			foreach ($doc as &$val) {
@@ -159,8 +169,9 @@ class Mapper extends \DB\Cursor {
 		@return array
 		@param $filter array
 		@param $options array
+		@param $ttl int
 	**/
-	function find($filter=NULL,array $options=NULL) {
+	function find($filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -169,7 +180,7 @@ class Mapper extends \DB\Cursor {
 			'limit'=>0,
 			'offset'=>0
 		);
-		return $this->select(NULL,$filter,$options);
+		return $this->select(NULL,$filter,$options,$ttl);
 	}
 
 	/**
