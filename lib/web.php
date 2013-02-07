@@ -93,8 +93,10 @@ class Web extends Prefab {
 				$accept[$parts[1]]=isset($parts[2])?$parts[2]:1;
 		if (!$accept)
 			$accept['*/*']=1;
-		else
+		else {
+			krsort($accept);
 			arsort($accept);
+		}
 		if ($list) {
 			if (is_string($list))
 				$list=explode(',',$list);
