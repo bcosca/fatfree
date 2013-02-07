@@ -645,7 +645,7 @@ class Web extends Prefab {
 	/**
 		Return an array of acceptable media types according to the HTTP request Accept header
 		If the available media types are provided, the best match is returned or FALSE if nothing found
-		@return array|FALSE
+		@return array|string|FALSE
 		@param $available string|array
 	**/
 	function acceptable($available=NULL) {
