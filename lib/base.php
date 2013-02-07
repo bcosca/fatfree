@@ -1407,7 +1407,12 @@ final class Base {
 			$_SERVER['REQUEST_METHOD']='GET';
 			$_SERVER['REQUEST_URI']=$_SERVER['argv'][1];
 		}
-		$headers=getallheaders();
+		$headers=array();
+		if (PHP_SAPI!='cli')
+			foreach (array_keys($_SERVER) as $key)
+				if (substr($key,0,5)=='HTTP_')
+					$headers[strtr(ucwords(strtolower(strtr(
+						substr($key,5),'_',' '))),' ','-')]=&$_SERVER[$key];
 		if (isset($headers['X-HTTP-Method-Override']))
 			$_SERVER['REQUEST_METHOD']=$headers['X-HTTP-Method-Override'];
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
@@ -2246,25 +2251,6 @@ final class Registry {
 
 	//! Prohibit instantiation
 	private function __construct() {
-	}
-
-}
-
-if (!function_exists('getallheaders')) {
-
-	/**
-		Fetch HTTP request headers
-		@return array
-	**/
-	function getallheaders() {
-		if (PHP_SAPI=='cli')
-			return FALSE;
-		$headers=array();
-		foreach ($_SERVER as $key=>$val)
-			if (substr($key,0,5)=='HTTP_')
-				$headers[strtr(ucwords(strtolower(
-					strtr(substr($key,5),'_',' '))),' ','-')]=$val;
-		return $headers;
 	}
 
 }
