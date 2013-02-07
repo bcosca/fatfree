@@ -641,7 +641,43 @@ class Web extends Prefab {
 				'Ý'=>'Y','Ÿ'=>'Y','ý'=>'y','ÿ'=>'y','Ž'=>'Z','ž'=>'z'
 			))))),'-');
 	}
-
+	
+	/**
+		Return an array of acceptable media types according to the HTTP request Accept header
+		If the available media types are provided, the best match is returned or FALSE if nothing found
+		@return array|FALSE
+		@param $available string|array
+	**/
+	function acceptable($available=NULL) {
+		if (!$accept=strtolower(str_replace(' ','',Base::instance()->get('HEADERS.Accept'))))
+			$accept='*/*';
+		$acceptable=array();
+		foreach (explode(',',$accept) as $a) {
+			@list($type,$q)=explode(';q=',$a);
+			$q=$q===NULL?1:(float)$q;
+			if ($q>0)
+				$acceptable[$type]=$q;
+		}
+		arsort($acceptable);
+		if (!$available)
+			return $acceptable;
+		$available=array_combine(array_map('strtolower',is_array($available)?$available:array($available)),array_fill(0,count($available),0));
+		foreach($available as $k=>&$q) {
+			if (isset($acceptable[$k]))
+				$q=$acceptable[$k];
+			elseif (preg_match('/([^\/]+)\/([^;]+)/',$k,$parts)) {
+				list($type,$subtype)=array($parts[1],$parts[2]);
+				if (isset($acceptable[$type.'/'.$subtype]))
+					$q=$acceptable[$type.'/'.$subtype];
+				elseif (isset($acceptable[$type.'/*']))
+					$q=$acceptable[$type.'/*'];
+				elseif (isset($acceptable['*/*']))
+					$q=$acceptable['*/*'];
+			}
+		}
+		arsort($available);
+		return reset($available)>0?key($available):FALSE;
+	}
 }
 
 if (!function_exists('gzdecode')) {

@@ -89,6 +89,21 @@ class Web extends Controller {
 				);
 			}
 		}
+		$f3->set('HEADERS.Accept','application/xml;q=0.1, text/html; q=0.5, text/*; q=0.01 , application/json;q=0, text/html;version=2, text/html;version=1;q=0.5,application/xhtml+xml ; q=0.1');
+		$test->expect(
+			\Web::instance()->acceptable()===array(
+				'text/html;version=2' => 1,
+				'text/html;version=1' => 0.5,
+				'text/html' => 0.5,
+				'application/xml' => 0.1,
+				'application/xhtml+xml' => 0.1,
+				'text/*' => 0.01,
+			)
+			&& \Web::instance()->acceptable(array('text/html','text/html;version=1','text/html;version=2','text/html;version=3'))==='text/html;version=2'
+			&& \Web::instance()->acceptable('image/jpeg')===FALSE
+			&& \Web::instance()->acceptable('text/javascript')==='text/javascript',
+			'Acceptable media types'
+		);
 		$f3->set('ESCAPE',FALSE);
 		$f3->set('results',$test->results());
 	}
