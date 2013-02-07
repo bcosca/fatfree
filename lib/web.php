@@ -79,7 +79,7 @@ class Web extends Prefab {
 	}
 
 	/**
-		Return the MIME types stated the HTTP Accept header as an array;
+		Return the MIME types stated in the HTTP Accept header as an array;
 		If a list of MIME types is specified, return the best match; or
 		FALSE if none found
 		@return array|FALSE
