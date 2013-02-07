@@ -45,6 +45,22 @@ class Web extends Controller {
 			'Upload file via PUT'
 		);
 		@unlink($target);
+		$_SERVER['HTTP_ACCEPT']='application/xml;q=0.1, text/html; q=0.5, text/*; q=0.01 , application/json;q=0, text/html;level=2, text/html;level=1;q=0.5,application/xhtml+xml ; q=0.1';
+		$test->expect(
+			$web->acceptable()==array(
+				'text/html;level=2'=>1,
+				'text/html;level=1'=>0.5,
+				'text/html'=>0.5,
+				'application/xml'=>0.1,
+				'application/xhtml+xml'=>0.1,
+				'text/*'=>0.01,
+				'application/json'=>0
+			) &&
+			$web->acceptable(array('text/html','text/html;level=1','text/html;level=2','text/html;level=3'))=='text/html;level=2' &&
+			$web->acceptable('image/jpeg')===FALSE &&
+			$web->acceptable('text/javascript')=='text/javascript',
+			'Acceptable MIME types'
+		);
 		$f3->clear('ROUTES');
 		$f3->clear('BODY');
 		$f3->set('CACHE',TRUE);

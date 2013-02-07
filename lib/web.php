@@ -79,6 +79,35 @@ class Web extends Prefab {
 	}
 
 	/**
+		Return the MIME types stated the HTTP Accept header as an array;
+		If a list of MIME types is specified, return the best match; or
+		FALSE if none found
+		@return array|FALSE
+		@param $list string|array
+	**/
+	function acceptable($list=NULL) {
+		$accept=array();
+		foreach (explode(',',str_replace(' ','',$_SERVER['HTTP_ACCEPT']))
+			as $mime)
+			if (preg_match('/(.+?)(?:;q=([\d\.]+)|$)/',$mime,$parts))
+				$accept[$parts[1]]=isset($parts[2])?$parts[2]:1;
+		if (!$accept)
+			$accept['*/*']=1;
+		else
+			arsort($accept);
+		if ($list) {
+			if (is_string($list))
+				$list=explode(',',$list);
+			foreach (array_keys($accept) as $mime)
+				if ($out=preg_grep('/'.
+					str_replace('\*','*',preg_quote($mime,'/')).'/',$list))
+					return current($out);
+			return FALSE;
+		}
+		return $accept;
+	}
+
+	/**
 		Transmit file to HTTP client; Return file size if successful,
 		FALSE otherwise
 		@return int|FALSE
