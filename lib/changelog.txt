@@ -1,5 +1,42 @@
 CHANGELOG
 
+3.0.4
+*	NEW: Support for ICU/CLDR pluralization
+*	NEW: User-defined FALLBACK language
+*	NEW: minify() now recognizes CSS @import directives
+*	NEW: UTF->bom() returns byte order mark for UTF-8 encoding
+*	Expose SQL\Mapper->schema()
+*	Change in behavior: Send error response as JSON string if AJAX request is
+	detected
+*	Deprecated: afind*() methods
+*	Discard output buffer in favor of debug output
+*	Make _id available to Jig queries
+*	Magic class now implements ArrayAccess
+*	Abort execution on startup errors
+*	Suppress stack trace on DEBUG level 0
+*	Allow single = as equality operator in Jig query expressions
+*	Abort OpenID discovery if Web->request() fails
+*	Mimic PHP *RECURSION* in stringify()
+*	Modify Jig parser to allow wildcard-search using preg_match()
+*	Abort execution after error() execution
+*	Concatenate cached/uncached minify() iterations; Prevent spillover
+	caching of previous minify() result
+*	Work around obscure PHP session id regeneration bug
+*	Revise algorithm for Jig filter involving undefined fields (Issue #230)
+*	Use checkdnsrr() instead of gethostbyname() in DNSBL check
+*	Auto-adjust pagination to cursor boundaries
+*	Add Romanian diacritics
+*	Bug fix: Root namespace reference and sorting with undefined Jig fields
+*	Bug fix: Greedy receive() regex
+*	Bug fix: Default LANGUAGE always 'en'
+*	Bug fix: minify() hammers cache backend
+*	Bug fix: Previous values of primary keys not saved during factory()
+	instantiation
+*	Bug fix: Jig find() fails when search key is not present in all records
+*	Bug fix: Jig SORT_DESC (Issue #233)
+*	Bug fix: Error reporting (Issue #225)
+*	Bug fix: language() return value
+
 3.0.3
 *	NEW: [ajax] and [sync] routing pattern modifiers
 *	NEW: Basket class (session-based pseudo-mapper, shopping cart, etc.)
