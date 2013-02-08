@@ -58,6 +58,7 @@ class Web extends Controller {
 			) &&
 			$web->acceptable(array('text/html','text/html;level=1','text/html;level=2','text/html;level=3'))=='text/html;level=2' &&
 			$web->acceptable('image/jpeg')===FALSE &&
+			$web->acceptable('application/json')===FALSE &&
 			$web->acceptable('text/javascript')=='text/javascript',
 			'Acceptable MIME types'
 		);

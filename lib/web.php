@@ -100,9 +100,9 @@ class Web extends Prefab {
 		if ($list) {
 			if (is_string($list))
 				$list=explode(',',$list);
-			foreach (array_keys($accept) as $mime)
-				if ($out=preg_grep('/'.
-					str_replace('\*','*',preg_quote($mime,'/')).'/',$list))
+			foreach ($accept as $mime=>$q)
+				if ($q && $out=preg_grep('/'.
+					str_replace('\*','.*',preg_quote($mime,'/')).'/',$list))
 					return current($out);
 			return FALSE;
 		}
