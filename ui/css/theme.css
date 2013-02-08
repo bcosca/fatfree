@@ -11,7 +11,6 @@ body {
 	overflow:hidden;
 }
 h1 {
-	font-size:1.5em;
 	margin:0 0 0.5em 0;
 }
 .sidebar {
@@ -28,7 +27,7 @@ h1 {
 	font-size:0.95em;
 	font-weight:bold;
 	text-transform:uppercase;
-	margin:2.75em 0 0 0;
+	margin:3.75em 0 0 0;
 }
 .sidebar li {
 	list-style-type:none;
