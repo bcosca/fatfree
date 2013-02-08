@@ -1481,7 +1481,6 @@ final class Base {
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'php',
 			'TEMP'=>'tmp/',
 			'TIME'=>microtime(TRUE),
-			'TZ'=>date_default_timezone_get(),
 			'UI'=>'./',
 			'UNLOAD'=>NULL,
 			'UPLOADS'=>'./',
@@ -1503,6 +1502,8 @@ final class Base {
 				$global=>preg_match('/SERVER|ENV/',$global)?$sync:array()
 			);
 		}
+		// Delay initialization to set up error() dependencies
+		$this->hive['TZ']=date_default_timezone_get();
 		if ($error=error_get_last())
 			// Error detected
 			$this->error(500,sprintf(self::E_Fatal,$error['message']),
