@@ -1275,12 +1275,14 @@ final class Base {
 	}
 
 	/**
-		Read file
+		Read file (with option to apply Unix LF as standard line ending)
 		@return string
 		@param $file string
+		@param $lf bool
 	**/
-	function read($file) {
-		return file_get_contents($file);
+	function read($file,$lf=FALSE) {
+		$out=file_get_contents($file);
+		return $lf?preg_replace('/\r\n|\r/',"\n",$out):$out;
 	}
 
 	/**
