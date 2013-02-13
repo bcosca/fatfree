@@ -16,10 +16,11 @@
 //! Markdown-to-HTML converter
 class Markdown extends Prefab {
 
-	//@{ Parsing rules
 	protected
-		$blocks;
-	//@}
+		//! Parsing rules
+		$blocks,
+		//! Special characters
+		$special;
 
 	/**
 		Process blockquote
@@ -311,6 +312,15 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function esc($str) {
+		if (!$this->special)
+			$this->special=array(
+				'...'=>'&hellip;',
+				'(tm)'=>'&trade;',
+				'(r)'=>'&reg;',
+				'(c)'=>'&copy;'
+			);
+		foreach ($this->special as $key=>$val)
+			$str=preg_replace('/'.preg_quote($key,'/').'/i',$val,$str);
 		return htmlspecialchars($str,ENT_COMPAT,
 			Base::instance()->get('ENCODING'),FALSE);
 	}
