@@ -382,6 +382,22 @@ class Web extends Prefab {
 	}
 
 	/**
+		Replace old headers with new elements
+		@return NULL
+		@param $old array
+		@param $new string|array
+	**/
+	function subst(array &$old,$new) {
+		if (is_string($new))
+			$new=array($new);
+		foreach ($new as $hdr) {
+			$old=preg_grep('/'.preg_quote(strstr($hdr,':',TRUE),'/').':.+/',
+					$old,PREG_GREP_INVERT);
+			array_push($old,$hdr);
+		}
+	}
+
+	/**
 		Submit HTTP request; Use HTTP context options (described in
 		http://www.php.net/manual/en/context.http.php) if specified;
 		Cache the page as instructed by remote server
@@ -417,24 +433,27 @@ class Web extends Prefab {
 					unset($header);
 					break;
 				}
-			array_push($options['header'],'Host: '.$parts['host']);
+			$this->subst($options['header'],'Host: '.$parts['host']);
 		}
-		array_push($options['header'],
-			'Accept-Encoding: gzip,deflate',
-			'User-Agent: Mozilla/5.0 (compatible; '.php_uname('s').')',
-			'Connection: close'
+		$this->subst($options['header'],
+			array(
+				'Accept-Encoding: gzip,deflate',
+				'User-Agent: Mozilla/5.0 (compatible; '.php_uname('s').')',
+				'Connection: close'
+			)
 		);
 		if (isset($options['content']))
-			array_push($options['header'],
-				'Content-Type: application/x-www-form-urlencoded',
-				'Content-Length: '.strlen($options['content'])
+			$this->subst($options['header'],
+				array(
+					'Content-Type: application/x-www-form-urlencoded',
+					'Content-Length: '.strlen($options['content'])
+				)
 			);
 		if (isset($parts['user'],$parts['pass']))
-			array_push($options['header'],
+			$this->subst($options['header'],
 				'Authorization: Basic '.
 					base64_encode($parts['user'].':'.$parts['pass'])
 			);
-		$options['header']=array_unique($options['header']);
 		$options+=array(
 			'method'=>'GET',
 			'header'=>$options['header'],
@@ -450,7 +469,7 @@ class Web extends Prefab {
 				$hash=$fw->hash($options['method'].' '.$url).'.url',$data)) {
 				if (preg_match('/Last-Modified: (.+?)'.preg_quote($eol).'/',
 					implode($eol,$data['headers']),$mod))
-					array_push($options['header'],
+					$this->subst($options['header'],
 						'If-Modified-Since: '.$mod[1]);
 			}
 		}
