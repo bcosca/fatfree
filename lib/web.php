@@ -442,13 +442,13 @@ class Web extends Prefab {
 				'Connection: close'
 			)
 		);
-		if (isset($options['content']))
+		if (isset($options['content'])) {
+			if ($options['method']=='POST')
+				$this->subst($options['header'],
+					'Content-Type: application/x-www-form-urlencoded');
 			$this->subst($options['header'],
-				array(
-					'Content-Type: application/x-www-form-urlencoded',
-					'Content-Length: '.strlen($options['content'])
-				)
-			);
+				'Content-Length: '.strlen($options['content']));
+		}
 		if (isset($parts['user'],$parts['pass']))
 			$this->subst($options['header'],
 				'Authorization: Basic '.
