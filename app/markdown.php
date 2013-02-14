@@ -12,7 +12,7 @@ class Markdown extends Controller {
 		);
 		$md=\Markdown::instance();
 		$cases=array(
-			'Code Blocks',
+			'Code blocks',
 			'Blockquotes with code blocks',
 			'Nested blockquotes',
 			'Horizontal rules',
@@ -27,12 +27,13 @@ class Markdown extends Controller {
 			'Inline HTML (Simple)',
 			'Inline HTML (Advanced)',
 			'Inline HTML comments',
-			'Code Spans',
+			'Code spans',
 			'Strong and em together',
 			'Auto links',
 			'Amps and angle encoding',
 			'Backslash escapes',
-			'Literal quotes in titles'
+			'Literal quotes in titles',
+			'PHP-specific bugs'
 		);
 		foreach ($cases as $case) {
 			$txt=$md->render('markdown/'.$case.'.txt');

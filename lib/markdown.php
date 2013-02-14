@@ -448,7 +448,7 @@ class Markdown extends Prefab {
 		foreach ($fw->split($fw->get('UI')) as $dir)
 			if (is_file($abs=$fw->fixslashes($dir.$file))) {
 				$str=preg_replace_callback(
-					'/(<code>.+?<\/code>|<[^>\n]+>|\([^\n\)]+\)|"[^"\n]")|'.
+					'/(<code>.+?<\/code>|<[^>\n]+>|\([^\n\)]+\)|"[^"\n]+")|'.
 					'\\\\(.)/s',
 					function($expr) {
 						// Process escaped characters
