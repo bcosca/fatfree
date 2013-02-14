@@ -52,7 +52,7 @@ h1 {
 }
 .main p {
 	font-size:0.75em;
-	white-space:no-wrap;
+	white-space:nowrap;
 	line-height:1.5em;
 	margin:0;
 }
