@@ -328,12 +328,12 @@ class Markdown extends Prefab {
 	}
 
 	/**
-		Reduce multiple trailing line feeds
+		Reduce multiple line feeds
 		@return string
 		@param $str string
 	**/
 	protected function snip($str) {
-		return preg_replace('/\n+$/',"\n",$str);
+		return preg_replace('/(?:(?<=\n)\n+)|\n+$/',"\n",$str);
 	}
 
 	/**
