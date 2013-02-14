@@ -56,8 +56,9 @@ class Markdown extends Prefab {
 	**/
 	protected function _fence($hint,$str) {
 		$str=$this->snip($str);
-		$str=preg_match('/^php\b/',$hint)?
-			Base::instance()->highlight($str):
+		$fw=Base::instance();
+		$str=$fw->get('HIGHLIGHT') && preg_match('/^php\b/',$hint)?
+			$fw->highlight($str):
 			('<code>'.$this->esc($str).'</code>');
 		return '<pre>'.$str.'</pre>'."\n\n";
 	}
