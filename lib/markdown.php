@@ -203,7 +203,7 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _mixed($str) {
-		return preg_replace('/(?<!\\\\)([*_]{3})(.+?)(?!\\\\)\1/',
+		return preg_replace('/(?<!\\\\)([*_]{3})([^\n`]+)(?!\\\\)\1/',
 			'<strong><em>\2</em></strong>',$str);
 	}
 
@@ -213,7 +213,7 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _strong($str) {
-		return preg_replace('/(?<!\\\\)([*_]{2})(.+?)(?!\\\\)\1/',
+		return preg_replace('/(?<!\\\\)([*_]{2})([^\n`]+)(?!\\\\)\1/',
 			'<strong>\2</strong>',$str);
 	}
 
@@ -223,7 +223,7 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _em($str) {
-		return preg_replace('/(?<!\\\\)([*_])(.+?)(?!\\\\)\1/',
+		return preg_replace('/(?<!\\\\)([*_])([^\n`]+)(?!\\\\)\1/',
 			'<em>\2</em>',$str);
 	}
 
@@ -257,7 +257,7 @@ class Markdown extends Prefab {
 	protected function _a($str) {
 		$self=$this;
 		return preg_replace_callback(
-			'/\[(.+?)\]\h*\(<?(.*?)>?(?:\h*"(.*?)"\h*)?\)/',
+			'/(?<!\\\\)\[(.+?)(?!\\\\)\]\h*\(<?(.*?)>?(?:\h*"(.*?)"\h*)?\)/',
 			function($expr) use($self) {
 				return '<a href="'.$self->esc($expr[2]).'"'.
 					(empty($expr[3])?
@@ -365,7 +365,7 @@ class Markdown extends Prefab {
 				'setext'=>'/^\h*(.+?)\h*\n([=-])+\h*(?:\n+|$)/',
 				'li'=>'/^(?:(?:[*+-]|\d+\.)\h.+?(?:\n+|$)'.
 					'(?:(?: {4}|\t)+.+?(?:\n+|$))*)+/s',
-				'raw'=>'/^((?:<!--.+?-->|'.
+				'raw'=>'/^((?:<!--.+?-->|<\?.+?\?>|<%.+?%>|'.
 					'<(\w+).*?(?:\/>|>(?:(?>[^><]+)|(?R))*<\/\2>))'.
 					'\h*(?:\n{2,}|\n?$))/s',
 				'p'=>'/^(.+?(?:\n{2,}|\n?$))/s'
@@ -380,7 +380,7 @@ class Markdown extends Prefab {
 		$dst='';
 		// Main loop
 		while ($ptr<$len) {
-			if (preg_match('/^ {0,3}\[([^\]]+)\]:\s*<?(.*?)>?\s*'.
+			if (preg_match('/^ {0,3}\[([^\[\]]+)\]:\s*<?(.*?)>?\s*'.
 				'(?:"([^\n]*)")?(?:\n+|$)/s',substr($str,$ptr),$match)) {
 				// Reference-style link; Backtrack
 				$ptr+=strlen($match[0]);
@@ -389,8 +389,8 @@ class Markdown extends Prefab {
 				$ref=preg_replace('/\h/','\s',preg_quote($match[1],'/'));
 				while ($dst!=$tmp) {
 					$dst=preg_replace_callback(
-						'/\[('.$ref.')\]\s*\[\]|'.
-						'(!?)(?:\[([^\]]+)\]\s*)?'.
+						'/(?<!\\\\)\[('.$ref.')(?!\\\\)\]\s*\[\]|'.
+						'(!?)(?:\[([^\[\]]+)\]\s*)?'.
 						'(?<!\\\\)\[('.$ref.')(?!\\\\)\]/',
 						function($expr) use($match,$self) {
 							return (empty($expr[2]))?
