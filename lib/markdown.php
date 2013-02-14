@@ -203,8 +203,8 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _mixed($str) {
-		return preg_replace('/(?<=^|[\h>])[*_]{3}(.+?)[*_]{3}(?=[\h<]|$)/',
-			'<strong><em>\1</em></strong>',$str);
+		return preg_replace('/(?<!\\\\)([*_]{3})(.+?)(?!\\\\)\1/',
+			'<strong><em>\2</em></strong>',$str);
 	}
 
 	/**
@@ -213,8 +213,8 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _strong($str) {
-		return preg_replace('/(?<=^|[\h>])[*_]{2}(.+?)[*_]{2}(?=[\h<]|$)/',
-			'<strong>\1</strong>',$str);
+		return preg_replace('/(?<!\\\\)([*_]{2})(.+?)(?!\\\\)\1/',
+			'<strong>\2</strong>',$str);
 	}
 
 	/**
@@ -223,8 +223,8 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _em($str) {
-		return preg_replace('/(?<=^|[\h>])[*_](.+?)(?!\\\\)[*_](?=[\h<]|$)/',
-			'<em>\1</em>',$str);
+		return preg_replace('/(?<!\\\\)([*_])(.+?)(?!\\\\)\1/',
+			'<em>\2</em>',$str);
 	}
 
 	/**
@@ -390,7 +390,8 @@ class Markdown extends Prefab {
 				while ($dst!=$tmp) {
 					$dst=preg_replace_callback(
 						'/\[('.$ref.')\]\s*\[\]|'.
-						'(!?)(?:\[([^\]]+)\]\s*)?(?<!\\\\)\[('.$ref.')\]/',
+						'(!?)(?:\[([^\]]+)\]\s*)?'.
+						'(?<!\\\\)\[('.$ref.')(?!\\\\)\]/',
 						function($expr) use($match,$self) {
 							return (empty($expr[2]))?
 								// Anchor
