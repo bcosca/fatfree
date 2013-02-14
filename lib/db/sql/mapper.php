@@ -142,6 +142,8 @@ class Mapper extends \DB\Cursor {
 			if ($var=='fields' && $mapper->{$var}[$key]['pkey'])
 				$mapper->{$var}[$key]['previous']=$val;
 		}
+		$mapper->query=array($row);
+		$mapper->ptr=0;
 		return $mapper;
 	}
 
