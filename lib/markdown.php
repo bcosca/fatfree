@@ -155,6 +155,49 @@ class Markdown extends Prefab {
 	}
 
 	/**
+		Ignore raw HTML
+		@return string
+		@param $str string
+	**/
+	protected function _raw($str) {
+		//var_dump($str);
+		return $str;
+	}
+
+	/**
+		Process paragraph
+		@return string
+		@param $str string
+	**/
+	protected function _p($str) {
+		$str=trim($str);
+		if (strlen($str)) {
+			if (preg_match('/(.+?\n)([>#].+)/',$str,$parts))
+				return $this->_p($parts[1]).$this->build($parts[2]);
+			$self=$this;
+			$str=preg_replace_callback(
+				'/([^<\[]+)?(<.+?>|\[.+?\]\s*\(.+?\))([^>\]]+)?|(.+)/s',
+				function($expr) use($self) {
+					$tmp='';
+					if (isset($expr[4]))
+						$tmp.=$self->esc($expr[4]);
+					else {
+						if (isset($expr[1]))
+							$tmp.=$self->esc($expr[1]);
+						$tmp.=$expr[2];
+						if (isset($expr[3]))
+							$tmp.=$self->esc($expr[3]);
+					}
+					return $tmp;
+				},
+				$str
+			);
+			return '<p>'.$this->scan($str).'</p>'."\n\n";
+		}
+		return '';
+	}
+
+	/**
 		Process mixed strong/em span
 		@return string
 		@param $str string
@@ -303,47 +346,6 @@ class Markdown extends Prefab {
 		foreach ($inline as $func)
 			$str=$this->{'_'.$func}($str);
 		return $str;
-	}
-
-	/**
-		Ignore raw HTML
-		@return string
-		@param $str string
-	**/
-	protected function _raw($str) {
-		//var_dump($str);
-		return $str;
-	}
-
-	/**
-		Process paragraph
-		@return string
-		@param $str string
-	**/
-	protected function _p($str) {
-		$str=trim($str);
-		if (strlen($str)) {
-			$self=$this;
-			$str=preg_replace_callback(
-				'/([^<\[]+)?(<.+?>|\[.+?\]\s*\(.+?\))([^>\]]+)?|(.+)/s',
-				function($expr) use($self) {
-					$tmp='';
-					if (isset($expr[4]))
-						$tmp.=$self->esc($expr[4]);
-					else {
-						if (isset($expr[1]))
-							$tmp.=$self->esc($expr[1]);
-						$tmp.=$expr[2];
-						if (isset($expr[3]))
-							$tmp.=$self->esc($expr[3]);
-					}
-					return $tmp;
-				},
-				$str
-			);
-			return '<p>'.$this->scan($str).'</p>'."\n\n";
-		}
-		return '';
 	}
 
 	/**

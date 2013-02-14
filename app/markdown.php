@@ -18,6 +18,7 @@ class Markdown extends Controller {
 			'Horizontal rules',
 			'Ordered and unordered lists',
 			'Hard-wrapped paragraphs with list-like lines',
+			'Tight blocks',
 			'Tabs',
 			'Tidyness',
 			'Links, shortcut references',
