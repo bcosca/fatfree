@@ -79,7 +79,8 @@ class Markdown extends Prefab {
 	**/
 	protected function _atx($type,$str) {
 		$level=strlen($type);
-		return '<h'.$level.'>'.$this->scan($str).'</h'.$level.'>'."\n\n";
+		return '<h'.$level.' id="'.Web::instance()->slug($str).'">'.
+			$this->scan($str).'</h'.$level.'>'."\n\n";
 	}
 
 	/**
@@ -90,7 +91,8 @@ class Markdown extends Prefab {
 	**/
 	protected function _setext($str,$type) {
 		$level=strpos('=-',$type)+1;
-		return '<h'.$level.'>'.$this->scan($str).'</h'.$level.'>'."\n\n";
+		return '<h'.$level.' id="'.Web::instance()->slug($str).'">'.
+			$this->scan($str).'</h'.$level.'>'."\n\n";
 	}
 
 	/**
