@@ -158,7 +158,7 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _mixed($str) {
-		return preg_replace('/[*_]{3}(.+?)[*_]{3}/',
+		return preg_replace('/(?<=^|[\h>])[*_]{3}(.+?)[*_]{3}(?=[\h<]|$)/',
 			'<strong><em>\1</em></strong>',$str);
 	}
 
@@ -168,7 +168,7 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _strong($str) {
-		return preg_replace('/[*_]{2}(.+?)[*_]{2}/',
+		return preg_replace('/(?<=^|[\h>])[*_]{2}(.+?)[*_]{2}(?=[\h<]|$)/',
 			'<strong>\1</strong>',$str);
 	}
 
@@ -178,7 +178,7 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _em($str) {
-		return preg_replace('/(?<!\\\\)[*_](.+?)(?!\\\\)[*_]/',
+		return preg_replace('/(?<=^|[\h>])[*_](.+?)(?!\\\\)[*_](?=[\h<]|$)/',
 			'<em>\1</em>',$str);
 	}
 
