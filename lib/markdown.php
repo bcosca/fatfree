@@ -51,10 +51,15 @@ class Markdown extends Prefab {
 	/**
 		Process fenced code block
 		@return string
+		@param $hint string
 		@param $str string
 	**/
-	protected function _fence($str) {
-		return '<pre><code>'.$this->snip($str).'</code></pre>'."\n\n";
+	protected function _fence($hint,$str) {
+		$str=$this->snip($str);
+		$str=preg_match('/^php\b/',$hint)?
+			Base::instance()->highlight($str):
+			('<code>'.$this->esc($str).'</code>');
+		return '<pre>'.$str.'</pre>'."\n\n";
 	}
 
 	/**
@@ -144,55 +149,6 @@ class Markdown extends Prefab {
 		}
 		return strlen($dst)?
 			('<'.$type.'>'."\n".$dst.'</'.$type.'>'."\n\n"):'';
-	}
-
-	/**
-		Process block prequel/sequel; Ignore the rest
-		@return string
-		@param $str string
-	**/
-	protected function _ignore($str) {
-		preg_match('/([^\<]*)((?:<!--.*?-->|'.
-			'<(\w+)(?:[^\/]*\/>|[^>]*>(?:(?>[^<]+)|(?R))*<\/\3>))'.
-			'.*?(?:\n+|$))/s',$str,$match);
-		if (preg_match('/(.+?\n{2,})(.*)/s',$match[1],$parts)) {
-			// Parse preceding block(s)
-			$match[1]=$this->build($this->esc($parts[1]));
-			if ($parts[2])
-				$match[2]=$this->build($parts[2].$match[2]);
-		}
-		return $match[1].$match[2];
-	}
-
-	/**
-		Process paragraph
-		@return string
-		@param $str string
-	**/
-	protected function _p($str) {
-		$str=trim($str);
-		if (strlen($str)) {
-			$self=$this;
-			$str=preg_replace_callback(
-				'/([^<\[]+)?(<.+?>|\[.+?\]\s*\(.+?\))([^>\]]+)?|(.+)/s',
-				function($expr) use($self) {
-					$tmp='';
-					if (isset($expr[4]))
-						$tmp.=$self->esc($expr[4]);
-					else {
-						if (isset($expr[1]))
-							$tmp.=$self->esc($expr[1]);
-						$tmp.=$expr[2];
-						if (isset($expr[3]))
-							$tmp.=$self->esc($expr[3]);
-					}
-					return $tmp;
-				},
-				$str
-			);
-			return '<p>'.$this->scan($str).'</p>'."\n\n";
-		}
-		return '';
 	}
 
 	/**
@@ -294,7 +250,7 @@ class Markdown extends Prefab {
 	**/
 	protected function _code($str) {
 		return preg_replace_callback(
-			'/([\'"].*?`.+?`.*?[\'"])|`` (.+?) ``|(?<!\\\\)`(.+?)(?!\\\\)`/',
+			'/(".*?`.+?`.*?")|`` (.+?) ``|(?<!\\\\)`(.+?)(?!\\\\)`/',
 			function($expr) {
 				return empty($expr[1])?
 					('<code>'.
@@ -311,7 +267,7 @@ class Markdown extends Prefab {
 		@return string
 		@param $str string
 	**/
-	protected function esc($str) {
+	function esc($str) {
 		if (!$this->special)
 			$this->special=array(
 				'...'=>'&hellip;',
@@ -347,27 +303,69 @@ class Markdown extends Prefab {
 	}
 
 	/**
+		Ignore raw HTML
+		@return string
+		@param $str string
+	**/
+	protected function _raw($str) {
+		//var_dump($str);
+		return $str;
+	}
+
+	/**
+		Process paragraph
+		@return string
+		@param $str string
+	**/
+	protected function _p($str) {
+		$str=trim($str);
+		if (strlen($str)) {
+			$self=$this;
+			$str=preg_replace_callback(
+				'/([^<\[]+)?(<.+?>|\[.+?\]\s*\(.+?\))([^>\]]+)?|(.+)/s',
+				function($expr) use($self) {
+					$tmp='';
+					if (isset($expr[4]))
+						$tmp.=$self->esc($expr[4]);
+					else {
+						if (isset($expr[1]))
+							$tmp.=$self->esc($expr[1]);
+						$tmp.=$expr[2];
+						if (isset($expr[3]))
+							$tmp.=$self->esc($expr[3]);
+					}
+					return $tmp;
+				},
+				$str
+			);
+			return '<p>'.$this->scan($str).'</p>'."\n\n";
+		}
+		return '';
+	}
+
+	/**
 		Assemble blocks
 		@return string
 		@param $str string
 	**/
 	protected function build($str) {
-		if (!$this->blocks)
+		if (!$this->blocks) {
 			// Regexes for capturing entire blocks
 			$this->blocks=array(
 				'blockquote'=>'/^(?:\h?>\h?.*?(?:\n+|$))+/',
 				'pre'=>'/^(?:(?: {4}|\t).+?(?:\n+|$))+/',
-				'fence'=>'/^`{3}[^\n]*\n+(.+?)`{3}[^\n]*(?:\n+|$)/s',
+				'fence'=>'/^`{3}\h*(\w+)?[^\n]*\n+(.+?)`{3}[^\n]*(?:\n+|$)/s',
 				'hr'=>'/^\h*[*_-](?:\h?[\*_-]){2,}\h*(?:\n+|$)/',
 				'atx'=>'/^\h*(#{1,6})\h?(.+?)\h*(?:#.*)?(?:\n+|$)/',
 				'setext'=>'/^\h*(.+?)\h*\n([=-])+\h*(?:\n+|$)/',
 				'li'=>'/^(?:(?:[*+-]|\d+\.)\h.+?(?:\n+|$)'.
 					'(?:(?: {4}|\t)+.+?(?:\n+|$))*)+/s',
-				'ignore'=>'/([^<]*(?:<!--.+?-->|'.
-					'<(\w+)(?:[^\/]*\/>|[^>]*>(?:[^<]+|(?R))*<\/\2>))'.
-					'.*?(?:\n+|$))/s',
-				'p'=>'/^.+?(?:\n{2,}|$)/s'
+				'raw'=>'/^((?:<!--.+?-->|'.
+					'<(\w+).*?(?:\/>|>(?:(?>[^><]+)|(?R))*<\/\2>))'.
+					'\h*(?:\n{2,}|\n?$))/s',
+				'p'=>'/^(.+?(?:\n{2,}|\n?$))/s'
 			);
+		}
 		$self=$this;
 		// Treat lines with nothing but whitespaces as empty lines
 		$str=preg_replace('/\n\h+(?=\n)/',"\n",$str);
@@ -422,11 +420,13 @@ class Markdown extends Prefab {
 			else
 				foreach ($this->blocks as $func=>$regex)
 					if (preg_match($regex,substr($str,$ptr),$match)) {
+						//echo '{'.$func.','.$ptr.':'.strlen($match[0]).'}->';
+						//var_dump($match[0]);
 						$ptr+=strlen($match[0]);
-						$dst.=count($match)>1?
-							call_user_func_array(
-								array($this,'_'.$func),array_slice($match,1)):
-							$this->{'_'.$func}($match[0]);
+						$dst.=call_user_func_array(
+							array($this,'_'.$func),
+							count($match)>1?array_slice($match,1):$match
+						);
 						break;
 					}
 		}
@@ -445,9 +445,10 @@ class Markdown extends Prefab {
 		foreach ($fw->split($fw->get('UI')) as $dir)
 			if (is_file($abs=$fw->fixslashes($dir.$file))) {
 				$str=preg_replace_callback(
-					'/(<code>.+?<\/code>|<[^>]+>|\([^\)]+\))|'.
-					'\'[^\'\n]\'|"[^"\n]"|\\\\(.)/s',
+					'/(<code>.+?<\/code>|<[^>\n]+>|\([^\n\)]+\)|"[^"\n]")|'.
+					'\\\\(.)/s',
 					function($expr) {
+						// Process escaped characters
 						return empty($expr[1])?$expr[2]:$expr[1];
 					},
 					$this->build($fw->read($abs,TRUE))
