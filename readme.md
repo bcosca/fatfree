@@ -2284,7 +2284,7 @@ F3 uses Git for version control. To clone the Git code repository:-
 git clone git://git@github.com:bcosca/Fat-Free-Framework.git
 ```
 
-If you just want a zipball instead, grab it here.
+If you just want a zipball instead, grab it [here](https://github.com/bcosca/fatfree/archive/dev.zip).
 
 To file a bug report, visit [https://github.com/bcosca/fatfree/issues](https://github.com/bcosca/fatfree/issues).
 
