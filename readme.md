@@ -72,7 +72,7 @@ Important: If your application uses APC, Memcached, WinCache, XCache, or a files
 
 Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 5.3. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by outdated PHP versions. To find out, open your console (run cmd.exe if you're running Windows):-
 
-``` bash
+```
 /path/to/php -v
 ```
 
@@ -195,7 +195,7 @@ Wait a second - in all the previous examples, we never really created any direct
 
 PHP's latest stable version has its own built-in Web server. Start it up using the following configuration:-
 
-``` bash
+```
 php -S localhost:80 -t /var/www/
 ```
 
@@ -205,7 +205,7 @@ The above command will start routing all requests to the Web root `/var/www`. If
 
 If you're using Apache, make sure you activate the URL rewriting module (mod_rewrite) in your apache.conf (or httpd.conf) file. You should also create a .htaccess file containing the following:-
 
-``` apache
+```
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -219,7 +219,7 @@ The `.htaccess file` containing the Apache directives stated above should always
 
 You also need to set up Apache so it knows the physical location of `index.php` in your hard drive. A typical configuration is:-
 
-``` apache
+``` html
 DocumentRoot "/var/www/html"
 <Directory "/var/www/html">
     Options -Indexes FollowSymLinks Includes
@@ -231,7 +231,7 @@ DocumentRoot "/var/www/html"
 
 If you're developing several applications simultaneously, a virtual host configuration is easier to manage:-
 
-``` apache
+``` html
 NameVirtualHost *
 <VirtualHost *>
     ServerName site1.com
@@ -261,7 +261,7 @@ Each `ServerName` (`site1.com` and `site2.com` in our example) must be listed in
 
 For Nginx servers, here's the recommended configuration (replace ip_address:port with your environment's FastCGI PHP settings):-
 
-``` nginx
+```
 server {
     root /var/www/html;
     location / {
@@ -281,7 +281,7 @@ server {
 
 Lighttpd servers are configured in a similar manner:-
 
-``` lighttpd
+```
 $HTTP["host"] =~ "www\.example\.com$" {
     url.rewrite-once = ( "^/(.*?)(\?.+)?$"=>"/index.php/$1?$2" )
     server.error-handler-404 = "/index.php"
@@ -667,7 +667,7 @@ The `[globals]` and `[routes]` section headers are required. You can combine bot
 
 String values need not be quoted, unless you want leading or trailing spaces included. If a comma should be treated as part of a string, enclose the string using double-quotes - otherwise, the value will be treated as an array (the comma is used as an array element separator). Strings can span multiple lines:-
 
-``` php
+``` ini
 [globals]
 str="this is a \
 very long \
@@ -768,7 +768,7 @@ However, if you simply insert {{ @buddy }} in your template, PHP 5.3 will replac
 
 F3 allows you to embed expressions in templates. These expressions may take on various forms, like arithmetic calculations, boolean expressions, PHP constants, etc. Here are a few examples:-
 
-``` html
+```
 {{ 2*(@page-1) }}
 <option value="F" {{ @active?'selected="selected"':'' }}>Female</option>
 {{ (int)765.29+1.2e3 }}
@@ -900,7 +900,7 @@ Nothing is gained by assigning a value to `@fruit` in your application code. Fat
 
 The framework allows unlimited nesting of `<repeat>` blocks:-
 
-``` php
+``` html
 <repeat group="{{ @div }}" key="{{ @ikey }}" value="{{ @idiv }}">
     <div>
         <p><span><b>{{ @ikey }}</b></span></p>
@@ -1190,7 +1190,7 @@ Huh, what's going on here? Shouldn't we be setting up things like PDOs, statemen
 This time we create an HTML template like `abc.htm` that has at a minimum the following:-
 
 ``` html
-<repeat group="@result" value="@item">
+<repeat group="{{ @result }}" value="{{ @item }}">
     <span>{{ @item.brandName  }}</span>
 </repeat>
 ```

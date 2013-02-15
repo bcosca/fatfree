@@ -57,7 +57,7 @@ class Markdown extends Prefab {
 	protected function _fence($hint,$str) {
 		$str=$this->snip($str);
 		$fw=Base::instance();
-		if ($fw->get('HIGHLIGHT'))
+		if ($fw->get('HIGHLIGHT')) {
 			switch (strtolower($hint)) {
 				case 'php':
 					$str=$fw->highlight($str);
@@ -65,7 +65,7 @@ class Markdown extends Prefab {
 				case 'html':
 					preg_match_all(
 						'/(?:(?:<(\/?)(\w+)'.
-						'((?:\h+\w+\h*=\h*".+?")*|\h+.+?)\h*(\/?)>)|'.
+						'((?:\h+(?:\w+\h*=\h*)?".+?")*|\h+.+?)(\h*\/?)>)|'.
 						'(.+?))/s',
 						$str,$matches,PREG_SET_ORDER
 					);
@@ -76,14 +76,17 @@ class Markdown extends Prefab {
 								$match[1].$match[2].'</span>';
 							if ($match[3]) {
 								preg_match_all(
-									'/(?:\h+(\w+)\h*=\h*(".+?"))|\h+(.+?)/',
+									'/(?:\h+(?:(\w+)\h*=\h*)?'.
+									'(".+?"))|\h+(.+?)/',
 									$match[3],$parts,PREG_SET_ORDER
 								);
 								foreach ($parts as $part)
 									$out.=' '.
 										(empty($part[3])?
-											('<span class="xml_attr">'.
-												$part[1].'</span>='.
+											((empty($part[1])?
+												'':
+												('<span class="xml_attr">'.
+													$part[1].'</span>=')).
 											'<span class="xml_data">'.
 												$part[2].'</span>'):
 											$part[3]);
@@ -131,6 +134,7 @@ class Markdown extends Prefab {
 					$str='<code>'.$this->esc($str).'</code>';
 					break;
 			}
+		}
 		else
 			$str='<code>'.$this->esc($str).'</code>';
 		return '<pre>'.$str.'</pre>'."\n\n";
@@ -526,7 +530,8 @@ class Markdown extends Prefab {
 		foreach ($fw->split($fw->get('UI')) as $dir)
 			if (is_file($abs=$fw->fixslashes($dir.$file))) {
 				$str=preg_replace_callback(
-					'/(<code>.+?<\/code>|<[^>\n]+>|\([^\n\)]+\)|"[^"\n]+")|'.
+					'/(<code.*?>.+?<\/code>|'.
+					'<[^>\n]+>|\([^\n\)]+\)|"[^"\n]+")|'.
 					'\\\\(.)/s',
 					function($expr) {
 						// Process escaped characters
