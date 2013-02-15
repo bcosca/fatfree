@@ -295,12 +295,13 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _code($str) {
+		$self=$this;
 		return preg_replace_callback(
 			'/(".*?`.+?`.*?")|`` (.+?) ``|(?<!\\\\)`(.+?)(?!\\\\)`/',
-			function($expr) {
+			function($expr) use($self) {
 				return empty($expr[1])?
 					('<code>'.
-						$this->esc(empty($expr[2])?$expr[3]:$expr[2]).
+						$self->esc(empty($expr[2])?$expr[3]:$expr[2]).
 					'</code>'):
 					$expr[1];
 			},
