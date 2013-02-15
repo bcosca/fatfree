@@ -1322,7 +1322,7 @@ final class Base {
 							$this->encode($token[1]).''):
 						('>'.$this->encode($token))).
 					'</span>';
-		return $out?('<code class="php">'.$out.'</code>'):$text;
+		return $out?('<code>'.$out.'</code>'):$text;
 	}
 
 	/**

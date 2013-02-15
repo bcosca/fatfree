@@ -57,9 +57,48 @@ class Markdown extends Prefab {
 	protected function _fence($hint,$str) {
 		$str=$this->snip($str);
 		$fw=Base::instance();
-		$str=$fw->get('HIGHLIGHT') && preg_match('/^php\b/',$hint)?
-			$fw->highlight($str):
-			('<code>'.$this->esc($str).'</code>');
+		if ($fw->get('HIGHLIGHT'))
+			switch (strtolower($hint)) {
+				case 'php':
+					$str=$fw->highlight($str);
+					break;
+				case 'ini':
+					preg_match_all(
+						'/(?<=^|\n)(?:'.
+						'(;[^\n]*)|(?:<\?php.+?\?>?)|'.
+						'(?:\[(.+?)\])|'.
+						'(.+?)\h*=\h*'.
+						'((?:\\\\\h*\r?\n|.+?)*)'.
+						')((?:\r?\n)+|$)/',
+						$str,$matches,PREG_SET_ORDER
+					);
+					$out='';
+					foreach ($matches as $match) {
+						if ($match[1])
+							$out.='<span class="comment">'.$match[1].
+								'</span>';
+						elseif ($match[2])
+							$out.='<span class="ini_section">['.$match[2].']'.
+								'</span>';
+						elseif ($match[3])
+							$out.='<span class="ini_key">'.$match[3].
+								'</span>='.
+								($match[4]?
+									('<span class="ini_value">'.
+										$match[4].'</span>'):'');
+						else
+							$out.=$match[0];
+						if (isset($match[5]))
+							$out.=$match[5];
+					}
+					$str='<code>'.$out.'</code>';
+					break;
+				default:
+					$str='<code>'.$this->esc($str).'</code>';
+					break;
+			}
+		else
+			$str='<code>'.$this->esc($str).'</code>';
 		return '<pre>'.$str.'</pre>'."\n\n";
 	}
 
@@ -360,7 +399,8 @@ class Markdown extends Prefab {
 			$this->blocks=array(
 				'blockquote'=>'/^(?:\h?>\h?.*?(?:\n+|$))+/',
 				'pre'=>'/^(?:(?: {4}|\t).+?(?:\n+|$))+/',
-				'fence'=>'/^`{3}\h*(\w+)?[^\n]*\n+(.+?)`{3}[^\n]*(?:\n+|$)/s',
+				'fence'=>'/^`{3}\h*(\w+)?.*?[^\n]*\n+(.+?)`{3}[^\n]*'.
+					'(?:\n+|$)/s',
 				'hr'=>'/^\h*[*_-](?:\h?[\*_-]){2,}\h*(?:\n+|$)/',
 				'atx'=>'/^\h*(#{1,6})\h?(.+?)\h*(?:#.*)?(?:\n+|$)/',
 				'setext'=>'/^\h*(.+?)\h*\n([=-])+\h*(?:\n+|$)/',
