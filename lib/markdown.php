@@ -65,7 +65,7 @@ class Markdown extends Prefab {
 				case 'html':
 					preg_match_all(
 						'/(?:(?:<(\/?)(\w+)'.
-						'(?:\h+(\w+)\h*=\h*(".+?"))*\h*(\/?)>)|'.
+						'((?:\h+\w+\h*=\h*".+?")*|\h+.+?)\h*(\/?)>)|'.
 						'(.+?))/s',
 						$str,$matches,PREG_SET_ORDER
 					);
@@ -74,16 +74,25 @@ class Markdown extends Prefab {
 						if ($match[2]) {
 							$out.='<span class="xml_tag">&lt;'.
 								$match[1].$match[2].'</span>';
-							if ($match[3])
-								$out.=' <span class="xml_attr">'.
-									$match[3].'</span>='.
-									'<span class="xml_data">'.
-									$match[4].'</span>';
+							if ($match[3]) {
+								preg_match_all(
+									'/(?:\h+(\w+)\h*=\h*(".+?"))|\h+(.+?)/',
+									$match[3],$parts,PREG_SET_ORDER
+								);
+								foreach ($parts as $part)
+									$out.=' '.
+										(empty($part[3])?
+											('<span class="xml_attr">'.
+												$part[1].'</span>='.
+											'<span class="xml_data">'.
+												$part[2].'</span>'):
+											$part[3]);
+							}
 							$out.='<span class="xml_tag">'.
-								$match[5].'&gt;</span>';
+								$match[4].'&gt;</span>';
 						}
 						else
-							$out.=$this->esc($match[6]);
+							$out.=$this->esc($match[5]);
 					}
 					$str='<code>'.$out.'</code>';
 					break;
