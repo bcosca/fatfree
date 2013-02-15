@@ -1383,8 +1383,8 @@ final class Base {
 		ini_set('default_charset',$charset='UTF-8');
 		ini_set('display_errors',0);
 		// Deprecated directives
-		ini_set('magic_quotes_gpc',0);
-		ini_set('register_globals',0);
+		@ini_set('magic_quotes_gpc',0);
+		@ini_set('register_globals',0);
 		// Abort on startup error
 		// Intercept errors/exceptions; PHP5.3-compatible
 		error_reporting(E_ALL|E_STRICT);
