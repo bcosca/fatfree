@@ -857,9 +857,8 @@ final class Base {
 			'text'=>$text,
 			'trace'=>$trace
 		);
-		if (!count(array_diff(ob_list_handlers(),
-			array('default output handler'))))
-			ob_clean();
+		if (ob_get_level())
+			ob_end_clean();
 		if ($this->hive['ONERROR'])
 			// Execute custom error handler
 			$this->call($this->hive['ONERROR'],$this);
