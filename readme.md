@@ -768,7 +768,7 @@ However, if you simply insert {{ @buddy }} in your template, PHP 5.3 will replac
 
 F3 allows you to embed expressions in templates. These expressions may take on various forms, like arithmetic calculations, boolean expressions, PHP constants, etc. Here are a few examples:-
 
-```
+``` html
 {{ 2*(@page-1) }}
 <option value="F" {{ @active?'selected="selected"':'' }}>Female</option>
 {{ (int)765.29+1.2e3 }}

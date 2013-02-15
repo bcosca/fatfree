@@ -65,8 +65,8 @@ class Markdown extends Prefab {
 				case 'html':
 					preg_match_all(
 						'/(?:(?:<(\/?)(\w+)'.
-						'((?:\h+(?:\w+\h*=\h*)?".+?")*|\h+.+?)(\h*\/?)>)|'.
-						'(.+?))/s',
+						'((?:\h+(?:\w+\h*=\h*)?".+?"|[^>]+)*|'.
+						'\h+.+?)(\h*\/?)>)|(.+?))/s',
 						$str,$matches,PREG_SET_ORDER
 					);
 					$out='';
@@ -76,8 +76,8 @@ class Markdown extends Prefab {
 								$match[1].$match[2].'</span>';
 							if ($match[3]) {
 								preg_match_all(
-									'/(?:\h+(?:(\w+)\h*=\h*)?'.
-									'(".+?"))|\h+(.+?)/',
+									'/(?:\h+(?:(?:(\w+)\h*=\h*)?'.
+									'(".+?")|(.+)))/',
 									$match[3],$parts,PREG_SET_ORDER
 								);
 								foreach ($parts as $part)
