@@ -2,7 +2,7 @@
 
 *A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!*
 
-Condensed in a single ~50KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
+Condensed in a single ~50KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
 
 Whether you're a novice or an expert PHP programmer, F3 will get you up and running in no time. No unnecessary and painstaking installation procedures. No complex configuration required. No convoluted directory structures. There's no better time to start developing Web applications the easy way than right now!
 
@@ -13,11 +13,15 @@ That's not all. F3 is packaged with other optional plug-ins that extend its capa
 * Fast and clean template engine,
 * Unit testing toolkit,
 * Database-managed sessions,
+* Markdown-to-HTML converter,
 * Atom/RSS feed reader,
-* Image handler,
+* Image processor,
+* Geodata handler,
 * On-the-fly Javascript/CSS compressor,
 * OpenID (consumer),
 * Custom logger,
+* Basket/Shopping cart,
+* Pingback server/consumer,
 * Unicode-aware string functions,
 * SMTP over SSL/TLS,
 * Tools for communicating with other servers,
@@ -189,7 +193,7 @@ Wait a second - in all the previous examples, we never really created any direct
 
 ### PHP 5.4's Built-In Web Server
 
-F3 works seamlessly with PHP's latest stable version has its own Web server. Start it up using the following configuration:-
+PHP's latest stable version has its own built-in Web server. Start it up using the following configuration:-
 
 ``` bash
 php -S localhost:80 -t /var/www/
