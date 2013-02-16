@@ -1,6 +1,66 @@
 CHANGELOG
 
-3.0.3
+3.0.5 (16 Feb 2013)
+*	NEW: Markdown class with PHP, HTML, and .ini syntax highlighting support
+*	NEW: Options for caching of select() and find() results
+*	NEW: Web->acceptable()
+*	Add send() argument for forcing downloads
+*	Provide read() option for applying Unix LF as standard line ending
+*	Bypass lexicon() call if LANGUAGE is undefined
+*	Load fallback language dictionary if LANGUAGE is undefined
+*	map() now checks existence of class/methods for non-tokenized URLs
+*	Improve error reporting of non-existent Template methods
+*	Address output buffer issues on some servers
+*	Bug fix: Setting DEBUG to 0 won't suppress the stack trace when the
+	content type is application/json (Issue #257)
+*	Bug fix: Image dump/render additional arguments shifted
+*	Bug fix: ob_clean() causes buffer issues with zlib compression
+*	Bug fix: minify() fails when commenting CSS @ rules (Issue #251)
+*	Bug fix: Handling of commas inside quoted strings
+*	Bug fix: Glitch in stringify() handling of closures
+*	Bug fix: dry() in mappers returns TRUE despite being hydrated by
+	factory() (Issue #265)
+*	Bug fix: expect() not handling flags correctly
+*	Bug fix: weather() fails when server is unreachable
+
+3.0.4 (29 Jan 2013)
+*	NEW: Support for ICU/CLDR pluralization
+*	NEW: User-defined FALLBACK language
+*	NEW: minify() now recognizes CSS @import directives
+*	NEW: UTF->bom() returns byte order mark for UTF-8 encoding
+*	Expose SQL\Mapper->schema()
+*	Change in behavior: Send error response as JSON string if AJAX request is
+	detected
+*	Deprecated: afind*() methods
+*	Discard output buffer in favor of debug output
+*	Make _id available to Jig queries
+*	Magic class now implements ArrayAccess
+*	Abort execution on startup errors
+*	Suppress stack trace on DEBUG level 0
+*	Allow single = as equality operator in Jig query expressions
+*	Abort OpenID discovery if Web->request() fails
+*	Mimic PHP *RECURSION* in stringify()
+*	Modify Jig parser to allow wildcard-search using preg_match()
+*	Abort execution after error() execution
+*	Concatenate cached/uncached minify() iterations; Prevent spillover
+	caching of previous minify() result
+*	Work around obscure PHP session id regeneration bug
+*	Revise algorithm for Jig filter involving undefined fields (Issue #230)
+*	Use checkdnsrr() instead of gethostbyname() in DNSBL check
+*	Auto-adjust pagination to cursor boundaries
+*	Add Romanian diacritics
+*	Bug fix: Root namespace reference and sorting with undefined Jig fields
+*	Bug fix: Greedy receive() regex
+*	Bug fix: Default LANGUAGE always 'en'
+*	Bug fix: minify() hammers cache backend
+*	Bug fix: Previous values of primary keys not saved during factory()
+	instantiation
+*	Bug fix: Jig find() fails when search key is not present in all records
+*	Bug fix: Jig SORT_DESC (Issue #233)
+*	Bug fix: Error reporting (Issue #225)
+*	Bug fix: language() return value
+
+3.0.3 (29 Dec 2013)
 *	NEW: [ajax] and [sync] routing pattern modifiers
 *	NEW: Basket class (session-based pseudo-mapper, shopping cart, etc.)
 *	NEW: Test->message() method
@@ -31,7 +91,7 @@ CHANGELOG
 *	Bug fix: Inconsistent dry() return value
 *	Bug fix: URL-decoding
 
-3.0.2
+3.0.2 (23 Dec 2013)
 *	NEW: Syntax-highlighted stack traces via Base->highlight(); boolean
 	HIGHLIGHT global variable can be used to enable/disable this feature
 *	NEW: Template engine <ignore> tag
@@ -61,5 +121,5 @@ CHANGELOG
 *	Empty comments in ini-style files now parsed properly
 *	Use file_get_contents() in methods that don't involve high concurrency
 
-3.0.1
+3.0.1 (14 Dec 2013)
 *	Major rewrite of much of the framework's core features

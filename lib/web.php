@@ -79,19 +79,51 @@ class Web extends Prefab {
 	}
 
 	/**
+		Return the MIME types stated in the HTTP Accept header as an array;
+		If a list of MIME types is specified, return the best match; or
+		FALSE if none found
+		@return array|string|FALSE
+		@param $list string|array
+	**/
+	function acceptable($list=NULL) {
+		$accept=array();
+		foreach (explode(',',str_replace(' ','',$_SERVER['HTTP_ACCEPT']))
+			as $mime)
+			if (preg_match('/(.+?)(?:;q=([\d\.]+)|$)/',$mime,$parts))
+				$accept[$parts[1]]=isset($parts[2])?$parts[2]:1;
+		if (!$accept)
+			$accept['*/*']=1;
+		else {
+			krsort($accept);
+			arsort($accept);
+		}
+		if ($list) {
+			if (is_string($list))
+				$list=explode(',',$list);
+			foreach ($accept as $mime=>$q)
+				if ($q && $out=preg_grep('/'.
+					str_replace('\*','.*',preg_quote($mime,'/')).'/',$list))
+					return current($out);
+			return FALSE;
+		}
+		return $accept;
+	}
+
+	/**
 		Transmit file to HTTP client; Return file size if successful,
 		FALSE otherwise
 		@return int|FALSE
 		@param $file string
 		@param $mime string
 		@param $kbps int
+		@param $force bool
 	**/
-	function send($file,$mime=NULL,$kbps=0) {
+	function send($file,$mime=NULL,$kbps=0,$force=TRUE) {
 		if (!is_file($file))
 			return FALSE;
 		if (PHP_SAPI!='cli') {
 			header('Content-Type: '.$mime?:$this->mime($file));
-			if ($mime=='application/octet-stream')
+			if ($force)
 				header('Content-Disposition: attachment; '.
 					'filename='.basename($file));
 			header('Accept-Ranges: bytes');
@@ -350,6 +382,22 @@ class Web extends Prefab {
 	}
 
 	/**
+		Replace old headers with new elements
+		@return NULL
+		@param $old array
+		@param $new string|array
+	**/
+	function subst(array &$old,$new) {
+		if (is_string($new))
+			$new=array($new);
+		foreach ($new as $hdr) {
+			$old=preg_grep('/'.preg_quote(strstr($hdr,':',TRUE),'/').':.+/',
+					$old,PREG_GREP_INVERT);
+			array_push($old,$hdr);
+		}
+	}
+
+	/**
 		Submit HTTP request; Use HTTP context options (described in
 		http://www.php.net/manual/en/context.http.php) if specified;
 		Cache the page as instructed by remote server
@@ -385,24 +433,27 @@ class Web extends Prefab {
 					unset($header);
 					break;
 				}
-			array_push($options['header'],'Host: '.$parts['host']);
+			$this->subst($options['header'],'Host: '.$parts['host']);
 		}
-		array_push($options['header'],
-			'Accept-Encoding: gzip,deflate',
-			'User-Agent: Mozilla/5.0 (compatible; '.php_uname('s').')',
-			'Connection: close'
+		$this->subst($options['header'],
+			array(
+				'Accept-Encoding: gzip,deflate',
+				'User-Agent: Mozilla/5.0 (compatible; '.php_uname('s').')',
+				'Connection: close'
+			)
 		);
-		if (isset($options['content']))
-			array_push($options['header'],
-				'Content-Type: application/x-www-form-urlencoded',
-				'Content-Length: '.strlen($options['content'])
-			);
+		if (isset($options['content'])) {
+			if ($options['method']=='POST')
+				$this->subst($options['header'],
+					'Content-Type: application/x-www-form-urlencoded');
+			$this->subst($options['header'],
+				'Content-Length: '.strlen($options['content']));
+		}
 		if (isset($parts['user'],$parts['pass']))
-			array_push($options['header'],
+			$this->subst($options['header'],
 				'Authorization: Basic '.
 					base64_encode($parts['user'].':'.$parts['pass'])
 			);
-		$options['header']=array_unique($options['header']);
 		$options+=array(
 			'method'=>'GET',
 			'header'=>$options['header'],
@@ -418,7 +469,7 @@ class Web extends Prefab {
 				$hash=$fw->hash($options['method'].' '.$url).'.url',$data)) {
 				if (preg_match('/Last-Modified: (.+?)'.preg_quote($eol).'/',
 					implode($eol,$data['headers']),$mod))
-					array_push($options['header'],
+					$this->subst($options['header'],
 						'If-Modified-Since: '.$mod[1]);
 			}
 		}
@@ -477,14 +528,7 @@ class Web extends Prefab {
 								continue;
 							}
 							if ($src[$ptr]=='/') {
-								if (substr($src,$ptr+1,2)=='*@') {
-									// Conditional block
-									$str=strstr(
-										substr($src,$ptr+3),'@*/',TRUE);
-									$data.='/*@'.$str.$src[$ptr].'@*/';
-									$ptr+=strlen($str)+6;
-								}
-								elseif ($src[$ptr+1]=='*') {
+								if ($src[$ptr+1]=='*') {
 									// Multiline comment
 									$str=strstr(
 										substr($src,$ptr+2),'*/',TRUE);

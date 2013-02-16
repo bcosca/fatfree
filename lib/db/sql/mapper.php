@@ -136,9 +136,14 @@ class Mapper extends \DB\Cursor {
 	protected function factory($row) {
 		$mapper=clone($this);
 		$mapper->reset();
-		foreach ($row as $key=>$val)
-			$mapper->{array_key_exists($key,$this->fields)?'fields':'adhoc'}
-				[$key]['value']=$val;
+		foreach ($row as $key=>$val) {
+			$var=array_key_exists($key,$this->fields)?'fields':'adhoc';
+			$mapper->{$var}[$key]['value']=$val;
+			if ($var=='fields' && $mapper->{$var}[$key]['pkey'])
+				$mapper->{$var}[$key]['previous']=$val;
+		}
+		$mapper->query=array($row);
+		$mapper->ptr=0;
 		return $mapper;
 	}
 
@@ -164,8 +169,9 @@ class Mapper extends \DB\Cursor {
 		@param $fields string
 		@param $filter string|array
 		@param $options array
+		@param $ttl int
 	**/
-	function select($fields,$filter=NULL,array $options=NULL) {
+	function select($fields,$filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -194,7 +200,7 @@ class Mapper extends \DB\Cursor {
 			$sql.=' LIMIT '.$options['limit'];
 		if ($options['offset'])
 			$sql.=' OFFSET '.$options['offset'];
-		$result=$this->db->exec($sql.';',$args);
+		$result=$this->db->exec($sql.';',$args,$ttl);
 		$out=array();
 		foreach ($result as &$row) {
 			foreach ($row as $field=>&$val) {
@@ -218,8 +224,9 @@ class Mapper extends \DB\Cursor {
 		@return array
 		@param $filter string|array
 		@param $options array
+		@param $ttl int
 	**/
-	function find($filter=NULL,array $options=NULL) {
+	function find($filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -231,7 +238,7 @@ class Mapper extends \DB\Cursor {
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
 			$adhoc.=','.$field['expr'].' AS '.$key;
-		return $this->select('*'.$adhoc,$filter,$options);
+		return $this->select('*'.$adhoc,$filter,$options,$ttl);
 	}
 
 	/**
@@ -240,10 +247,20 @@ class Mapper extends \DB\Cursor {
 		@param $filter string|array
 	**/
 	function count($filter=NULL) {
-		list($result)=$this->select('COUNT(*) AS rows',$filter);
-		$out=$result->adhoc['rows']['value'];
-		unset($this->adhoc['rows']);
-		return $out;
+		$sql='SELECT COUNT(*) AS rows FROM '.$this->table;
+		$args=array();
+		if ($filter) {
+			if (is_array($filter)) {
+				$args=isset($filter[1]) && is_array($filter[1])?
+					$filter[1]:
+					array_slice($filter,1,NULL,TRUE);
+				$args=is_array($args)?$args:array(1=>$args);
+				list($filter)=$filter;
+			}
+			$sql.=' WHERE '.$filter;
+		}
+		$result=$this->db->exec($sql.';',$args);
+		return $result[0]['rows'];
 	}
 
 	/**
@@ -292,28 +309,36 @@ class Mapper extends \DB\Cursor {
 				'VALUES ('.$values.');',$args
 			);
 		$pkeys=array();
-		$out=array();
-		$inc=array();
-		foreach ($this->fields as $key=>$field) {
-			$out+=array($key=>$field['value']);
+		$inc=NULL;
+		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
 				$pkeys[]=$key;
 				$field['previous']=$field['value'];
-				if ($field['pdo_type']==\PDO::PARAM_INT &&
+				if (!$inc && $field['pdo_type']==\PDO::PARAM_INT &&
 					is_null($field['value']) && !$field['nullable'])
-					$inc[]=$key;
+					$inc=$key;
 			}
+			$field['changed']=FALSE;
+			unset($field);
 		}
 		$seq=NULL;
 		if ($this->engine=='pgsql')
 			$seq=$this->table.'_'.end($pkeys).'_seq';
 		$this->_id=$this->db->lastinsertid($seq);
-		$ctr=count($inc);
-		if ($ctr!=1)
-			return $out;
+		if (!$inc) {
+			$ctr=0;
+			$query='';
+			$args='';
+			foreach ($pkeys as $pkey) {
+				$query.=($query?' AND ':'').$pkey.'=?';
+				$args[$ctr+1]=$this->fields[$pkey]['value'];
+				$ctr++;
+			}
+			return $this->load(array($query,$args));
+		}
 		// Reload to obtain default and auto-increment field values
-		return $this->load(array($inc[0].'=?',
-			$this->value($this->fields[$inc[0]]['pdo_type'],$this->_id)));
+		return $this->load(array($inc.'=?',
+			$this->value($this->fields[$inc]['pdo_type'],$this->_id)));
 	}
 
 	/**
@@ -434,6 +459,14 @@ class Mapper extends \DB\Cursor {
 		$var=&\Base::instance()->ref($key);
 		foreach ($this->fields as $key=>$field)
 			$var[$key]=$field['value'];
+	}
+
+	/**
+		Return schema
+		@return array
+	**/
+	function schema() {
+		return $this->fields;
 	}
 
 	/**

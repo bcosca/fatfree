@@ -89,12 +89,13 @@ class Geo extends \Prefab {
 			'lng'=>$longitude,
 			'username'=>$fw->hash($fw->get('IP'))
 		);
-		if (($req=$web->request(
+		return ($req=$web->request(
 			'http://ws.geonames.org/findNearByWeatherJSON?'.
 				http_build_query($query))) &&
-			$data=json_decode($req['body'],TRUE))
-			return $data['weatherObservation'];
-		return FALSE;
+			($data=json_decode($req['body'],TRUE)) &&
+			isset($data['weatherObservation'])?
+			$data['weatherObservation']:
+			FALSE;
 	}
 
 }

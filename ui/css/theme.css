@@ -1,53 +1,28 @@
-body {
-	margin:0 auto;
-	width:50%;
-}
-div.header {
-	text-align:center;
-	border-bottom:3px solid gray;
-}
-div.header h1 {
-	font-size:36pt;
-	line-height:1em;
-	margin:0.25em 0 0.5em 0;
-}
-div.header h4 {
-	margin-bottom:0;
-}
-div.footer {
-	text-align:center;
-	border-top:1px solid gray;
-}
-table {
-	border-top:3px solid gray;
-	border-bottom:3px solid gray;
-}
-tr {
-	border-top:1px solid gray;
-	border-bottom:1px solid gray;
-}
-code, pre {
-	font-size:10.5pt;
-    border-radius: 3px;
-    background-color: #F8F8F8;
-    color: inherit;
-}
-
-code {
-    border: 1px solid #EAEAEA;
-    margin: 0 2px;
-    padding: 0 2px;
-}
-
-pre {
-    border: 1px solid #CCCCCC;
-    line-height: 1.25em;
-    overflow: auto;
-    padding: 3px 5px;
-}
-
-pre > code {
-    border: 0;
-    margin: 0;
-    padding: 0;
-}
+body{font-family:Ubuntu,sans-serif;color:#333;margin:0 auto;width:50%}
+h1{color:#aaf}
+h2{color:#88d}
+h3{color:#66b}
+h4{color:#449}
+h5{color:#227}
+h6{color:#005}
+small{font-size:0.75em}
+a{text-decoration:none;color:#66f}
+a:hover{color:#333}
+table{width:100%}
+table code{background:transparent;padding:0}
+tr{border-bottom:1px solid #999}
+tr:last-child{border-bottom:5px solid #999}
+th,td{font-size:1em;line-height:1.25em;margin:1.25em 0;padding:0.625em 0.5em;white-space:nowrap}
+th{text-align:left;text-transform:uppercase;color:#fff;background:#999}
+th a{color:#fff}
+pre{background:#efefef;padding:0.75em;border-radius:0.75em}
+p code,ul code{padding:0.125em 0.5em;border-radius:0.5em;white-space:nowrap}
+blockquote pre,blockquote code{color:#666;background:#fff}
+code{background:#eee}
+.center{text-align:center}
+.right{text-align:right}
+.header{border-bottom:5px solid #ccc;margin-top:1em}
+.header h1{margin:0 0 0.25em}
+.header p{margin:0}
+.footer{font-size:0.9em;border-top:3px solid #ccc}
+@media screen and (max-width:960px){body{min-width:320px;width:90%}}

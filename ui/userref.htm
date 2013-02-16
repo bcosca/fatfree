@@ -2,16 +2,11 @@
 <html lang="en">
 	<head>
 		<title>Fat-Free Framework: User Reference</title>
-		<link rel="stylesheet" href="ui/css/reset.css" type="text/css" />
-		<link rel="stylesheet" href="ui/css/typography.css" type="text/css" />
+		<link rel="stylesheet" href="ui/css/base.css" type="text/css" />
 		<link rel="stylesheet" href="ui/css/theme.css" type="text/css" />
+		<style><?php include('lib/code.css'); ?></style>
 	</head>
 	<body>
-		<div id="markdown"><?php echo htmlspecialchars(file_get_contents('readme.md')); ?></div>
-		<script type="text/javascript" src="ui/js/showdown.js"></script>
-		<script type="text/javascript">
-			var e=document.getElementById('markdown');
-			e.innerHTML=(new Showdown.converter()).makeHtml(e.textContent);
-		</script>
+		<?php echo Markdown::instance()->render('../readme.md'); ?>
 	</body>
 </html>

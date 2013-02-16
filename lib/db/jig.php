@@ -36,9 +36,8 @@ class Jig {
 		Read data from file
 		@return array
 		@param $file string
-		@param $frame string
 	**/
-	function read($file,$frame=NULL) {
+	function read($file) {
 		$fw=\Base::instance();
 		if (!is_file($dst=$this->dir.$file))
 			return array();
@@ -59,9 +58,8 @@ class Jig {
 		@return int
 		@param $file string
 		@param $data array
-		@param $frame string
 	**/
-	function write($file,array $data=NULL,$frame=NULL) {
+	function write($file,array $data=NULL) {
 		$fw=\Base::instance();
 		switch ($this->format) {
 			case self::FORMAT_JSON:

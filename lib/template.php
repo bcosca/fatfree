@@ -16,6 +16,11 @@
 //! Template engine
 class Template extends View {
 
+	//@{ Error messages
+	const
+		E_Method='Call to undefined method %s()';
+	//@}
+
 	protected
 		//! MIME type
 		$mime,
@@ -230,9 +235,11 @@ class Template extends View {
 		@param $args array
 	**/
 	function __call($func,array $args) {
-		return ($func[0]=='_')?
-			call_user_func_array($this->custom[$func],$args):
-			FALSE;
+		if ($func[0]=='_')
+			return call_user_func_array($this->custom[$func],$args);
+		if (method_exists($this,$func))
+			return call_user_func_array(array($this,$func),$args);
+		user_error(sprintf(self::E_Method,$func));
 	}
 
 	/**

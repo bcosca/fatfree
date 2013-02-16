@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.0.5-Dev';
+		VERSION='3.0.5-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -432,11 +432,12 @@ final class Base {
 		switch (gettype($arg)) {
 			case 'object':
 				$str='';
-				if ($this->hive['DEBUG']>2)
-					foreach ((array)$arg as $key=>$val)
+				if ($this->hive['DEBUG']>2 && get_class($arg)!='Closure')
+					foreach ((array)$arg as $key=>$val) {
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
 							$this->stringify($val);
+					}
 				return addslashes(get_class($arg)).'::__set_state('.$str.')';
 			case 'array':
 				$str='';
@@ -711,7 +712,7 @@ final class Base {
 	**/
 	function lexicon($path) {
 		$lex=array();
-		foreach ($this->languages as $lang) {
+		foreach ($this->languages?:array($this->fallback) as $lang) {
 			if ((is_file($file=($base=$path.$lang).'.php') ||
 				is_file($file=$base.'.php')) &&
 				is_array($dict=require($file)))
@@ -821,20 +822,20 @@ final class Base {
 			$text='HTTP '.$code.' ('.$req.')';
 		error_log($text);
 		if (!$trace)
-			$trace=array_slice(debug_backtrace(0),1);
+			$trace=array_slice(debug_backtrace(FALSE),1);
 		$debug=$this->hive['DEBUG'];
 		$trace=array_filter(
 			$trace,
 			function($frame) use($debug) {
-				return isset($frame['file']) &&
+				return $debug && isset($frame['file']) &&
 					($frame['file']!=__FILE__ || $debug>1) &&
 					(empty($frame['function']) ||
 					!preg_match('/^(?:(?:trigger|user)_error|'.
 						'__call|call_user_func)/',$frame['function']));
 			}
 		);
-		$highlight=$this->hive['HIGHLIGHT'] &&
-			is_file($css=__DIR__.'/'.self::CSS);
+		$highlight=PHP_SAPI!='cli' &&
+			$this->hive['HIGHLIGHT'] && is_file($css=__DIR__.'/'.self::CSS);
 		$out='';
 		$eol="\n";
 		// Analyze stack trace
@@ -856,14 +857,15 @@ final class Base {
 			'text'=>$text,
 			'trace'=>$trace
 		);
-		ob_clean();
+		if (ob_get_level())
+			ob_end_clean();
 		if ($this->hive['ONERROR'])
 			// Execute custom error handler
 			$this->call($this->hive['ONERROR'],$this);
 		elseif (!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo $this->hive['AJAX']?
 				json_encode($this->hive['ERROR']):
-				('<!DOCTYPE html>'.
+				('<!DOCTYPE html>'.$eol.
 				'<html>'.$eol.
 				'<head>'.
 					'<title>'.$code.' '.$header.'</title>'.
@@ -965,9 +967,13 @@ final class Base {
 		@param $kbps int
 	**/
 	function map($url,$class,$ttl=0,$kbps=0) {
+		$fluid=preg_match('/@\w+/',$url);
 		foreach (explode('|',self::VERBS) as $method)
-			$this->route($method.' '.
-				$url,$class.'->'.strtolower($method),$ttl,$kbps);
+			if ($fluid ||
+				method_exists($class,$method) ||
+				method_exists($class,'__call'))
+				$this->route($method.' '.
+					$url,$class.'->'.strtolower($method),$ttl,$kbps);
 	}
 
 	/**
@@ -1231,9 +1237,9 @@ final class Base {
 							return preg_replace(
 								'/\\\\\h*\r?\n/','',$val);
 						},
-						str_getcsv(
-							// Mark quoted strings with 0x00 whitespace
-							preg_replace('/"(.+?)"/',"\x00\\1",$match[3]))
+						// Mark quoted strings with 0x00 whitespace
+						str_getcsv(preg_replace(
+							'/(")(.+?)\1/',"\\1\x00\\2\\1",$match[3]))
 					);
 					call_user_func_array(array($this,'set'),
 						array_merge(
@@ -1270,12 +1276,14 @@ final class Base {
 	}
 
 	/**
-		Read file
+		Read file (with option to apply Unix LF as standard line ending)
 		@return string
 		@param $file string
+		@param $lf bool
 	**/
-	function read($file) {
-		return file_get_contents($file);
+	function read($file,$lf=FALSE) {
+		$out=file_get_contents($file);
+		return $lf?preg_replace('/\r\n|\r/',"\n",$out):$out;
 	}
 
 	/**
@@ -1313,7 +1321,7 @@ final class Base {
 							$this->encode($token[1]).''):
 						('>'.$this->encode($token))).
 					'</span>';
-		return $out?('<code class="php">'.$out.'</code>'):$text;
+		return $out?('<code>'.$out.'</code>'):$text;
 	}
 
 	/**
@@ -1374,8 +1382,8 @@ final class Base {
 		ini_set('default_charset',$charset='UTF-8');
 		ini_set('display_errors',0);
 		// Deprecated directives
-		ini_set('magic_quotes_gpc',0);
-		ini_set('register_globals',0);
+		@ini_set('magic_quotes_gpc',0);
+		@ini_set('register_globals',0);
 		// Abort on startup error
 		// Intercept errors/exceptions; PHP5.3-compatible
 		error_reporting(E_ALL|E_STRICT);
@@ -1402,7 +1410,12 @@ final class Base {
 			$_SERVER['REQUEST_METHOD']='GET';
 			$_SERVER['REQUEST_URI']=$_SERVER['argv'][1];
 		}
-		$headers=getallheaders();
+		$headers=array();
+		if (PHP_SAPI!='cli')
+			foreach (array_keys($_SERVER) as $key)
+				if (substr($key,0,5)=='HTTP_')
+					$headers[strtr(ucwords(strtolower(strtr(
+						substr($key,5),'_',' '))),' ','-')]=&$_SERVER[$key];
 		if (isset($headers['X-HTTP-Method-Override']))
 			$_SERVER['REQUEST_METHOD']=$headers['X-HTTP-Method-Override'];
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
@@ -1471,7 +1484,7 @@ final class Base {
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'php',
 			'TEMP'=>'tmp/',
 			'TIME'=>microtime(TRUE),
-			'TZ'=>date_default_timezone_get(),
+			'TZ'=>ini_get('date.timezone'),
 			'UI'=>'./',
 			'UNLOAD'=>NULL,
 			'UPLOADS'=>'./',
@@ -2241,25 +2254,6 @@ final class Registry {
 
 	//! Prohibit instantiation
 	private function __construct() {
-	}
-
-}
-
-if (!function_exists('getallheaders')) {
-
-	/**
-		Fetch HTTP request headers
-		@return array
-	**/
-	function getallheaders() {
-		if (PHP_SAPI=='cli')
-			return FALSE;
-		$headers=array();
-		foreach ($_SERVER as $key=>$val)
-			if (substr($key,0,5)=='HTTP_')
-				$headers[strtr(ucwords(strtolower(
-					strtr(substr($key,5),'_',' '))),' ','-')]=$val;
-		return $headers;
 	}
 
 }

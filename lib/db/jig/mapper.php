@@ -83,6 +83,8 @@ class Mapper extends \DB\Cursor {
 			$mapper->id=$id;
 			$mapper->document[$field]=$val;
 		}
+		$mapper->query=array($row);
+		$mapper->ptr=0;
 		return $mapper;
 	}
 
@@ -106,12 +108,12 @@ class Mapper extends \DB\Cursor {
 		$self=$this;
 		$str=preg_replace_callback(
 			'/(?<!\w)@(\w(?:[\w\.\[\]])*)/',
-			function($var) use($self) {
+			function($token) use($self) {
 				// Convert from JS dot notation to PHP array notation
 				return '$'.preg_replace_callback(
 					'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
 					function($expr) use($self) {
-						$fw=Base::instance();
+						$fw=\Base::instance();
 						return 
 							'['.
 							($expr[1]?
@@ -122,7 +124,7 @@ class Mapper extends \DB\Cursor {
 									$mix)).
 							']';
 					},
-					$var[1]
+					$token[1]
 				);
 			},
 			$str
@@ -135,9 +137,10 @@ class Mapper extends \DB\Cursor {
 		@return array|FALSE
 		@param $filter array
 		@param $options array
+		@param $ttl int
 		@param $log bool
 	**/
-	function find($filter=NULL,array $options=NULL,$log=TRUE) {
+	function find($filter=NULL,array $options=NULL,$ttl=0,$log=TRUE) {
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -146,73 +149,107 @@ class Mapper extends \DB\Cursor {
 			'offset'=>0
 		);
 		$fw=\Base::instance();
+		$cache=\Cache::instance();
 		$db=$this->db;
 		$now=microtime(TRUE);
-		$data=$db->read($this->file);
-		if ($filter) {
-			if (!is_array($filter))
-				return FALSE;
-			// Prefix local variables to avoid conflict with user code
-			$_self=$this;
-			$_args=isset($filter[1]) && is_array($filter[1])?
-				$filter[1]:
-				array_slice($filter,1,NULL,TRUE);
-			$_args=is_array($_args)?$_args:array(1=>$_args);
-			$keys=$vals=array();
-			list($_expr)=$filter;
-			$data=array_filter($data,
-				function($_row) use($_expr,$_args,$_self) {
-					extract($_row);
-					$_ctr=0;
-					// Evaluate pseudo-SQL expression
-					return eval('return '.
-						preg_replace_callback(
-							'/(\:\w+)|(\?)/',
-							function($token) use($_args,&$_ctr) {
-								// Parameterized query
-								if ($token[1])
-									// Named
-									$key=$token[1];
-								else {
+		if (!$fw->get('CACHE') || !$ttl || !($cached=$cache->exists(
+			$hash=$fw->hash($fw->stringify(array($filter,$options))).'.jig',
+				$data)) || $cached+$ttl<microtime(TRUE)) {
+			$data=$db->read($this->file);
+			foreach ($data as $key=>&$val) {
+				$val['_id']=$key;
+				unset($val);
+			}
+			if ($filter) {
+				if (!is_array($filter))
+					return FALSE;
+				// Normalize equality operator
+				$expr=preg_replace('/(?<=[^<>!=])=(?!=)/','==',$filter[0]);
+				// Prepare query arguments
+				$args=isset($filter[1]) && is_array($filter[1])?
+					$filter[1]:
+					array_slice($filter,1,NULL,TRUE);
+				$args=is_array($args)?$args:array(1=>$args);
+				$keys=$vals=array();
+				$tokens=array_slice(
+					token_get_all('<?php '.$this->token($expr)),1);
+				$data=array_filter($data,
+					function($_row) use($fw,$args,$tokens) {
+						$_expr='';
+						$ctr=0;
+						$named=FALSE;
+						foreach ($tokens as $token) {
+							if (is_string($token))
+								if ($token=='?') {
 									// Positional
-									$_ctr++;
-									$key=$_ctr;
+									$ctr++;
+									$key=$ctr;
 								}
-								// Add slashes to prevent code injection
-								return \Base::instance()->stringify(
-									is_string($_args[$key])?
-										addcslashes($_args[$key],'\''):
-										$_args[$key]);
-							},
-							$_self->token($_expr)
-						).';'
-					);
-				}
-			);
-		}
-		if (isset($options['order']))
-			foreach (array_reverse($fw->split($options['order'])) as $col) {
-				$parts=explode(' ',$col,2);
-				$order=empty($parts[1])?SORT_ASC:constant($parts[1]);
-				uasort(
-					$data,
-					function($val1,$val2) use($col,$order) {
-						list($v1,$v2)=array($val1[$col],$val2[$col]);
-						$out=is_numeric($v1) && is_numeric($v2)?
-							Base::instance()->sign($v1-$v2):strcmp($v1,$v2);
-						if ($order==SORT_DESC)
-							$out=-$out;
-						return $out;
+								else {
+									if ($token==':')
+										$named=TRUE;
+									else
+										$_expr.=$token;
+									continue;
+								}
+							elseif ($named &&
+								token_name($token[0])=='T_STRING') {
+								$key=':'.$token[1];
+								$named=FALSE;
+							}
+							else {
+								$_expr.=$token[1];
+								continue;
+							}
+							$_expr.=$fw->stringify(
+								is_string($args[$key])?
+									addcslashes($args[$key],'\''):
+									$args[$key]);
+						}
+						// Avoid conflict with user code
+						unset($fw,$tokens,$args,$ctr,$token,$key,$named);
+						extract($_row);
+						// Evaluate pseudo-SQL expression
+						return eval('return '.$_expr.';');
 					}
 				);
 			}
+			if (isset($options['order'])) {
+				$cols=$fw->split($options['order']);
+				uasort(
+					$data,
+					function($val1,$val2) use($cols) {
+						foreach ($cols as $col) {
+							$parts=explode(' ',$col,2);
+							$order=empty($parts[1])?
+								SORT_ASC:
+								constant($parts[1]);
+							$col=$parts[0];
+							if (!array_key_exists($col,$val1))
+								$val1[$col]=NULL;
+							if (!array_key_exists($col,$val2))
+								$val2[$col]=NULL;
+							list($v1,$v2)=array($val1[$col],$val2[$col]);
+							if ($out=strnatcmp($v1,$v2)*
+								(($order==SORT_ASC)*2-1))
+								return $out;
+						}
+						return 0;
+					}
+				);
+			}
+			$data=array_slice($data,
+				$options['offset'],$options['limit']?:NULL,TRUE);
+			if ($fw->get('CACHE') && $ttl)
+				// Save to cache backend
+				$cache->set($hash,$data,$ttl);
+		}
 		$out=array();
-		foreach (array_slice($data,
-			$options['offset'],$options['limit']?:NULL,TRUE) as $id=>$doc)
+		foreach ($data as $id=>$doc)
 			$out[]=$this->factory($id,$doc);
 		if ($log) {
 			if ($filter)
-				foreach ($_args as $key=>$val) {
+				foreach ($args as $key=>$val) {
 					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
 					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
 				}
@@ -253,6 +290,8 @@ class Mapper extends \DB\Cursor {
 		@return array
 	**/
 	function insert() {
+		if ($this->id)
+			return $this->update();
 		$db=$this->db;
 		$now=microtime(TRUE);
 		while (($id=uniqid()) &&
@@ -308,11 +347,11 @@ class Mapper extends \DB\Cursor {
 			return FALSE;
 		$db->write($this->file,$data);
 		if ($filter) {
-			$_args=isset($filter[1]) && is_array($filter[1])?
+			$args=isset($filter[1]) && is_array($filter[1])?
 				$filter[1]:
 				array_slice($filter,1,NULL,TRUE);
-			$_args=is_array($_args)?$_args:array(1=>$_args);
-			foreach ($_args as $key=>$val) {
+			$args=is_array($args)?$args:array(1=>$args);
+			foreach ($args as $key=>$val) {
 				$vals[]=\Base::instance()->
 					stringify(is_array($val)?$val[0]:$val);
 				$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
