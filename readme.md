@@ -1527,7 +1527,7 @@ Suppose we have the following table defined as:-
 ``` sql
 CREATE TABLE products
     productID VARCHAR(30),
-    desc VARCHAR(255),
+    description VARCHAR(255),
     supplierID VARCHAR(30),
     unitprice DECIMAL(10,2),
     quantity INT,
@@ -1731,7 +1731,7 @@ Tip:Use the tools as they're designed for. Fat-Free already has an easy-to-use S
 
 ### About F3 Plug-ins
 
-Plug-ins are nothing more than autoloaded classes that use framework built-ins to extend F3's features and functionality. If you'd like to contribute, leave a note at the Fat-Free Discussion Area hosted by Google Groups or tell us about it in the FreeNode #fatfree IRC channel. Someone else might be involved in a similar project. The framework community will appreciate it a lot if we unify our efforts.
+Plug-ins are nothing more than autoloaded classes that use framework built-ins to extend F3's features and functionality. If you'd like to contribute, leave a note at the Fat-Free Discussion Area hosted by Google Groups or tell us about it in the FreeNode `#fatfree` IRC channel. Someone else might be involved in a similar project. The framework community will appreciate it a lot if we unify our efforts.
 
 ### Grabbing Data from Another Site
 
@@ -1795,7 +1795,7 @@ $f3->route('GET /my_page','App->method',60);
 
 Here's how it works. In this example, when F3 detects that the URL `/my_page` is accessed for the first time, it executes the route handler represented by the second argument and saves all browser output to the framework's built-in cache (server-side). A similar instruction is automatically sent to the user's Web browser (client-side), so that instead of sending an identical request to the server within the 60-second period, the browser can just retrieve the page locally. The framework uses the cache for an entirely different purpose - serving framework-cached data to other users asking for the same Web page within the 60-second time frame. It skips execution of the route handler and serves the previously-saved page directly from disk. When someone tries to access the same URL after the 60-second timer has lapsed, F3 will refresh the cache with a new copy.
 
-Web pages with static data are the most likely candidates for caching. Fat-Free will not cache a Web page at a specified URL if the third argument in the `$f3->route() method` is zero or unspecified. F3 conforms to the HTTP specifications: only GET and HEAD requests can be cached.
+Web pages with static data are the most likely candidates for caching. Fat-Free will not cache a Web page at a specified URL if the third argument in the `$f3->route()` method is zero or unspecified. F3 conforms to the HTTP specifications: only GET and HEAD requests can be cached.
 
 Here's an important point to consider when designing your application. Don't cache Web pages unless you understand the possible unwanted side-effects of the cache at the client-side. Make sure that you activate caching on Web pages that have nothing to do with the user's session state.
 
@@ -1880,8 +1880,6 @@ $f3->route('GET /minify/@type',
 ```
 
 And that's all there is to it! `minify()` reads each file (`typo.css` and `grid.css` in our CSS example, `underscore.js` in our Javascript example), strips off all unnecessary whitespaces and comments, combines all of the related items as a single Web page component, and attaches a far-future expiry date so the user's Web browser can cache the data. It's important that the `PARAMS.type` variable base points to the correct path. Otherwise, the URL rewriting mechanism inside the compressor won't find the CSS/Javascript files.
-
-Note: Like other Javascript/CSS compression engines, Fat-Free will not go to the trouble of compressing CSS files defined by the `@import` directive.
 
 ### Client-Side Caching
 
