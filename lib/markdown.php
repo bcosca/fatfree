@@ -89,7 +89,8 @@ class Markdown extends Prefab {
 													$part[1].'</span>=')).
 											'<span class="xml_data">'.
 												$part[2].'</span>'):
-											$part[3]);
+											('<span class="xml_tag">'.
+												$part[3].'</span>'));
 							}
 							$out.='<span class="xml_tag">'.
 								$match[4].'&gt;</span>';
