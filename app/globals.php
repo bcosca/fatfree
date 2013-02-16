@@ -176,10 +176,10 @@ class Globals extends Controller {
 		$f3->set('GET["bar"]','foo');
 		$f3->set('POST.baz','qux');
 		$test->expect(
-			$f3->get('GET["bar"]')=='foo' && $_GET['bar']=='foo' &&
-			$f3->get('REQUEST["bar"]')=='foo' && $_REQUEST['bar']=='foo' &&
-			$f3->get('POST["baz"]')=='qux' && $_POST['baz']=='qux' &&
-			$f3->get('REQUEST["baz"]')=='qux' && $_REQUEST['baz']=='qux',
+			$f3->get('GET.bar')=='foo' && $_GET['bar']=='foo' &&
+			$f3->get('REQUEST.bar')=='foo' && $_REQUEST['bar']=='foo' &&
+			$f3->get('POST.baz')=='qux' && $_POST['baz']=='qux' &&
+			$f3->get('REQUEST.baz')=='qux' && $_REQUEST['baz']=='qux',
 			'PHP global variables in sync'
 		);
 		$f3->clear('GET["bar"]');
@@ -187,6 +187,41 @@ class Globals extends Controller {
 			!$f3->exists('GET["bar"]') && empty($_GET['bar']) &&
 			!$f3->exists('REQUEST["bar"]') && empty($_REQUEST['bar']),
 			'PHP global variables cleared'
+		);
+		$ok=TRUE;
+		foreach ($f3->get('HEADERS') as $hdr=>$val)
+			if ($_SERVER['HTTP_'.strtoupper(str_replace('-','_',$hdr))]!=
+				$val)
+				$ok=FALSE;
+		$test->expect(
+			$ok,
+			'HTTP headers match HEADERS variable'
+		);
+		$ok=TRUE;
+		$hdrs=array();
+		foreach (array_keys($f3->get('HEADERS')) as $hdr) {
+			$f3->set('HEADERS["'.$hdr.'"]','foo');
+			$hdr=strtoupper(str_replace('-','_',$hdr));
+			$hdrs[]=$hdr;
+			if ($_SERVER['HTTP_'.$hdr]!='foo')
+				$ok=FALSE;
+		}
+		$test->expect(
+			$ok,
+			'Altering HEADERS variable affects HTTP headers'
+		);
+		$ok=TRUE;
+		foreach ($hdrs as $hdr) {
+			$_SERVER['HTTP_'.$hdr]='bar';
+			if ($f3->get('HEADERS["'.
+				str_replace(' ','-',
+					ucwords(str_replace('_',' ',strtolower($hdr)))).'"]')!=
+				$_SERVER['HTTP_'.$hdr])
+				$ok=FALSE;
+		}
+		$test->expect(
+			$ok,
+			'Altering HTTP headers affects HEADERS variable'
 		);
 		if ($f3->exists('COOKIE.baz')) {
 			$test->message('HTTP cookie retrieved');
