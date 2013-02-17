@@ -238,7 +238,6 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _raw($str) {
-		//var_dump($str);
 		return $str;
 	}
 
@@ -506,8 +505,6 @@ class Markdown extends Prefab {
 			else
 				foreach ($this->blocks as $func=>$regex)
 					if (preg_match($regex,substr($str,$ptr),$match)) {
-						//echo '{'.$func.','.$ptr.':'.strlen($match[0]).'}->';
-						//var_dump($match[0]);
 						$ptr+=strlen($match[0]);
 						$dst.=call_user_func_array(
 							array($this,'_'.$func),
