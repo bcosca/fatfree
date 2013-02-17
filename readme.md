@@ -205,7 +205,7 @@ The above command will start routing all requests to the Web root `/var/www`. If
 
 If you're using Apache, make sure you activate the URL rewriting module (mod_rewrite) in your apache.conf (or httpd.conf) file. You should also create a .htaccess file containing the following:-
 
-```
+``` apache
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -219,7 +219,7 @@ The `.htaccess file` containing the Apache directives stated above should always
 
 You also need to set up Apache so it knows the physical location of `index.php` in your hard drive. A typical configuration is:-
 
-``` html
+``` apache
 DocumentRoot "/var/www/html"
 <Directory "/var/www/html">
     Options -Indexes FollowSymLinks Includes
@@ -231,7 +231,7 @@ DocumentRoot "/var/www/html"
 
 If you're developing several applications simultaneously, a virtual host configuration is easier to manage:-
 
-``` html
+``` apache
 NameVirtualHost *
 <VirtualHost *>
     ServerName site1.com
@@ -577,10 +577,11 @@ If you feel it's a bit too plain or wish to do other things when the error occur
 
 ``` php
 $f3->set('ONERROR',
-    function() {
+    function($f3) {
         // custom error handler code goes here
         // use this if you want to display errors in a
         // format consistent with your site's theme
+        echo $f3->get('ERROR.title');
     }
 );
 ```
@@ -2273,23 +2274,24 @@ The framework API documentation is contained in `lib/api.chm` of the distributio
 
 ## Support and Licensing
 
-Technical support is available at: [https://groups.google.com/forum/#!forum/f3-framework](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit [http://webchat.freenode.net/](http://webchat.freenode.net/) to join the conversation. You can also download the Firefox Chatzilla add-on if you don't have an IRC client so you can participate in the live chat.
+Technical support is available at the official discussion forum: [`https://groups.google.com/forum/#!forum/f3-framework`](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode `#fatfree` channel (`chat.freenode.net`). Visit [`http://webchat.freenode.net/`](http://webchat.freenode.net/) to join the conversation. You can also download the Firefox Chatzilla add-on if you don't have an IRC client so you can participate in the live chat.
 
 ### Nightly Builds
 
-F3 uses Git for version control. To clone the Git code repository:-
+F3 uses Git for version control. To clone the code repository on GitHub:-
 
 ``` bash
 git clone git://git@github.com:bcosca/Fat-Free-Framework.git
 ```
 
-If you just want a zipball instead, grab it [here](https://github.com/bcosca/fatfree/archive/dev.zip).
+If all you want is a zipball, grab it [**here**](https://github.com/bcosca/fatfree/archive/dev.zip).
 
-To file a bug report, visit [https://github.com/bcosca/fatfree/issues](https://github.com/bcosca/fatfree/issues).
+To file a bug report, visit [`https://github.com/bcosca/fatfree/issues`](https://github.com/bcosca/fatfree/issues).
 
 ### Fair Licensing
 
-Fat-Free Framework is free and released as open source software covered by the terms of the GNU Public License (GPL v3). You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a reasonable fee.
+**Fat-Free Framework is free and released as open source software covered by the terms of the [GNU Public License](http://www.gnu.org/licenses/gpl-3.0.html) (GPL v3).** You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a very reasonable fee.
+
 If you feel that this software is one great weapon to have in your programming arsenal, it saves you a lot of time and money, use it for commercial gain or in your business organization, please consider making a donation to the project. A significant amount of time, effort, and money has been spent on this project. Your donations help keep this project alive and the development team motivated. Donors and sponsors get priority support (24-hour response time on business days).
 
 ### Credits
@@ -2362,6 +2364,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Philipp Hirsch
 * Christian Treptow
 * Кубарев Дмитрий
+* Stehlik & Company
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
