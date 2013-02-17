@@ -226,7 +226,7 @@ final class Base {
 		$ref=$val;
 		if ($ttl)
 			// Persist the key-value pair
-			Cache::instance()->set($this->hash($key).'.var',$val);
+			Cache::instance()->set($this->hash($key).'.var',$val,$ttl);
 		return $ref;
 	}
 
