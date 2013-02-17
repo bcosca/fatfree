@@ -359,7 +359,7 @@ class Markdown extends Prefab {
 					(empty($expr[3])?
 						'':
 						(' title="'.$self->esc($expr[3]).'"')).
-					'>'.$expr[1].'</a>';
+					'>'.$self->scan($expr[1]).'</a>';
 			},
 			$str
 		);
@@ -393,13 +393,10 @@ class Markdown extends Prefab {
 	protected function _code($str) {
 		$self=$this;
 		return preg_replace_callback(
-			'/(".*?`.+?`.*?")|`` (.+?) ``|(?<!\\\\)`(.+?)(?!\\\\)`/',
+			'/`` (.+?) ``|(?<!\\\\)`(.+?)(?!\\\\)`/',
 			function($expr) use($self) {
-				return empty($expr[1])?
-					('<code>'.
-						$self->esc(empty($expr[2])?$expr[3]:$expr[2]).
-					'</code>'):
-					$expr[1];
+				return '<code>'.
+					$self->esc(empty($expr[1])?$expr[2]:$expr[1]).'</code>';
 			},
 			$str
 		);
@@ -499,12 +496,13 @@ class Markdown extends Prefab {
 									(' title="'.
 										$self->esc($match[3]).'"')).'>'.
 								// Link
-								(empty($expr[3])?
-									(empty($expr[1])?
-										$expr[4]:
-										$expr[1]):
-									$expr[3]).
-								'</a>'):
+								$self->scan(
+									empty($expr[3])?
+										(empty($expr[1])?
+											$expr[4]:
+											$expr[1]):
+										$expr[3]
+								).'</a>'):
 								// Image
 								('<img src="'.$match[2].'"'.
 								(empty($expr[2])?
