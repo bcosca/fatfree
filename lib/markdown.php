@@ -216,17 +216,16 @@ class Markdown extends Prefab {
 					'<hr />'."\n\n".$this->build(substr($str,$ptr));
 			}
 			elseif (preg_match('/(?<=^|\n)([*+-]|\d+\.)\h'.
-				'(.+?(?:\n+|$))((?:(?: {4}|\t)+.+?(?:\n+|$))*)/s',
+				'(.+?(?:\n+|$))(((?: {4}|\t)+.+?(?:\n+|$))*)/s',
 				substr($str,$ptr),$match)) {
 				// List
-				$block=preg_match(
-					'/^\h+([*+-]|\d+\.)\h?.+?(?:\n+|$)/',$match[3]);
+				$block=preg_match('/^\h*(?:[*+-]|\d+\.)/',$match[3]);
 				if ($first) {
 					// First pass
 					if (is_numeric($match[1]))
 						$type='ol';
-					if (preg_match('/\n{2,}$/',
-						$match[2].($block?'':$match[3])))
+					if (preg_match('/\n{2,}$/',$match[2].
+						(isset($match[4]) && !$block?$match[4]:'')))
 						// Loose structure; Use paragraphs
 						$tight=FALSE;
 					$first=FALSE;
@@ -235,16 +234,13 @@ class Markdown extends Prefab {
 				// Strip leading whitespaces
 				$match[3]=preg_replace('/(?<=^|\n)(?: {4}|\t)/','',$match[3]);
 				$tmp=$this->snip($match[2].$match[3]);
-				$dst.='<li>'.$this->scan(
-					trim(
-						$tight?
-							($block?
-								($match[2].
-									$this->_li($this->snip($match[3]))):
-								$tmp):
-							$this->build($tmp)
-					)
-				).'</li>'."\n";
+				if ($tight) {
+					if ($block)
+						$tmp=$match[2].$this->build($this->snip($match[3]));
+				}
+				else
+					$tmp=$this->build($tmp);
+				$dst.='<li>'.$this->scan(trim($tmp)).'</li>'."\n";
 			}
 		}
 		return strlen($dst)?
