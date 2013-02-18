@@ -461,7 +461,11 @@ class Markdown extends Prefab {
 				'li'=>'/^(?:(?:[*+-]|\d+\.)\h.+?(?:\n+|$)'.
 					'(?:(?: {4}|\t)+.+?(?:\n+|$))*)+/s',
 				'raw'=>'/^((?:<!--.+?-->|<\?.+?\?>|<%.+?%>|'.
-					'<(\w+).*?(?:\/>|>(?:(?>[^><]+)|(?R))*<\/\2>))'.
+					'<(address|article|aside|audio|blockquote|canvas|dd|'.
+					'div|dl|fieldset|figcaption|figure|footer|form|h\d|'.
+					'header|hgroup|hr|noscript|object|ol|output|p|pre|'.
+					'section|table|tfoot|ul|video).'.
+					'*?(?:\/>|>(?:(?>[^><]+)|(?R))*<\/\2>))'.
 					'\h*(?:\n{2,}|\n?$))/s',
 				'p'=>'/^(.+?(?:\n{2,}|\n?$))/s'
 			);
