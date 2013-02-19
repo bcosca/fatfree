@@ -63,22 +63,32 @@ class Markdown extends Prefab {
 					$str=$fw->highlight($str);
 					break;
 				case 'apache':
-					preg_match_all('/(\h*)((?:<\/?)?)'.
-						'(\w+)((?:\h+(?:".+?"|.+?))*)?(\h*>?)\h*(\n+|$)/',
+					preg_match_all('/(?<=^|\n)(\h*)'.
+						'(?:(<\/?)(\w+)((?:\h+[^>]+)*)(>)|'.
+						'(?:(\w+)(\h.+?)))(\h*(?:\n+|$))/',
 						$str,$matches,PREG_SET_ORDER);
 					$out='';
 					foreach ($matches as $match)
 						$out.=$match[1].
-							($match[2]?
+							($match[3]?
 								('<span class="section">'.
-								$this->esc($match[2].$match[3]).
+									$this->esc($match[2]).$match[3].
+								'</span>'.
+								($match[4]?
+									('<span class="data">'.
+										$this->esc($match[4]).
+									'</span>'):
+									'').
+								'<span class="section">'.
+									$this->esc($match[5]).
 								'</span>'):
-								('<span class="directive">'.$match[3].
+								('<span class="directive">'.
+									$match[6].
+								'</span>'.
+								'<span class="data">'.
+									$this->esc($match[7]).
 								'</span>')).
-							'<span class="data">'.$this->esc($match[4]).
-							'</span>'.
-							'<span class="directive">'.
-							$this->esc($match[5]).'</span>'.$match[6];
+							$match[8];
 					$str='<code>'.$out.'</code>';
 					break;
 				case 'html':
