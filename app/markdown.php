@@ -5,7 +5,7 @@ namespace App;
 class Markdown extends Controller {
 
 	function get($f3) {
-		$test=new \Test(\Test::FLAG_Both);
+		$test=new \Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -41,10 +41,9 @@ class Markdown extends Controller {
 		foreach ($cases as $case) {
 			$txt=$md->render('markdown/'.$case.'.txt');
 			$test->expect(
-				$ok=$txt==$f3->read($f3->get('UI').'markdown/'.$case.'.htm'),
+				$txt==$f3->read($f3->get('UI').'markdown/'.$case.'.htm'),
 				$case
 			);
-			if (!$ok) echo $txt;
 		}
 		$f3->set('results',$test->results());
 	}

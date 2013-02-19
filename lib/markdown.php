@@ -295,36 +295,27 @@ class Markdown extends Prefab {
 	}
 
 	/**
-		Process mixed strong/em span
+		Process strong/em spans
 		@return string
 		@param $str string
 	**/
-	protected function _mixed($str) {
-		return preg_replace('/(?<!\\\\|[$A-Za-z])([*_]{3})'.
-			'([^\n`]+)(?!\\\\)\1/',
-			'<strong><em>\2</em></strong>',$str);
-	}
-
-	/**
-		Process strong span
-		@return string
-		@param $str string
-	**/
-	protected function _strong($str) {
-		return preg_replace('/(?<!\\\\|[$A-Za-z])([*_]{2})'.
-			'([^\n`]+)(?!\\\\)\1/',
-			'<strong>\2</strong>',$str);
-	}
-
-	/**
-		Reduce em span
-		@return string
-		@param $str string
-	**/
-	protected function _em($str) {
-		return preg_replace('/(?<!\\\\|[$A-Za-z])([*_])'.
-			'([^\n`]+)(?!\\\\)\1/',
-			'<em>\2</em>',$str);
+	protected function _text($str) {
+		$tmp='';
+		while ($str!=$tmp)
+			$str=preg_replace_callback(
+				'/(?<!\\\\|[$A-Za-z])([*_]{1,2})'.
+				'((?:(?>[^\n<>`])|(?R))+)(?!\\\\)\1/',
+				function($expr) {
+					switch (strlen($expr[1])) {
+						case 1:
+							return '<em>'.$expr[2].'</em>';
+						case 2:
+							return '<strong>'.$expr[2].'</strong>';
+					}
+				},
+				$tmp=$str
+			);
+		return $str;
 	}
 
 	/**
@@ -440,7 +431,7 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	function scan($str) {
-		$inline=array('img','a','mixed','strong','em','auto','code');
+		$inline=array('img','a','text','auto','code');
 		foreach ($inline as $func)
 			$str=$this->{'_'.$func}($str);
 		return $str;
