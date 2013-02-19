@@ -87,7 +87,7 @@ class SQL extends \PDO {
 		$auto=FALSE;
 		if (is_null($args))
 			$args=array();
-		elseif (is_string($args))
+		elseif (is_scalar($args))
 			$args=array(1=>$args);
 		if (is_array($cmds)) {
 			if (count($args)<($count=count($cmds)))
