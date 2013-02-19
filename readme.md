@@ -261,7 +261,7 @@ Each `ServerName` (`site1.com` and `site2.com` in our example) must be listed in
 
 For Nginx servers, here's the recommended configuration (replace ip_address:port with your environment's FastCGI PHP settings):-
 
-```
+``` nginx
 server {
     root /var/www/html;
     location / {
@@ -1350,7 +1350,7 @@ You can't add or delete a mapped field, or change a table's structure using the 
 
 F3 derives the data mapper structure directly from the database schema. No guesswork involved. It understands the differences between MySQL, SQLite, MSSQL, Sybase, and PostgreSQL database engines.
 
-SQL identifiers should not use reserved words, and should be limited to alphanumeric characters A-Z, 0-9, and the underscore symbol (_). Column names containing spaces (or special characters) and surrounded by quotes in the data definition are not compatible with the ORM. They cannot be represented properly as PHP object properties.
+SQL identifiers should not use reserved words, and should be limited to alphanumeric characters `A-Z`, `0-9`, and the underscore symbol (`_`). Column names containing spaces (or special characters) and surrounded by quotes in the data definition are not compatible with the ORM. They cannot be represented properly as PHP object properties.
 
 Let's say we want to increment the user's number of visits and update the corresponding record in our users table, we can add the following code:-
 

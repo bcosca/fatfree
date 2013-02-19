@@ -216,26 +216,31 @@ class Markdown extends Prefab {
 					'<hr />'."\n\n".$this->build(substr($str,$ptr));
 			}
 			elseif (preg_match('/(?<=^|\n)([*+-]|\d+\.)\h'.
-				'(.+?(?:\n+|$))(((?: {4}|\t)+.+?(?:\n+|$))*)/s',
+				'(.+?(?:\n+|$))((?:(?: {4}|\t)+.+?(?:\n+|$))*)/s',
 				substr($str,$ptr),$match)) {
+				$match[3]=preg_replace('/(?<=^|\n)(?: {4}|\t)/','',$match[3]);
+				$found=FALSE;
+				foreach (array_slice($this->blocks,0,-1) as $regex)
+					if (preg_match($regex,$match[3])) {
+						$found=TRUE;
+						break;
+					}
 				// List
-				$block=preg_match('/^\h*(?:[*+-]|\d+\.)/',$match[3]);
 				if ($first) {
 					// First pass
 					if (is_numeric($match[1]))
 						$type='ol';
 					if (preg_match('/\n{2,}$/',$match[2].
-						(isset($match[4]) && !$block?$match[4]:'')))
+						($found?'':$match[3])))
 						// Loose structure; Use paragraphs
 						$tight=FALSE;
 					$first=FALSE;
 				}
-				$ptr+=strlen($match[0]);
 				// Strip leading whitespaces
-				$match[3]=preg_replace('/(?<=^|\n)(?: {4}|\t)/','',$match[3]);
+				$ptr+=strlen($match[0]);
 				$tmp=$this->snip($match[2].$match[3]);
 				if ($tight) {
-					if ($block)
+					if ($found)
 						$tmp=$match[2].$this->build($this->snip($match[3]));
 				}
 				else
@@ -295,7 +300,8 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _mixed($str) {
-		return preg_replace('/(?<!\\\\)([*_]{3})([^\n`]+)(?!\\\\)\1/',
+		return preg_replace('/(?<!\\\\|[$A-Za-z])([*_]{3})'.
+			'([^\n`]+)(?!\\\\)\1/',
 			'<strong><em>\2</em></strong>',$str);
 	}
 
@@ -305,7 +311,8 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _strong($str) {
-		return preg_replace('/(?<!\\\\)([*_]{2})([^\n`]+)(?!\\\\)\1/',
+		return preg_replace('/(?<!\\\\|[$A-Za-z])([*_]{2})'.
+			'([^\n`]+)(?!\\\\)\1/',
 			'<strong>\2</strong>',$str);
 	}
 
@@ -315,7 +322,8 @@ class Markdown extends Prefab {
 		@param $str string
 	**/
 	protected function _em($str) {
-		return preg_replace('/(?<!\\\\)([*_])([^\n`]+)(?!\\\\)\1/',
+		return preg_replace('/(?<!\\\\|[$A-Za-z])([*_])'.
+			'([^\n`]+)(?!\\\\)\1/',
 			'<em>\2</em>',$str);
 	}
 
@@ -431,7 +439,7 @@ class Markdown extends Prefab {
 		@return string
 		@param $str string
 	**/
-	protected function scan($str) {
+	function scan($str) {
 		$inline=array('img','a','mixed','strong','em','auto','code');
 		foreach ($inline as $func)
 			$str=$this->{'_'.$func}($str);

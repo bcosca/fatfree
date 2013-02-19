@@ -17,6 +17,7 @@ class Markdown extends Controller {
 			'Nested blockquotes',
 			'Horizontal rules',
 			'Ordered and unordered lists',
+			'Code block in a list item',
 			'Hard-wrapped paragraphs with list-like lines',
 			'Tight blocks',
 			'Tabs',
