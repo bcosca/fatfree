@@ -303,8 +303,7 @@ class Markdown extends Prefab {
 		$tmp='';
 		while ($str!=$tmp)
 			$str=preg_replace_callback(
-				'/(?<!\\\\|[$A-Za-z])([*_]{1,2})'.
-				'((?:(?>[^\n<>`])|(?R))+)(?!\\\\)\1/',
+				'/(?<!\\\\|[$A-Za-z])([*_]{1,2})([^\n`]+)(?!\\\\)\1/',
 				function($expr) {
 					switch (strlen($expr[1])) {
 						case 1:
