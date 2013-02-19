@@ -1,6 +1,6 @@
 [![Fat-Free Framework](ui/images/logo.png)](http://fatfree.sf.net/)
 
-*A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!*
+**A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!**
 
 Condensed in a single ~50KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
 
@@ -56,7 +56,7 @@ It is highly recommended that experienced users develop new applications with th
 
 ## Getting Started
 
-*A designer knows he has achieved perfection not when there is nothing left to add, but when there is nothing left to take away. - Antoine de Saint-Exupéry*
+> *A designer knows he has achieved perfection not when there is nothing left to add, but when there is nothing left to take away. -- Antoine de Saint-Exupéry*
 
 Fat-Free Framework makes it easy to build entire Web sites in a jiffy. With the same power and brevity as modern Javascript toolkits and libraries, F3 helps you write better-looking and more reliable PHP programs. One glance at your PHP source code and anyone will find it easy to understand, how much you can accomplish in so few lines of code, and how powerful the results are.
 
@@ -337,7 +337,7 @@ $f3->run();
 
 Fat-Free's `$f3->map()` method provides a ReST interface by mapping HTTP methods in routes to the equivalent methods of an object or a PHP class. If your application receives an incoming HTTP request like `GET /cart/123`, Fat-Free will automatically transfer control to the object's or class' `get()` method. On the other hand, a `POST /cart/123` request will be routed to the `Item` class' `post()` method.
 
-Note: Browsers do not implement the HTTP `PUT` and `DELETE` methods in regular HTML forms. These and other ReST methods (`HEAD`, and `CONNECT`) are accessible only via AJAX calls to the server.
+**Note:** Browsers do not implement the HTTP `PUT` and `DELETE` methods in regular HTML forms. These and other ReST methods (`HEAD`, and `CONNECT`) are accessible only via AJAX calls to the server.
 
 If the framework receives an HTTP method that's not implemented by a class, it generates an `HTTP 405 Method Not Allowed` error. F3 automatically responds with the appropriate headers to HTTP `OPTIONS` method requests. The framework will not map this request to a class.
 
@@ -456,7 +456,7 @@ To assign a value to a Fat-Free variable:
 $f3->set('var',value)
 ```
 
-Note: Fat-Free variables accept all PHP data types, including objects and anonymous functions.
+**Note:** Fat-Free variables accept all PHP data types, including objects and anonymous functions.
 
 To set several variables at once:
 
@@ -1118,7 +1118,7 @@ To override this behavior, you can trigger F3 to use a language specified by the
 $f3->set('LANGUAGE','de');
 ```
 
-Note: In the above example, the key pi exists only in the English dictionary. The framework will always use English (`en`) as a fallback to populate keys that are not present in the specified (or detected) language.
+**Note:** In the above example, the key pi exists only in the English dictionary. The framework will always use English (`en`) as a fallback to populate keys that are not present in the specified (or detected) language.
 
 You may also create dictionary files for language variants like en-US, es-AR, etc. In this case, F3 will use the language variant first (like es-AR). If there are keys that do not exist in the variant, the framework will look up the key in the root language (es), then use the en language file as the final fallback.
 Dictionary key-value pairs become F3 variables once referenced. Make sure the keys do not conflict with any framework variable instantiated via `$f3->set()`, `$f3->mset()`, or `$f3->config()`.
@@ -1303,7 +1303,7 @@ CREATE TABLE users (
 );
 ```
 
-Note: MongoDB is a NoSQL database engine and inherently schema-less. F3 has its own fast and lightweight NoSQL implementation called Jig, which uses PHP-serialized or JSON-encoded flat files. These abstraction layers require no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.
+**Note:** MongoDB is a NoSQL database engine and inherently schema-less. F3 has its own fast and lightweight NoSQL implementation called Jig, which uses PHP-serialized or JSON-encoded flat files. These abstraction layers require no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.
 
 Now back to SQL. First, we establish communication with our database.
 
@@ -1809,7 +1809,7 @@ Some pointers:-
 * Activate caching on pages that are available only in ONE session state. If you want to cache the `"About Us"` page, make sure it's available only when a user is not logged in.
 * If you have a RAMdisk or fast solid-state drive, configure the `CACHE` global variable so it points to that drive. This will make your application run like a Formula 1 race car.
 
-One additional note: Don't set the timeout value to a very long period until you're ready to roll out your application, i.e. the release or production state. Changes you make to any of your PHP scripts may not have the expected effect on the displayed output if the page exists in the framework cache and the expiration period has not lapsed. If you do alter a program that generates a page affected by the cache timer and you want these changes to take effect immediately, you should clear the cache by erasing the files in the cache/ directory (or whatever path the `CACHE` global variable points to). F3 will automatically refresh the cache if necessary. At the client-side, there's little you can do but instruct the user to clear the browser's cache or wait for the cache period to expire.
+**Note:** Don't set the timeout value to a very long period until you're ready to roll out your application, i.e. the release or production state. Changes you make to any of your PHP scripts may not have the expected effect on the displayed output if the page exists in the framework cache and the expiration period has not lapsed. If you do alter a program that generates a page affected by the cache timer and you want these changes to take effect immediately, you should clear the cache by erasing the files in the cache/ directory (or whatever path the `CACHE` global variable points to). F3 will automatically refresh the cache if necessary. At the client-side, there's little you can do but instruct the user to clear the browser's cache or wait for the cache period to expire.
 
 PHP needs to be set up correctly for the F3 cache engine to work properly. Your operating system timezone should be synchronized with the date.timezone setting in the `php.ini` file.
 
@@ -2015,15 +2015,15 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool AJAX`
 
-* TRUE if an XML HTTP request is detected, FALSE otherwise.
+* `TRUE` if an XML HTTP request is detected, `FALSE` otherwise.
 
 `string AUTOLOAD`
 
-* Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+* Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (`|`), comma (`,`), or semi-colon (`;`) as path separator.
 
 `string BASE`
 
-* Path to the index.php main/front controller.
+* Path to the `index.php` main/front controller.
 
 `string BODY`
 
@@ -2031,7 +2031,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool/string CACHE`
 
-* Cache backend. Unless assigned a value like 'memcache=localhost' (and the PHP memcache module is present), F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a FALSE value.
+* Cache backend. Unless assigned a value like `'memcache=localhost'` (and the PHP memcache module is present), F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a `FALSE` value.
 
 `bool CASELESS`
 
@@ -2079,7 +2079,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool HIGHLIGHT`
 
-* Enable/disable syntax highlighting of stack traces. Default value: TRUE (requires `code.css` stylesheet).
+* Enable/disable syntax highlighting of stack traces. Default value: `TRUE` (requires `code.css` stylesheet).
 
 `string HOST`
 
@@ -2095,7 +2095,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `string LANGUAGE`
 
-* Current active language. Value is used to load the appropriate language translation file in the folder pointed to by LOCALES. If set to NULL, language is auto-detected from the HTTP Accept-Language request header.
+* Current active language. Value is used to load the appropriate language translation file in the folder pointed to by `LOCALES`. If set to `NULL`, language is auto-detected from the HTTP `Accept-Language` request header.
 
 `string LOCALES`
 
@@ -2127,7 +2127,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `int PORT`
 
-* HTTP port used by the Web server.
+* TCP/IP listening port used by the Web server.
 
 `bool QUIET`
 
@@ -2139,7 +2139,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `string RESPONSE`
 
-* The body of the last HTTP response. F3 populates this variable regardless of the QUIET setting.
+* The body of the last HTTP response. F3 populates this variable regardless of the `QUIET` setting.
 
 `string ROOT`
 
@@ -2147,7 +2147,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `array ROUTES`
 
-* Contains the defined application routes. This is a read-only variable.
+* Contains the defined application routes.
 
 `string SCHEME`
 
@@ -2167,7 +2167,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `string UI`
 
-* Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+* Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (`|`), comma (`,`), or semi-colon (`;`) as separator for multiple paths.
 
 `callback UNLOAD`
 
@@ -2214,7 +2214,7 @@ Once you get the hang of testing the smallest units of your application, you can
 ```
 {{ string expr, arg1, ..., argN | format }}
 ```
-* Render an ICU-formatted `expr` and pass the comma-separated arguments, where `arg1, ..., argn` is one of:- `date`, `time`, `number, integer`, `number, currency`, or `number, percent`.
+* Render an ICU-formatted `expr` and pass the comma-separated arguments, where `arg1, ..., argn` is one of:- `'date'`, `'time'`, `'number, integer'`, `'number, currency'`, or `'number, percent'`.
 
 ```
 <include
@@ -2299,6 +2299,10 @@ If you feel that this software is one great weapon to have in your programming a
 The Fat-Free Framework is community-driven software. It can't be what it is today without the help and support from the following people and organizations:
 
 * GitHub
+* Tecnilógica
+* Stehlik & Company
+* Mirosystems
+* G Holdings, LLC
 * Sascha Ohms
 * Jermaine Maree
 * Sergey Zaretsky
@@ -2343,7 +2347,6 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Christian Knuth
 * Maximilian Summe
 * Caspar Frey
-* G Holdings, LLC
 * FocusHeart
 * Philip Lawrence
 * Peter Beverwyk
@@ -2357,19 +2360,16 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Dmitrij Chernov
 * Marek Toman
 * Simone Cociancich
-* Tecnilógica
 * Alan Holding
-* Mirosystems
 * Aurélien Botermans
 * Philipp Hirsch
 * Christian Treptow
 * Кубарев Дмитрий
-* Stehlik & Company
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
 [![Donate](ui/images/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
 
-Copyright (c) 2009-2012 F3::Factory/Bong Cosca
+**Copyright (c) 2009-2012 F3::Factory/Bong Cosca**
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)
