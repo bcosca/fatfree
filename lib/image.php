@@ -18,7 +18,8 @@ class Image {
 
 	//@{ Messages
 	const
-		E_Color='Invalid color specified: %s';
+		E_Color='Invalid color specified: %s',
+		E_Font='CAPTCHA font not found';
 	//@}
 
 	//@{ Positional cues
@@ -381,6 +382,7 @@ class Image {
 					$fw->set($key,$seed);
 				return $this->save();
 			}
+		user_error(self::E_Font);
 		return FALSE;
 	}
 
