@@ -1662,9 +1662,10 @@ final class Cache {
 			case 'memcache':
 				foreach (memcache_get_extended_stats(
 					$this->ref,'slabs') as $slabs)
-					foreach (array_keys($slabs) as $id)
+					foreach (array_filter(array_keys($slabs),'is_numeric')
+						as $id)
 						foreach (memcache_get_extended_stats(
-							$this->ref,'cachedump',floor($id)) as $data)
+							$this->ref,'cachedump',$id) as $data)
 							if (is_array($data))
 								foreach ($data as $key=>$val)
 									if (preg_match($regex,$key) &&
