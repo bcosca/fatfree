@@ -295,19 +295,6 @@ class Mapper extends \DB\Cursor {
 		$ctr=0;
 		$fields='';
 		$values='';
-		foreach ($this->fields as $key=>$field)
-			if ($field['changed']) {
-				$fields.=($ctr?',':'').
-					($this->engine=='mysql'?('`'.$key.'`'):$key);
-				$values.=($ctr?',':'').'?';
-				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
-				$ctr++;
-			}
-		if ($fields)
-			$this->db->exec(
-				'INSERT INTO '.$this->table.' ('.$fields.') '.
-				'VALUES ('.$values.');',$args
-			);
 		$pkeys=array();
 		$inc=NULL;
 		foreach ($this->fields as $key=>&$field) {
@@ -315,12 +302,24 @@ class Mapper extends \DB\Cursor {
 				$pkeys[]=$key;
 				$field['previous']=$field['value'];
 				if (!$inc && $field['pdo_type']==\PDO::PARAM_INT &&
-					is_null($field['value']) && !$field['nullable'])
+					empty($field['value']) && !$field['nullable'])
 					$inc=$key;
+			}
+			if ($field['changed'] && $key!=$inc) {
+				$fields.=($ctr?',':'').
+					($this->engine=='mysql'?('`'.$key.'`'):$key);
+				$values.=($ctr?',':'').'?';
+				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
+				$ctr++;
 			}
 			$field['changed']=FALSE;
 			unset($field);
 		}
+		if ($fields)
+			$this->db->exec(
+				'INSERT INTO '.$this->table.' ('.$fields.') '.
+				'VALUES ('.$values.');',$args
+			);
 		$seq=NULL;
 		if ($this->engine=='pgsql')
 			$seq=$this->table.'_'.end($pkeys).'_seq';
