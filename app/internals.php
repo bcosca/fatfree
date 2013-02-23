@@ -15,6 +15,10 @@ class Internals extends Controller {
 			'PHP version '.PHP_VERSION
 		);
 		$test->expect(
+			PHP_SAPI,
+			'SAPI: '.PHP_SAPI
+		);
+		$test->expect(
 			!@strpos(),
 			'Intentional error'
 		);
