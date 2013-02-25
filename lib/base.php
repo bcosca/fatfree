@@ -546,11 +546,11 @@ final class Base {
 		@param $tags string
 	**/
 	function scrub(&$var,$tags=NULL) {
-		if (is_string($var)) {
-			if ($tags)
-				$tags='<'.implode('><',$this->split($tags)).'>';
-			$var=trim(preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/','',
-				($tags=='*')?$var:strip_tags($var,$tags)));
+		if (is_string($var) && strlen($var)) {
+			if ($tags!='*')
+				$var=strip_tags($var,
+					'<'.implode('><',$this->split($tags)).'>');
+			$var=trim(preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/','',$var));
 		}
 		elseif (is_array($var))
 			foreach ($var as &$val) {
