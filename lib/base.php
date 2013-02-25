@@ -204,9 +204,6 @@ final class Base {
 			case 'ENCODING':
 				$val=ini_set('default_charset',$val);
 				break;
-			case 'JAR':
-				call_user_func_array('session_set_cookie_params',$val);
-				break;
 			case 'FALLBACK':
 				$this->fallback=$val;
 				$lang=$this->language($this->hive['LANGUAGE']);
@@ -224,6 +221,9 @@ final class Base {
 		}
 		$ref=&$this->ref($key);
 		$ref=$val;
+		if (preg_match('/^JAR\b/',$key))
+			call_user_func_array(
+				'session_set_cookie_params',$this->hive['JAR']);
 		if ($ttl)
 			// Persist the key-value pair
 			Cache::instance()->set($this->hash($key).'.var',$val,$ttl);
