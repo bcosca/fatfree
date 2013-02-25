@@ -93,7 +93,7 @@ class Internals extends Controller {
 		$f3->scrub($_GET,'*');
 		$test->expect(
 			$f3->get('GET["foo"]')=='ok<h1>foo</h1><p>bar<span>baz</span></p>',
-			'Ignore HTML tags'
+			'Pass-thru HTML tags'
 		);
 		$var='"hello world", a'.chr(8).
 			'<$20 or €20> donation helps improve'.chr(0).' this software';
