@@ -12,7 +12,7 @@ class Markdown extends Controller {
 		);
 		$md=\Markdown::instance();
 		$cases=array(
-			'Code blocks',
+			'Code Blocks',
 			'Blockquotes with code blocks',
 			'Nested blockquotes',
 			'Horizontal rules',
@@ -29,7 +29,7 @@ class Markdown extends Controller {
 			'Inline HTML (Simple)',
 			'Inline HTML (Advanced)',
 			'Inline HTML comments',
-			'Code spans',
+			'Code Spans',
 			'Strong and em together',
 			'Auto links',
 			'Amps and angle encoding',
