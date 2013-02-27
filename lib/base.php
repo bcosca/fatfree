@@ -1078,6 +1078,9 @@ final class Base {
 						if (PHP_SAPI!='cli')
 							array_walk($headers,'header');
 						$this->expire($cached+$ttl-$now);
+						if (!$this->hive['QUIET'])
+							echo $body;
+						die();
 					}
 					else
 						// Expire HTTP client-cached page
