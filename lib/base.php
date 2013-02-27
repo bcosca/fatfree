@@ -1056,6 +1056,7 @@ final class Base {
 				// Save matching route
 				$this->hive['PATTERN']=$url;
 				// Process request
+				$body='';
 				$now=microtime(TRUE);
 				if (preg_match('/GET|HEAD/',$this->hive['VERB']) &&
 					isset($ttl)) {
@@ -1066,13 +1067,6 @@ final class Base {
 						$hash=$this->hash($this->hive['VERB'].' '.
 							$this->hive['URI']).'.url',$data);
 					if ($cached && $cached+$ttl>$now) {
-						if (isset($headers['If-Modified-Since']) &&
-							strtotime($headers['If-Modified-Since'])>
-							floor($cached)) {
-							// HTTP client-cached page is fresh
-							$this->status(304);
-							die;
-						}
 						// Retrieve from cache backend
 						list($headers,$body)=$data;
 						if (PHP_SAPI!='cli')
@@ -1085,14 +1079,16 @@ final class Base {
 				}
 				else
 					$this->expire(0);
-				ob_start();
-				// Call route handler
-				$this->call($handler,array($this,$args),
-					'beforeroute,afterroute');
-				$body=ob_get_clean();
-				if ($ttl && !error_get_last())
-					// Save to cache backend
-					$cache->set($hash,array(headers_list(),$body),$ttl);
+				if (!strlen($body)) {
+					ob_start();
+					// Call route handler
+					$this->call($handler,array($this,$args),
+						'beforeroute,afterroute');
+					$body=ob_get_clean();
+					if ($ttl && !error_get_last())
+						// Save to cache backend
+						$cache->set($hash,array(headers_list(),$body),$ttl);
+				}
 				$this->hive['RESPONSE']=$body;
 				if (!$this->hive['QUIET']) {
 					if ($kbps) {
