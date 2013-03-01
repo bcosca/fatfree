@@ -25,7 +25,7 @@ class Template extends View {
 		//! MIME type
 		$mime,
 		//! Template tags
-		$tags='set|include|exclude|ignore|loop|repeat|check|true|false',
+		$tags,
 		//! Custom tag handlers
 		$custom=array();
 
@@ -338,6 +338,15 @@ class Template extends View {
 				return $this->sandbox();
 			}
 		user_error(sprintf(Base::E_Open,$file));
+	}
+
+	function __construct() {
+		$ref=new ReflectionClass(__CLASS__);
+		$this->tags='';
+		foreach ($ref->getmethods() as $method)
+			if (preg_match('/^_(?=[[:alpha:]])/',$method->name))
+				$this->tags.=(strlen($this->tags)?'|':'').
+					substr($method->name,1);
 	}
 
 }
