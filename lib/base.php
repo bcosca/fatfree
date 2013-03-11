@@ -568,11 +568,14 @@ final class Base {
 	function esc($arg) {
 		if (is_string($arg))
 			return $this->encode($arg);
-		if (is_array($arg))
+		if (is_array($arg) || is_a($arg,'ArrayAccess'))
 			foreach ($arg as &$val) {
 				$val=$this->esc($val);
 				unset($val);
 			}
+		if (is_object($arg))
+			foreach (get_object_vars($arg) as $key=>$val)
+				$arg->$key=$this->esc($val);
 		return $arg;
 	}
 
@@ -584,11 +587,14 @@ final class Base {
 	function raw($arg) {
 		if (is_string($arg))
 			return $this->decode($arg);
-		if (is_array($arg))
+		if (is_array($arg) || is_a($arg,'ArrayAccess'))
 			foreach ($arg as &$val) {
 				$val=$this->raw($val);
 				unset($val);
 			}
+		if (is_object($arg))
+			foreach (get_object_vars($arg) as $key=>$val)
+				$arg->$key=$this->raw($val);
 		return $arg;
 	}
 
