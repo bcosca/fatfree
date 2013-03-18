@@ -39,9 +39,10 @@ class Markdown extends Controller {
 			'Tricky combinations'
 		);
 		foreach ($cases as $case) {
-			$txt=$md->render('markdown/'.$case.'.txt');
+			$txt=$f3->read($f3->get('UI').'markdown/'.$case.'.txt');
 			$test->expect(
-				$txt==$f3->read($f3->get('UI').'markdown/'.$case.'.htm'),
+				$md->convert($txt)==$f3->read($f3->get('UI').
+					'markdown/'.$case.'.htm'),
 				$case
 			);
 		}
