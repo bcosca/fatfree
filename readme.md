@@ -1628,10 +1628,10 @@ $array=$place->cast();
 echo $array['city'].', '.$array['country'];
 ```
 
-To retrieve the number of records in a table that match a certain condition, use the `found()` method.
+To retrieve the number of records in a table that match a certain condition, use the `count()` method.
 
 ``` php
-if (!$user->found(array('visits>?',10)))
+if (!$user->count(array('visits>?',10)))
     echo 'We need a better ad campaign!';
 ```
 
