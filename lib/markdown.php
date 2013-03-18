@@ -544,27 +544,20 @@ class Markdown extends Prefab {
 	/**
 		Render HTML equivalent of markdown
 		@return string
-		@param $file string
+		@param $txt string
 	**/
-	function render($file) {
-		$fw=Base::instance();
-		if (!is_dir($tmp=$fw->get('TEMP')))
-			mkdir($tmp,Base::MODE,TRUE);
-		foreach ($fw->split($fw->get('UI')) as $dir)
-			if (is_file($abs=$fw->fixslashes($dir.$file))) {
-				$str=preg_replace_callback(
-					'/(<code.*?>.+?<\/code>|'.
-					'<[^>\n]+>|\([^\n\)]+\)|"[^"\n]+")|'.
-					'\\\\(.)/s',
-					function($expr) {
-						// Process escaped characters
-						return empty($expr[1])?$expr[2]:$expr[1];
-					},
-					$this->build($fw->read($abs,TRUE))
-				);
-				return $this->snip($str);
-			}
-		user_error(sprintf(Base::E_Open,$file));
+	function convert($txt) {
+		$txt=preg_replace_callback(
+			'/(<code.*?>.+?<\/code>|'.
+			'<[^>\n]+>|\([^\n\)]+\)|"[^"\n]+")|'.
+			'\\\\(.)/s',
+			function($expr) {
+				// Process escaped characters
+				return empty($expr[1])?$expr[2]:$expr[1];
+			},
+			$this->build(preg_replace('/\r\n|\r/',"\n",$txt))
+		);
+		return $this->snip($txt);
 	}
 
 }
