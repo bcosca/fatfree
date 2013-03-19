@@ -1735,6 +1735,20 @@ Tip:Use the tools as they're designed for. Fat-Free already has an easy-to-use S
 
 Plug-ins are nothing more than autoloaded classes that use framework built-ins to extend F3's features and functionality. If you'd like to contribute, leave a note at the Fat-Free Discussion Area hosted by Google Groups or tell us about it in the FreeNode `#fatfree` IRC channel. Someone else might be involved in a similar project. The framework community will appreciate it a lot if we unify our efforts.
 
+### CAPTCHA Images
+
+There might be instances when you want to make your forms more secure against spam bots and malicious automated scripts. F3 provides a `captcha()` method to generate images with random text that are designed to be recognizable only by humans.
+
+``` php
+$img = new Image();
+$img->captcha('fonts/CoolFont.ttf',16,5,'SESSION.captcha_code');
+$img->render();
+```
+
+This example generates an random image based on your desired TrueType font. The `fonts/` folder is a subfolder within application's `UI` path. The second parameter indicates the font size, and the third argument defines the number of hexadecimal characters to generate.
+
+The last argument represents an F3 variable name. This is where F3 will store the string equivalent of the CAPTCHA image. To make the string reload-safe, we specified a session variable:- `SESSION.captcha_code` which maps to `$_SESSION['captcha_code']`, which you can use later to verify whether the input element in the form submitted matches this string.
+
 ### Grabbing Data from Another Site
 
 We've covered almost every feature available in the framework to run a stand-alone Web server. For most applications, these features will serve you quite well. But what do you do if your application needs data from another Web server on the network? F3 has the Web plugin to help you in this situation:-
