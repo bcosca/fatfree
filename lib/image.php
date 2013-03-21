@@ -187,6 +187,26 @@ class Image {
 		$this->data=$tmp;
 		return $this->save();
 	}
+	
+	/**
+		Crop the image
+		@return object
+		@param $x1 Top-left x-coordinate
+		@param $y1 Top-left y-coordinate
+		@param $x2 Bottom-right x-coordinate
+		@param $y2 Bottom-right y-coordinate
+	**/
+	function crop($x1,$y1,$x2,$y2) {
+		$tmp=imagecreatetruecolor(
+			$width=$x2-$x1+1,$height=$y2-$y1+1);
+		imagesavealpha($tmp,TRUE);
+		imagefill($tmp,0,0,IMG_COLOR_TRANSPARENT);
+		imagecopyresampled($tmp,$this->data,
+			0,0,$x1,$y1,$width,$height,$width,$height);
+		imagedestroy($this->data);
+		$this->data=$tmp;
+		return $this->save();
+	}
 
 	/**
 		Resize image (Maintain aspect ratio); Crop relative to center
