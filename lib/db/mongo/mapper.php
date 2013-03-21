@@ -76,8 +76,6 @@ class Mapper extends \DB\Cursor {
 		$mapper->reset();
 		foreach ($row as $key=>$val)
 			$mapper->document[$key]=$val;
-		$mapper->query=array($row);
-		$mapper->ptr=0;
 		return $mapper;
 	}
 
