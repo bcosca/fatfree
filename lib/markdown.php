@@ -283,7 +283,7 @@ class Markdown extends Prefab {
 				return $this->_p($parts[1]).$this->build($parts[2]);
 			$self=$this;
 			$str=preg_replace_callback(
-				'/([^<\[]+)?(<.+?>|\[.+?\]\s*\(.+?\))([^>\]]+)?|(.+)/s',
+				'/([^<>\[]+)?(<.+?>|\[.+?\]\s*\(.+?\))([^<>\]]+)?|(.+)/s',
 				function($expr) use($self) {
 					$tmp='';
 					if (isset($expr[4]))
