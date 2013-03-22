@@ -104,6 +104,12 @@ class Image extends Controller {
 				'title="'.$img->width().'x'.$img->height().'" />'
 		);
 		$test->expect(
+			$src=$f3->base64($img->restore()->crop(25,25,95,95)->dump(),'image/png'),
+			'Crop<br />'.
+			'<img src="'.$src.'" '.
+				'title="'.$img->width().'x'.$img->height().'" />'
+		);
+		$test->expect(
 			$src=$f3->base64($img->restore()->resize(120,90)->dump(),'image/png'),
 			'Resize (smaller)<br />'.
 			'<img src="'.$src.'" '.
