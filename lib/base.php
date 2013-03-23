@@ -950,13 +950,12 @@ final class Base {
 	}
 
 	/**
-		Reroute to specified URI.  This is by default a temporary (303) redirect,
-		but can be made permanent (301).
+		Reroute to specified URI
 		@return NULL
 		@param $uri string
-		@param $permanent boolean
+		@param $permanent bool
 	**/
-	function reroute($uri, $permanent=FALSE) {
+	function reroute($uri,$permanent=FALSE) {
 		if (PHP_SAPI!='cli') {
 			@session_commit();
 			header('Location: '.(preg_match('/^https?:\/\//',$uri)?
