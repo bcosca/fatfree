@@ -1021,7 +1021,7 @@ final class Base {
 		krsort($this->hive['ROUTES']);
 		// Convert to BASE-relative URL
 		$req=preg_replace(
-			'/^'.preg_quote($this->hive['BASE'],'/').'\b(.*)/','\1',
+			'/^'.preg_quote($this->hive['BASE'],'/').'(\/.*|$)/','\1',
 			$this->hive['URI']
 		);
 		$allowed=array();
@@ -1424,9 +1424,7 @@ final class Base {
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
 			isset($headers['X-Forwarded-Proto']) &&
 			$headers['X-Forwarded-Proto']=='https'?'https':'http';
-		$base=implode('/',array_map('urlencode',
-			explode('/',$this->fixslashes(
-			preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME'])))));
+		$base=preg_replace('/\/[^\/]+$/','',$_SERVER['PHP_SELF']);
 		call_user_func_array('session_set_cookie_params',
 			$jar=array(
 				'expire'=>0,
