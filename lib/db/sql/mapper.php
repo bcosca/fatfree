@@ -476,6 +476,8 @@ class Mapper extends \DB\Cursor {
 	function __construct(\DB\SQL $db,$table,$ttl=60) {
 		$this->db=$db;
 		$this->engine=$db->driver();
+		if ($this->engine=='mysql')
+			$table='`'.$table.'`';
 		$this->table=$table;
 		$this->fields=$db->schema($table,$ttl);
 		$this->reset();
