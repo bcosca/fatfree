@@ -30,9 +30,9 @@ class Template extends View {
 		$custom=array();
 
 	/**
-		Convert token to variable
-		@return string
-		@param $str string
+	*	Convert token to variable
+	*	@return string
+	*	@param $str string
 	**/
 	function token($str) {
 		$self=$this;
@@ -63,9 +63,9 @@ class Template extends View {
 	}
 
 	/**
-		Template -set- tag handler
-		@return string
-		@param $node array
+	*	Template -set- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _set(array $node) {
 		$out='';
@@ -78,9 +78,9 @@ class Template extends View {
 	}
 
 	/**
-		Template -include- tag handler
-		@return string
-		@param $node array
+	*	Template -include- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _include(array $node) {
 		$attrib=$node['@attrib'];
@@ -95,26 +95,26 @@ class Template extends View {
 	}
 
 	/**
-		Template -exclude- tag handler
-		@return string
+	*	Template -exclude- tag handler
+	*	@return string
 	**/
 	protected function _exclude() {
 		return '';
 	}
 
 	/**
-		Template -ignore- tag handler
-		@return string
-		@param $node array
+	*	Template -ignore- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _ignore(array $node) {
 		return $node[0];
 	}
 
 	/**
-		Template -loop- tag handler
-		@return string
-		@param $node array
+	*	Template -loop- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _loop(array $node) {
 		$attrib=$node['@attrib'];
@@ -129,9 +129,9 @@ class Template extends View {
 	}
 
 	/**
-		Template -repeat- tag handler
-		@return string
-		@param $node array
+	*	Template -repeat- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _repeat(array $node) {
 		$attrib=$node['@attrib'];
@@ -151,9 +151,9 @@ class Template extends View {
 	}
 
 	/**
-		Template -check- tag handler
-		@return string
-		@param $node array
+	*	Template -check- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _check(array $node) {
 		$attrib=$node['@attrib'];
@@ -174,27 +174,27 @@ class Template extends View {
 	}
 
 	/**
-		Template -true- tag handler
-		@return string
-		@param $node array
+	*	Template -true- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _true(array $node) {
 		return $this->build($node);
 	}
 
 	/**
-		Template -false- tag handler
-		@return string
-		@param $node array
+	*	Template -false- tag handler
+	*	@return string
+	*	@param $node array
 	**/
 	protected function _false(array $node) {
 		return '<?php else: ?>'.$this->build($node);
 	}
 
 	/**
-		Assemble markup
-		@return string
-		@param $node array|string
+	*	Assemble markup
+	*	@return string
+	*	@param $node array|string
 	**/
 	protected function build($node) {
 		if (is_string($node)) {
@@ -218,10 +218,10 @@ class Template extends View {
 	}
 
 	/**
-		Extend template with custom tag
-		@return NULL
-		@param $tag string
-		@param $func callback
+	*	Extend template with custom tag
+	*	@return NULL
+	*	@param $tag string
+	*	@param $func callback
 	**/
 	function extend($tag,$func) {
 		$this->tags.='|'.$tag;
@@ -229,10 +229,10 @@ class Template extends View {
 	}
 
 	/**
-		Call custom tag handler
-		@return string|FALSE
-		@param $func callback
-		@param $args array
+	*	Call custom tag handler
+	*	@return string|FALSE
+	*	@param $func callback
+	*	@param $args array
 	**/
 	function __call($func,array $args) {
 		if ($func[0]=='_')
@@ -243,11 +243,11 @@ class Template extends View {
 	}
 
 	/**
-		Render template
-		@return string
-		@param $file string
-		@param $mime string
-		@param $hive array
+	*	Render template
+	*	@return string
+	*	@param $file string
+	*	@param $mime string
+	*	@param $hive array
 	**/
 	function render($file,$mime='text/html',array $hive=NULL) {
 		$fw=Base::instance();

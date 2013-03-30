@@ -38,19 +38,19 @@ class Mapper extends \DB\Cursor {
 		$adhoc=array();
 
 	/**
-		Return TRUE if field is defined
-		@return bool
-		@param $key string
+	*	Return TRUE if field is defined
+	*	@return bool
+	*	@param $key string
 	**/
 	function exists($key) {
 		return array_key_exists($key,$this->fields+$this->adhoc);
 	}
 
 	/**
-		Assign value to field
-		@return scalar
-		@param $key string
-		@param $val scalar
+	*	Assign value to field
+	*	@return scalar
+	*	@param $key string
+	*	@param $val scalar
 	**/
 	function set($key,$val) {
 		if (array_key_exists($key,$this->fields)) {
@@ -67,9 +67,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Retrieve value of field
-		@return scalar
-		@param $key string
+	*	Retrieve value of field
+	*	@return scalar
+	*	@param $key string
 	**/
 	function get($key) {
 		if ($key=='_id')
@@ -82,9 +82,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Clear value of field
-		@return NULL
-		@param $key string
+	*	Clear value of field
+	*	@return NULL
+	*	@param $key string
 	**/
 	function clear($key) {
 		if (array_key_exists($key,$this->adhoc))
@@ -92,9 +92,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Get PHP type equivalent of PDO constant
-		@return string
-		@param $pdo string
+	*	Get PHP type equivalent of PDO constant
+	*	@return string
+	*	@param $pdo string
 	**/
 	function type($pdo) {
 		switch ($pdo) {
@@ -110,10 +110,10 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Cast value to PHP type
-		@return scalar
-		@param $type string
-		@param $val scalar
+	*	Cast value to PHP type
+	*	@return scalar
+	*	@param $type string
+	*	@param $val scalar
 	**/
 	function value($type,$val) {
 		switch ($type) {
@@ -129,9 +129,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Convert array to mapper object
-		@return object
-		@param $row array
+	*	Convert array to mapper object
+	*	@return object
+	*	@param $row array
 	**/
 	protected function factory($row) {
 		$mapper=clone($this);
@@ -147,9 +147,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Return fields of mapper object as an associative array
-		@return array
-		@param $obj object
+	*	Return fields of mapper object as an associative array
+	*	@return array
+	*	@param $obj object
 	**/
 	function cast($obj=NULL) {
 		if (!$obj)
@@ -163,12 +163,12 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Build query string and execute
-		@return array
-		@param $fields string
-		@param $filter string|array
-		@param $options array
-		@param $ttl int
+	*	Build query string and execute
+	*	@return array
+	*	@param $fields string
+	*	@param $filter string|array
+	*	@param $options array
+	*	@param $ttl int
 	**/
 	function select($fields,$filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
@@ -219,11 +219,11 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Return records that match criteria
-		@return array
-		@param $filter string|array
-		@param $options array
-		@param $ttl int
+	*	Return records that match criteria
+	*	@return array
+	*	@param $filter string|array
+	*	@param $options array
+	*	@param $ttl int
 	**/
 	function find($filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
@@ -241,9 +241,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Count records that match criteria
-		@return int
-		@param $filter string|array
+	*	Count records that match criteria
+	*	@return int
+	*	@param $filter string|array
 	**/
 	function count($filter=NULL) {
 		$sql='SELECT COUNT(*) AS rows FROM '.$this->table;
@@ -263,10 +263,10 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Return record at specified offset using same criteria as
-		previous load() call and make it active
-		@return array
-		@param $ofs int
+	*	Return record at specified offset using same criteria as
+	*	previous load() call and make it active
+	*	@return array
+	*	@param $ofs int
 	**/
 	function skip($ofs=1) {
 		if ($out=parent::skip($ofs)) {
@@ -286,8 +286,8 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Insert new record
-		@return array
+	*	Insert new record
+	*	@return array
 	**/
 	function insert() {
 		$args=array();
@@ -340,8 +340,8 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Update current record
-		@return array
+	*	Update current record
+	*	@return array
 	**/
 	function update() {
 		$args=array();
@@ -370,9 +370,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Delete current record
-		@return int
-		@param $filter string|array
+	*	Delete current record
+	*	@return int
+	*	@param $filter string|array
 	**/
 	function erase($filter=NULL) {
 		if ($filter) {
@@ -413,8 +413,8 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Reset cursor
-		@return NULL
+	*	Reset cursor
+	*	@return NULL
 	**/
 	function reset() {
 		foreach ($this->fields as &$field) {
@@ -432,9 +432,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Hydrate mapper object using hive array variable
-		@return NULL
-		@param $key string
+	*	Hydrate mapper object using hive array variable
+	*	@return NULL
+	*	@param $key string
 	**/
 	function copyfrom($key) {
 		foreach (\Base::instance()->get($key) as $key=>$val)
@@ -449,9 +449,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Populate hive array variable with mapper fields
-		@return NULL
-		@param $key string
+	*	Populate hive array variable with mapper fields
+	*	@return NULL
+	*	@param $key string
 	**/
 	function copyto($key) {
 		$var=&\Base::instance()->ref($key);
@@ -460,18 +460,18 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Return schema
-		@return array
+	*	Return schema
+	*	@return array
 	**/
 	function schema() {
 		return $this->fields;
 	}
 
 	/**
-		Instantiate class
-		@param $db object
-		@param $table string
-		@param $ttl int
+	*	Instantiate class
+	*	@param $db object
+	*	@param $table string
+	*	@param $ttl int
 	**/
 	function __construct(\DB\SQL $db,$table,$ttl=60) {
 		$this->db=$db;

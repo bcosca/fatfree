@@ -26,9 +26,9 @@ class Web extends Prefab {
 		$wrapper;
 
 	/**
-		Detect MIME type using file extension
-		@return string
-		@param $file string
+	*	Detect MIME type using file extension
+	*	@return string
+	*	@param $file string
 	**/
 	function mime($file) {
 		if (preg_match('/\w+$/',$file,$ext)) {
@@ -79,11 +79,11 @@ class Web extends Prefab {
 	}
 
 	/**
-		Return the MIME types stated in the HTTP Accept header as an array;
-		If a list of MIME types is specified, return the best match; or
-		FALSE if none found
-		@return array|string|FALSE
-		@param $list string|array
+	*	Return the MIME types stated in the HTTP Accept header as an array;
+	*	If a list of MIME types is specified, return the best match; or
+	*	FALSE if none found
+	*	@return array|string|FALSE
+	*	@param $list string|array
 	**/
 	function acceptable($list=NULL) {
 		$accept=array();
@@ -110,13 +110,13 @@ class Web extends Prefab {
 	}
 
 	/**
-		Transmit file to HTTP client; Return file size if successful,
-		FALSE otherwise
-		@return int|FALSE
-		@param $file string
-		@param $mime string
-		@param $kbps int
-		@param $force bool
+	*	Transmit file to HTTP client; Return file size if successful,
+	*	FALSE otherwise
+	*	@return int|FALSE
+	*	@param $file string
+	*	@param $mime string
+	*	@param $kbps int
+	*	@param $force bool
 	**/
 	function send($file,$mime=NULL,$kbps=0,$force=TRUE) {
 		if (!is_file($file))
@@ -150,12 +150,12 @@ class Web extends Prefab {
 	}
 
 	/**
-		Receive file(s) from HTTP client; Return file size if successful,
-		FALSE otherwise
-		@return int|FALSE
-		@param $func callback
-		@param $overwrite bool
-		@param $slug bool
+	*	Receive file(s) from HTTP client; Return file size if successful,
+	*	FALSE otherwise
+	*	@return int|FALSE
+	*	@param $func callback
+	*	@param $overwrite bool
+	*	@param $slug bool
 	**/
 	function receive($func=NULL,$overwrite=FALSE,$slug=TRUE) {
 		$fw=Base::instance();
@@ -199,9 +199,9 @@ class Web extends Prefab {
 	}
 
 	/**
-		Return upload progress in bytes, FALSE on failure
-		@return int|FALSE
-		@param $id string
+	*	Return upload progress in bytes, FALSE on failure
+	*	@return int|FALSE
+	*	@param $id string
 	**/
 	function progress($id) {
 		// ID returned by session.upload_progress.name
@@ -211,10 +211,10 @@ class Web extends Prefab {
 	}
 
 	/**
-		HTTP request via cURL
-		@return array
-		@param $url string
-		@param $options array
+	*	HTTP request via cURL
+	*	@return array
+	*	@param $url string
+	*	@param $options array
 	**/
 	protected function _curl($url,$options) {
 		$curl=curl_init($url);
@@ -258,10 +258,10 @@ class Web extends Prefab {
 	}
 
 	/**
-		HTTP request via PHP stream wrapper
-		@return array
-		@param $url string
-		@param $options array
+	*	HTTP request via PHP stream wrapper
+	*	@return array
+	*	@param $url string
+	*	@param $options array
 	**/
 	protected function _stream($url,$options) {
 		$eol="\r\n";
@@ -292,10 +292,10 @@ class Web extends Prefab {
 	}
 
 	/**
-		HTTP request via low-level TCP/IP socket
-		@return array
-		@param $url string
-		@param $options array
+	*	HTTP request via low-level TCP/IP socket
+	*	@return array
+	*	@param $url string
+	*	@param $options array
 	**/
 	protected function _socket($url,$options) {
 		$eol="\r\n";
@@ -360,10 +360,10 @@ class Web extends Prefab {
 	}
 
 	/**
-		Specify the HTTP request engine to use; If not available,
-		fall back to an applicable substitute
-		@return string
-		@param $arg string
+	*	Specify the HTTP request engine to use; If not available,
+	*	fall back to an applicable substitute
+	*	@return string
+	*	@param $arg string
 	**/
 	function engine($arg='socket') {
 		$arg=strtolower($arg);
@@ -382,10 +382,10 @@ class Web extends Prefab {
 	}
 
 	/**
-		Replace old headers with new elements
-		@return NULL
-		@param $old array
-		@param $new string|array
+	*	Replace old headers with new elements
+	*	@return NULL
+	*	@param $old array
+	*	@param $new string|array
 	**/
 	function subst(array &$old,$new) {
 		if (is_string($new))
@@ -398,12 +398,12 @@ class Web extends Prefab {
 	}
 
 	/**
-		Submit HTTP request; Use HTTP context options (described in
-		http://www.php.net/manual/en/context.http.php) if specified;
-		Cache the page as instructed by remote server
-		@return array|FALSE
-		@param $url string
-		@param $options array
+	*	Submit HTTP request; Use HTTP context options (described in
+	*	http://www.php.net/manual/en/context.http.php) if specified;
+	*	Cache the page as instructed by remote server
+	*	@return array|FALSE
+	*	@param $url string
+	*	@param $options array
 	**/
 	function request($url,array $options=NULL) {
 		$fw=Base::instance();
@@ -488,12 +488,12 @@ class Web extends Prefab {
 	}
 
 	/**
-		Strip Javascript/CSS files of extraneous whitespaces and comments;
-		Return combined output as a minified string
-		@return string
-		@param $files string|array
-		@param $mime string
-		@param $header bool
+	*	Strip Javascript/CSS files of extraneous whitespaces and comments;
+	*	Return combined output as a minified string
+	*	@return string
+	*	@param $files string|array
+	*	@param $mime string
+	*	@param $header bool
 	**/
 	function minify($files,$mime=NULL,$header=TRUE) {
 		$fw=Base::instance();
@@ -619,11 +619,11 @@ class Web extends Prefab {
 	}
 
 	/**
-		Retrieve RSS/Atom feed and return as an array
-		@return array|FALSE
-		@param $url string
-		@param $max int
-		@param $tags string
+	*	Retrieve RSS/Atom feed and return as an array
+	*	@return array|FALSE
+	*	@param $url string
+	*	@param $max int
+	*	@param $tags string
 	**/
 	function rss($url,$max=10,$tags=NULL) {
 		if (!$data=$this->request($url))
@@ -664,9 +664,9 @@ class Web extends Prefab {
 	}
 
 	/**
-		Return a URL/filesystem-friendly version of string
-		@return string
-		@param $text string
+	*	Return a URL/filesystem-friendly version of string
+	*	@return string
+	*	@param $text string
 	**/
 	function slug($text) {
 		return trim(strtolower(preg_replace('/([^\pL\pN])+/u','-',
@@ -728,8 +728,8 @@ class Web extends Prefab {
 if (!function_exists('gzdecode')) {
 
 	/**
-		Decode gzip-compressed string
-		@param $data string
+	*	Decode gzip-compressed string
+	*	@param $data string
 	**/
 	function gzdecode($str) {
 		$fw=Base::instance();

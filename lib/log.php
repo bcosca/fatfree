@@ -21,10 +21,10 @@ class Log {
 		$file;
 
 	/**
-		Write specified text to log file
-		@return string
-		@param $text string
-		@param $format string
+	*	Write specified text to log file
+	*	@return string
+	*	@param $text string
+	*	@param $format string
 	**/
 	function write($text,$format='r') {
 		$fw=Base::instance();
@@ -39,16 +39,16 @@ class Log {
 	}
 
 	/**
-		Erase log
-		@return NULL
+	*	Erase log
+	*	@return NULL
 	**/
 	function erase() {
 		@unlink($this->file);
 	}
 
 	/**
-		Instantiate class
-		@param $file string
+	*	Instantiate class
+	*	@param $file string
 	**/
 	function __construct($file) {
 		$fw=Base::instance();

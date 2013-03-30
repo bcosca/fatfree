@@ -31,11 +31,11 @@ class Auth extends Prefab {
 		$args;
 
 	/**
-		Jig storage handler
-		@return bool
-		@param $id string
-		@param $pw string
-		@param $realm string
+	*	Jig storage handler
+	*	@return bool
+	*	@param $id string
+	*	@param $pw string
+	*	@param $realm string
 	**/
 	protected function _jig($id,$pw,$realm) {
 		return (bool)
@@ -57,11 +57,11 @@ class Auth extends Prefab {
 	}
 
 	/**
-		MongoDB storage handler
-		@return bool
-		@param $id string
-		@param $pw string
-		@param $realm string
+	*	MongoDB storage handler
+	*	@return bool
+	*	@param $id string
+	*	@param $pw string
+	*	@param $realm string
 	**/
 	protected function _mongo($id,$pw,$realm) {
 		return (bool)
@@ -76,11 +76,11 @@ class Auth extends Prefab {
 	}
 
 	/**
-		SQL storage handler
-		@return bool
-		@param $id string
-		@param $pw string
-		@param $realm string
+	*	SQL storage handler
+	*	@return bool
+	*	@param $id string
+	*	@param $pw string
+	*	@param $realm string
 	**/
 	protected function _sql($id,$pw,$realm) {
 		return (bool)
@@ -102,10 +102,10 @@ class Auth extends Prefab {
 	}
 
 	/**
-		LDAP storage handler
-		@return bool
-		@param $id string
-		@param $pw string
+	*	LDAP storage handler
+	*	@return bool
+	*	@param $id string
+	*	@param $pw string
 	**/
 	protected function _ldap($id,$pw) {
 		$dc=@ldap_connect($this->args['dc']);
@@ -125,10 +125,10 @@ class Auth extends Prefab {
 	}
 
 	/**
-		SMTP storage handler
-		@return bool
-		@param $id string
-		@param $pw string
+	*	SMTP storage handler
+	*	@return bool
+	*	@param $id string
+	*	@param $pw string
 	**/
 	protected function _smtp($id,$pw) {
 		$socket=@fsockopen(
@@ -172,21 +172,21 @@ class Auth extends Prefab {
 	}
 
 	/**
-		Login auth mechanism
-		@return bool
-		@param $id string
-		@param $pw string
-		@param $realm string
+	*	Login auth mechanism
+	*	@return bool
+	*	@param $id string
+	*	@param $pw string
+	*	@param $realm string
 	**/
 	function login($id,$pw,$realm=NULL) {
 		return $this->{'_'.$this->storage}($id,$pw,$realm);
 	}
 
 	/**
-		HTTP basic auth mechanism
-		@return bool
-		@param $func callback
-		@param $halt bool
+	*	HTTP basic auth mechanism
+	*	@return bool
+	*	@param $func callback
+	*	@param $halt bool
 	**/
 	function basic($func=NULL,$halt=TRUE) {
 		$fw=Base::instance();
@@ -208,10 +208,10 @@ class Auth extends Prefab {
 	}
 
 	/**
-		Instantiate class
-		@return object
-		@param $storage string|object
-		@param $args array
+	*	Instantiate class
+	*	@return object
+	*	@param $storage string|object
+	*	@param $args array
 	**/
 	function __construct($storage,array $args=NULL) {
 		if (is_object($storage) && is_a($storage,'DB\Cursor')) {

@@ -28,9 +28,9 @@ class OpenID extends \Magic {
 		$args=array();
 
 	/**
-		Determine OpenID provider
-		@return string|FALSE
-		@param $proxy string
+	*	Determine OpenID provider
+	*	@return string|FALSE
+	*	@param $proxy string
 	**/
 	protected function discover($proxy) {
 		// Normalize
@@ -128,10 +128,10 @@ class OpenID extends \Magic {
 	}
 
 	/**
-		Initiate OpenID authentication sequence; Return FALSE on failure
-		or redirect to OpenID provider URL
-		@return bool
-		@param $proxy string
+	*	Initiate OpenID authentication sequence; Return FALSE on failure
+	*	or redirect to OpenID provider URL
+	*	@return bool
+	*	@param $proxy string
 	**/
 	function auth($proxy=NULL) {
 		$fw=\Base::instance();
@@ -151,9 +151,9 @@ class OpenID extends \Magic {
 	}
 
 	/**
-		Return TRUE if OpenID verification was successful
-		@return bool
-		@param $proxy string
+	*	Return TRUE if OpenID verification was successful
+	*	@return bool
+	*	@param $proxy string
 	**/
 	function verified($proxy=NULL) {
 		foreach ($_GET as $key=>$val)
@@ -178,36 +178,37 @@ class OpenID extends \Magic {
 	}
 
 	/**
-		Return TRUE if OpenID request parameter exists
-		@return bool
-		@param $key string
+	*	Return TRUE if OpenID request parameter exists
+	*	@return bool
+	*	@param $key string
 	**/
 	function exists($key) {
 		return isset($this->args[$key]);
 	}
 
 	/**
-		Bind value to OpenID request parameter
-		@return string
-		@param $key string
-		@param $val string
+	*	Bind value to OpenID request parameter
+	*	@return string
+	*	@param $key string
+	*	@param $val string
 	**/
 	function set($key,$val) {
 		return $this->args[$key]=$val;
 	}
 
 	/**
-		Return value of OpenID request parameter
-		@return mixed
-		@param $key string
+	*	Return value of OpenID request parameter
+	*	@return mixed
+	*	@param $key string
 	**/
 	function get($key) {
 		return isset($this->args[$key])?$this->args[$key]:NULL;
 	}
 
 	/**
-		Remove OpenID request parameter
-		@param $key
+	*	Remove OpenID request parameter
+	*	@return NULL
+	*	@param $key
 	**/
 	function clear($key) {
 		unset($this->args[$key]);

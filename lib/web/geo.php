@@ -19,9 +19,9 @@ namespace Web;
 class Geo extends \Prefab {
 
 	/**
-		Return information about specified Unix time zone
-		@return array
-		@param $zone string
+	*	Return information about specified Unix time zone
+	*	@return array
+	*	@param $zone string
 	**/
 	function tzinfo($zone) {
 		$ref=new \DateTimeZone($zone);
@@ -40,9 +40,9 @@ class Geo extends \Prefab {
 	}
 
 	/**
-		Return geolocation data based on specified/auto-detected IP address
-		@return array|FALSE
-		@param $ip string
+	*	Return geolocation data based on specified/auto-detected IP address
+	*	@return array|FALSE
+	*	@param $ip string
 	**/
 	function location($ip=NULL) {
 		$fw=\Base::instance();
@@ -76,10 +76,10 @@ class Geo extends \Prefab {
 	}
 
 	/**
-		Return weather data based on specified latitude/longitude
-		@return array|FALSE
-		@param $latitude float
-		@param $longitude float
+	*	Return weather data based on specified latitude/longitude
+	*	@return array|FALSE
+	*	@param $latitude float
+	*	@param $longitude float
 	**/
 	function weather($latitude,$longitude) {
 		$fw=\Base::instance();

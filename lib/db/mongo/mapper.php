@@ -27,28 +27,28 @@ class Mapper extends \DB\Cursor {
 		$document=array();
 
 	/**
-		Return TRUE if field is defined
-		@return bool
-		@param $key string
+	*	Return TRUE if field is defined
+	*	@return bool
+	*	@param $key string
 	**/
 	function exists($key) {
 		return array_key_exists($key,$this->document);
 	}
 
 	/**
-		Assign value to field
-		@return scalar|FALSE
-		@param $key string
-		@param $val scalar
+	*	Assign value to field
+	*	@return scalar|FALSE
+	*	@param $key string
+	*	@param $val scalar
 	**/
 	function set($key,$val) {
 		return $this->document[$key]=$val;
 	}
 
 	/**
-		Retrieve value of field
-		@return scalar|FALSE
-		@param $key string
+	*	Retrieve value of field
+	*	@return scalar|FALSE
+	*	@param $key string
 	**/
 	function get($key) {
 		if ($this->exists($key))
@@ -58,18 +58,18 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Delete field
-		@return NULL
-		@param $key string
+	*	Delete field
+	*	@return NULL
+	*	@param $key string
 	**/
 	function clear($key) {
 		unset($this->document[$key]);
 	}
 
 	/**
-		Convert array to mapper object
-		@return object
-		@param $row array
+	*	Convert array to mapper object
+	*	@return object
+	*	@param $row array
 	**/
 	protected function factory($row) {
 		$mapper=clone($this);
@@ -81,9 +81,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Return fields of mapper object as an associative array
-		@return array
-		@param $obj object
+	*	Return fields of mapper object as an associative array
+	*	@return array
+	*	@param $obj object
 	**/
 	function cast($obj=NULL) {
 		if (!$obj)
@@ -92,12 +92,12 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Build query and execute
-		@return array
-		@param $fields string
-		@param $filter array
-		@param $options array
-		@param $ttl int
+	*	Build query and execute
+	*	@return array
+	*	@param $fields string
+	*	@param $filter array
+	*	@param $options array
+	*	@param $ttl int
 	**/
 	function select($fields=NULL,$filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
@@ -166,11 +166,11 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Return records that match criteria
-		@return array
-		@param $filter array
-		@param $options array
-		@param $ttl int
+	*	Return records that match criteria
+	*	@return array
+	*	@param $filter array
+	*	@param $options array
+	*	@param $ttl int
 	**/
 	function find($filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
@@ -185,19 +185,19 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Count records that match criteria
-		@return int
-		@param $filter array
+	*	Count records that match criteria
+	*	@return int
+	*	@param $filter array
 	**/
 	function count($filter=NULL) {
 		return $this->collection->count($filter);
 	}
 
 	/**
-		Return record at specified offset using criteria of previous
-		load() call and make it active
-		@return array
-		@param $ofs int
+	*	Return record at specified offset using criteria of previous
+	*	load() call and make it active
+	*	@return array
+	*	@param $ofs int
 	**/
 	function skip($ofs=1) {
 		$this->document=($out=parent::skip($ofs))?$out->document:array();
@@ -205,8 +205,8 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Insert new record
-		@return array
+	*	Insert new record
+	*	@return array
 	**/
 	function insert() {
 		if (isset($this->document['_id']))
@@ -216,8 +216,8 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Update current record
-		@return array
+	*	Update current record
+	*	@return array
 	**/
 	function update() {
 		$this->collection->update(
@@ -226,9 +226,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Delete current record
-		@return bool
-		@param $filter array
+	*	Delete current record
+	*	@return bool
+	*	@param $filter array
 	**/
 	function erase($filter=NULL) {
 		if ($filter)
@@ -241,8 +241,8 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Reset cursor
-		@return NULL
+	*	Reset cursor
+	*	@return NULL
 	**/
 	function reset() {
 		$this->document=array();
@@ -250,9 +250,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Hydrate mapper object using hive array variable
-		@return NULL
-		@param $key string
+	*	Hydrate mapper object using hive array variable
+	*	@return NULL
+	*	@param $key string
 	**/
 	function copyfrom($key) {
 		foreach (\Base::instance()->get($key) as $key=>$val)
@@ -260,9 +260,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Populate hive array variable with mapper fields
-		@return NULL
-		@param $key string
+	*	Populate hive array variable with mapper fields
+	*	@return NULL
+	*	@param $key string
 	**/
 	function copyto($key) {
 		$var=&\Base::instance()->ref($key);
@@ -271,10 +271,10 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Instantiate class
-		@return void
-		@param $db object
-		@param $collection string
+	*	Instantiate class
+	*	@return void
+	*	@param $db object
+	*	@param $collection string
 	**/
 	function __construct(\DB\Mongo $db,$collection) {
 		$this->db=$db;
