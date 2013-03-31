@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -17,20 +17,20 @@
 class UTF extends Prefab {
 
 	/**
-		Find position of first occurrence of a string (case-insensitive)
-		@return int|FALSE
-		@param $stack string
-		@param $needle string
-		@param $ofs int
+	*	Find position of first occurrence of a string (case-insensitive)
+	*	@return int|FALSE
+	*	@param $stack string
+	*	@param $needle string
+	*	@param $ofs int
 	**/
 	function stripos($stack,$needle,$ofs=0) {
 		return $this->strpos($stack,$needle,$ofs,TRUE);
 	}
 
 	/**
-		Get string length
-		@return int
-		@param $str string
+	*	Get string length
+	*	@return int
+	*	@param $str string
 	**/
 	function strlen($str) {
 		preg_match_all('/./u',$str,$parts);
@@ -38,12 +38,12 @@ class UTF extends Prefab {
 	}
 
 	/**
-		Find position of first occurrence of a string
-		@return int|FALSE
-		@param $stack string
-		@param $needle string
-		@param $ofs int
-		@param $case bool
+	*	Find position of first occurrence of a string
+	*	@return int|FALSE
+	*	@param $stack string
+	*	@param $needle string
+	*	@param $ofs int
+	*	@param $case bool
 	**/
 	function strpos($stack,$needle,$ofs=0,$case=FALSE) {
 		preg_match('/^(.*?)'.preg_quote($needle,'/').'/u'.($case?'i':''),
@@ -52,23 +52,23 @@ class UTF extends Prefab {
 	}
 
 	/**
-		Finds position of last occurrence of a string (case-insensitive)
-		@return int|FALSE
-		@param $stack string
-		@param $needle string
-		@param $ofs int
+	*	Finds position of last occurrence of a string (case-insensitive)
+	*	@return int|FALSE
+	*	@param $stack string
+	*	@param $needle string
+	*	@param $ofs int
 	**/
 	function strripos($stack,$needle,$ofs=0) {
 		return $this->strrpos($stack,$needle,$ofs,TRUE);
 	}
 
 	/**
-		Find position of last occurrence of a string
-		@return int|FALSE
-		@param $stack string
-		@param $needle string
-		@param $ofs int
-		@param $case bool
+	*	Find position of last occurrence of a string
+	*	@return int|FALSE
+	*	@param $stack string
+	*	@param $needle string
+	*	@param $ofs int
+	*	@param $case bool
 	**/
 	function strrpos($stack,$needle,$ofs=0,$case=FALSE) {
 		if (!$needle)
@@ -85,25 +85,25 @@ class UTF extends Prefab {
 	}
 
 	/**
-		Returns part of haystack string from the first occurrence of
-		needle to the end of haystack (case-insensitive)
-		@return string|FALSE
-		@param $stack string
-		@param $needle string
-		@param $before bool
+	*	Returns part of haystack string from the first occurrence of
+	*	needle to the end of haystack (case-insensitive)
+	*	@return string|FALSE
+	*	@param $stack string
+	*	@param $needle string
+	*	@param $before bool
 	**/
 	function stristr($stack,$needle,$before=FALSE) {
 		return strstr($stack,$needle,$before,TRUE);
 	}
 
 	/**
-		Returns part of haystack string from the first occurrence of
-		needle to the end of haystack
-		@return string|FALSE
-		@param $stack string
-		@param $needle string
-		@param $before bool
-		@param $case bool
+	*	Returns part of haystack string from the first occurrence of
+	*	needle to the end of haystack
+	*	@return string|FALSE
+	*	@param $stack string
+	*	@param $needle string
+	*	@param $before bool
+	*	@param $case bool
 	**/
 	function strstr($stack,$needle,$before=FALSE,$case=FALSE) {
 		if (!$needle)
@@ -118,11 +118,11 @@ class UTF extends Prefab {
 	}
 
 	/**
-		Return part of a string
-		@return string|FALSE
-		@param $str string
-		@param $start int
-		@param $len int
+	*	Return part of a string
+	*	@return string|FALSE
+	*	@param $str string
+	*	@param $start int
+	*	@param $len int
 	**/
 	function substr($str,$start,$len=0) {
 		if ($start<0) {
@@ -136,10 +136,10 @@ class UTF extends Prefab {
 	}
 
 	/**
-		Count the number of substring occurrences
-		@return int
-		@param $stack string
-		@param $needle string
+	*	Count the number of substring occurrences
+	*	@return int
+	*	@param $stack string
+	*	@param $needle string
 	**/
 	function substr_count($stack,$needle) {
 		preg_match_all('/'.preg_quote($needle,'/').'/u',$stack,
@@ -148,35 +148,35 @@ class UTF extends Prefab {
 	}
 
 	/**
-		Strip whitespaces from the beginning of a string
-		@return string
-		@param $str string
+	*	Strip whitespaces from the beginning of a string
+	*	@return string
+	*	@param $str string
 	**/
 	function ltrim($str) {
 		return preg_replace('/^[\pZ\pC]+/u','',$str);
 	}
 
 	/**
-		Strip whitespaces from the end of a string
-		@return string
-		@param $str string
+	*	Strip whitespaces from the end of a string
+	*	@return string
+	*	@param $str string
 	**/
 	function rtrim($str) {
 		return preg_replace('/[\pZ\pC]+$/u','',$str);
 	}
 
 	/**
-		Strip whitespaces from the beginning and end of a string
-		@return string
-		@param $str string
+	*	Strip whitespaces from the beginning and end of a string
+	*	@return string
+	*	@param $str string
 	**/
 	function trim($str) {
 		return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u','',$str);
 	}
 
 	/**
-		Return UTF-8 byte order mark
-		@return string
+	*	Return UTF-8 byte order mark
+	*	@return string
 	**/
 	function bom() {
 		return chr(0xef).chr(0xbb).chr(0xbf);

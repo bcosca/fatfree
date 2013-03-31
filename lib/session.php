@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -17,37 +17,37 @@
 class Session {
 
 	/**
-		Open session
-		@return TRUE
-		@param $path string
-		@param $name string
+	*	Open session
+	*	@return TRUE
+	*	@param $path string
+	*	@param $name string
 	**/
 	function open($path,$name) {
 		return TRUE;
 	}
 
 	/**
-		Close session
-		@return TRUE
+	*	Close session
+	*	@return TRUE
 	**/
 	function close() {
 		return TRUE;
 	}
 
 	/**
-		Return session data in serialized format
-		@return string|FALSE
-		@param $id string
+	*	Return session data in serialized format
+	*	@return string|FALSE
+	*	@param $id string
 	**/
 	function read($id) {
 		return Cache::instance()->exists($id.'.@',$data)?$data['data']:FALSE;
 	}
 
 	/**
-		Write session data
-		@return TRUE
-		@param $id string
-		@param $data string
+	*	Write session data
+	*	@return TRUE
+	*	@param $id string
+	*	@param $data string
 	**/
 	function write($id,$data) {
 		$fw=Base::instance();
@@ -67,9 +67,9 @@ class Session {
 	}
 
 	/**
-		Destroy session
-		@return TRUE
-		@param $id string
+	*	Destroy session
+	*	@return TRUE
+	*	@param $id string
 	**/
 	function destroy($id) {
 		Cache::instance()->clear($id.'.@');
@@ -77,9 +77,9 @@ class Session {
 	}
 
 	/**
-		Garbage collector
-		@return TRUE
-		@param $max int
+	*	Garbage collector
+	*	@return TRUE
+	*	@param $max int
 	**/
 	function cleanup($max) {
 		Cache::instance()->reset('.@',$max);
@@ -87,9 +87,9 @@ class Session {
 	}
 
 	/**
-		Return IP address associated with specified session ID
-		@return string|FALSE
-		@param $id string
+	*	Return IP address associated with specified session ID
+	*	@return string|FALSE
+	*	@param $id string
 	**/
 	function ip($id=NULL) {
 		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
@@ -97,9 +97,9 @@ class Session {
 	}
 
 	/**
-		Return Unix timestamp associated with specified session ID
-		@return string|FALSE
-		@param $id string
+	*	Return Unix timestamp associated with specified session ID
+	*	@return string|FALSE
+	*	@param $id string
 	**/
 	function stamp($id=NULL) {
 		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
@@ -107,9 +107,9 @@ class Session {
 	}
 
 	/**
-		Return HTTP user agent associated with specified session ID
-		@return string|FALSE
-		@param $id string
+	*	Return HTTP user agent associated with specified session ID
+	*	@return string|FALSE
+	*	@param $id string
 	**/
 	function agent($id=NULL) {
 		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
@@ -117,8 +117,8 @@ class Session {
 	}
 
 	/**
-		Instantiate class
-		@return object
+	*	Instantiate class
+	*	@return object
 	**/
 	function __construct() {
 		session_set_save_handler(

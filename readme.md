@@ -1,6 +1,6 @@
 [![Fat-Free Framework](ui/images/logo.png)](http://fatfree.sf.net/)
 
-*A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!*
+**A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!**
 
 Condensed in a single ~50KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
 
@@ -56,7 +56,7 @@ It is highly recommended that experienced users develop new applications with th
 
 ## Getting Started
 
-*A designer knows he has achieved perfection not when there is nothing left to add, but when there is nothing left to take away. - Antoine de Saint-Exupéry*
+> *A designer knows he has achieved perfection not when there is nothing left to add, but when there is nothing left to take away. -- Antoine de Saint-Exupéry*
 
 Fat-Free Framework makes it easy to build entire Web sites in a jiffy. With the same power and brevity as modern Javascript toolkits and libraries, F3 helps you write better-looking and more reliable PHP programs. One glance at your PHP source code and anyone will find it easy to understand, how much you can accomplish in so few lines of code, and how powerful the results are.
 
@@ -70,7 +70,7 @@ Unzip the contents of the distribution package anywhere in your hard drive. By d
 
 **Important:** If your application uses APC, Memcached, WinCache, XCache, or a filesystem cache, clear all cache entries first before overwriting an older version of the framework with a new one.
 
-Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 5.3. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by outdated PHP versions. To find out, open your console (run cmd.exe if you're running Windows):-
+Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 5.3. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by outdated PHP versions. To find out, open your console (`bash` shell on Linux, or `cmd.exe` on Windows):-
 
 ```
 /path/to/php -v
@@ -205,7 +205,7 @@ The above command will start routing all requests to the Web root `/var/www`. If
 
 If you're using Apache, make sure you activate the URL rewriting module (mod_rewrite) in your apache.conf (or httpd.conf) file. You should also create a .htaccess file containing the following:-
 
-```
+``` apache
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -219,7 +219,7 @@ The `.htaccess file` containing the Apache directives stated above should always
 
 You also need to set up Apache so it knows the physical location of `index.php` in your hard drive. A typical configuration is:-
 
-``` html
+``` apache
 DocumentRoot "/var/www/html"
 <Directory "/var/www/html">
     Options -Indexes FollowSymLinks Includes
@@ -231,7 +231,7 @@ DocumentRoot "/var/www/html"
 
 If you're developing several applications simultaneously, a virtual host configuration is easier to manage:-
 
-``` html
+``` apache
 NameVirtualHost *
 <VirtualHost *>
     ServerName site1.com
@@ -261,7 +261,7 @@ Each `ServerName` (`site1.com` and `site2.com` in our example) must be listed in
 
 For Nginx servers, here's the recommended configuration (replace ip_address:port with your environment's FastCGI PHP settings):-
 
-```
+``` nginx
 server {
     root /var/www/html;
     location / {
@@ -337,7 +337,7 @@ $f3->run();
 
 Fat-Free's `$f3->map()` method provides a ReST interface by mapping HTTP methods in routes to the equivalent methods of an object or a PHP class. If your application receives an incoming HTTP request like `GET /cart/123`, Fat-Free will automatically transfer control to the object's or class' `get()` method. On the other hand, a `POST /cart/123` request will be routed to the `Item` class' `post()` method.
 
-Note: Browsers do not implement the HTTP `PUT` and `DELETE` methods in regular HTML forms. These and other ReST methods (`HEAD`, and `CONNECT`) are accessible only via AJAX calls to the server.
+**Note:** Browsers do not implement the HTTP `PUT` and `DELETE` methods in regular HTML forms. These and other ReST methods (`HEAD`, and `CONNECT`) are accessible only via AJAX calls to the server.
 
 If the framework receives an HTTP method that's not implemented by a class, it generates an `HTTP 405 Method Not Allowed` error. F3 automatically responds with the appropriate headers to HTTP `OPTIONS` method requests. The framework will not map this request to a class.
 
@@ -456,7 +456,7 @@ To assign a value to a Fat-Free variable:
 $f3->set('var',value)
 ```
 
-Note: Fat-Free variables accept all PHP data types, including objects and anonymous functions.
+**Note:** Fat-Free variables accept all PHP data types, including objects and anonymous functions.
 
 To set several variables at once:
 
@@ -577,10 +577,11 @@ If you feel it's a bit too plain or wish to do other things when the error occur
 
 ``` php
 $f3->set('ONERROR',
-    function() {
+    function($f3) {
         // custom error handler code goes here
         // use this if you want to display errors in a
         // format consistent with your site's theme
+        echo $f3->get('ERROR.title');
     }
 );
 ```
@@ -1117,7 +1118,7 @@ To override this behavior, you can trigger F3 to use a language specified by the
 $f3->set('LANGUAGE','de');
 ```
 
-Note: In the above example, the key pi exists only in the English dictionary. The framework will always use English (`en`) as a fallback to populate keys that are not present in the specified (or detected) language.
+**Note:** In the above example, the key pi exists only in the English dictionary. The framework will always use English (`en`) as a fallback to populate keys that are not present in the specified (or detected) language.
 
 You may also create dictionary files for language variants like en-US, es-AR, etc. In this case, F3 will use the language variant first (like es-AR). If there are keys that do not exist in the variant, the framework will look up the key in the root language (es), then use the en language file as the final fallback.
 Dictionary key-value pairs become F3 variables once referenced. Make sure the keys do not conflict with any framework variable instantiated via `$f3->set()`, `$f3->mset()`, or `$f3->config()`.
@@ -1302,7 +1303,7 @@ CREATE TABLE users (
 );
 ```
 
-Note: MongoDB is a NoSQL database engine and inherently schema-less. F3 has its own fast and lightweight NoSQL implementation called Jig, which uses PHP-serialized or JSON-encoded flat files. These abstraction layers require no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.
+**Note:** MongoDB is a NoSQL database engine and inherently schema-less. F3 has its own fast and lightweight NoSQL implementation called Jig, which uses PHP-serialized or JSON-encoded flat files. These abstraction layers require no rigid data structures. Fields may vary from one record to another. They can also be defined or dropped on the fly.
 
 Now back to SQL. First, we establish communication with our database.
 
@@ -1349,7 +1350,7 @@ You can't add or delete a mapped field, or change a table's structure using the 
 
 F3 derives the data mapper structure directly from the database schema. No guesswork involved. It understands the differences between MySQL, SQLite, MSSQL, Sybase, and PostgreSQL database engines.
 
-SQL identifiers should not use reserved words, and should be limited to alphanumeric characters A-Z, 0-9, and the underscore symbol (_). Column names containing spaces (or special characters) and surrounded by quotes in the data definition are not compatible with the ORM. They cannot be represented properly as PHP object properties.
+SQL identifiers should not use reserved words, and should be limited to alphanumeric characters `A-Z`, `0-9`, and the underscore symbol (`_`). Column names containing spaces (or special characters) and surrounded by quotes in the data definition are not compatible with the ORM. They cannot be represented properly as PHP object properties.
 
 Let's say we want to increment the user's number of visits and update the corresponding record in our users table, we can add the following code:-
 
@@ -1627,10 +1628,10 @@ $array=$place->cast();
 echo $array['city'].', '.$array['country'];
 ```
 
-To retrieve the number of records in a table that match a certain condition, use the `found()` method.
+To retrieve the number of records in a table that match a certain condition, use the `count()` method.
 
 ``` php
-if (!$user->found(array('visits>?',10)))
+if (!$user->count(array('visits>?',10)))
     echo 'We need a better ad campaign!';
 ```
 
@@ -1734,6 +1735,20 @@ Tip:Use the tools as they're designed for. Fat-Free already has an easy-to-use S
 
 Plug-ins are nothing more than autoloaded classes that use framework built-ins to extend F3's features and functionality. If you'd like to contribute, leave a note at the Fat-Free Discussion Area hosted by Google Groups or tell us about it in the FreeNode `#fatfree` IRC channel. Someone else might be involved in a similar project. The framework community will appreciate it a lot if we unify our efforts.
 
+### CAPTCHA Images
+
+There might be instances when you want to make your forms more secure against spam bots and malicious automated scripts. F3 provides a `captcha()` method to generate images with random text that are designed to be recognizable only by humans.
+
+``` php
+$img = new Image();
+$img->captcha('fonts/CoolFont.ttf',16,5,'SESSION.captcha_code');
+$img->render();
+```
+
+This example generates an random image based on your desired TrueType font. The `fonts/` folder is a subfolder within application's `UI` path. The second parameter indicates the font size, and the third argument defines the number of hexadecimal characters to generate.
+
+The last argument represents an F3 variable name. This is where F3 will store the string equivalent of the CAPTCHA image. To make the string reload-safe, we specified a session variable:- `SESSION.captcha_code` which maps to `$_SESSION['captcha_code']`, which you can use later to verify whether the input element in the form submitted matches this string.
+
 ### Grabbing Data from Another Site
 
 We've covered almost every feature available in the framework to run a stand-alone Web server. For most applications, these features will serve you quite well. But what do you do if your application needs data from another Web server on the network? F3 has the Web plugin to help you in this situation:-
@@ -1808,7 +1823,7 @@ Some pointers:-
 * Activate caching on pages that are available only in ONE session state. If you want to cache the `"About Us"` page, make sure it's available only when a user is not logged in.
 * If you have a RAMdisk or fast solid-state drive, configure the `CACHE` global variable so it points to that drive. This will make your application run like a Formula 1 race car.
 
-One additional note: Don't set the timeout value to a very long period until you're ready to roll out your application, i.e. the release or production state. Changes you make to any of your PHP scripts may not have the expected effect on the displayed output if the page exists in the framework cache and the expiration period has not lapsed. If you do alter a program that generates a page affected by the cache timer and you want these changes to take effect immediately, you should clear the cache by erasing the files in the cache/ directory (or whatever path the `CACHE` global variable points to). F3 will automatically refresh the cache if necessary. At the client-side, there's little you can do but instruct the user to clear the browser's cache or wait for the cache period to expire.
+**Note:** Don't set the timeout value to a very long period until you're ready to roll out your application, i.e. the release or production state. Changes you make to any of your PHP scripts may not have the expected effect on the displayed output if the page exists in the framework cache and the expiration period has not lapsed. If you do alter a program that generates a page affected by the cache timer and you want these changes to take effect immediately, you should clear the cache by erasing the files in the cache/ directory (or whatever path the `CACHE` global variable points to). F3 will automatically refresh the cache if necessary. At the client-side, there's little you can do but instruct the user to clear the browser's cache or wait for the cache period to expire.
 
 PHP needs to be set up correctly for the F3 cache engine to work properly. Your operating system timezone should be synchronized with the date.timezone setting in the `php.ini` file.
 
@@ -2014,15 +2029,15 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool AJAX`
 
-* TRUE if an XML HTTP request is detected, FALSE otherwise.
+* `TRUE` if an XML HTTP request is detected, `FALSE` otherwise.
 
 `string AUTOLOAD`
 
-* Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+* Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (`|`), comma (`,`), or semi-colon (`;`) as path separator.
 
 `string BASE`
 
-* Path to the index.php main/front controller.
+* Path to the `index.php` main/front controller.
 
 `string BODY`
 
@@ -2030,7 +2045,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool/string CACHE`
 
-* Cache backend. Unless assigned a value like 'memcache=localhost' (and the PHP memcache module is present), F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a FALSE value.
+* Cache backend. Unless assigned a value like `'memcache=localhost'` (and the PHP memcache module is present), F3 auto-detects the presence of APC, WinCache and XCache and uses the first available PHP module if set to TRUE. If none of these PHP modules are available, a filesystem-based backend is used (default directory: `tmp/cache`). The framework disables the cache engine if assigned a `FALSE` value.
 
 `bool CASELESS`
 
@@ -2078,7 +2093,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool HIGHLIGHT`
 
-* Enable/disable syntax highlighting of stack traces. Default value: TRUE (requires `code.css` stylesheet).
+* Enable/disable syntax highlighting of stack traces. Default value: `TRUE` (requires `code.css` stylesheet).
 
 `string HOST`
 
@@ -2094,7 +2109,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `string LANGUAGE`
 
-* Current active language. Value is used to load the appropriate language translation file in the folder pointed to by LOCALES. If set to NULL, language is auto-detected from the HTTP Accept-Language request header.
+* Current active language. Value is used to load the appropriate language translation file in the folder pointed to by `LOCALES`. If set to `NULL`, language is auto-detected from the HTTP `Accept-Language` request header.
 
 `string LOCALES`
 
@@ -2126,7 +2141,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `int PORT`
 
-* HTTP port used by the Web server.
+* TCP/IP listening port used by the Web server.
 
 `bool QUIET`
 
@@ -2138,7 +2153,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `string RESPONSE`
 
-* The body of the last HTTP response. F3 populates this variable regardless of the QUIET setting.
+* The body of the last HTTP response. F3 populates this variable regardless of the `QUIET` setting.
 
 `string ROOT`
 
@@ -2146,7 +2161,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `array ROUTES`
 
-* Contains the defined application routes. This is a read-only variable.
+* Contains the defined application routes.
 
 `string SCHEME`
 
@@ -2166,7 +2181,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `string UI`
 
-* Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (|), comma (,), or semi-colon (;) as path separator.
+* Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (`|`), comma (`,`), or semi-colon (`;`) as separator for multiple paths.
 
 `callback UNLOAD`
 
@@ -2213,7 +2228,7 @@ Once you get the hang of testing the smallest units of your application, you can
 ```
 {{ string expr, arg1, ..., argN | format }}
 ```
-* Render an ICU-formatted `expr` and pass the comma-separated arguments, where `arg1, ..., argn` is one of:- `date`, `time`, `number, integer`, `number, currency`, or `number, percent`.
+* Render an ICU-formatted `expr` and pass the comma-separated arguments, where `arg1, ..., argn` is one of:- `'date'`, `'time'`, `'number, integer'`, `'number, currency'`, or `'number, percent'`.
 
 ```
 <include
@@ -2273,23 +2288,24 @@ The framework API documentation is contained in `lib/api.chm` of the distributio
 
 ## Support and Licensing
 
-Technical support is available at: [https://groups.google.com/forum/#!forum/f3-framework](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode #fatfree channel (chat.freenode.net). Visit [http://webchat.freenode.net/](http://webchat.freenode.net/) to join the conversation. You can also download the Firefox Chatzilla add-on if you don't have an IRC client so you can participate in the live chat.
+Technical support is available at the official discussion forum: [`https://groups.google.com/forum/#!forum/f3-framework`](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via IRC. We're on the FreeNode `#fatfree` channel (`chat.freenode.net`). Visit [`http://webchat.freenode.net/`](http://webchat.freenode.net/) to join the conversation. You can also download the [Firefox Chatzilla](https://addons.mozilla.org/en-US/firefox/addon/chatzilla/) add-on or [Pidgin](http://www.pidgin.im/) if you don't have an IRC client so you can participate in the live chat.
 
 ### Nightly Builds
 
-F3 uses Git for version control. To clone the Git code repository:-
+F3 uses Git for version control. To clone the code repository on GitHub:-
 
 ``` bash
 git clone git://git@github.com:bcosca/Fat-Free-Framework.git
 ```
 
-If you just want a zipball instead, grab it [here](https://github.com/bcosca/fatfree/archive/dev.zip).
+If all you want is a zipball, grab it [**here**](https://github.com/bcosca/fatfree/archive/dev.zip).
 
-To file a bug report, visit [https://github.com/bcosca/fatfree/issues](https://github.com/bcosca/fatfree/issues).
+To file a bug report, visit [`https://github.com/bcosca/fatfree/issues`](https://github.com/bcosca/fatfree/issues).
 
 ### Fair Licensing
 
-Fat-Free Framework is free and released as open source software covered by the terms of the GNU Public License (GPL v3). You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a reasonable fee.
+**Fat-Free Framework is free and released as open source software covered by the terms of the [GNU Public License](http://www.gnu.org/licenses/gpl-3.0.html) (GPL v3).** You may not use the software, documentation, and samples except in compliance with the license. If the terms and conditions of this license are too restrictive for your use, alternative licensing is available for a very reasonable fee.
+
 If you feel that this software is one great weapon to have in your programming arsenal, it saves you a lot of time and money, use it for commercial gain or in your business organization, please consider making a donation to the project. A significant amount of time, effort, and money has been spent on this project. Your donations help keep this project alive and the development team motivated. Donors and sponsors get priority support (24-hour response time on business days).
 
 ### Credits
@@ -2297,6 +2313,10 @@ If you feel that this software is one great weapon to have in your programming a
 The Fat-Free Framework is community-driven software. It can't be what it is today without the help and support from the following people and organizations:
 
 * GitHub
+* Tecnilógica
+* Stehlik & Company
+* Mirosystems
+* G Holdings, LLC
 * Sascha Ohms
 * Jermaine Maree
 * Sergey Zaretsky
@@ -2341,7 +2361,6 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Christian Knuth
 * Maximilian Summe
 * Caspar Frey
-* G Holdings, LLC
 * FocusHeart
 * Philip Lawrence
 * Peter Beverwyk
@@ -2355,9 +2374,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Dmitrij Chernov
 * Marek Toman
 * Simone Cociancich
-* Tecnilógica
 * Alan Holding
-* Mirosystems
 * Aurélien Botermans
 * Philipp Hirsch
 * Christian Treptow
@@ -2367,6 +2384,6 @@ Special thanks to the selfless others who expressed their desire to remain anony
 
 [![Donate](ui/images/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
 
-Copyright (c) 2009-2012 F3::Factory/Bong Cosca
+**Copyright (c) 2009-2012 F3::Factory/Bong Cosca**
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)

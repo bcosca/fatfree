@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -17,38 +17,38 @@
 abstract class Magic extends Prefab implements ArrayAccess {
 
 	/**
-		Return TRUE if key is not empty
-		@return bool
-		@param $key string
+	*	Return TRUE if key is not empty
+	*	@return bool
+	*	@param $key string
 	**/
 	abstract function exists($key);
 
 	/**
-		Bind value to key
-		@return mixed
-		@param $key string
-		@param $val mixed
+	*	Bind value to key
+	*	@return mixed
+	*	@param $key string
+	*	@param $val mixed
 	**/
 	abstract function set($key,$val);
 
 	/**
-		Retrieve contents of key
-		@return mixed
-		@param $key string
+	*	Retrieve contents of key
+	*	@return mixed
+	*	@param $key string
 	**/
 	abstract function get($key);
 
 	/**
-		Unset key
-		@return NULL
-		@param $key string
+	*	Unset key
+	*	@return NULL
+	*	@param $key string
 	**/
 	abstract function clear($key);
 
 	/**
-		Return TRUE if property has public visibility
-		@return bool
-		@param $Key string
+	*	Return TRUE if property has public visibility
+	*	@return bool
+	*	@param $key string
 	**/
 	private function visible($key) {
 		if (property_exists($this,$key)) {
@@ -61,65 +61,65 @@ abstract class Magic extends Prefab implements ArrayAccess {
 	}
 
 	/**
-		Convenience method for checking property value
-		@return mixed
-		@param $key string
+	*	Convenience method for checking property value
+	*	@return mixed
+	*	@param $key string
 	**/
 	function offsetexists($key) {
 		return $this->visible($key)?isset($this->$key):$this->exists($key);
 	}
 
 	/**
-		Alias for offsetexists()
-		@return mixed
-		@param $key string
+	*	Alias for offsetexists()
+	*	@return mixed
+	*	@param $key string
 	**/
 	function __isset($key) {
 		return $this->offsetexists($key);
 	}
 
 	/**
-		Convenience method for assigning property value
-		@return mixed
-		@param $key string
-		@param $val scalar
+	*	Convenience method for assigning property value
+	*	@return mixed
+	*	@param $key string
+	*	@param $val scalar
 	**/
 	function offsetset($key,$val) {
 		return $this->visible($key)?($this->key=$val):$this->set($key,$val);
 	}
 
 	/**
-		Alias for offsetset()
-		@return mixed
-		@param $key string
-		@param $val scalar
+	*	Alias for offsetset()
+	*	@return mixed
+	*	@param $key string
+	*	@param $val scalar
 	**/
 	function __set($key,$val) {
 		return $this->offsetset($key,$val);
 	}
 
 	/**
-		Convenience method for retrieving property value
-		@return mixed
-		@param $key string
+	*	Convenience method for retrieving property value
+	*	@return mixed
+	*	@param $key string
 	**/
 	function offsetget($key) {
 		return $this->visible($key)?$this->$key:$this->get($key);
 	}
 
 	/**
-		Alias for offsetget()
-		@return mixed
-		@param $key string
+	*	Alias for offsetget()
+	*	@return mixed
+	*	@param $key string
 	**/
 	function __get($key) {
 		return $this->offsetget($key);
 	}
 
 	/**
-		Convenience method for checking property value
-		@return NULL
-		@param $key string
+	*	Convenience method for checking property value
+	*	@return NULL
+	*	@param $key string
 	**/
 	function offsetunset($key) {
 		if ($this->visible($key))
@@ -129,9 +129,9 @@ abstract class Magic extends Prefab implements ArrayAccess {
 	}
 
 	/**
-		Alias for offsetunset()
-		@return NULL
-		@param $key string
+	*	Alias for offsetunset()
+	*	@return NULL
+	*	@param $key string
 	**/
 	function __unset($key) {
 		$this->offsetunset($key);

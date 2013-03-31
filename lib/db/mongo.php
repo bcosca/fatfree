@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -28,8 +28,8 @@ class Mongo extends \MongoDB {
 		$log;
 
 	/**
-		Return MongoDB profiler results
-		@return string
+	*	Return MongoDB profiler results
+	*	@return string
 	**/
 	function log() {
 		$cursor=$this->selectcollection('system.profile')->find();
@@ -47,8 +47,8 @@ class Mongo extends \MongoDB {
 	}
 
 	/**
-		Intercept native call to re-enable profiler
-		@return int
+	*	Intercept native call to re-enable profiler
+	*	@return int
 	**/
 	function drop() {
 		$out=parent::drop();
@@ -57,10 +57,10 @@ class Mongo extends \MongoDB {
 	}
 
 	/**
-		Instantiate class
-		@param $dsn string
-		@param $dbname string
-		@param $options array
+	*	Instantiate class
+	*	@param $dsn string
+	*	@param $dbname string
+	*	@param $options array
 	**/
 	function __construct($dsn,$dbname,array $options=NULL) {
 		$class=class_exists('\MongoClient')?'\MongoClient':'\Mongo';

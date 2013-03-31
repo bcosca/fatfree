@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -19,27 +19,27 @@ namespace DB\Jig;
 class Session extends Mapper {
 
 	/**
-		Open session
-		@return TRUE
-		@param $path string
-		@param $name string
+	*	Open session
+	*	@return TRUE
+	*	@param $path string
+	*	@param $name string
 	**/
 	function open($path,$name) {
 		return TRUE;
 	}
 
 	/**
-		Close session
-		@return TRUE
+	*	Close session
+	*	@return TRUE
 	**/
 	function close() {
 		return TRUE;
 	}
 
 	/**
-		Return session data in serialized format
-		@return string|FALSE
-		@param $id string
+	*	Return session data in serialized format
+	*	@return string|FALSE
+	*	@param $id string
 	**/
 	function read($id) {
 		$this->load(array('@session_id==?',$id));
@@ -47,10 +47,10 @@ class Session extends Mapper {
 	}
 
 	/**
-		Write session data
-		@return TRUE
-		@param $id string
-		@param $data string
+	*	Write session data
+	*	@return TRUE
+	*	@param $id string
+	*	@param $data string
 	**/
 	function write($id,$data) {
 		$fw=\Base::instance();
@@ -67,9 +67,9 @@ class Session extends Mapper {
 	}
 
 	/**
-		Destroy session
-		@return TRUE
-		@param $id string
+	*	Destroy session
+	*	@return TRUE
+	*	@param $id string
 	**/
 	function destroy($id) {
 		$this->erase(array('@session_id==?',$id));
@@ -77,9 +77,9 @@ class Session extends Mapper {
 	}
 
 	/**
-		Garbage collector
-		@return TRUE
-		@param $max int
+	*	Garbage collector
+	*	@return TRUE
+	*	@param $max int
 	**/
 	function cleanup($max) {
 		$this->erase(array('@stamp+?<?',$max,time()));
@@ -87,9 +87,9 @@ class Session extends Mapper {
 	}
 
 	/**
-		Return IP address associated with specified session ID
-		@return string|FALSE
-		@param $id string
+	*	Return IP address associated with specified session ID
+	*	@return string|FALSE
+	*	@param $id string
 	**/
 	function ip($id=NULL) {
 		$this->load(array('@session_id==?',$id?:session_id()));
@@ -97,9 +97,9 @@ class Session extends Mapper {
 	}
 
 	/**
-		Return Unix timestamp associated with specified session ID
-		@return string|FALSE
-		@param $id string
+	*	Return Unix timestamp associated with specified session ID
+	*	@return string|FALSE
+	*	@param $id string
 	**/
 	function stamp($id=NULL) {
 		$this->load(array('@session_id==?',$id?:session_id()));
@@ -107,9 +107,9 @@ class Session extends Mapper {
 	}
 
 	/**
-		Return HTTP user agent associated with specified session ID
-		@return string|FALSE
-		@param $id string
+	*	Return HTTP user agent associated with specified session ID
+	*	@return string|FALSE
+	*	@param $id string
 	**/
 	function agent($id=NULL) {
 		$this->load(array('@session_id==?',$id?:session_id()));
@@ -117,9 +117,9 @@ class Session extends Mapper {
 	}
 
 	/**
-		Instantiate class
-		@param $db object
-		@param $table string
+	*	Instantiate class
+	*	@param $db object
+	*	@param $table string
 	**/
 	function __construct(\DB\Jig $db,$table='sessions') {
 		parent::__construct($db,'sessions');

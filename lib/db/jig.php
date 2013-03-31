@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -33,9 +33,9 @@ class Jig {
 		$log;
 
 	/**
-		Read data from file
-		@return array
-		@param $file string
+	*	Read data from file
+	*	@return array
+	*	@param $file string
 	**/
 	function read($file) {
 		$fw=\Base::instance();
@@ -54,10 +54,10 @@ class Jig {
 	}
 
 	/**
-		Write data to file
-		@return int
-		@param $file string
-		@param $data array
+	*	Write data to file
+	*	@return int
+	*	@param $file string
+	*	@param $data array
 	**/
 	function write($file,array $data=NULL) {
 		$fw=\Base::instance();
@@ -74,17 +74,17 @@ class Jig {
 	}
 
 	/**
-		Return SQL profiler results
-		@return string
+	*	Return SQL profiler results
+	*	@return string
 	**/
 	function log() {
 		return $this->log;
 	}
 
 	/**
-		Jot down log entry
-		@return NULL
-		@param $frame string
+	*	Jot down log entry
+	*	@return NULL
+	*	@param $frame string
 	**/
 	function jot($frame) {
 		if ($frame)
@@ -92,8 +92,8 @@ class Jig {
 	}
 
 	/**
-		Clean storage
-		@return NULL
+	*	Clean storage
+	*	@return NULL
 	**/
 	function drop() {
 		foreach (glob($this->dir.'/*',GLOB_NOSORT) as $file)
@@ -101,9 +101,9 @@ class Jig {
 	}
 
 	/**
-		Instantiate class
-		@param $dir string
-		@param $format int
+	*	Instantiate class
+	*	@param $dir string
+	*	@param $format int
 	**/
 	function __construct($dir,$format=self::FORMAT_JSON) {
 		if (!is_dir($dir))

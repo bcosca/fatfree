@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -44,9 +44,9 @@ class SMTP extends Magic {
 		$log;
 
 	/**
-		Fix header
-		@return string
-		@param $key string
+	*	Fix header
+	*	@return string
+	*	@param $key string
 	**/
 	protected function fixheader($key) {
 		return str_replace(' ','-',
@@ -54,9 +54,9 @@ class SMTP extends Magic {
 	}
 
 	/**
-		Return TRUE if header exists
-		@return bool
-		@param $key
+	*	Return TRUE if header exists
+	*	@return bool
+	*	@param $key
 	**/
 	function exists($key) {
 		$key=$this->fixheader($key);
@@ -64,10 +64,10 @@ class SMTP extends Magic {
 	}
 
 	/**
-		Bind value to e-mail header
-		@return string
-		@param $key string
-		@param $val string
+	*	Bind value to e-mail header
+	*	@return string
+	*	@param $key string
+	*	@param $val string
 	**/
 	function set($key,$val) {
 		$key=$this->fixheader($key);
@@ -75,9 +75,9 @@ class SMTP extends Magic {
 	}
 
 	/**
-		Return value of e-mail header
-		@return string|NULL
-		@param $key string
+	*	Return value of e-mail header
+	*	@return string|NULL
+	*	@param $key string
 	**/
 	function get($key) {
 		$key=$this->fixheader($key);
@@ -85,9 +85,9 @@ class SMTP extends Magic {
 	}
 
 	/**
-		Remove header
-		@return NULL
-		@param $key string
+	*	Remove header
+	*	@return NULL
+	*	@param $key string
 	**/
 	function clear($key) {
 		$key=$this->fixheader($key);
@@ -95,18 +95,18 @@ class SMTP extends Magic {
 	}
 
 	/**
-		Return client-server conversation history
-		@return string
+	*	Return client-server conversation history
+	*	@return string
 	**/
 	function log() {
 		return str_replace("\n",PHP_EOL,$this->log);
 	}
 
 	/**
-		Send SMTP command and record server response
-		@return NULL
-		@param $cmd string
-		@param $log bool
+	*	Send SMTP command and record server response
+	*	@return NULL
+	*	@param $cmd string
+	*	@param $log bool
 	**/
 	protected function dialog($cmd=NULL,$log=FALSE) {
 		$socket=&$this->socket;
@@ -126,9 +126,9 @@ class SMTP extends Magic {
 	}
 
 	/**
-		Add e-mail attachment
-		@return NULL
-		@param $file
+	*	Add e-mail attachment
+	*	@return NULL
+	*	@param $file
 	**/
 	function attach($file) {
 		if (!is_file($file))
@@ -137,9 +137,9 @@ class SMTP extends Magic {
 	}
 
 	/**
-		Transmit message
-		@return bool
-		@param $message string
+	*	Transmit message
+	*	@return bool
+	*	@param $message string
 	**/
 	function send($message) {
 		if ($this->scheme=='ssl' && !extension_loaded('openssl'))
@@ -242,12 +242,12 @@ class SMTP extends Magic {
 	}
 
 	/**
-		Instantiate class
-		@param $host string
-		@param $port int
-		@param $scheme string
-		@param $user string
-		@param $pw string
+	*	Instantiate class
+	*	@param $host string
+	*	@param $port int
+	*	@param $scheme string
+	*	@param $user string
+	*	@param $pw string
 	**/
 	function __construct($host,$port,$scheme,$user,$pw) {
 		$this->headers=array(

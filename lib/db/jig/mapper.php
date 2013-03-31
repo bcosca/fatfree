@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -29,28 +29,28 @@ class Mapper extends \DB\Cursor {
 		$document=array();
 
 	/**
-		Return TRUE if field is defined
-		@return bool
-		@param $key string
+	*	Return TRUE if field is defined
+	*	@return bool
+	*	@param $key string
 	**/
 	function exists($key) {
 		return array_key_exists($key,$this->document);
 	}
 
 	/**
-		Assign value to field
-		@return scalar|FALSE
-		@param $key string
-		@param $val scalar
+	*	Assign value to field
+	*	@return scalar|FALSE
+	*	@param $key string
+	*	@param $val scalar
 	**/
 	function set($key,$val) {
 		return ($key=='_id')?FALSE:($this->document[$key]=$val);
 	}
 
 	/**
-		Retrieve value of field
-		@return scalar|FALSE
-		@param $key string
+	*	Retrieve value of field
+	*	@return scalar|FALSE
+	*	@param $key string
 	**/
 	function get($key) {
 		if ($key=='_id')
@@ -62,19 +62,19 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Delete field
-		@return NULL
-		@param $key string
+	*	Delete field
+	*	@return NULL
+	*	@param $key string
 	**/
 	function clear($key) {
 		unset($this->document[$key]);
 	}
 
 	/**
-		Convert array to mapper object
-		@return object
-		@param $id string
-		@param $row array
+	*	Convert array to mapper object
+	*	@return object
+	*	@param $id string
+	*	@param $row array
 	**/
 	protected function factory($id,$row) {
 		$mapper=clone($this);
@@ -83,15 +83,14 @@ class Mapper extends \DB\Cursor {
 			$mapper->id=$id;
 			$mapper->document[$field]=$val;
 		}
-		$mapper->query=array($row);
-		$mapper->ptr=0;
+		$mapper->query=array(clone($mapper));
 		return $mapper;
 	}
 
 	/**
-		Return fields of mapper object as an associative array
-		@return array
-		@param $obj object
+	*	Return fields of mapper object as an associative array
+	*	@return array
+	*	@param $obj object
 	**/
 	function cast($obj=NULL) {
 		if (!$obj)
@@ -100,9 +99,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Convert tokens in string expression to variable names
-		@return string
-		@param $str string
+	*	Convert tokens in string expression to variable names
+	*	@return string
+	*	@param $str string
 	**/
 	function token($str) {
 		$self=$this;
@@ -114,7 +113,7 @@ class Mapper extends \DB\Cursor {
 					'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
 					function($expr) use($self) {
 						$fw=\Base::instance();
-						return 
+						return
 							'['.
 							($expr[1]?
 								$fw->stringify(substr($expr[1],1)):
@@ -133,12 +132,12 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Return records that match criteria
-		@return array|FALSE
-		@param $filter array
-		@param $options array
-		@param $ttl int
-		@param $log bool
+	*	Return records that match criteria
+	*	@return array|FALSE
+	*	@param $filter array
+	*	@param $options array
+	*	@param $ttl int
+	*	@param $log bool
 	**/
 	function find($filter=NULL,array $options=NULL,$ttl=0,$log=TRUE) {
 		if (!$options)
@@ -261,9 +260,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Count records that match criteria
-		@return int
-		@param $filter array
+	*	Count records that match criteria
+	*	@return int
+	*	@param $filter array
 	**/
 	function count($filter=NULL) {
 		$now=microtime(TRUE);
@@ -274,10 +273,10 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Return record at specified offset using criteria of previous
-		load() call and make it active
-		@return array
-		@param $ofs int
+	*	Return record at specified offset using criteria of previous
+	*	load() call and make it active
+	*	@return array
+	*	@param $ofs int
 	**/
 	function skip($ofs=1) {
 		$this->document=($out=parent::skip($ofs))?$out->document:array();
@@ -286,8 +285,8 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Insert new record
-		@return array
+	*	Insert new record
+	*	@return array
 	**/
 	function insert() {
 		if ($this->id)
@@ -309,8 +308,8 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Update current record
-		@return array
+	*	Update current record
+	*	@return array
 	**/
 	function update() {
 		$db=$this->db;
@@ -325,9 +324,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Delete current record
-		@return bool
-		@param $filter array
+	*	Delete current record
+	*	@return bool
+	*	@param $filter array
 	**/
 	function erase($filter=NULL) {
 		$db=$this->db;
@@ -364,8 +363,8 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Reset cursor
-		@return NULL
+	*	Reset cursor
+	*	@return NULL
 	**/
 	function reset() {
 		$this->id=NULL;
@@ -374,9 +373,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Hydrate mapper object using hive array variable
-		@return NULL
-		@param $key string
+	*	Hydrate mapper object using hive array variable
+	*	@return NULL
+	*	@param $key string
 	**/
 	function copyfrom($key) {
 		foreach (\Base::instance()->get($key) as $key=>$val)
@@ -384,9 +383,9 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Populate hive array variable with mapper fields
-		@return NULL
-		@param $key string
+	*	Populate hive array variable with mapper fields
+	*	@return NULL
+	*	@param $key string
 	**/
 	function copyto($key) {
 		$var=&\Base::instance()->ref($key);
@@ -395,10 +394,10 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-		Instantiate class
-		@return void
-		@param $db object
-		@param $file string
+	*	Instantiate class
+	*	@return void
+	*	@param $db object
+	*	@param $file string
 	**/
 	function __construct(\DB\Jig $db,$file) {
 		$this->db=$db;

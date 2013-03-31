@@ -3,7 +3,7 @@
 namespace DB;
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -31,8 +31,8 @@ class SQL extends \PDO {
 		$log;
 
 	/**
-		Begin SQL transaction
-		@return NULL
+	*	Begin SQL transaction
+	*	@return NULL
 	**/
 	function begin() {
 		parent::begintransaction();
@@ -40,8 +40,8 @@ class SQL extends \PDO {
 	}
 
 	/**
-		Rollback SQL transaction
-		@return NULL
+	*	Rollback SQL transaction
+	*	@return NULL
 	**/
 	function rollback() {
 		parent::rollback();
@@ -49,8 +49,8 @@ class SQL extends \PDO {
 	}
 
 	/**
-		Commit SQL transaction
-		@return NULL
+	*	Commit SQL transaction
+	*	@return NULL
 	**/
 	function commit() {
 		parent::commit();
@@ -58,9 +58,9 @@ class SQL extends \PDO {
 	}
 
 	/**
-		Map data type of argument to a PDO constant
-		@return int
-		@param $val scalar
+	*	Map data type of argument to a PDO constant
+	*	@return int
+	*	@param $val scalar
 	**/
 	function type($val) {
 		switch (gettype($val)) {
@@ -77,17 +77,17 @@ class SQL extends \PDO {
 
 
 	/**
-		Execute SQL statement(s)
-		@return array|int|FALSE
-		@param $cmds string|array
-		@param $args string|array
-		@param $ttl int
+	*	Execute SQL statement(s)
+	*	@return array|int|FALSE
+	*	@param $cmds string|array
+	*	@param $args string|array
+	*	@param $ttl int
 	**/
 	function exec($cmds,$args=NULL,$ttl=0) {
 		$auto=FALSE;
 		if (is_null($args))
 			$args=array();
-		elseif (is_string($args))
+		elseif (is_scalar($args))
 			$args=array(1=>$args);
 		if (is_array($cmds)) {
 			if (count($args)<($count=count($cmds)))
@@ -169,26 +169,26 @@ class SQL extends \PDO {
 	}
 
 	/**
-		Return number of rows affected by last query
-		@return int
+	*	Return number of rows affected by last query
+	*	@return int
 	**/
 	function count() {
 		return $this->rows;
 	}
 
 	/**
-		Return SQL profiler results
-		@return string
+	*	Return SQL profiler results
+	*	@return string
 	**/
 	function log() {
 		return $this->log;
 	}
 
 	/**
-		Retrieve schema of SQL table
-		@return array|FALSE
-		@param $table string
-		@param $ttl int
+	*	Retrieve schema of SQL table
+	*	@return array|FALSE
+	*	@param $table string
+	*	@param $ttl int
 	**/
 	function schema($table,$ttl=0) {
 		// Supported engines
@@ -258,35 +258,35 @@ class SQL extends \PDO {
 	}
 
 	/**
-		Return database engine
-		@return string
+	*	Return database engine
+	*	@return string
 	**/
 	function driver() {
 		return $this->engine;
 	}
 
 	/**
-		Return server version
-		@return string
+	*	Return server version
+	*	@return string
 	**/
 	function version() {
 		return parent::getattribute(parent::ATTR_SERVER_VERSION);
 	}
 
 	/**
-		Return database name
-		@return string
+	*	Return database name
+	*	@return string
 	**/
 	function name() {
 		return $this->dbname;
 	}
 
 	/**
-		Instantiate class
-		@param $dsn string
-		@param $user string
-		@param $pw string
-		@param $options array
+	*	Instantiate class
+	*	@param $dsn string
+	*	@param $user string
+	*	@param $pw string
+	*	@param $options array
 	**/
 	function __construct($dsn,$user=NULL,$pw=NULL,array $options=NULL) {
 		if (preg_match('/^.+?(?:dbname|database)=(.+?)(?=;|$)/i',$dsn,$parts))

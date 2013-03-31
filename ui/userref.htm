@@ -7,6 +7,9 @@
 		<style><?php include('lib/code.css'); ?></style>
 	</head>
 	<body>
-		<?php echo Markdown::instance()->render('../readme.md'); ?>
+		<div class="wrapper">
+			<?php echo Markdown::instance()->
+				convert(Base::instance()->read('readme.md')); ?>
+		</div>
 	</body>
 </html>
