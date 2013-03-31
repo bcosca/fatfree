@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -468,8 +468,8 @@ class Markdown extends Prefab {
 					'<(address|article|aside|audio|blockquote|canvas|dd|'.
 					'div|dl|fieldset|figcaption|figure|footer|form|h\d|'.
 					'header|hgroup|hr|noscript|object|ol|output|p|pre|'.
-					'section|table|tfoot|ul|video).'.
-					'*?(?:\/>|>(?:(?>[^><]+)|(?R))*<\/\2>))'.
+					'section|table|tfoot|ul|video).*?'.
+					'(?:\/>|>(?:(?>[^><]+)|(?R))*<\/\2>))'.
 					'\h*(?:\n{2,}|\n?$))/s',
 				'p'=>'/^(.+?(?:\n{2,}|\n?$))/s'
 			);

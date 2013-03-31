@@ -1,5 +1,32 @@
 CHANGELOG
 
+3.0.6 (31 Mar 2013)
+*	NEW: Image->crop()
+*	Modify documentation blocks for PHPDoc interoperability
+*	Allow user to control whether Base->rerouet() uses a permanent or
+	temporary redirect
+*	Allow JAR elements to be set individually
+*	Refactor DB\SQL\Mapper->insert() to cope with autoincrement fields
+*	Trigger error when captcha() font is missing
+*	Remove unnecessary markdown regex recursion
+*	Check for scalars instead of DB\SQL strings
+*	Implement more comprehensive diacritics table
+*	Add option for disabling 401 errors when basic auth() fails
+*	Add markdown syntax highlighting for Apache configuration
+*	Markdown->render() deprecated to remove dependency on UI variable;
+	Feature replaced by Markdown->convert() to enable translation from
+	markdown string to HTML
+*	Optimize factory() code of all data mappers
+*	Apply backticks on MySQL table names
+*	Bug fix: Routing failure when directory path contains a tilde (Issue #291)
+*	Bug fix: Incorrect markdown parsing of strong/em sequences and inline HTML
+*	Bug fix: Cached page not echoed (Issue #278)
+*	Bug fix: Object properties not escaped when rendering
+*	Bug fix: OpenID error response ignored
+*	Bug fix: memcache_get_extended_stats() timeout
+*	Bug fix: Base->set() doesn't pass TTL to Cache->set()
+*	Bug fix: Base->scrub() ignores pass-thru * argument (Issue #274)
+
 3.0.5 (16 Feb 2013)
 *	NEW: Markdown class with PHP, HTML, and .ini syntax highlighting support
 *	NEW: Options for caching of select() and find() results
