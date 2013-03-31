@@ -619,7 +619,7 @@ class Web extends Prefab {
 	}
 
 	/**
-	*	Retrieve RSS/Atom feed and return as an array
+	*	Retrieve RSS feed and return as an array
 	*	@return array|FALSE
 	*	@param $url string
 	*	@param $max int
@@ -642,17 +642,6 @@ class Web extends Prefab {
 				$fields=array();
 				foreach ($item->children() as $key=>$val)
 					$fields[$key]=(string)$item->$key;
-				$out['feed'][]=$fields;
-			}
-		}
-		elseif (isset($xml->entry)) {
-			$out['source']=(string)$xml->author->name;
-			for ($i=0;$i<$max;$i++) {
-				$item=$xml->entry[$i];
-				$fields=array();
-				foreach ($item->children() as $key=>$val)
-					$fields[$key]=(string)
-						($key=='link'?$item->link['href']:$item->$key);
 				$out['feed'][]=$fields;
 			}
 		}
