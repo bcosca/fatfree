@@ -639,22 +639,21 @@ class Web extends Prefab {
 			$out['source']=(string)$xml->channel->title;
 			for ($i=0;$i<$max;$i++) {
 				$item=$xml->channel->item[$i];
-				$out['feed'][]=array(
-					'title'=>(string)$item->title,
-					'link'=>(string)$item->link,
-					'text'=>(string)$item->description
-				);
+				$fields=array();
+				foreach ($item->children() as $key=>$val)
+					$fields[$key]=(string)$item->$key;
+				$out['feed'][]=$fields;
 			}
 		}
 		elseif (isset($xml->entry)) {
 			$out['source']=(string)$xml->author->name;
 			for ($i=0;$i<$max;$i++) {
 				$item=$xml->entry[$i];
-				$out['feed'][]=array(
-					'title'=>(string)$item->title,
-					'link'=>(string)$item->link['href'],
-					'text'=>(string)$item->summary
-				);
+				$fields=array();
+				foreach ($item->children() as $key=>$val)
+					$fields[$key]=(string)
+						($key=='link'?$item->link['href']:$item->$key);
+				$out['feed'][]=$fields;
 			}
 		}
 		else
