@@ -639,9 +639,11 @@ class Web extends Prefab {
 			$out['source']=(string)$xml->channel->title;
 			for ($i=0;$i<$max;$i++) {
 				$item=$xml->channel->item[$i];
+				$list=array(''=>NULL)+$item->getnamespaces(TRUE);
 				$fields=array();
-				foreach ($item->children() as $key=>$val)
-					$fields[$key]=(string)$item->$key;
+				foreach ($list as $ns=>$uri)
+					foreach ($item->children($uri) as $key=>$val)
+						$fields[$ns.($ns?':':'').$key]=(string)$val;
 				$out['feed'][]=$fields;
 			}
 		}
