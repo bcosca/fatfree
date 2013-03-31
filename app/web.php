@@ -101,7 +101,7 @@ class Web extends Controller {
 				$test->expect(
 					is_array($rss=$web->rss(
 						$url='https://news.google.com/news/feeds?output=rss')),
-					'RSS/Atom feed ('.$url.') '.
+					'RSS feed ('.$url.') '.
 					round(1e3*(microtime(TRUE)-$now),1).' msecs'
 				);
 			}
