@@ -100,7 +100,7 @@ class Web extends Controller {
 				$now=microtime(TRUE);
 				$test->expect(
 					is_array($rss=$web->rss(
-						$url='https://news.google.com/news/feeds?output=rss')),
+						$url='http://wordpress.org/news/feed/')),
 					'RSS feed ('.$url.') '.
 					round(1e3*(microtime(TRUE)-$now),1).' msecs'
 				);
