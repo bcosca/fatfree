@@ -155,9 +155,9 @@ class Mapper extends \DB\Cursor {
 			$hash=$fw->hash($fw->stringify(array($filter,$options))).'.jig',
 				$data)) || $cached+$ttl<microtime(TRUE)) {
 			$data=$db->read($this->file);
-			foreach ($data as $key=>&$val) {
-				$val['_id']=$key;
-				unset($val);
+			foreach ($data as $id=>&$doc) {
+				$doc['_id']=$id;
+				unset($doc);
 			}
 			if ($filter) {
 				if (!is_array($filter))
@@ -244,8 +244,10 @@ class Mapper extends \DB\Cursor {
 				$cache->set($hash,$data,$ttl);
 		}
 		$out=array();
-		foreach ($data as $id=>$doc)
+		foreach ($data as $id=>&$doc) {
 			$out[]=$this->factory($id,$doc);
+			unset($doc['_id'],$doc);
+		}
 		if ($log) {
 			if ($filter)
 				foreach ($args as $key=>$val) {
