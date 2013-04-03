@@ -14,7 +14,7 @@
 */
 
 //! PHP magic wrapper
-abstract class Magic extends Prefab implements ArrayAccess {
+abstract class Magic implements ArrayAccess {
 
 	/**
 	*	Return TRUE if key is not empty
