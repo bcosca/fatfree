@@ -94,7 +94,7 @@ class Mapper extends \DB\Cursor {
 	function cast($obj=NULL) {
 		if (!$obj)
 			$obj=$this;
-		return $obj->document;
+		return $obj->document+array('_id'=>$this->id);
 	}
 
 	/**
