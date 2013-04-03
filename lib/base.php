@@ -88,7 +88,8 @@ final class Base {
 		E_Fatal='Fatal error: %s',
 		E_Open='Unable to open %s',
 		E_Routes='No routes specified',
-		E_Method='Invalid method %s';
+		E_Method='Invalid method %s',
+		E_Hive='Invalid hive key %s';
 	//@}
 
 	private
@@ -137,6 +138,8 @@ final class Base {
 			@session_start();
 			$this->sync('SESSION');
 		}
+		elseif (!preg_match('/^\w+$/',$parts[0]))
+			trigger_error(sprintf(self::E_Hive,$this->stringify($key)));
 		if ($add)
 			$var=&$this->hive;
 		else
