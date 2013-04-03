@@ -2317,6 +2317,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Stehlik & Company
 * Mirosystems
 * G Holdings, LLC
+* PHP Experts, Inc.
 * Sascha Ohms
 * Jermaine Maree
 * Sergey Zaretsky
