@@ -927,13 +927,16 @@ final class Base {
 	/**
 	*	Bind handler to route pattern
 	*	@return NULL
-	*	@param $pattern string
+	*	@param $pattern string|array
 	*	@param $handler callback
 	*	@param $ttl int
 	*	@param $kbps int
 	**/
 	function route($pattern,$handler,$ttl=0,$kbps=0) {
 		$types=array('sync','ajax');
+		if (is_array($pattern))
+			foreach ($pattern as $item)
+				$this->route($item,$handler,$ttl,$kbps);
 		preg_match('/([\|\w]+)\h+([^\h]+)'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
 		if (empty($parts[2]))
