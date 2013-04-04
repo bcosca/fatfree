@@ -937,9 +937,11 @@ final class Base {
 	**/
 	function route($pattern,$handler,$ttl=0,$kbps=0) {
 		$types=array('sync','ajax');
-		if (is_array($pattern))
+		if (is_array($pattern)) {
 			foreach ($pattern as $item)
 				$this->route($item,$handler,$ttl,$kbps);
+			return;
+		}
 		preg_match('/([\|\w]+)\h+([^\h]+)'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
 		if (empty($parts[2]))
@@ -974,12 +976,18 @@ final class Base {
 
 	/**
 	*	Provide ReST interface by mapping HTTP verb to class method
+	*	@return NULL
 	*	@param $url string
 	*	@param $class string
 	*	@param $ttl int
 	*	@param $kbps int
 	**/
 	function map($url,$class,$ttl=0,$kbps=0) {
+		if (is_array($url)) {
+			foreach ($url as $item)
+				$this->map($item,$class,$ttl,$kbps);
+			return;
+		}
 		$fluid=preg_match('/@\w+/',$url);
 		foreach (explode('|',self::VERBS) as $method)
 			if ($fluid ||
