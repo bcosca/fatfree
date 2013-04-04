@@ -366,19 +366,12 @@ class Web extends Prefab {
 	*	@param $arg string
 	**/
 	function engine($arg='socket') {
-		$arg=strtolower($arg);
-		if ($arg=='curl' && ($curl=extension_loaded('curl')) ||
-			$arg=='stream' && ($stream=ini_get('allow_url_fopen')) ||
-			$arg=='socket' && ($socket=function_exists('fsockopen')))
-			$this->wrapper=$arg;
-		elseif ($socket)
-			$this->wrapper='socket';
-		elseif ($stream)
-			$this->wrapper='stream';
-		elseif ($curl)
-			$this->wrapper='curl';
-		else
-			user_error(E_Request);
+		foreach(array(strtolower($arg),'curl','stream','socket') as $engine)
+			if ($engine=='curl' && extension_loaded('curl') ||
+				$engine=='stream' && ini_get('allow_url_fopen') ||
+				$engine=='socket' && function_exists('fsockopen'))
+				return $this->wrapper=$engine;
+		user_error(E_Request);
 	}
 
 	/**
