@@ -637,7 +637,7 @@ class Web extends Prefab {
 		$out=array();
 		if (isset($xml->channel)) {
 			$out['source']=(string)$xml->channel->title;
-			for ($i=0;$i<$max;$i++) {
+			for ($i=0;$i<min($max,count($xml->channel->item));$i++) {
 				$item=$xml->channel->item[$i];
 				$list=array(''=>NULL)+$item->getnamespaces(TRUE);
 				$fields=array();
