@@ -126,4 +126,17 @@ class Audit extends Prefab {
 		return FALSE;
 	}
 
+	/**
+	*	Return entropy estimate of a password (NIST 800-63)
+	*	@return int
+	*	@param $str string
+	**/
+	function entropy($str) {
+		$len=strlen($str);
+		return 4*min($len,1)+($len>1?(2*(min($len,8)-1)):0)+
+			($len>8?(1.5*(min($len,20)-8)):0)+($len>20?($len-20):0)+
+			6*(bool)(preg_match(
+				'/[A-Z].*?[0-9[:punct:]]|[0-9[:punct:]].*?[A-Z]/',$str));
+	}
+
 }
