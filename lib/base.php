@@ -616,6 +616,7 @@ final class Base {
 			'(?:,(?P<mod>(?:\s*\w+(?:\s+\{.+?\}\s*,?)?)*))?)?\}/',
 			function($expr) use($args,$conv) {
 				extract($expr);
+				extract($conv);
 				if (!array_key_exists($pos,$args))
 					return $expr[0];
 				if (isset($type))
@@ -635,39 +636,50 @@ final class Base {
 							if (isset($mod))
 								switch ($mod) {
 									case 'integer':
-										return
-											number_format(
-												$args[$pos],0,'',
-												$conv['thousands_sep']);
+										return number_format(
+											$args[$pos],0,'',$thousands_sep);
 									case 'currency':
 										if (function_exists('money_format'))
-											return money_format('%n',$args[$pos]);
-										$conv+=array(
-											'sign'=>$args[$pos]<0?$conv['negative_sign']:$conv['positive_sign'],
-											'cs_precedes'=>$args[$pos]<0?$conv['n_cs_precedes']:$conv['p_cs_precedes'],
-											'sep_by_space'=>$args[$pos]<0?$conv['n_sep_by_space']:$conv['p_sep_by_space'],
-											'sign_posn'=>$args[$pos]<0?$conv['n_sign_posn']:$conv['p_sign_posn'],
-										);
-										$num=number_format(abs($args[$pos]),$conv['frac_digits'],$conv['decimal_point'],$conv['thousands_sep']);
-										$space1=$conv['sep_by_space']==1?' ':'';
-										$space2=$conv['sep_by_space']==2?' ':'';
-										$cs=$conv['currency_symbol'];
-										if ($conv['sign_posn']==3)
-											$cs=$conv['sign'].$space2.$cs;
-										elseif ($conv['sign_posn']==4)
-											$cs.=$space2.$conv['sign'];
-										$num=$conv['cs_precedes']?$cs.$space1.$num:$num.$space1.$cs;
-										if ($conv['sign_posn']==1)
-											$num=$conv['sign'].$space2.$num;
-										elseif ($conv['sign_posn']==2)
-											$num.=$space2.$conv['sign'];
-										return $conv['sign_posn']>0?$num:"($num)";
+											return money_format(
+												'%n',$args[$pos]);
+										$num=number_format(
+											abs($args[$pos]),$frac_digits,
+											$decimal_point,$thousands_sep);
+										if ($args[$pos]<0) {
+											$sgn=$negative_sign;
+											$loc=$n_sign_posn;
+											$sep=$n_sep_by_space?' ':'';
+											$pre=$n_cs_precedes;
+										}
+										else {
+											$sgn=$positive_sign;
+											$loc=$p_sign_posn;
+											$sep=$p_sep_by_space?' ':'';
+											$pre=$p_cs_precedes;
+										}
+										if ($pre) {
+											if ($loc==3)
+												$currency_symbol=$sgn.
+													$currency_symbol;
+											elseif ($loc==4)
+												$currency_symbol.=$sgn;
+											$num=$currency_symbol.$sep.$num;
+										}
+										else
+											$num.=$sep.$currency_symbol;
+										switch ($loc) {
+											case 0:
+												return '('.$num.')';
+											case 1:
+												return $sgn.$num;
+											case 2:
+												return $num.$sgn;
+										}
+										return $num;
 									case 'percent':
-										return
-											number_format(
-												$args[$pos]*100,0,
-												$conv['decimal_point'],
-												$conv['thousands_sep']).'%';
+										return number_format(
+											$args[$pos]*100,0,$decimal_point,
+											$thousands_sep).'%';
 								}
 							break;
 						case 'date':
