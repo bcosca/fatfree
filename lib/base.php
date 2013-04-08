@@ -640,13 +640,26 @@ final class Base {
 												$args[$pos],0,'',
 												$conv['thousands_sep']);
 									case 'currency':
-										return
-											$conv['currency_symbol'].
-											number_format(
-												$args[$pos],
-												$conv['frac_digits'],
-												$conv['decimal_point'],
-												$conv['thousands_sep']);
+										$conv+=array(
+											'sign'=>$args[$pos]<0?$conv['negative_sign']:$conv['positive_sign'],
+											'cs_precedes'=>$args[$pos]<0?$conv['n_cs_precedes']:$conv['p_cs_precedes'],
+											'sep_by_space'=>$args[$pos]<0?$conv['n_sep_by_space']:$conv['p_sep_by_space'],
+											'sign_posn'=>$args[$pos]<0?$conv['n_sign_posn']:$conv['p_sign_posn'],
+										);
+										$num=number_format(abs($args[$pos]),$conv['frac_digits'],$conv['decimal_point'],$conv['thousands_sep']);
+										$space1=$conv['sep_by_space']==1?' ':'';
+										$space2=$conv['sep_by_space']==2?' ':'';
+										$cs=$conv['currency_symbol'];
+										if ($conv['sign_posn']==3)
+											$cs=$conv['sign'].$space2.$cs;
+										elseif ($conv['sign_posn']==4)
+											$cs.=$space2.$conv['sign'];
+										$num=$conv['cs_precedes']?$cs.$space1.$num:$num.$space1.$cs;
+										if ($conv['sign_posn']==1)
+											$num=$conv['sign'].$space2.$num;
+										elseif ($conv['sign_posn']==2)
+											$num.=$space2.$conv['sign'];
+										return $conv['sign_posn']>0?$num:"($num)";
 									case 'percent':
 										return
 											number_format(
