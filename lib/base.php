@@ -640,6 +640,8 @@ final class Base {
 												$args[$pos],0,'',
 												$conv['thousands_sep']);
 									case 'currency':
+										if (function_exists('money_format'))
+											return money_format('%n',$args[$pos]);
 										$conv+=array(
 											'sign'=>$args[$pos]<0?$conv['negative_sign']:$conv['positive_sign'],
 											'cs_precedes'=>$args[$pos]<0?$conv['n_cs_precedes']:$conv['p_cs_precedes'],
