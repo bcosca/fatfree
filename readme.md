@@ -1795,6 +1795,21 @@ If the framework variable `CACHE` is enabled, and if the remote server instructs
 
 Fat-Free will use whatever means are available on your Web server for the `request()` method to run: PHP stream wrappers (`allow_url_fopen`), cURL module, or low-level sockets.
 
+### Handling File Downloads
+
+F3 has a utility for sending files to an HTTP client, i.e. fulfilling download requests. You can use it to hide the real path to your download files. This adds some layer of security because users won't be able to download files if they don't know the file names and their locations. Here's how it's done:-
+
+``` php
+$f3->route('GET /downloads/@filename',
+    function($f3,$args) {
+        // send() method returns FALSE if file doesn't exist
+        if (!Web::instance()->send('/real/path/'.$args['filename']))
+            // Generate an HTTP 404
+        $f3->error(404);
+    }
+);
+```
+
 ### Remoting and Distributed Applications
 
 The `request()` method can also be used in complex SOAP or XML-RPC applications, if you find the need for another Web server to process data on your computer's behalf - thus harnessing the power of distributing computing. W3Schools.com has an excellent tutorial on SOAP. On the other hand, TutorialsPoint.com gives a nice overview of XML-RPC.
@@ -1918,21 +1933,6 @@ $f3->set('/throttledpage','MyApp->handler',0,128);
 In this example, the framework will serve the Web page at a rate of 128KiBps.
 
 Bandwidth throttling at the application level can be particularly useful for login pages. Slow responses to dictionary attacks is a good way of mitigating this kind of security risk.
-
-### Handling File Downloads
-
-F3 has a utility for sending files to an HTTP client, i.e. fulfilling download requests. You can use it to hide the real path to your download files. This adds some layer of security because users won't be able to download files if they don't know the file names and their locations. Here's how it's done:-
-
-``` php
-$f3->route('GET /downloads/@filename',
-    function($f3,$args) {
-        // send() method returns FALSE if file doesn't exist
-        if (!Web::instance()->send('/real/path/'.$args['filename']))
-            // Generate an HTTP 404
-        $f3->error(404);
-    }
-);
-```
 
 ## Unit Testing
 
