@@ -642,40 +642,45 @@ final class Base {
 										if (function_exists('money_format'))
 											return money_format(
 												'%n',$args[$pos]);
-										$num=number_format(
-											abs($args[$pos]),$frac_digits,
-											$decimal_point,$thousands_sep);
+										$fmt=array(
+											0=>'(nc)',1=>'(n c)',
+											2=>'(n c)',10=>'+nc',
+											11=>'+n c',12=>'+n c',
+											20=>'nc+',21=>'n c+',
+											22=>'nc +',30=>'n+c',
+											31=>'n +c',32=>'n+ c',
+											40=>'nc+',41=>'n c+',
+											42=>'nc +',100=>'(cn)',
+											101=>'(c n)',102=>'(cn)',
+											110=>'+cn',111=>'+c n',
+											112=>'+ cn',120=>'cn+',
+											121=>'c n+',122=>'cn +',
+											130=>'+cn',131=>'+c n',
+											132=>'+ cn',140=>'c+n',
+											141=>'c+ n',142=>'c +n'
+										);
 										if ($args[$pos]<0) {
 											$sgn=$negative_sign;
-											$loc=$n_sign_posn;
-											$sep=$n_sep_by_space?' ':'';
-											$pre=$n_cs_precedes;
+											$pre='n';
 										}
 										else {
 											$sgn=$positive_sign;
-											$loc=$p_sign_posn;
-											$sep=$p_sep_by_space?' ':'';
-											$pre=$p_cs_precedes;
+											$pre='p';
 										}
-										if ($pre) {
-											if ($loc==3)
-												$currency_symbol=$sgn.
-													$currency_symbol;
-											elseif ($loc==4)
-												$currency_symbol.=$sgn;
-											$num=$currency_symbol.$sep.$num;
-										}
-										else
-											$num.=$sep.$currency_symbol;
-										switch ($loc) {
-											case 0:
-												return '('.$num.')';
-											case 1:
-												return $sgn.$num;
-											case 2:
-												return $num.$sgn;
-										}
-										return $num;
+										return str_replace(
+											array('+','n','c'),
+											array($sgn,number_format(
+												abs($args[$pos]),
+												$frac_digits,
+												$decimal_point,
+												$thousands_sep),
+												$currency_symbol),
+											$fmt[(int)(
+												(int)${$pre.'_cs_precedes'}.
+												(int)${$pre.'_sign_posn'}.
+												(int)${$pre.'_sep_by_space'}
+											)]
+										);
 									case 'percent':
 										return number_format(
 											$args[$pos]*100,0,$decimal_point,
