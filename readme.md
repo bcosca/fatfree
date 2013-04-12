@@ -2313,6 +2313,7 @@ If you feel that this software is one great weapon to have in your programming a
 The Fat-Free Framework is community-driven software. It can't be what it is today without the help and support from the following people and organizations:
 
 * GitHub
+* Square Lines, LLC
 * Tecnilógica
 * Stehlik & Company
 * Mirosystems
