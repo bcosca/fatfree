@@ -1,4 +1,4 @@
-body{font-family:Ubuntu,sans-serif;color:#333;background:#9cf}
+body{font-family:Ubuntu,sans-serif;color:#333;background:#fff;width:640px;margin:2em auto}
 h1{color:#aaf;border-bottom:5px solid #aaf}
 h2{color:#88d;border-bottom:3px dotted #88d}
 h3{color:#66b}
@@ -22,9 +22,8 @@ blockquote pre,blockquote code{color:#666;background:#fff}
 code{background:#eee}
 .center{text-align:center}
 .right{text-align:right}
-.wrapper{background:#fff;padding:2em;margin:0 auto;width:60%}
 .header{border-bottom:5px solid #ccc}
-.header p{margin:0}
+.header p{font-size:0.75em;text-transform:uppercase;letter-spacing:0.2em;margin:0}
 .footer{font-size:0.9em;border-top:3px solid #ccc}
 .footer p{margin-top:1em}
 @media screen and (max-width:960px){.wrapper{min-width:320px;width:90%}}
