@@ -50,7 +50,7 @@ class SMTP extends Magic {
 	**/
 	protected function fixheader($key) {
 		return str_replace(' ','-',
-			ucwords(preg_replace('/_-/',' ',strtolower($key))));
+			ucwords(preg_replace('/[_-]/',' ',strtolower($key))));
 	}
 
 	/**
