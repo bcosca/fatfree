@@ -16,6 +16,13 @@
 //! Data validator
 class Audit extends Prefab {
 
+	//@{ User agents
+	const
+		UA_Mobile='android|blackberry|iphone|ipod|palm|windows\s+ce',
+		UA_Desktop='bsd|linux|os\s+[x9]|solaris|windows',
+		UA_Bot='bot|crawl|slurp|spider';
+	//@}
+
 	/**
 	*	Return TRUE if string is a valid URL
 	*	@return bool
@@ -85,6 +92,26 @@ class Audit extends Prefab {
 		return (bool)filter_var($addr,FILTER_VALIDATE_IP,
 			FILTER_FLAG_IPV4|FILTER_FLAG_IPV6|
 			FILTER_FLAG_NO_PRIV_RANGE|FILTER_FLAG_NO_RES_RANGE);
+	}
+
+	/**
+	*	Return TRUE if user agent is a desktop browser
+	*	@return bool
+	**/
+	function isdesktop() {
+		$agent=Base::instance()->get('AGENT');
+		return empty($agent) ||
+			(!preg_match('/('.self::UA_Mobile.')/i',$agent) &&
+				preg_match('/('.self::UA_Desktop.')/i',$agent) ||
+				preg_match('/('.self::UA_Bot.')/i',$agent));
+	}
+
+	/**
+	*	Return TRUE if user agent is a mobile device
+	*	@return bool
+	**/
+	function ismobile() {
+		return !$this->isdesktop();
 	}
 
 	/**
