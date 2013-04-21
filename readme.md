@@ -2031,6 +2031,10 @@ Once you get the hang of testing the smallest units of your application, you can
 
 ### System Variables
 
+`string AGENT`
+
+* Auto-detected HTTP user agent, e.g. `Mozilla/5.0 (Linux; Android 4.2.2; Nexus 7) AppleWebKit/537.31`.
+
 `bool AJAX`
 
 * `TRUE` if an XML HTTP request is detected, `FALSE` otherwise.

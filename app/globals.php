@@ -62,6 +62,10 @@ class Globals extends Controller {
 			'URI (request URI): '.$f3->stringify($uri)
 		);
 		$test->expect(
+			$agent=$f3->get('AGENT'),
+			'AGENT (user agent): '.$f3->stringify($agent)
+		);
+		$test->expect(
 			!($ajax=$f3->get('AJAX')),
 			'AJAX: '.$f3->stringify($ajax)
 		);

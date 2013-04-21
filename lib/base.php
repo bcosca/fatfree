@@ -1484,6 +1484,12 @@ final class Base {
 		);
 		// Default configuration
 		$this->hive=array(
+			'AGENT'=>isset($headers['X-Operamini-Phone-UA'])?
+				$headers['X-Operamini-Phone-UA']:
+				(isset($headers['X-Skyfire-Phone'])?
+					$headers['X-Skyfire-Phone']:
+					(isset($headers['User-Agent'])?
+						$headers['User-Agent']:'')),
 			'AJAX'=>isset($headers['X-Requested-With']) &&
 				$headers['X-Requested-With']=='XMLHttpRequest',
 			'AUTOLOAD'=>'./',
