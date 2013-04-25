@@ -1064,7 +1064,14 @@ final class Base {
 			// No routes defined
 			user_error(self::E_Routes);
 		// Match specific routes first
-		krsort($this->hive['ROUTES']);
+		$tmp=array();
+		foreach ($this->hive['ROUTES'] as $url=>$routes)
+			$tmp[str_replace('@',"\x00",$url)]=$routes;
+		krsort($tmp);
+		$this->hive['ROUTES']=array();
+		foreach ($tmp as $url=>$routes)
+			$this->hive['ROUTES'][str_replace("\x00",'@',$url)]=$routes;
+		unset($tmp);
 		// Convert to BASE-relative URL
 		$req=preg_replace(
 			'/^'.preg_quote($this->hive['BASE'],'/').'(\/.*|$)/','\1',
@@ -1072,17 +1079,17 @@ final class Base {
 		);
 		$allowed=array();
 		$case=$this->hive['CASELESS']?'i':'';
-		foreach ($this->hive['ROUTES'] as $url=>$types) {
+		foreach ($this->hive['ROUTES'] as $url=>$routes) {
 			if (!preg_match('/^'.
 				preg_replace('/@(\w+\b)/','(?P<\1>[^\/\?]+)',
 				str_replace('\*','(.*)',preg_quote($url,'/'))).
 				'\/?(?:\?.*)?$/'.$case.'um',$req,$args))
 				continue;
 			$route=NULL;
-			if (isset($types[$this->hive['AJAX']+1]))
-				$route=$types[$this->hive['AJAX']+1];
-			elseif (isset($types[self::REQ_SYNC|self::REQ_AJAX]))
-				$route=$types[self::REQ_SYNC|self::REQ_AJAX];
+			if (isset($routes[$this->hive['AJAX']+1]))
+				$route=$routes[$this->hive['AJAX']+1];
+			elseif (isset($routes[self::REQ_SYNC|self::REQ_AJAX]))
+				$route=$routes[self::REQ_SYNC|self::REQ_AJAX];
 			if (!$route)
 				continue;
 			if (isset($route[$this->hive['VERB']])) {
