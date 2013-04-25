@@ -1020,7 +1020,7 @@ final class Base {
 				$this->map($item,$class,$ttl,$kbps);
 			return;
 		}
-		$fluid=preg_match('/@\w+/',$url);
+		$fluid=preg_match('/@\w+/',$class);
 		foreach (explode('|',self::VERBS) as $method)
 			if ($fluid ||
 				method_exists($class,$method) ||
