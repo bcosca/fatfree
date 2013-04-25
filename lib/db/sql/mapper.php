@@ -332,7 +332,8 @@ class Mapper extends \DB\Cursor {
 				$args[$ctr+1]=$this->fields[$pkey]['value'];
 				$ctr++;
 			}
-			return $this->load(array($query,$args));
+            $filter=$query&&$args?array($query,$args):null;
+            return $this->load($filter);
 		}
 		// Reload to obtain default and auto-increment field values
 		return $this->load(array($inc.'=?',
