@@ -297,7 +297,7 @@ class Template extends View {
 								if ($match[3]) {
 									// Process attributes
 									preg_match_all(
-										'/\b(\w+)\h*=\h*'.
+										'/\b([\w-]+)\h*=\h*'.
 										'(?:"(.+?)"|\'(.+?)\')/s',
 										$match[3],$attr,PREG_SET_ORDER);
 									foreach ($attr as $kv)
