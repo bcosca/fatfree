@@ -984,8 +984,8 @@ final class Base {
 		foreach ($this->split($parts[1]) as $verb) {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
-			$this->hive['ROUTES'][$parts[2]][$type]
-				[strtoupper($verb)]=array($handler,$ttl,$kbps);
+			$this->hive['ROUTES'][str_replace('@',"\x00".'@',$parts[2])]
+				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps);
 		}
 	}
 
@@ -1064,14 +1064,7 @@ final class Base {
 			// No routes defined
 			user_error(self::E_Routes);
 		// Match specific routes first
-		$tmp=array();
-		foreach ($this->hive['ROUTES'] as $url=>$routes)
-			$tmp[str_replace('@',"\x00",$url)]=$routes;
-		krsort($tmp);
-		$this->hive['ROUTES']=array();
-		foreach ($tmp as $url=>$routes)
-			$this->hive['ROUTES'][str_replace("\x00",'@',$url)]=$routes;
-		unset($tmp);
+		krsort($this->hive['ROUTES']);
 		// Convert to BASE-relative URL
 		$req=preg_replace(
 			'/^'.preg_quote($this->hive['BASE'],'/').'(\/.*|$)/','\1',
@@ -1080,6 +1073,7 @@ final class Base {
 		$allowed=array();
 		$case=$this->hive['CASELESS']?'i':'';
 		foreach ($this->hive['ROUTES'] as $url=>$routes) {
+			$url=str_replace("\x00".'@','@',$url);
 			if (!preg_match('/^'.
 				preg_replace('/@(\w+\b)/','(?P<\1>[^\/\?]+)',
 				str_replace('\*','(.*)',preg_quote($url,'/'))).
@@ -1524,7 +1518,8 @@ final class Base {
 						$_SERVER['REMOTE_ADDR']:'')),
 			'JAR'=>$jar,
 			'LANGUAGE'=>isset($headers['Accept-Language'])?
-				$this->language($headers['Accept-Language']):$this->fallback,
+				$this->language($headers['Accept-Language']):
+				$this->fallback,
 			'LOCALES'=>'./',
 			'LOGS'=>'./',
 			'ONERROR'=>NULL,
