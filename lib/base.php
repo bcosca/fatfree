@@ -173,7 +173,7 @@ final class Base {
 	}
 
 	/**
-	*	Return TRUE if hive key is not empty
+	*	Return TRUE if hive key is not empty (or timestamp and TTL if cached)
 	*	@return bool
 	*	@param $key string
 	**/
@@ -1120,7 +1120,7 @@ final class Base {
 					$cached=$cache->exists(
 						$hash=$this->hash($this->hive['VERB'].' '.
 							$this->hive['URI']).'.url',$data);
-					if ($cached && $cached+$ttl>$now) {
+					if ($cached && $cached[0]+$ttl>$now) {
 						// Retrieve from cache backend
 						list($headers,$body)=$data;
 						if (PHP_SAPI!='cli')
@@ -1593,7 +1593,7 @@ final class Cache {
 		$ref;
 
 	/**
-	*	Return timestamp of cache entry or FALSE if not found
+	*	Return timestamp and TTL of cache entry or FALSE if not found
 	*	@return float|FALSE
 	*	@param $key string
 	*	@param $val mixed
@@ -1624,8 +1624,8 @@ final class Cache {
 		}
 		if (isset($raw)) {
 			list($val,$time,$ttl)=$fw->unserialize($raw);
-			if (!$ttl || $time+$ttl>microtime(TRUE))
-				return $time;
+			if ($ttl===0 || $time+$ttl>microtime(TRUE))
+				return array($time,$ttl);
 			$this->clear($key);
 		}
 		return FALSE;
