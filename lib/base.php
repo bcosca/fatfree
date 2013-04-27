@@ -1643,7 +1643,14 @@ final class Cache {
 		if (!$this->dsn)
 			return TRUE;
 		$ndx=$this->prefix.'.'.$key;
-		$data=$fw->serialize(array($val,microtime(TRUE),$ttl));
+		if ($cached=$this->exists($key)) {
+			list($time,$ttl)=$cached;
+			if ($ttl)
+				$ttl-=microtime(TRUE)-$time;
+		}
+		else
+			$time=microtime(TRUE);
+		$data=$fw->serialize(array($val,$time,$ttl));
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
