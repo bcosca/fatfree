@@ -815,9 +815,10 @@ final class Base {
 	*	@param $code int
 	**/
 	function status($code) {
+		$reason=@constant('self::HTTP_'.$code);
 		if (PHP_SAPI!='cli')
-			header('HTTP/1.1 '.$code);
-		return @constant('self::HTTP_'.$code);
+			header('HTTP/1.1 '.$code.' '.$reason);
+		return $reason;
 	}
 
 	/**
