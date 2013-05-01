@@ -2385,19 +2385,20 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Marek Toman
 * Simone Cociancich
 * Alan Holding
-* Aurélien Botermans
 * Philipp Hirsch
+* Aurélien Botermans
 * Christian Treptow
 * Кубарев Дмитрий
 * Alexandru Catalin Trandafir
 * Leigh Harrison
 * Дмитриев Иван
 * IT_GAP
+* Sergeev Andrey
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
 [![Donate](ui/images/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
 
-**Copyright (c) 2009-2012 F3::Factory/Bong Cosca**
+**Copyright (c) 2009-2013 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)
