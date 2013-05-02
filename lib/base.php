@@ -227,9 +227,10 @@ final class Base {
 		if (preg_match('/^JAR\b/',$key))
 			call_user_func_array(
 				'session_set_cookie_params',$this->hive['JAR']);
-		if ($ttl)
+		$cache=Cache::instance();
+		if ($cache->exists($hash=$this->hash($key).'.var') || $ttl)
 			// Persist the key-value pair
-			Cache::instance()->set($this->hash($key).'.var',$val,$ttl);
+			$cache->set($hash,$val,$ttl);
 		return $ref;
 	}
 
