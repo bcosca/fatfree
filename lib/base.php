@@ -1825,8 +1825,10 @@ abstract class Prefab {
 	*	@return object
 	**/
 	static function instance() {
-		if (!Registry::exists($class=get_called_class()))
-			Registry::set($class,new $class);
+		if (!Registry::exists($class=get_called_class())) {
+			$ref=new Reflectionclass($class);
+			Registry::set($class,$ref->newinstanceargs(func_get_args()));
+		}
 		return Registry::get($class);
 	}
 
