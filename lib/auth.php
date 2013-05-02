@@ -14,7 +14,7 @@
 */
 
 //! Authorization/authentication plug-in
-class Auth extends Prefab {
+class Auth {
 
 	//@{ Error messages
 	const

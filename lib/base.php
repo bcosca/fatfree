@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.0.6-Release';
+		VERSION='3.0.7-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -88,7 +88,8 @@ final class Base {
 		E_Fatal='Fatal error: %s',
 		E_Open='Unable to open %s',
 		E_Routes='No routes specified',
-		E_Method='Invalid method %s';
+		E_Method='Invalid method %s',
+		E_Hive='Invalid hive key %s';
 	//@}
 
 	private
@@ -137,6 +138,8 @@ final class Base {
 			@session_start();
 			$this->sync('SESSION');
 		}
+		elseif (!preg_match('/^\w+$/',$parts[0]))
+			trigger_error(sprintf(self::E_Hive,$this->stringify($key)));
 		if ($add)
 			$var=&$this->hive;
 		else
@@ -170,7 +173,7 @@ final class Base {
 	}
 
 	/**
-	*	Return TRUE if hive key is not empty
+	*	Return TRUE if hive key is not empty (or timestamp and TTL if cached)
 	*	@return bool
 	*	@param $key string
 	**/
@@ -224,9 +227,10 @@ final class Base {
 		if (preg_match('/^JAR\b/',$key))
 			call_user_func_array(
 				'session_set_cookie_params',$this->hive['JAR']);
-		if ($ttl)
+		$cache=Cache::instance();
+		if ($cache->exists($hash=$this->hash($key).'.var') || $ttl)
 			// Persist the key-value pair
-			Cache::instance()->set($this->hash($key).'.var',$val,$ttl);
+			$cache->set($hash,$val,$ttl);
 		return $ref;
 	}
 
@@ -450,8 +454,7 @@ final class Base {
 				}
 				return 'array('.$str.')';
 			default:
-				return var_export(
-					is_string($arg)?addcslashes($arg,'\''):$arg,TRUE);
+				return var_export($arg,TRUE);
 		}
 	}
 
@@ -613,6 +616,7 @@ final class Base {
 			'(?:,(?P<mod>(?:\s*\w+(?:\s+\{.+?\}\s*,?)?)*))?)?\}/',
 			function($expr) use($args,$conv) {
 				extract($expr);
+				extract($conv);
 				if (!array_key_exists($pos,$args))
 					return $expr[0];
 				if (isset($type))
@@ -632,24 +636,55 @@ final class Base {
 							if (isset($mod))
 								switch ($mod) {
 									case 'integer':
-										return
-											number_format(
-												$args[$pos],0,'',
-												$conv['thousands_sep']);
+										return number_format(
+											$args[$pos],0,'',$thousands_sep);
 									case 'currency':
-										return
-											$conv['currency_symbol'].
-											number_format(
-												$args[$pos],
-												$conv['frac_digits'],
-												$conv['decimal_point'],
-												$conv['thousands_sep']);
+										if (function_exists('money_format'))
+											return money_format(
+												'%n',$args[$pos]);
+										$fmt=array(
+											0=>'(nc)',1=>'(n c)',
+											2=>'(nc)',10=>'+nc',
+											11=>'+n c',12=>'+ nc',
+											20=>'nc+',21=>'n c+',
+											22=>'nc +',30=>'n+c',
+											31=>'n +c',32=>'n+ c',
+											40=>'nc+',41=>'n c+',
+											42=>'nc +',100=>'(cn)',
+											101=>'(c n)',102=>'(cn)',
+											110=>'+cn',111=>'+c n',
+											112=>'+ cn',120=>'cn+',
+											121=>'c n+',122=>'cn +',
+											130=>'+cn',131=>'+c n',
+											132=>'+ cn',140=>'c+n',
+											141=>'c+ n',142=>'c +n'
+										);
+										if ($args[$pos]<0) {
+											$sgn=$negative_sign;
+											$pre='n';
+										}
+										else {
+											$sgn=$positive_sign;
+											$pre='p';
+										}
+										return str_replace(
+											array('+','n','c'),
+											array($sgn,number_format(
+												abs($args[$pos]),
+												$frac_digits,
+												$decimal_point,
+												$thousands_sep),
+												$currency_symbol),
+											$fmt[(int)(
+												(int)${$pre.'_cs_precedes'}.
+												(int)${$pre.'_sign_posn'}.
+												(int)${$pre.'_sep_by_space'}
+											)]
+										);
 									case 'percent':
-										return
-											number_format(
-												$args[$pos]*100,0,
-												$conv['decimal_point'],
-												$conv['thousands_sep']).'%';
+										return number_format(
+											$args[$pos]*100,0,$decimal_point,
+											$thousands_sep).'%';
 								}
 							break;
 						case 'date':
@@ -780,9 +815,10 @@ final class Base {
 	*	@param $code int
 	**/
 	function status($code) {
+		$reason=@constant('self::HTTP_'.$code);
 		if (PHP_SAPI!='cli')
-			header('HTTP/1.1 '.$code);
-		return @constant('self::HTTP_'.$code);
+			header('HTTP/1.1 '.$code.' '.$reason);
+		return $reason;
 	}
 
 	/**
@@ -927,13 +963,18 @@ final class Base {
 	/**
 	*	Bind handler to route pattern
 	*	@return NULL
-	*	@param $pattern string
+	*	@param $pattern string|array
 	*	@param $handler callback
 	*	@param $ttl int
 	*	@param $kbps int
 	**/
 	function route($pattern,$handler,$ttl=0,$kbps=0) {
 		$types=array('sync','ajax');
+		if (is_array($pattern)) {
+			foreach ($pattern as $item)
+				$this->route($item,$handler,$ttl,$kbps);
+			return;
+		}
 		preg_match('/([\|\w]+)\h+([^\h]+)'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
 		if (empty($parts[2]))
@@ -944,8 +985,8 @@ final class Base {
 		foreach ($this->split($parts[1]) as $verb) {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
-			$this->hive['ROUTES'][$parts[2]][$type]
-				[strtoupper($verb)]=array($handler,$ttl,$kbps);
+			$this->hive['ROUTES'][str_replace('@',"\x00".'@',$parts[2])]
+				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps);
 		}
 	}
 
@@ -968,13 +1009,19 @@ final class Base {
 
 	/**
 	*	Provide ReST interface by mapping HTTP verb to class method
+	*	@return NULL
 	*	@param $url string
 	*	@param $class string
 	*	@param $ttl int
 	*	@param $kbps int
 	**/
 	function map($url,$class,$ttl=0,$kbps=0) {
-		$fluid=preg_match('/@\w+/',$url);
+		if (is_array($url)) {
+			foreach ($url as $item)
+				$this->map($item,$class,$ttl,$kbps);
+			return;
+		}
+		$fluid=preg_match('/@\w+/',$class);
 		foreach (explode('|',self::VERBS) as $method)
 			if ($fluid ||
 				method_exists($class,$method) ||
@@ -1026,17 +1073,18 @@ final class Base {
 		);
 		$allowed=array();
 		$case=$this->hive['CASELESS']?'i':'';
-		foreach ($this->hive['ROUTES'] as $url=>$types) {
+		foreach ($this->hive['ROUTES'] as $url=>$routes) {
+			$url=str_replace("\x00".'@','@',$url);
 			if (!preg_match('/^'.
 				preg_replace('/@(\w+\b)/','(?P<\1>[^\/\?]+)',
 				str_replace('\*','(.*)',preg_quote($url,'/'))).
 				'\/?(?:\?.*)?$/'.$case.'um',$req,$args))
 				continue;
 			$route=NULL;
-			if (isset($types[$this->hive['AJAX']+1]))
-				$route=$types[$this->hive['AJAX']+1];
-			elseif (isset($types[self::REQ_SYNC|self::REQ_AJAX]))
-				$route=$types[self::REQ_SYNC|self::REQ_AJAX];
+			if (isset($routes[$this->hive['AJAX']+1]))
+				$route=$routes[$this->hive['AJAX']+1];
+			elseif (isset($routes[self::REQ_SYNC|self::REQ_AJAX]))
+				$route=$routes[self::REQ_SYNC|self::REQ_AJAX];
 			if (!$route)
 				continue;
 			if (isset($route[$this->hive['VERB']])) {
@@ -1073,7 +1121,7 @@ final class Base {
 					$cached=$cache->exists(
 						$hash=$this->hash($this->hive['VERB'].' '.
 							$this->hive['URI']).'.url',$data);
-					if ($cached && $cached+$ttl>$now) {
+					if ($cached && $cached[0]+$ttl>$now) {
 						// Retrieve from cache backend
 						list($headers,$body)=$data;
 						if (PHP_SAPI!='cli')
@@ -1438,6 +1486,12 @@ final class Base {
 		);
 		// Default configuration
 		$this->hive=array(
+			'AGENT'=>isset($headers['X-Operamini-Phone-UA'])?
+				$headers['X-Operamini-Phone-UA']:
+				(isset($headers['X-Skyfire-Phone'])?
+					$headers['X-Skyfire-Phone']:
+					(isset($headers['User-Agent'])?
+						$headers['User-Agent']:'')),
 			'AJAX'=>isset($headers['X-Requested-With']) &&
 				$headers['X-Requested-With']=='XMLHttpRequest',
 			'AUTOLOAD'=>'./',
@@ -1465,7 +1519,8 @@ final class Base {
 						$_SERVER['REMOTE_ADDR']:'')),
 			'JAR'=>$jar,
 			'LANGUAGE'=>isset($headers['Accept-Language'])?
-				$this->language($headers['Accept-Language']):$this->fallback,
+				$this->language($headers['Accept-Language']):
+				$this->fallback,
 			'LOCALES'=>'./',
 			'LOGS'=>'./',
 			'ONERROR'=>NULL,
@@ -1485,7 +1540,7 @@ final class Base {
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'php',
 			'TEMP'=>'tmp/',
 			'TIME'=>microtime(TRUE),
-			'TZ'=>ini_get('date.timezone'),
+			'TZ'=>@date_default_timezone_get('date.timezone'),
 			'UI'=>'./',
 			'UNLOAD'=>NULL,
 			'UPLOADS'=>'./',
@@ -1539,7 +1594,7 @@ final class Cache {
 		$ref;
 
 	/**
-	*	Return timestamp of cache entry or FALSE if not found
+	*	Return timestamp and TTL of cache entry or FALSE if not found
 	*	@return float|FALSE
 	*	@param $key string
 	*	@param $val mixed
@@ -1570,8 +1625,8 @@ final class Cache {
 		}
 		if (isset($raw)) {
 			list($val,$time,$ttl)=$fw->unserialize($raw);
-			if (!$ttl || $time+$ttl>microtime(TRUE))
-				return $time;
+			if ($ttl===0 || $time+$ttl>microtime(TRUE))
+				return array($time,$ttl);
 			$this->clear($key);
 		}
 		return FALSE;
@@ -1589,7 +1644,10 @@ final class Cache {
 		if (!$this->dsn)
 			return TRUE;
 		$ndx=$this->prefix.'.'.$key;
-		$data=$fw->serialize(array($val,microtime(TRUE),$ttl));
+		$time=microtime(TRUE);
+		if ($cached=$this->exists($key))
+			list($time,$ttl)=$cached;
+		$data=$fw->serialize(array($val,$time,$ttl));
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
@@ -1766,8 +1824,10 @@ abstract class Prefab {
 	*	@return object
 	**/
 	static function instance() {
-		if (!Registry::exists($class=get_called_class()))
-			Registry::set($class,new $class);
+		if (!Registry::exists($class=get_called_class())) {
+			$ref=new Reflectionclass($class);
+			Registry::set($class,$ref->newinstanceargs(func_get_args()));
+		}
 		return Registry::get($class);
 	}
 

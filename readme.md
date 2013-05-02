@@ -2,6 +2,8 @@
 
 **A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!**
 
+[![Flattr this project](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=phpfatfree&url=https://github.com/bcosca/fatfree)
+
 Condensed in a single ~50KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
 
 Whether you're a novice or an expert PHP programmer, F3 will get you up and running in no time. No unnecessary and painstaking installation procedures. No complex configuration required. No convoluted directory structures. There's no better time to start developing Web applications the easy way than right now!
@@ -28,6 +30,8 @@ That's not all. F3 is packaged with other optional plug-ins that extend its capa
 * And more in a tiny supercharged package!
 
 Unlike other frameworks, F3 aims to be usable - not usual.
+
+[![Flattr this project](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=phpfatfree&url=https://github.com/bcosca/fatfree)
 
 The philosophy behind the framework and its approach to software architecture is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.
 
@@ -1120,7 +1124,7 @@ $f3->set('LANGUAGE','de');
 
 **Note:** In the above example, the key pi exists only in the English dictionary. The framework will always use English (`en`) as a fallback to populate keys that are not present in the specified (or detected) language.
 
-You may also create dictionary files for language variants like en-US, es-AR, etc. In this case, F3 will use the language variant first (like es-AR). If there are keys that do not exist in the variant, the framework will look up the key in the root language (es), then use the en language file as the final fallback.
+You may also create dictionary files for language variants like `en-US`, `es-AR`, etc. In this case, F3 will use the language variant first (like `es-AR`). If there are keys that do not exist in the variant, the framework will look up the key in the root language (`es`), then use the `en` language file as the final fallback.
 Dictionary key-value pairs become F3 variables once referenced. Make sure the keys do not conflict with any framework variable instantiated via `$f3->set()`, `$f3->mset()`, or `$f3->config()`.
 
 Did you notice the peculiar `'Today is {0,date}'` pattern in our previous example? F3's multilingual capability hinges on string/message formatting rules of the ICU project. The framework uses its own subset of the ICU string formatting implementation. There is no need for PHP's `intl` extension to be activated on the server.
@@ -1795,6 +1799,21 @@ If the framework variable `CACHE` is enabled, and if the remote server instructs
 
 Fat-Free will use whatever means are available on your Web server for the `request()` method to run: PHP stream wrappers (`allow_url_fopen`), cURL module, or low-level sockets.
 
+### Handling File Downloads
+
+F3 has a utility for sending files to an HTTP client, i.e. fulfilling download requests. You can use it to hide the real path to your download files. This adds some layer of security because users won't be able to download files if they don't know the file names and their locations. Here's how it's done:-
+
+``` php
+$f3->route('GET /downloads/@filename',
+    function($f3,$args) {
+        // send() method returns FALSE if file doesn't exist
+        if (!Web::instance()->send('/real/path/'.$args['filename']))
+            // Generate an HTTP 404
+        $f3->error(404);
+    }
+);
+```
+
 ### Remoting and Distributed Applications
 
 The `request()` method can also be used in complex SOAP or XML-RPC applications, if you find the need for another Web server to process data on your computer's behalf - thus harnessing the power of distributing computing. W3Schools.com has an excellent tutorial on SOAP. On the other hand, TutorialsPoint.com gives a nice overview of XML-RPC.
@@ -1919,21 +1938,6 @@ In this example, the framework will serve the Web page at a rate of 128KiBps.
 
 Bandwidth throttling at the application level can be particularly useful for login pages. Slow responses to dictionary attacks is a good way of mitigating this kind of security risk.
 
-### Handling File Downloads
-
-F3 has a utility for sending files to an HTTP client, i.e. fulfilling download requests. You can use it to hide the real path to your download files. This adds some layer of security because users won't be able to download files if they don't know the file names and their locations. Here's how it's done:-
-
-``` php
-$f3->route('GET /downloads/@filename',
-    function($f3,$args) {
-        // send() method returns FALSE if file doesn't exist
-        if (!Web::instance()->send('/real/path/'.$args['filename']))
-            // Generate an HTTP 404
-        $f3->error(404);
-    }
-);
-```
-
 ## Unit Testing
 
 ### Bullet-Proof Code
@@ -2026,6 +2030,10 @@ Once you get the hang of testing the smallest units of your application, you can
 ## Quick Reference
 
 ### System Variables
+
+`string AGENT`
+
+* Auto-detected HTTP user agent, e.g. `Mozilla/5.0 (Linux; Android 4.2.2; Nexus 7) AppleWebKit/537.31`.
 
 `bool AJAX`
 
@@ -2313,10 +2321,12 @@ If you feel that this software is one great weapon to have in your programming a
 The Fat-Free Framework is community-driven software. It can't be what it is today without the help and support from the following people and organizations:
 
 * GitHub
+* Square Lines, LLC
+* Mirosystems
 * Tecnilógica
 * Stehlik & Company
-* Mirosystems
 * G Holdings, LLC
+* PHP Experts, Inc.
 * Sascha Ohms
 * Jermaine Maree
 * Sergey Zaretsky
@@ -2375,15 +2385,20 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Marek Toman
 * Simone Cociancich
 * Alan Holding
-* Aurélien Botermans
 * Philipp Hirsch
+* Aurélien Botermans
 * Christian Treptow
 * Кубарев Дмитрий
+* Alexandru Catalin Trandafir
+* Leigh Harrison
+* Дмитриев Иван
+* IT_GAP
+* Sergeev Andrey
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
 [![Donate](ui/images/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
 
-**Copyright (c) 2009-2012 F3::Factory/Bong Cosca**
+**Copyright (c) 2009-2013 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)

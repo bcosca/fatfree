@@ -13,7 +13,7 @@ table{width:100%}
 table code{background:transparent;padding:0}
 tr{border-bottom:1px solid #999}
 tr:last-child{border-bottom:5px solid #999}
-th,td{font-size:1em;line-height:1.25em;margin:1.25em 0;padding:0.625em 0.5em;white-space:nowrap}
+th,td{font-size:1em;line-height:1.25em;margin:0;padding:0.625em 0.5em;white-space:nowrap}
 th{text-align:left;text-transform:uppercase;color:#fff;background:#999}
 th a{color:#fff}
 pre{background:#efefef;padding:0.75em;border-radius:0.75em}

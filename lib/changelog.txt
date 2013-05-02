@@ -1,5 +1,28 @@
 CHANGELOG
 
+3.0.7 (2 May 2013)
+*	NEW: route() now allows an array of routing patterns as first argument;
+	support array as first argument of map()
+*	NEW: entropy() for calculating password strength (NIST 800-63)
+*	NEW: AGENT variable containing auto-detected HTTP user agent string
+*	NEW: ismobile() and isdesktop() methods
+*	NEW: Prefab class and descendants now accept constructor arguments
+*	Change in behavior: Cache->exists() now returns timestamp and TTL of
+	cache entry or FALSE if not found (Feature request #315)
+*	Preserve timestamp and TTL when updating cache entry (Feature request
+	#316)
+*	Improved currency formatting with C99 compliance
+*	Suppress unnecessary program halt at startup caused by misconfigured
+	server
+*	Add support for dashes in custom attribute names in templates
+*	Bug fix: Routing precedene (Issue #313)
+*	Bug fix: Remove Jig _id element from document property
+*	Bug fix: Web->rss() error when not enough items in the feed (Issue #299)
+*	Bug fix: Web engine fallback (Issue #300)
+*	Bug fix: <strong> and <em> formatting
+*	Bug fix: Text rendering of text with trailing punctuation (Issue #303)
+*	Bug fix: Incorrect regex in SMTP
+
 3.0.6 (31 Mar 2013)
 *	NEW: Image->crop()
 *	Modify documentation blocks for PHPDoc interoperability

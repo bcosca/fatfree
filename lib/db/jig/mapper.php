@@ -79,10 +79,9 @@ class Mapper extends \DB\Cursor {
 	protected function factory($id,$row) {
 		$mapper=clone($this);
 		$mapper->reset();
-		foreach ($row as $field=>$val) {
-			$mapper->id=$id;
+		$mapper->id=$id;
+		foreach ($row as $field=>$val)
 			$mapper->document[$field]=$val;
-		}
 		$mapper->query=array(clone($mapper));
 		return $mapper;
 	}
@@ -95,7 +94,7 @@ class Mapper extends \DB\Cursor {
 	function cast($obj=NULL) {
 		if (!$obj)
 			$obj=$this;
-		return $obj->document;
+		return $obj->document+array('_id'=>$this->id);
 	}
 
 	/**
@@ -155,9 +154,9 @@ class Mapper extends \DB\Cursor {
 			$hash=$fw->hash($fw->stringify(array($filter,$options))).'.jig',
 				$data)) || $cached+$ttl<microtime(TRUE)) {
 			$data=$db->read($this->file);
-			foreach ($data as $key=>&$val) {
-				$val['_id']=$key;
-				unset($val);
+			foreach ($data as $id=>&$doc) {
+				$doc['_id']=$id;
+				unset($doc);
 			}
 			if ($filter) {
 				if (!is_array($filter))
@@ -244,8 +243,11 @@ class Mapper extends \DB\Cursor {
 				$cache->set($hash,$data,$ttl);
 		}
 		$out=array();
-		foreach ($data as $id=>$doc)
+		foreach ($data as $id=>&$doc) {
+			unset($doc['_id']);
 			$out[]=$this->factory($id,$doc);
+			unset($doc);
+		}
 		if ($log) {
 			if ($filter)
 				foreach ($args as $key=>$val) {
@@ -302,8 +304,7 @@ class Mapper extends \DB\Cursor {
 		$db->write($this->file,$data);
 		parent::reset();
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
-			$this->file.' [insert] '.
-			json_encode(array('_id'=>$this->id)+$this->document));
+			$this->file.' [insert] '.json_encode($this->document));
 		return $this->document;
 	}
 
@@ -318,8 +319,7 @@ class Mapper extends \DB\Cursor {
 		$data[$this->id]=$this->document;
 		$db->write($this->file,$data);
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
-			$this->file.' [update] '.
-			json_encode(array('_id'=>$this->id)+$this->document));
+			$this->file.' [update] '.json_encode($this->document));
 		return $this->document;
 	}
 
