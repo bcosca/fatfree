@@ -43,6 +43,10 @@ class Internals extends Controller {
 			'Convert number to exportable string'
 		);
 		$test->expect(
+			$f3->stringify('hello, world')=='\'hello, world\'',
+			'Convert string to exportable string'
+		);
+		$test->expect(
 			$f3->stringify(array(1,'a',0.5))==
 				'array(1,\'a\',0.5)' &&
 			$f3->stringify(array('x'=>'hello','y'=>'world'))==

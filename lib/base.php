@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.0.7-Dev';
+		VERSION='3.0.8-Dev';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -454,8 +454,7 @@ final class Base {
 				}
 				return 'array('.$str.')';
 			default:
-				return var_export(
-					is_string($arg)?addcslashes($arg,'\''):$arg,TRUE);
+				return var_export($arg,TRUE);
 		}
 	}
 
