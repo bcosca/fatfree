@@ -109,7 +109,7 @@ class SQL extends \PDO {
 			$keys=$vals=array();
 			if ($fw->get('CACHE') && $ttl && ($cached=$cache->exists(
 				$hash=$fw->hash($cmd.$fw->stringify($arg)).'.sql',
-				$result)) && $cached+$ttl>microtime(TRUE)) {
+				$result)) && $cached[0]+$ttl>microtime(TRUE)) {
 				foreach ($arg as $key=>$val) {
 					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
 					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';

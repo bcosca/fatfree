@@ -82,7 +82,7 @@ class Session extends Mapper {
 	*	@param $max int
 	**/
 	function cleanup($max) {
-		$this->erase('stamp+'.$max.'<'.time());
+		$this->erase(array('stamp+?<?',$max,time()));
 		return TRUE;
 	}
 
