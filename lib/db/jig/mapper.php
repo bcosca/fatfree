@@ -223,11 +223,15 @@ class Mapper extends \DB\Cursor {
 								SORT_ASC:
 								constant($parts[1]);
 							$col=$parts[0];
+							/*
 							if (!array_key_exists($col,$val1))
 								$val1[$col]=NULL;
 							if (!array_key_exists($col,$val2))
 								$val2[$col]=NULL;
 							list($v1,$v2)=array($val1[$col],$val2[$col]);
+							*/
+							$v1=\AZ\utils::get_value_from_stringarray($val1, $col);
+							$v2=\AZ\utils::get_value_from_stringarray($val2, $col);
 							if ($out=strnatcmp($v1,$v2)*
 								(($order==SORT_ASC)*2-1))
 								return $out;
