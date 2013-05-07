@@ -236,7 +236,9 @@ class Mapper extends \DB\Cursor {
 		);
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
-			$adhoc.=','.$field['expr'].' AS '.$key;
+			$adhoc.=','.$field['expr'].' AS '.
+				(preg_match('/mysql|sqlite/',$this->engine)?
+					('`'.$key.'`'):$key);
 		return $this->select('*'.$adhoc,$filter,$options,$ttl);
 	}
 
@@ -306,7 +308,8 @@ class Mapper extends \DB\Cursor {
 			}
 			if ($field['changed'] && $key!=$inc) {
 				$fields.=($ctr?',':'').
-					($this->engine=='mysql'?('`'.$key.'`'):$key);
+					(preg_match('/mysql|sqlite/',$this->engine)?
+						('`'.$key.'`'):$key);
 				$values.=($ctr?',':'').'?';
 				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
@@ -351,7 +354,8 @@ class Mapper extends \DB\Cursor {
 		foreach ($this->fields as $key=>$field)
 			if ($field['changed']) {
 				$pairs.=($pairs?',':'').
-					($this->engine=='mysql'?('`'.$key.'`'):$key).'=?';
+					(preg_match('/mysql|sqlite/',$this->engine)?
+						('`'.$key.'`'):$key).'=?';
 				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
 			}
@@ -392,7 +396,9 @@ class Mapper extends \DB\Cursor {
 		$filter='';
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
-				$filter.=($filter?' AND ':'').$key.'=?';
+				$filter.=($filter?' AND ':'').
+					(preg_match('/mysql|sqlite/',$this->engine)?
+						('`'.$key.'`'):$key).'=?';
 				$args[$ctr+1]=array($field['previous'],$field['pdo_type']);
 				$ctr++;
 			}
@@ -476,7 +482,7 @@ class Mapper extends \DB\Cursor {
 	function __construct(\DB\SQL $db,$table,$ttl=60) {
 		$this->db=$db;
 		$this->engine=$db->driver();
-		if ($this->engine=='mysql')
+		if (preg_match('/mysql|sqlite/',$this->engine))
 			$table='`'.$table.'`';
 		$this->table=$table;
 		$this->fields=$db->schema($table,$ttl);
