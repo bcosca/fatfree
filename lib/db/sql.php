@@ -197,7 +197,7 @@ class SQL extends \PDO {
 				'PRAGMA table_info('.$table.');',
 				'name','type','dflt_value','notnull',0,'pk',1),
 			'mysql'=>array(
-				'SHOW columns FROM `'.$this->dbname.'`.'.$table.';',
+				'SHOW columns FROM `'.$this->dbname.'`.`'.$table.'`;',
 				'Field','Type','Default','Null','YES','Key','PRI'),
 			'mssql|sqlsrv|sybase|dblib|pgsql|odbc'=>array(
 				'SELECT '.
@@ -279,6 +279,25 @@ class SQL extends \PDO {
 	**/
 	function name() {
 		return $this->dbname;
+	}
+
+	/**
+	*	Return quoted identifier name
+	*	@param $key
+	*	@return array
+	**/
+	function quoteKey($key) {
+		if ($this->engine=='mysql')
+			$key="`".$key."`";
+		elseif (preg_match('/sybase|dblib|odbc/',$this->engine))
+			$key="'".$key."'";
+		elseif (preg_match('/sqlite2?|pgsql/',$this->engine))
+			$key='"'.$key.'"';
+		elseif (preg_match('/mssql|sqlsrv/',$this->engine))
+			$key="[".$key."]";
+		elseif ($this->engine=='oci')
+			$key='"'.strtoupper($key).'"';
+		return $key;
 	}
 
 	/**
