@@ -1741,10 +1741,11 @@ final class Cache {
 			case 'xcache':
 				return TRUE; /* Not supported */
 			case 'folder':
-				foreach (glob($parts[1].'*') as $file)
-					if (preg_match($regex,basename($file)) &&
-						filemtime($file)+$lifetime<time())
-						@unlink($file);
+				if ($glob=@glob($parts[1].'*'))
+					foreach ($glob as $file)
+						if (preg_match($regex,basename($file)) &&
+							filemtime($file)+$lifetime<time())
+							@unlink($file);
 				return TRUE;
 		}
 		return FALSE;

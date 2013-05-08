@@ -534,9 +534,10 @@ class Image {
 			$path=$fw->get('TEMP').
 				$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 				$fw->hash($this->file);
-			foreach (glob($path.'*.png',GLOB_NOSORT) as $match)
-				if (preg_match('/-(\d+)\.png/',$match))
-					@unlink($match);
+			if ($glob=@glob($path.'*.png',GLOB_NOSORT))
+				foreach ($glob as $match)
+					if (preg_match('/-(\d+)\.png/',$match))
+						@unlink($match);
 		}
 	}
 
