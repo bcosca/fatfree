@@ -236,7 +236,7 @@ class Mapper extends \DB\Cursor {
 		);
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
-			$adhoc.=','.$field['expr'].' AS '.$this->db->quoteKey($key);
+			$adhoc.=','.$field['expr'].' AS '.$this->db->quotekey($key);
 		return $this->select('*'.$adhoc,$filter,$options,$ttl);
 	}
 
@@ -305,7 +305,7 @@ class Mapper extends \DB\Cursor {
 					$inc=$key;
 			}
 			if ($field['changed'] && $key!=$inc) {
-				$fields.=($ctr?',':'').$this->db->quoteKey($key);
+				$fields.=($ctr?',':'').$this->db->quotekey($key);
 				$values.=($ctr?',':'').'?';
 				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
@@ -327,7 +327,7 @@ class Mapper extends \DB\Cursor {
 			$query='';
 			$args='';
 			foreach ($pkeys as $pkey) {
-				$query.=($query?' AND ':'').$this->db->quoteKey($pkey).'=?';
+				$query.=($query?' AND ':'').$this->db->quotekey($pkey).'=?';
 				$args[$ctr+1]=$this->fields[$pkey]['value'];
 				$ctr++;
 			}
@@ -349,13 +349,13 @@ class Mapper extends \DB\Cursor {
 		$filter='';
 		foreach ($this->fields as $key=>$field)
 			if ($field['changed']) {
-				$pairs.=($pairs?',':'').$this->db->quoteKey($key).'=?';
+				$pairs.=($pairs?',':'').$this->db->quotekey($key).'=?';
 				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
 			}
 		foreach ($this->fields as $key=>$field)
 			if ($field['pkey']) {
-				$filter.=($filter?' AND ':'').$this->db->quoteKey($key).'=?';
+				$filter.=($filter?' AND ':'').$this->db->quotekey($key).'=?';
 				$args[$ctr+1]=array($field['previous'],$field['pdo_type']);
 				$ctr++;
 			}
@@ -390,7 +390,7 @@ class Mapper extends \DB\Cursor {
 		$filter='';
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
-				$filter.=($filter?' AND ':'').$this->db->quoteKey($key).'=?';
+				$filter.=($filter?' AND ':'').$this->db->quotekey($key).'=?';
 				$args[$ctr+1]=array($field['previous'],$field['pdo_type']);
 				$ctr++;
 			}
@@ -474,7 +474,7 @@ class Mapper extends \DB\Cursor {
 	function __construct(\DB\SQL $db,$table,$ttl=60) {
 		$this->db=$db;
 		$this->engine=$db->driver();
-		$this->table=$this->db->quoteKey($table);
+		$this->table=$this->db->quotekey($table);
 		$this->fields=$db->schema($table,$ttl);
 		$this->reset();
 	}

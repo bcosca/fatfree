@@ -33,8 +33,9 @@ class SQL extends Controller {
 			if ($engine=='mysql') {
 				$db->exec(
 					array(
-						'DROP DATABASE IF EXISTS `test`;',
-						'CREATE DATABASE `test` DEFAULT CHARSET=utf8;'
+						'DROP DATABASE IF EXISTS '.$db->quotekey('test').';',
+						'CREATE DATABASE '.$db->quotekey('test').
+							' DEFAULT CHARSET=utf8;'
 					)
 				);
 				unset($db);
@@ -43,11 +44,12 @@ class SQL extends Controller {
 			}
 			$db->exec(
 				array(
-					'DROP TABLE IF EXISTS `movies`;',
-					'CREATE TABLE `movies` ('.
-						'`title` VARCHAR(255) NOT NULL PRIMARY KEY,'.
-						'`director` VARCHAR(255),'.
-						'`year` INTEGER'.
+					'DROP TABLE IF EXISTS '.$db->quotekey('movies').';',
+					'CREATE TABLE '.$db->quotekey('movies').' ('.
+						$db->quotekey('title').
+							' VARCHAR(255) NOT NULL PRIMARY KEY,'.
+						$db->quotekey('director').' VARCHAR(255),'.
+						$db->quotekey('year').' INTEGER'.
 					');'
 				)
 			);
@@ -56,20 +58,29 @@ class SQL extends Controller {
 				'SQL profiler active'
 			);
 			$db->exec(
-				'INSERT INTO `movies` (`title`,`director`,`year`) '.
+				'INSERT INTO '.$db->quotekey('movies').' ('.
+					$db->quotekey('title').','.
+					$db->quotekey('director').','.
+					$db->quotekey('year').
+				') '.
 				'VALUES (\'Reservoir Dogs\',\'Quentin Tarantino\',1992);'
 			);
 			$db->begin();
 			$db->exec(
 				array (
-					'INSERT INTO `movies` (`title`,`director`,`year`) '.
+					'INSERT INTO '.$db->quotekey('movies').' ('.
+						$db->quotekey('title').','.
+						$db->quotekey('director').','.
+						$db->quotekey('year').
+					') '.
 					'VALUES (\'Fight Club\',\'David Fincher\',1999);',
-					'DELETE FROM `movies` WHERE `title`=\'Reservoir Dogs\';'
+					'DELETE FROM '.$db->quotekey('movies').' WHERE '.
+						$db->quotekey('title').'=\'Reservoir Dogs\';'
 				)
 			);
 			$db->rollback();
 			$test->expect(
-				$db->exec('SELECT * FROM `movies`;')==
+				$db->exec('SELECT * FROM '.$db->quotekey('movies').';')==
 				array(
 					array(
 						'title'=>'Reservoir Dogs',
@@ -82,14 +93,19 @@ class SQL extends Controller {
 			$db->begin();
 			$db->exec(
 				array (
-					'INSERT INTO `movies` (`title`,`director`,`year`) '.
+					'INSERT INTO '.$db->quotekey('movies').' ('.
+						$db->quotekey('title').','.
+						$db->quotekey('director').','.
+						$db->quotekey('year').
+					') '.
 					'VALUES (\'Fight Club\',\'David Fincher\',1999);',
-					'DELETE FROM `movies` WHERE `title`=\'Reservoir Dogs\';'
+					'DELETE FROM '.$db->quotekey('movies').' WHERE '.
+						$db->quotekey('title').'=\'Reservoir Dogs\';'
 				)
 			);
 			$db->commit();
 			$test->expect(
-				$db->exec('SELECT * FROM `movies`;')==
+				$db->exec('SELECT * FROM '.$db->quotekey('movies').';')==
 				array(
 					array(
 						'title'=>'Fight Club',
@@ -101,13 +117,18 @@ class SQL extends Controller {
 			);
 			$db->exec(
 				array (
-					'INSERT INTO `movies` (`title`,`director`,`year`) '.
+					'INSERT INTO '.$db->quotekey('movies').' ('.
+						$db->quotekey('title').','.
+						$db->quotekey('director').','.
+						$db->quotekey('year').
+					') '.
 					'VALUES (\'Donnie Brasco\',\'Mike Newell\',1997);',
-					'DELETE FROM `movies` WHERE `title`=\'Fight Club\';'
+					'DELETE FROM '.$db->quotekey('movies').' WHERE '.
+						$db->quotekey('title').'=\'Fight Club\';'
 				)
 			);
 			$test->expect(
-				$db->exec('SELECT * FROM `movies`;')==
+				$db->exec('SELECT * FROM '.$db->quotekey('movies').';')==
 				array(
 					array(
 						'title'=>'Donnie Brasco',
@@ -118,11 +139,15 @@ class SQL extends Controller {
 				'Auto-commit'
 			);
 			@$db->exec(
-				'INSERT INTO `movies` (`title`,`director`,`year`) '.
+					'INSERT INTO '.$db->quotekey('movies').' ('.
+						$db->quotekey('title').','.
+						$db->quotekey('director').','.
+						$db->quotekey('year').
+					') '.
 				'VALUES (\'Donnie Brasco\',\'Mike Newell\',1997);'
 			);
 			$test->expect(
-				$db->exec('SELECT * FROM `movies`;')==
+				$db->exec('SELECT * FROM '.$db->quotekey('movies').';')==
 				array(
 					array(
 						'title'=>'Donnie Brasco',
@@ -134,8 +159,9 @@ class SQL extends Controller {
 			);
 			$test->expect(
 				$db->exec(
-					'SELECT * FROM `movies` WHERE `director`=?;',
-					'Mike Newell')==
+					'SELECT * FROM '.$db->quotekey('movies').' WHERE '.
+						$db->quotekey('director').'=?;',
+						array(1=>'Mike Newell'))==
 				array(
 					array(
 						'title'=>'Donnie Brasco',
@@ -146,7 +172,8 @@ class SQL extends Controller {
 				'Parameterized query (positional)'
 			);
 			$test->expect(
-				$db->exec('SELECT * FROM `movies` WHERE `director`=:name;',
+				$db->exec('SELECT * FROM '.$db->quotekey('movies').' WHERE '.
+					$db->quotekey('director').'=:name;',
 					array(':name'=>'Mike Newell'))==
 				array(
 					array(
@@ -166,12 +193,12 @@ class SQL extends Controller {
 				is_object($movie),
 				'Mapper instantiated'
 			);
-			$movie->load(array('`title`=?','The Hobbit'));
+			$movie->load(array($db->quotekey('title').'=?','The Hobbit'));
 			$test->expect(
 				$movie->dry(),
 				'Mapper is dry'
 			);
-			$movie->load(array('`title`=?','Donnie Brasco'));
+			$movie->load(array($db->quotekey('title').'=?','Donnie Brasco'));
 			$test->expect(
 				$movie->count()==1 &&
 				$movie->get('title')=='Donnie Brasco' &&
@@ -197,7 +224,8 @@ class SQL extends Controller {
 			$movie->save(); // intentional
 			$movie->load(
 				array(
-					'`title`=? AND `director`=?',
+					$db->quotekey('title').'=? AND '.
+					$db->quotekey('director').'=?',
 					'The River Murders',
 					'Rich Cowan'
 				)
@@ -210,7 +238,8 @@ class SQL extends Controller {
 			);
 			$movie->load(
 				array(
-					'`title`=? AND `director`=?',
+					$db->quotekey('title').'=? AND '.
+					$db->quotekey('director').'=?',
 					array(
 						1=>'The River Murders',
 						2=>'Rich Cowan'
@@ -225,7 +254,8 @@ class SQL extends Controller {
 			);
 			$movie->load(
 				array(
-					'`title`=:title AND `director`=:director',
+					$db->quotekey('title').'=:title AND '.
+					$db->quotekey('director').'=:director',
 					':title'=>'The River Murders',
 					':director'=>'Rich Cowan'
 				)
@@ -238,7 +268,8 @@ class SQL extends Controller {
 			);
 			$movie->load(
 				array(
-					'`title`=:title AND `director`=:director',
+					$db->quotekey('title').'=:title AND '.
+					$db->quotekey('director').'=:director',
 					array(
 						':title'=>'The River Murders',
 						':director'=>'Rich Cowan'
@@ -344,7 +375,7 @@ class SQL extends Controller {
 				!$movie->next() && $movie->dry(),
 				'Navigation beyond cursor limit'
 			);
-			$obj=$movie->findone(array('`title`=?','Zodiac'));
+			$obj=$movie->findone(array($db->quotekey('title').'=?','Zodiac'));
 			$class=get_class($obj);
 			$test->expect(
 				$class=='DB\SQL\Mapper' &&
@@ -372,10 +403,10 @@ class SQL extends Controller {
 			}
 			$db->exec(
 				array(
-					'DROP TABLE IF EXISTS tickets;',
+					'DROP TABLE IF EXISTS '.$db->quotekey('tickets').';',
 					'CREATE TABLE tickets ('.
-						'`ticketno` '.$inc.' PRIMARY KEY,'.
-						'`title` VARCHAR(128) NOT NULL'.
+						$db->quotekey('ticketno').' '.$inc.' PRIMARY KEY,'.
+						$db->quotekey('title').' VARCHAR(128) NOT NULL'.
 					');'
 				)
 			);
@@ -403,7 +434,7 @@ class SQL extends Controller {
 				($id=$ticket->get('_id'))==$num,
 				'Virtual _id field: '.$id
 			);
-			$ticket->set('adhoc','MIN(`ticketno`)');
+			$ticket->set('adhoc','MIN('.$db->quotekey('ticketno').')');
 			$test->expect(
 				$ticket->exists('adhoc') && is_null($ticket->get('adhoc')),
 				'Ad hoc field defined'
@@ -413,7 +444,7 @@ class SQL extends Controller {
 				($num=$ticket->get('adhoc'))==$first,
 				'First auto-increment ID: '.$num
 			);
-			$ticket->set('adhoc','MAX(`ticketno`)');
+			$ticket->set('adhoc','MAX('.$db->quotekey('ticketno').')');
 			$ticket->load();
 			$test->expect(
 				($num=$ticket->get('adhoc'))==$latest,
@@ -426,15 +457,19 @@ class SQL extends Controller {
 			);
 			$f3->set('GET',
 				array(
-					'title'=>'admin\'; DELETE FROM `tickets`; SELECT \'1'
+					'title'=>'admin\'; '.
+					'DELETE FROM '.$db->quotekey('tickets').'; '.
+					'SELECT \'1'
 				)
 			);
 			$ticket->copyfrom('GET');
 			$ticket->save();
 			$ticket->load(
 				array(
-					'`title`=?',
-					'admin\'; DELETE FROM `tickets`; SELECT \'1'
+					$db->quotekey('title').'=?',
+					'admin\'; '.
+					'DELETE FROM '.$db->quotekey('tickets').'; '.
+					'SELECT \'1'
 				)
 			);
 			$test->expect(
@@ -442,7 +477,9 @@ class SQL extends Controller {
 				'SQL injection-safe'
 			);
 			if ($engine!='pgsql') { // PostgreSQL not supported (yet)
-				$db->exec('DROP TABLE IF EXISTS `sessions`;');
+				$db->exec(
+					'DROP TABLE IF EXISTS '.$db->quotekey('sessions').';'
+				);
 				$session=new \DB\SQL\Session($db);
 				$test->expect(
 					session_start(),

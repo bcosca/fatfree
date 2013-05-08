@@ -227,14 +227,12 @@ class SQL extends \PDO {
 								'k.table_catalog=t.table_catalog':
 								'k.table_schema=t.table_schema').' '):'').
 				'WHERE '.
-					'c.table_name='.
-						($this->quote($table)?:('"'.$table.'"')).' '.
+					'c.table_name='.$this->quote($table).' '.
 					($this->dbname?
 						('AND '.
 							($this->engine=='pgsql'?
 							'c.table_catalog':'c.table_schema').
-							'='.($this->quote($this->dbname)?:
-								('"'.$this->dbname.'"'))):'').
+							'='.$this->quote($this->dbname)):'').
 				';',
 				'field','type','defval','nullable','YES','pkey','PRIMARY KEY')
 		);
@@ -283,10 +281,10 @@ class SQL extends \PDO {
 
 	/**
 	*	Return quoted identifier name
-	*	@param $key
 	*	@return array
+	*	@param $key
 	**/
-	function quoteKey($key) {
+	function quotekey($key) {
 		if ($this->engine=='mysql')
 			$key="`".$key."`";
 		elseif (preg_match('/sybase|dblib|odbc/',$this->engine))
