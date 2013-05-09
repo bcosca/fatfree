@@ -196,7 +196,7 @@ class SQL extends \PDO {
 		// Supported engines
 		$cmd=array(
 			'sqlite2?'=>array(
-				'PRAGMA table_info('.$table.');',
+				'PRAGMA table_info("'.$table.'");',
 				'name','type','dflt_value','notnull',0,'pk',1),
 			'mysql'=>array(
 				'SHOW columns FROM `'.$this->dbname.'`.`'.$table.'`;',
@@ -283,7 +283,7 @@ class SQL extends \PDO {
 
 	/**
 	*	Return quoted identifier name
-	*	@return array
+	*	@return string
 	*	@param $key
 	**/
 	function quotekey($key) {
