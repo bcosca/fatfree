@@ -82,8 +82,9 @@ class SQL extends \PDO {
 	*	@param $cmds string|array
 	*	@param $args string|array
 	*	@param $ttl int
+	*	@param $log bool
 	**/
-	function exec($cmds,$args=NULL,$ttl=0) {
+	function exec($cmds,$args=NULL,$ttl=0,$log=TRUE) {
 		$auto=FALSE;
 		if (is_null($args))
 			$args=array();
@@ -159,9 +160,10 @@ class SQL extends \PDO {
 					user_error('PDO: '.$error[2]);
 				}
 			}
-			$this->log.=date('r').' ('.
-				sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
-				preg_replace($keys,$vals,$cmd,1).PHP_EOL;
+			if ($log)
+				$this->log.=date('r').' ('.
+					sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+					preg_replace($keys,$vals,$cmd,1).PHP_EOL;
 		}
 		if ($this->trans && $auto)
 			$this->commit();
