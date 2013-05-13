@@ -904,6 +904,10 @@ final class Base {
 		if ($this->hive['ONERROR'])
 			// Execute custom error handler
 			$this->call($this->hive['ONERROR'],$this);
+		if ($this->hive['ONERROR-'.$code])
+			// Execute custom error handler
+			$this->call($this->hive['ONERROR-'.$code],$this);
+
 		elseif (!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo $this->hive['AJAX']?
 				json_encode($this->hive['ERROR']):
