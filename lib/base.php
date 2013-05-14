@@ -901,11 +901,9 @@ final class Base {
 		);
 		if (ob_get_level())
 			ob_end_clean();
-		if ($this->hive['ONERROR'] &&
-			$this->call($this->hive['ONERROR'],$this)!==FALSE) {
-			// Execute custom error handler
-		}
-		elseif (!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
+		if ((!$this->hive['ONERROR'] ||
+			$this->call($this->hive['ONERROR'],$this)===FALSE) &&
+			!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo $this->hive['AJAX']?
 				json_encode($this->hive['ERROR']):
 				('<!DOCTYPE html>'.$eol.
