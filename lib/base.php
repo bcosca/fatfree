@@ -1086,7 +1086,8 @@ final class Base {
 				$route=$routes[self::REQ_SYNC|self::REQ_AJAX];
 			if (!$route)
 				continue;
-			if (isset($route[$this->hive['VERB']])) {
+			if ($this->hive['VERB']!='OPTIONS' &&
+				isset($route[$this->hive['VERB']])) {
 				$parts=parse_url($req);
 				if ($this->hive['VERB']=='GET' &&
 					preg_match('/.+\/$/',$parts['path']))
