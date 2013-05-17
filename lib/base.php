@@ -1126,7 +1126,7 @@ final class Base {
 						list($headers,$body)=$data;
 						if (PHP_SAPI!='cli')
 							array_walk($headers,'header');
-						$this->expire($cached+$ttl-$now);
+						$this->expire($cached[0]+$ttl-$now);
 					}
 					else
 						// Expire HTTP client-cached page
