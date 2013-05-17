@@ -236,7 +236,7 @@ class Mapper extends \DB\Cursor {
 		);
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
-			$adhoc.=','.$field['expr'].' AS '.$key;
+			$adhoc.=','.$field['expr'].' AS '.$this->db->quotekey($key);
 		return $this->select('*'.$adhoc,$filter,$options,$ttl);
 	}
 
@@ -305,8 +305,7 @@ class Mapper extends \DB\Cursor {
 					$inc=$key;
 			}
 			if ($field['changed'] && $key!=$inc) {
-				$fields.=($ctr?',':'').
-					($this->engine=='mysql'?('`'.$key.'`'):$key);
+				$fields.=($ctr?',':'').$this->db->quotekey($key);
 				$values.=($ctr?',':'').'?';
 				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
@@ -328,7 +327,7 @@ class Mapper extends \DB\Cursor {
 			$query='';
 			$args='';
 			foreach ($pkeys as $pkey) {
-				$query.=($query?' AND ':'').$pkey.'=?';
+				$query.=($query?' AND ':'').$this->db->quotekey($pkey).'=?';
 				$args[$ctr+1]=$this->fields[$pkey]['value'];
 				$ctr++;
 			}
@@ -350,14 +349,13 @@ class Mapper extends \DB\Cursor {
 		$filter='';
 		foreach ($this->fields as $key=>$field)
 			if ($field['changed']) {
-				$pairs.=($pairs?',':'').
-					($this->engine=='mysql'?('`'.$key.'`'):$key).'=?';
+				$pairs.=($pairs?',':'').$this->db->quotekey($key).'=?';
 				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
 			}
 		foreach ($this->fields as $key=>$field)
 			if ($field['pkey']) {
-				$filter.=($filter?' AND ':'').$key.'=?';
+				$filter.=($filter?' AND ':'').$this->db->quotekey($key).'=?';
 				$args[$ctr+1]=array($field['previous'],$field['pdo_type']);
 				$ctr++;
 			}
@@ -392,7 +390,7 @@ class Mapper extends \DB\Cursor {
 		$filter='';
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
-				$filter.=($filter?' AND ':'').$key.'=?';
+				$filter.=($filter?' AND ':'').$this->db->quotekey($key).'=?';
 				$args[$ctr+1]=array($field['previous'],$field['pdo_type']);
 				$ctr++;
 			}
@@ -476,9 +474,7 @@ class Mapper extends \DB\Cursor {
 	function __construct(\DB\SQL $db,$table,$ttl=60) {
 		$this->db=$db;
 		$this->engine=$db->driver();
-		if ($this->engine=='mysql')
-			$table='`'.$table.'`';
-		$this->table=$table;
+		$this->table=$this->db->quotekey($table);
 		$this->fields=$db->schema($table,$ttl);
 		$this->reset();
 	}

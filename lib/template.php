@@ -315,7 +315,7 @@ class Template extends View {
 						}
 						else {
 							// Text node
-							$tmp.=$text[$ptr];
+							$tmp.=substr($text,$ptr,1);
 							$ptr++;
 						}
 					if (strlen($tmp))

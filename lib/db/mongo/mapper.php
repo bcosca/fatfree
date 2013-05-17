@@ -112,7 +112,7 @@ class Mapper extends \DB\Cursor {
 		$cache=\Cache::instance();
 		if (!$fw->get('CACHE') || !$ttl || !($cached=$cache->exists(
 			$hash=$fw->hash($fw->stringify(array($fields,$filter,$options))).
-				'.mongo',$result)) || $cached+$ttl<microtime(TRUE)) {
+				'.mongo',$result)) || $cached[0]+$ttl<microtime(TRUE)) {
 			if ($options['group']) {
 				$tmp=$this->db->selectcollection(
 					$fw->get('HOST').'.'.$fw->get('BASE').'.'.uniqid().'.tmp'

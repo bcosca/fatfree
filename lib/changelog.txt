@@ -1,5 +1,15 @@
 CHANGELOG
 
+3.0.8 (17 May 2013)
+*	NEW: Bcrypt lightweight hashing library\
+*	Return total number of records in superset in Cursor->paginate()
+*	ONERROR short-circuit (Enhancement #334)
+*	Apply quotes/backticks on DB identifiers
+*	Allow enabling/disabling of SQL log
+*	Normalize glob() behavior (Issue #330)
+*	Bug fix: mbstring 2-byte text truncation (Issue #325)
+*	Bug fix: Unsupported operand types (Issue #324)
+
 3.0.7 (2 May 2013)
 *	NEW: route() now allows an array of routing patterns as first argument;
 	support array as first argument of map()
