@@ -70,7 +70,8 @@ abstract class Cursor extends \Magic {
 
 	/**
 	*	Return array containing subset of records matching criteria,
-	*	number of subsets available, and actual subset position
+	*	total number of records in superset, number of subsets available,
+	*	and actual subset position
 	*	@return array
 	*	@param $pos int
 	*	@param $size int
@@ -78,7 +79,8 @@ abstract class Cursor extends \Magic {
 	*	@param $options array
 	**/
 	function paginate($pos=0,$size=10,$filter=NULL,array $options=NULL) {
-		$count=ceil($this->count($filter,$options)/$size);
+		$total=$this->count($filter,$options);
+		$count=ceil($total/$size);
 		$pos=max(0,min($pos,$count-1));
 		return array(
 			'subset'=>$this->find($filter,
@@ -87,6 +89,7 @@ abstract class Cursor extends \Magic {
 					array('limit'=>$size,'offset'=>$pos*$size)
 				)
 			),
+			'total'=>$total,
 			'count'=>$count,
 			'pos'=>$pos<$count?$pos:0
 		);
