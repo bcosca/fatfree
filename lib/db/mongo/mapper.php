@@ -221,7 +221,10 @@ class Mapper extends \DB\Cursor {
 	**/
 	function update() {
 		$this->collection->update(
-			array('_id'=>$this->document['_id']),$this->document);
+			array('_id'=>$this->document['_id']),
+			$this->document,
+			array('upsert'=>TRUE)
+		);
 		return $this->document;
 	}
 
