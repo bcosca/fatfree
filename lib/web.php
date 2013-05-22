@@ -72,7 +72,7 @@ class Web extends Prefab {
 				'zip'=>'application/zip'
 			);
 			foreach ($map as $key=>$val)
-				if (preg_match('/'.$key.'/',$ext[0]))
+				if (preg_match('/'.$key.'/',strtolower($ext[0])))
 					return $val;
 		}
 		return 'application/octet-stream';
