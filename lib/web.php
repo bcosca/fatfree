@@ -654,6 +654,32 @@ class Web extends Prefab {
 	}
 
 	/**
+	*	Retrieve information from whois server
+	*	@return string|FALSE
+	*	@param $addr string
+	**/
+	function whois($addr,$server='whois.internic.net') {
+		$socket=@fsockopen($server,43,$errno,$errstr);
+		if (!$socket)
+			// Can't establish connection
+			return FALSE;
+		// Set connection timeout parameters
+		stream_set_blocking($socket,TRUE);
+		stream_set_timeout($socket,ini_get('default_socket_timeout'));
+		// Send request
+		fputs($socket,$addr."\r\n");
+		$info=stream_get_meta_data($socket);
+		// Get response
+		$response='';
+		while (!feof($socket) && !$info['timed_out']) {
+			$response.=fgets($socket,4096); // MDFK97
+			$info=stream_get_meta_data($socket);
+		}
+		fclose($socket);
+		return $info['timed_out']?FALSE:trim($response);
+	}
+
+	/**
 	*	Return a URL/filesystem-friendly version of string
 	*	@return string
 	*	@param $text string
