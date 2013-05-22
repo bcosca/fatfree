@@ -106,6 +106,10 @@ class Web extends Controller {
 				);
 			}
 		}
+		$test->expect(
+			$whois=$web->whois('sourceforge.net'),
+			'WHOIS: '.nl2br($f3->stringify($whois))
+		);
 		$f3->set('ESCAPE',FALSE);
 		$f3->set('results',$test->results());
 	}
