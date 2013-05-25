@@ -21,7 +21,6 @@ class Lexicon extends Controller {
 		);
 		$template=\Template::instance();
 		$f3->set('LANGUAGE','fr_FR');
-		var_dump($f3->get('tqbf'));
 		$test->expect(
 			substr_count($f3->decode($template->render('templates/lexicon.htm')),
 			'Les naïfs ægithales hâtifs pondant à Noël où il gèle sont sûrs d\'être déçus et de voir leurs drôles d\'œufs abîmés.'),
