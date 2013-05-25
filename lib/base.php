@@ -771,7 +771,7 @@ final class Base {
 						if (isset($match[1]) &&
 							!array_key_exists($match[1],$lex))
 							$lex[$match[1]]=preg_replace(
-								'/\\\\\h*\r?\n/','',$match[2]);
+								'/(?<!\\\\)"|\\\\\h*\r?\n/','',$match[2]);
 			}
 		}
 		return $lex;
