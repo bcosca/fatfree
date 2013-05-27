@@ -611,7 +611,7 @@ final class Base {
 		setlocale(LC_ALL,$this->locales);
 		// Get formatting rules
 		$conv=localeconv();
-		$out=preg_replace_callback(
+		return preg_replace_callback(
 			'/\{(?P<pos>\d+)\s*(?:,\s*(?P<type>\w+)\s*'.
 			'(?:,(?P<mod>(?:\s*\w+(?:\s+\{.+?\}\s*,?)?)*))?)?\}/',
 			function($expr) use($args,$conv) {
@@ -700,8 +700,6 @@ final class Base {
 			},
 			$val
 		);
-		return preg_match('/^win/i',PHP_OS)?
-			iconv('Windows-1252',$this->hive['ENCODING'],$out):$out;
 	}
 
 	/**
