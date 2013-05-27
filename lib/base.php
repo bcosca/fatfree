@@ -770,8 +770,8 @@ final class Base {
 					foreach ($matches as $match)
 						if (isset($match[1]) &&
 							!array_key_exists($match[1],$lex))
-							$lex[$match[1]]=preg_replace(
-								'/(?<!\\\\)"|\\\\\h*\r?\n/','',$match[2]);
+							$lex[$match[1]]=trim(preg_replace(
+								'/(?<!\\\\)"|\\\\\h*\r?\n/','',$match[2]));
 			}
 		}
 		return $lex;
@@ -1285,8 +1285,7 @@ final class Base {
 								return $val+0;
 							if (preg_match('/^\w+$/i',$val) && defined($val))
 								return constant($val);
-							return preg_replace(
-								'/\\\\\h*\r?\n/','',$val);
+							return preg_replace('/\\\\\h*\r?\n/','',$val);
 						},
 						// Mark quoted strings with 0x00 whitespace
 						str_getcsv(preg_replace(
