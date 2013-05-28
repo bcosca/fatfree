@@ -1579,8 +1579,35 @@ final class Base {
 
 }
 
+//! Prefab for classes with constructors and static factory methods
+abstract class Prefab {
+
+	/**
+	*	Return class instance
+	*	@return object
+	**/
+	static function instance() {
+		if (!Registry::exists($class=get_called_class())) {
+			$ref=new Reflectionclass($class);
+			$args=func_get_args();
+			Registry::set($class,
+				$args?$ref->newinstanceargs($args):new $class);
+		}
+		return Registry::get($class);
+	}
+
+	/**
+	*	Wrap-up
+	*	@return NULL
+	**/
+	function __destruct() {
+		Registry::clear(get_called_class());
+	}
+
+}
+
 //! Cache engine
-final class Cache {
+final class Cache extends Prefab {
 
 	private
 		//! Cache DSN
@@ -1780,63 +1807,9 @@ final class Cache {
 			if (preg_match('/^folder\h*=\h*(.+)/',$dsn,$parts) &&
 				!is_dir($parts[1]))
 				mkdir($parts[1],Base::MODE,TRUE);
+			$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
 		}
 		return $this->dsn=$dsn;
-	}
-
-	/**
-	*	Return class instance
-	*	@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=__CLASS__))
-			Registry::set($class,new $class);
-		return Registry::get($class);
-	}
-
-	//! Prohibit cloning
-	private function __clone() {
-	}
-
-	//! Prohibit instantiation
-	private function __construct() {
-		$fw=Base::instance();
-		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
-	}
-
-	/**
-	*	Wrap-up
-	*	@return NULL
-	**/
-	function __destruct() {
-		Registry::clear(__CLASS__);
-	}
-
-}
-
-//! Prefab for classes with constructors and static factory methods
-abstract class Prefab {
-
-	/**
-	*	Return class instance
-	*	@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=get_called_class())) {
-			$ref=new Reflectionclass($class);
-			$args=func_get_args();
-			Registry::set($class,
-				$args?$ref->newinstanceargs($args):new $class);
-		}
-		return Registry::get($class);
-	}
-
-	/**
-	*	Wrap-up
-	*	@return NULL
-	**/
-	function __destruct() {
-		Registry::clear(get_called_class());
 	}
 
 }
