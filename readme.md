@@ -295,7 +295,7 @@ $HTTP["host"] =~ "www\.example\.com$" {
 
 ### Rerouting
 
-So let's get back to coding. You can declare a page obsolete and redirect your visitors to another site:-
+So let's get back to coding. You can declare a page obsolete and redirect your visitors to another site/page:-
 
 ``` php
 $f3->route('GET|HEAD /obsoletepage',
