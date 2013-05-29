@@ -122,7 +122,7 @@ class Web extends Prefab {
 		if (!is_file($file))
 			return FALSE;
 		if (PHP_SAPI!='cli') {
-			header('Content-Type: '.$mime?:$this->mime($file));
+			header('Content-Type: '.($mime?:$this->mime($file)));
 			if ($force)
 				header('Content-Disposition: attachment; '.
 					'filename='.basename($file));
