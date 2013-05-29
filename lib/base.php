@@ -1781,8 +1781,8 @@ final class Cache extends Prefab {
 	*	@param $dsn bool|string
 	**/
 	function load($dsn) {
+		$fw=Base::instance();
 		if ($dsn=trim($dsn)) {
-			$fw=Base::instance();
 			if (preg_match('/^memcache=(.+)/',$dsn,$parts) &&
 				extension_loaded('memcache'))
 				foreach ($fw->split($parts[1]) as $server) {
@@ -1807,8 +1807,8 @@ final class Cache extends Prefab {
 			if (preg_match('/^folder\h*=\h*(.+)/',$dsn,$parts) &&
 				!is_dir($parts[1]))
 				mkdir($parts[1],Base::MODE,TRUE);
-			$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
 		}
+		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
 		return $this->dsn=$dsn;
 	}
 
