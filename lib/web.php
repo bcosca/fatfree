@@ -657,6 +657,7 @@ class Web extends Prefab {
 	*	Retrieve information from whois server
 	*	@return string|FALSE
 	*	@param $addr string
+	*	@param $server string
 	**/
 	function whois($addr,$server='whois.internic.net') {
 		$socket=@fsockopen($server,43,$errno,$errstr);
