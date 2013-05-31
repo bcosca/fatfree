@@ -12,6 +12,7 @@
 	<body>
 		<div class="row">
 			<div class="sidebar">
+				<h1><?php echo $VERSION; ?></h1>
 				<ul>
 					<?php foreach ($menu as $url=>$desc): ?>
 					<li><?php if ($active==$desc): ?><?php echo $desc; ?><?php else: ?><a href="<?php echo $BASE.$url; ?>"><?php echo $desc; ?></a><?php endif; ?></li>

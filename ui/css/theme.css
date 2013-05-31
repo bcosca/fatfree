@@ -17,7 +17,7 @@ h1 {
 	text-align:right;
 	color:#fc3;
 	background:#000;
-	padding:2% 2% 9999px 2%;
+	padding:3% 2% 9999px 2%;
 	margin-bottom:-9999px;
 	width:21%;
 	float:left;
@@ -27,7 +27,7 @@ h1 {
 	font-size:0.95em;
 	font-weight:bold;
 	text-transform:uppercase;
-	margin:3.75em 0 0 0;
+	margin:1em 0 0 0;
 }
 .sidebar li {
 	list-style-type:none;
