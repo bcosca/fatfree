@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.0.7-Release';
+		VERSION='3.0.9-Dev';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -901,10 +901,9 @@ final class Base {
 		);
 		if (ob_get_level())
 			ob_end_clean();
-		if ($this->hive['ONERROR'])
-			// Execute custom error handler
-			$this->call($this->hive['ONERROR'],$this);
-		elseif (!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
+		if ((!$this->hive['ONERROR'] ||
+			$this->call($this->hive['ONERROR'],$this)===FALSE) &&
+			!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo $this->hive['AJAX']?
 				json_encode($this->hive['ERROR']):
 				('<!DOCTYPE html>'.$eol.
@@ -1087,7 +1086,8 @@ final class Base {
 				$route=$routes[self::REQ_SYNC|self::REQ_AJAX];
 			if (!$route)
 				continue;
-			if (isset($route[$this->hive['VERB']])) {
+			if ($this->hive['VERB']!='OPTIONS' &&
+				isset($route[$this->hive['VERB']])) {
 				$parts=parse_url($req);
 				if ($this->hive['VERB']=='GET' &&
 					preg_match('/.+\/$/',$parts['path']))
@@ -1126,7 +1126,7 @@ final class Base {
 						list($headers,$body)=$data;
 						if (PHP_SAPI!='cli')
 							array_walk($headers,'header');
-						$this->expire($cached+$ttl-$now);
+						$this->expire($cached[0]+$ttl-$now);
 					}
 					else
 						// Expire HTTP client-cached page
@@ -1741,10 +1741,11 @@ final class Cache {
 			case 'xcache':
 				return TRUE; /* Not supported */
 			case 'folder':
-				foreach (glob($parts[1].'*') as $file)
-					if (preg_match($regex,basename($file)) &&
-						filemtime($file)+$lifetime<time())
-						@unlink($file);
+				if ($glob=@glob($parts[1].'*'))
+					foreach ($glob as $file)
+						if (preg_match($regex,basename($file)) &&
+							filemtime($file)+$lifetime<time())
+							@unlink($file);
 				return TRUE;
 		}
 		return FALSE;

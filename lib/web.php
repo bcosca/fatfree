@@ -122,7 +122,7 @@ class Web extends Prefab {
 		if (!is_file($file))
 			return FALSE;
 		if (PHP_SAPI!='cli') {
-			header('Content-Type: '.$mime?:$this->mime($file));
+			header('Content-Type: '.($mime?:$this->mime($file)));
 			if ($force)
 				header('Content-Disposition: attachment; '.
 					'filename='.basename($file));
@@ -509,7 +509,7 @@ class Web extends Prefab {
 					if ($fw->get('CACHE') &&
 						($cached=$cache->exists(
 							$hash=$fw->hash($save).'.'.$ext[0],$data)) &&
-						$cached>filemtime($save))
+						$cached[0]>filemtime($save))
 						$dst.=$data;
 					else {
 						$data='';

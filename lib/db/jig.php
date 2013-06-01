@@ -96,8 +96,9 @@ class Jig {
 	*	@return NULL
 	**/
 	function drop() {
-		foreach (glob($this->dir.'/*',GLOB_NOSORT) as $file)
-			@unlink($file);
+		if ($glob=@glob($this->dir.'/*',GLOB_NOSORT))
+			foreach ($glob as $file)
+				@unlink($file);
 	}
 
 	/**
