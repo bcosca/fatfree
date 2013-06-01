@@ -17,7 +17,6 @@ class SQL extends Controller {
 		if ($loaded) {
 			if (!is_dir('tmp/'))
 				mkdir('tmp/',\Base::MODE,TRUE);
-			/*
 			$db=new \DB\SQL('sqlite:tmp/sqlite.db');
 			$db->exec(
 				array(
@@ -25,8 +24,7 @@ class SQL extends Controller {
 					'PRAGMA journal_mode=MEMORY;'
 				)
 			);
-			*/
-			$db=new \DB\SQL('mysql:host=localhost');
+			//$db=new \DB\SQL('mysql:host=localhost');
 			$engine=$db->driver();
 			$test->expect(
 				is_object($db),
@@ -519,7 +517,6 @@ class SQL extends Controller {
 					'Session destroyed'
 				);
 			}
-			var_dump($db->log());
 		}
 		$f3->set('results',$test->results());
 	}
