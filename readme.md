@@ -2304,7 +2304,7 @@ Technical support is available at the official discussion forum: [`https://group
 F3 uses Git for version control. To clone the code repository on GitHub:-
 
 ``` bash
-git clone git://git@github.com:bcosca/Fat-Free-Framework.git
+git clone git://github.com/bcosca/fatfree.git
 ```
 
 If all you want is a zipball, grab it [**here**](https://github.com/bcosca/fatfree/archive/dev.zip).
