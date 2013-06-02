@@ -258,6 +258,19 @@ class SQL extends \PDO {
 	}
 
 	/**
+	*	Quote string
+	*	@return string
+	*	@param $val mixed
+	*	@param $type int
+	**/
+	function quote($val,$type=\PDO::PARAM_STR) {
+		return method_exists('\PDO','quote')?
+			parent::quote($val,$type):
+			(is_string($val)?str_replace('\'','\'\'',$val):$val);
+	}
+
+
+	/**
 	*	Return database engine
 	*	@return string
 	**/
