@@ -1447,8 +1447,8 @@ final class Base {
 					throw new ErrorException($text,$code);
 			}
 		);
-		if (!isset($_SERVER['SERVER_NAME']))
-			$_SERVER['SERVER_NAME']=gethostname();
+		if (!isset($_SERVER['HTTP_HOST']))
+			$_SERVER['HTTP_HOST']=gethostname();
 		if (PHP_SAPI=='cli') {
 			// Emulate HTTP request
 			if (isset($_SERVER['argc']) && $_SERVER['argc']<2) {
@@ -1474,9 +1474,9 @@ final class Base {
 			$jar=array(
 				'expire'=>0,
 				'path'=>$base?:'/',
-				'domain'=>is_int(strpos($_SERVER['SERVER_NAME'],'.')) &&
-					!filter_var($_SERVER['SERVER_NAME'],FILTER_VALIDATE_IP)?
-					$_SERVER['SERVER_NAME']:'',
+				'domain'=>is_int(strpos($_SERVER['HTTP_HOST'],'.')) &&
+					!filter_var($_SERVER['HTTP_HOST'],FILTER_VALIDATE_IP)?
+					$_SERVER['HTTP_HOST']:'',
 				'secure'=>($scheme=='https'),
 				'httponly'=>TRUE
 			)
@@ -1506,7 +1506,7 @@ final class Base {
 			'FALLBACK'=>$this->fallback,
 			'HEADERS'=>$headers,
 			'HIGHLIGHT'=>TRUE,
-			'HOST'=>$_SERVER['SERVER_NAME'],
+			'HOST'=>$_SERVER['HTTP_HOST'],
 			'IP'=>isset($headers['Client-IP'])?
 				$headers['Client-IP']:
 				(isset($headers['X-Forwarded-For']) &&
@@ -1529,7 +1529,7 @@ final class Base {
 				$_SERVER['SERVER_PORT']:NULL,
 			'QUIET'=>FALSE,
 			'REALM'=>$scheme.'://'.
-				$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'],
+				$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
 			'RESPONSE'=>'',
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>array(),
