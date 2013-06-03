@@ -1610,7 +1610,9 @@ final class Cache extends Prefab {
 		//! Prefix for cache entries
 		$prefix,
 		//! MemCache object
-		$ref;
+		$ref,
+		//! is default cache
+		$isdefault;
 
 	/**
 	*	Return timestamp and TTL of cache entry or FALSE if not found
@@ -1807,6 +1809,16 @@ final class Cache extends Prefab {
 		return $this->dsn=$dsn;
 	}
 
+	function __construct($dsn=NULL) {
+		$this->isdefault=!Registry::exists(get_called_class());
+		if ($dsn)
+			$this->load($dsn);
+	}
+
+	function __destruct() {
+		if ($this->isdefault)
+			parent::__destruct();
+	}
 }
 
 //! View handler
