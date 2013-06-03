@@ -707,12 +707,7 @@ final class Base {
 	*	@return string
 	*	@param $code string
 	**/
-	function language($code=NULL) {
-		if (!$code) {
-			$headers=$this->hive['HEADERS'];
-			if (isset($headers['Accept-Language']))
-				$code=$headers['Accept-Language'];
-		}
+	function language($code) {
 		$code=str_replace('-','_',preg_replace('/;q=.+?(?=,|$)/','',$code));
 		$code.=($code?',':'').$this->fallback;
 		$this->languages=array();
