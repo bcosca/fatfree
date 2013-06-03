@@ -1562,6 +1562,8 @@ final class Base {
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler
 		register_shutdown_function(array($this,'unload'));
+		// Register framework cache
+		Cache::instance();
 	}
 
 	/**
@@ -1611,8 +1613,8 @@ final class Cache extends Prefab {
 		$prefix,
 		//! MemCache object
 		$ref,
-		//! is default cache
-		$isdefault;
+		//! Standard cache flag
+		$flag;
 
 	/**
 	*	Return timestamp and TTL of cache entry or FALSE if not found
@@ -1810,13 +1812,13 @@ final class Cache extends Prefab {
 	}
 
 	function __construct($dsn=NULL) {
-		$this->isdefault=!Registry::exists(get_called_class());
+		$this->flag=!Registry::exists('Cache');
 		if ($dsn)
 			$this->load($dsn);
 	}
 
 	function __destruct() {
-		if ($this->isdefault)
+		if ($this->flag)
 			parent::__destruct();
 	}
 }
