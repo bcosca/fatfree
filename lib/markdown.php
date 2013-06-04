@@ -305,7 +305,7 @@ class Markdown extends Prefab {
 	}
 
 	/**
-	*	Process strong/em spans
+	*	Process strong/em/strikethrough spans
 	*	@return string
 	*	@param $str string
 	**/
@@ -324,7 +324,11 @@ class Markdown extends Prefab {
 							return '<strong><em>'.$expr[2].'</em></strong>';
 					}
 				},
-				$tmp=$str
+				preg_replace(
+					'/(?<!\\\\)~~(.*?)(?!\\\\)~~(?=[\s[:punct:]]|$)/',
+					'<del>\1</del>',
+					$tmp=$str
+				)
 			);
 		return $str;
 	}

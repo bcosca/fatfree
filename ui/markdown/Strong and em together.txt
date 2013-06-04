@@ -5,3 +5,5 @@ So is ***this*** word.
 ___This is strong and em.___
 
 So is ___this___ word.
+
+~~This is strikethrough.~~
