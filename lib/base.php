@@ -1564,14 +1564,6 @@ final class Base {
 		register_shutdown_function(array($this,'unload'));
 	}
 
-	/**
-	*	Wrap-up
-	*	@return NULL
-	**/
-	function __destruct() {
-		Registry::clear(__CLASS__);
-	}
-
 }
 
 //! Prefab for classes with constructors and static factory methods
@@ -1591,18 +1583,10 @@ abstract class Prefab {
 		return Registry::get($class);
 	}
 
-	/**
-	*	Wrap-up
-	*	@return NULL
-	**/
-	function __destruct() {
-		Registry::clear(get_called_class());
-	}
-
 }
 
 //! Cache engine
-final class Cache extends Prefab {
+class Cache extends Prefab {
 
 	private
 		//! Cache DSN
@@ -1610,9 +1594,7 @@ final class Cache extends Prefab {
 		//! Prefix for cache entries
 		$prefix,
 		//! MemCache object
-		$ref,
-		//! Built-in cache flag
-		$flag;
+		$ref;
 
 	/**
 	*	Return timestamp and TTL of cache entry or FALSE if not found
@@ -1804,14 +1786,6 @@ final class Cache extends Prefab {
 			if (preg_match('/^folder\h*=\h*(.+)/',$dsn,$parts) &&
 				!is_dir($parts[1]))
 				mkdir($parts[1],Base::MODE,TRUE);
-			$this->flag=(bool)
-				array_filter(
-					debug_backtrace(FALSE),
-					function($frame) {
-						return isset($frame['args'][0]) &&
-							$frame['args'][0]=='CACHE';
-					}
-				);
 		}
 		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
 		return $this->dsn=$dsn;
@@ -1825,15 +1799,6 @@ final class Cache extends Prefab {
 	function __construct($dsn=FALSE) {
 		if ($dsn)
 			$this->load($dsn);
-	}
-
-	/**
-	*	Wrap-up
-	*	@return NULL
-	**/
-	function __destruct() {
-		if ($this->flag)
-			parent::__destruct();
 	}
 
 }
@@ -2296,15 +2261,6 @@ final class Registry {
 	**/
 	static function get($key) {
 		return self::$table[$key];
-	}
-
-	/**
-	*	Remove object from catalog
-	*	@return NULL
-	*	@param $key string
-	**/
-	static function clear($key) {
-		unset(self::$table[$key]);
 	}
 
 	//! Prohibit cloning
