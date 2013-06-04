@@ -202,7 +202,7 @@ final class Base {
 		}
 		else switch ($key) {
 			case 'CACHE':
-				$val=Cache::instance()->load($val);
+				$val=Cache::instance()->load($val,TRUE);
 				break;
 			case 'ENCODING':
 				$val=ini_set('default_charset',$val);
@@ -1562,8 +1562,6 @@ final class Base {
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler
 		register_shutdown_function(array($this,'unload'));
-		// Register framework cache
-		Cache::instance();
 	}
 
 	/**
@@ -1613,7 +1611,7 @@ final class Cache extends Prefab {
 		$prefix,
 		//! MemCache object
 		$ref,
-		//! Standard cache flag
+		//! Built-in cache flag
 		$flag;
 
 	/**
@@ -1806,21 +1804,38 @@ final class Cache extends Prefab {
 			if (preg_match('/^folder\h*=\h*(.+)/',$dsn,$parts) &&
 				!is_dir($parts[1]))
 				mkdir($parts[1],Base::MODE,TRUE);
+			$this->flag=(bool)
+				array_filter(
+					debug_backtrace(FALSE),
+					function($frame) {
+						return isset($frame['args'][0]) &&
+							$frame['args'][0]=='CACHE';
+					}
+				);
 		}
 		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
 		return $this->dsn=$dsn;
 	}
 
-	function __construct($dsn=NULL) {
-		$this->flag=!Registry::exists('Cache');
+	/**
+	*	Class constructor
+	*	@return object
+	*	@param $dsn bool|string
+	**/
+	function __construct($dsn=FALSE) {
 		if ($dsn)
 			$this->load($dsn);
 	}
 
+	/**
+	*	Wrap-up
+	*	@return NULL
+	**/
 	function __destruct() {
 		if ($this->flag)
 			parent::__destruct();
 	}
+
 }
 
 //! View handler
