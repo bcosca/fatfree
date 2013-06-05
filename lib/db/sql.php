@@ -266,7 +266,7 @@ class SQL extends \PDO {
 	function quote($val,$type=\PDO::PARAM_STR) {
 		return $this->engine=='odbc'?
 			(is_string($val)?
-				Base::instance()->stringify(str_replace('\'','\'\'',$val)):
+				\Base::instance()->stringify(str_replace('\'','\'\'',$val)):
 				$val):
 			parent::quote($val,$type);
 	}
@@ -303,11 +303,11 @@ class SQL extends \PDO {
 	function quotekey($key) {
 		if ($this->engine=='mysql')
 			$key="`".$key."`";
-		elseif (preg_match('/sybase|dblib|odbc/',$this->engine))
+		elseif (preg_match('/sybase|dblib/',$this->engine))
 			$key="'".$key."'";
 		elseif (preg_match('/sqlite2?|pgsql/',$this->engine))
 			$key='"'.$key.'"';
-		elseif (preg_match('/mssql|sqlsrv/',$this->engine))
+		elseif (preg_match('/mssql|sqlsrv|odbc/',$this->engine))
 			$key="[".$key."]";
 		elseif ($this->engine=='oci')
 			$key='"'.strtoupper($key).'"';
