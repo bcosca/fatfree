@@ -197,6 +197,13 @@ class Template extends Controller {
 		);
 		$f3->clear('cond1');
 		$f3->clear('cond2');
+		$f3->set('test',array('string'=>'thin','int'=>123,'bool'=>FALSE));
+		$test->expect(
+			preg_replace('/\s/','',$tpl->render('templates/test11.htm'))==
+				'<em>thin</em>-1failed',
+			'<switch>, <case>, <default>'
+		);
+		$f3->clear('test');
 		$test->expect(
 			preg_replace('/[\t\r\n]/','',
 				$tpl->render('templates/test6.htm'))==
