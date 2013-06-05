@@ -2287,6 +2287,18 @@ Once you get the hang of testing the smallest units of your application, you can
 * Repeat `text-block` as many times as there are elements in the array variable `@group` or the expression `expr`. `@key` and `@value` function in the same manner as the key-value pair in the equivalent PHP `foreach()` statement. Variable represented by `key` in `counter` attribute increments by `1` with every iteration.
 
 ```
+<switch expr="{{ scalar expr }}">
+    <case value="{{ scalar @value|expr }}" break="{{ bool TRUE|FALSE }}">
+        text-block
+    </case>
+    .
+    .
+    .
+</switch>
+```
+* Equivalent of the PHP switch-case jump table structure.
+
+```
 {{* text-block *}}
 ```
 * Alias for `<exclude>`.
