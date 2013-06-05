@@ -219,7 +219,7 @@ class Template extends View {
 		return
 			'<?php case '.$this->token($attrib['value']).': ?>'.
 				$this->build($node).
-			'<?php break; ?>';
+			'<?php '.(isset($attrib['break'])?'if ('.$this->token($attrib['break']).') ':'').'break; ?>';
 	}
 
 	/**
@@ -230,7 +230,7 @@ class Template extends View {
 	protected function _default(array $node) {
 		return
 			'<?php default: ?>'.
-				$this->build($node);
+				$this->build($node).
 			'<?php break; ?>';
 	}
 

@@ -200,7 +200,7 @@ class Template extends Controller {
 		$f3->set('test',array('string'=>'thin','int'=>123,'bool'=>FALSE));
 		$test->expect(
 			preg_replace('/\s/','',$tpl->render('templates/test11.htm'))==
-				'<em>thin</em>-1failed',
+				'<em>thin</em>-1failed123124',
 			'<switch>, <case>, <default>'
 		);
 		$f3->clear('test');
