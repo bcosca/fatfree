@@ -1,0 +1,20 @@
+<switch expr="{{@test.string}}">
+	<case value="'fat'"><strong>fat</strong></case>
+	<case value="'thin'"><em>thin</em></case>
+</switch>
+<switch expr="{{@test.int}}">
+	<default>-1</default>
+	<case value="100">100</case>
+	<case value="200">200</case>
+	<case value="300">300</case>
+</switch>
+<switch expr="1">
+	<case value="{{@test.bool===TRUE}}">passed</case>
+	<case value="{{@test.bool===FALSE}}">failed</case>
+</switch>
+<switch expr="{{@test.int}}">
+	<case value="123" break="false">123</case>
+	<case value="124" break="true">124</case>
+	<case value="125" break="false">125</case>
+	<default>-1</default>
+</switch>
