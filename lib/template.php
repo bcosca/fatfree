@@ -217,7 +217,9 @@ class Template extends View {
 		$attrib=$node['@attrib'];
 		unset($node['@attrib']);
 		return
-			'<?php case '.$this->token($attrib['value']).': ?>'.
+			'<?php case '.(preg_match('/{{(.+?)}}/',$attrib['value'])?
+				$this->token($attrib['value']):
+				Base::instance()->stringify($attrib['value'])).': ?>'.
 				$this->build($node).
 			'<?php '.(isset($attrib['break'])?
 				'if ('.$this->token($attrib['break']).') ':'').
