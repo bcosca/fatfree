@@ -219,7 +219,9 @@ class Template extends View {
 		return
 			'<?php case '.$this->token($attrib['value']).': ?>'.
 				$this->build($node).
-			'<?php '.(isset($attrib['break'])?'if ('.$this->token($attrib['break']).') ':'').'break; ?>';
+			'<?php '.(isset($attrib['break'])?
+				'if ('.$this->token($attrib['break']).') ':'').
+				'break; ?>';
 	}
 
 	/**
