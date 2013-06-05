@@ -231,6 +231,7 @@ class Template extends View {
 		return
 			'<?php default: ?>'.
 				$this->build($node);
+			'<?php break; ?>';
 	}
 
 	/**
