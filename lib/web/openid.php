@@ -156,9 +156,15 @@ class OpenID extends \Magic {
 	*	@param $proxy string
 	**/
 	function verified($proxy=NULL) {
-		foreach ($_GET as $key=>$val)
-			if (preg_match('/^openid_(.+)/',$key,$match))
-				$this->args[$match[1]]=$val;
+        foreach ($_GET as $key => $val)
+            if (preg_match('/^openid_ns_([^_]+)/', $key, $match))
+                $this->args['ns.' . $match[1]] = $val;
+            elseif (preg_match('/^openid_([^_]+)_mode/', $key, $match))
+                $this->args[$match[1].'.mode'] = $val;
+            elseif (preg_match('/^openid_([^_]+)_(type|value)_([^_]+)/', $key, $match))
+                $this->args[$match[1] . '.' . $match[2] . '.' . $match[3]] = $val;
+            elseif (preg_match('/^openid_(.+)/', $key, $match))
+                $this->args[$match[1]] = $val;
 		if ($this->args['mode']!='error' && $url=$this->discover($proxy)) {
 			$this->args['mode']='check_authentication';
 			$var=array();
