@@ -676,9 +676,9 @@ final class Base {
 												$thousands_sep),
 												$currency_symbol),
 											$fmt[(int)(
-												(int)${$pre.'_cs_precedes'}.
-												(int)${$pre.'_sign_posn'}.
-												(int)${$pre.'_sep_by_space'}
+												(${$pre.'_cs_precedes'}%2).
+												(${$pre.'_sign_posn'}%5).
+												(${$pre.'_sep_by_space'}%3)
 											)]
 										);
 									case 'percent':
