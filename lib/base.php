@@ -730,7 +730,7 @@ final class Base {
 				$parts=explode('_',$locale);
 				$locale=@constant('ISO::LC_'.$parts[0]);
 				if (isset($parts[1]) &&
-					$country=@constant('ISO::CC_'.$parts[1]))
+					$country=@constant('ISO::CC_'.strtolower($parts[1])))
 					$locale.='_'.$country;
 			}
 			$this->locales[]=$locale;
