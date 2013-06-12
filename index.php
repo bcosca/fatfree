@@ -7,8 +7,8 @@ $f3->set('UI','ui/');
 
 $f3->set('menu',
 	array(
-		'/'=>'Internals',
-		'/globals'=>'Globals',
+		'/'=>'Globals',
+		'/internals'=>'Internals',
 		'/hive'=>'Hive',
 		'/lexicon'=>'Lexicon',
 		'/autoload'=>'Autoloader',
@@ -34,7 +34,7 @@ $f3->set('menu',
 	)
 );
 
-$f3->map('/','App\Internals');
+$f3->map('/','App\Globals');
 $f3->map('/@controller','App\@controller');
 
 $f3->run();

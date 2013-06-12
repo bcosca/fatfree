@@ -1,6 +1,7 @@
 # Enable rewrite engine and route requests to framework
 RewriteEngine On
 
+RewriteBase /dev/
 RewriteCond %{REQUEST_URI} \.ini$
 RewriteRule \.ini$ - [R=404]
 
@@ -10,4 +11,4 @@ RewriteRule \.html?$ - [R=404]
 RewriteCond %{REQUEST_FILENAME} !-l
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule .* index.php [L,QSA]
+RewriteRule .* index.php [L,QSA,E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
