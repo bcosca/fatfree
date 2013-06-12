@@ -1788,7 +1788,7 @@ class Cache extends Prefab {
 				!is_dir($parts[1]))
 				mkdir($parts[1],Base::MODE,TRUE);
 		}
-		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
+		$this->prefix=$fw->hash($_SERVER['SERVER_NAME'].$fw->get('BASE'));
 		return $this->dsn=$dsn;
 	}
 
