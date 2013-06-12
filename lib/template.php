@@ -192,6 +192,53 @@ class Template extends View {
 	}
 
 	/**
+	*	Template -switch- tag handler
+	*	@return string
+	*	@param $node array
+	**/
+	protected function _switch(array $node) {
+		$attrib=$node['@attrib'];
+		unset($node['@attrib']);
+		foreach ($node as $pos=>$block)
+			if (is_string($block) && !preg_replace('/\s+/','',$block))
+				unset($node[$pos]);
+		return
+			'<?php switch ('.$this->token($attrib['expr']).'): ?>'.
+				$this->build($node).
+			'<?php endswitch; ?>';
+	}
+
+	/**
+	*	Template -case- tag handler
+	*	@return string
+	*	@param $node array
+	**/
+	protected function _case(array $node) {
+		$attrib=$node['@attrib'];
+		unset($node['@attrib']);
+		return
+			'<?php case '.(preg_match('/{{(.+?)}}/',$attrib['value'])?
+				$this->token($attrib['value']):
+				Base::instance()->stringify($attrib['value'])).': ?>'.
+				$this->build($node).
+			'<?php '.(isset($attrib['break'])?
+				'if ('.$this->token($attrib['break']).') ':'').
+				'break; ?>';
+	}
+
+	/**
+	*	Template -default- tag handler
+	*	@return string
+	*	@param $node array
+	**/
+	protected function _default(array $node) {
+		return
+			'<?php default: ?>'.
+				$this->build($node).
+			'<?php break; ?>';
+	}
+
+	/**
 	*	Assemble markup
 	*	@return string
 	*	@param $node array|string

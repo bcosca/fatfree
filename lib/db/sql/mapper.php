@@ -54,8 +54,8 @@ class Mapper extends \DB\Cursor {
 	**/
 	function set($key,$val) {
 		if (array_key_exists($key,$this->fields)) {
-			if (!is_null($val) || !$this->fields[$key]['nullable'])
-				$val=$this->value($this->fields[$key]['pdo_type'],$val);
+			$val=is_null($val) && $this->fields[$key]['nullable']?
+				NULL:$this->value($this->fields[$key]['pdo_type'],$val);
 			if ($this->fields[$key]['value']!==$val ||
 				$this->fields[$key]['default']!==$val)
 				$this->fields[$key]['changed']=TRUE;
@@ -156,7 +156,7 @@ class Mapper extends \DB\Cursor {
 			$obj=$this;
 		return array_map(
 			function($row) {
-				return $row['value' ];
+				return $row['value'];
 			},
 			$obj->fields+$obj->adhoc
 		);

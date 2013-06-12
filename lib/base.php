@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.0.9-Dev';
+		VERSION='3.0.9-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -202,7 +202,7 @@ final class Base {
 		}
 		else switch ($key) {
 			case 'CACHE':
-				$val=Cache::instance()->load($val);
+				$val=Cache::instance()->load($val,TRUE);
 				break;
 			case 'ENCODING':
 				$val=ini_set('default_charset',$val);
@@ -611,7 +611,7 @@ final class Base {
 		setlocale(LC_ALL,$this->locales);
 		// Get formatting rules
 		$conv=localeconv();
-		$out=preg_replace_callback(
+		return preg_replace_callback(
 			'/\{(?P<pos>\d+)\s*(?:,\s*(?P<type>\w+)\s*'.
 			'(?:,(?P<mod>(?:\s*\w+(?:\s+\{.+?\}\s*,?)?)*))?)?\}/',
 			function($expr) use($args,$conv) {
@@ -676,9 +676,9 @@ final class Base {
 												$thousands_sep),
 												$currency_symbol),
 											$fmt[(int)(
-												(int)${$pre.'_cs_precedes'}.
-												(int)${$pre.'_sign_posn'}.
-												(int)${$pre.'_sep_by_space'}
+												(${$pre.'_cs_precedes'}%2).
+												(${$pre.'_sign_posn'}%5).
+												(${$pre.'_sep_by_space'}%3)
 											)]
 										);
 									case 'percent':
@@ -700,8 +700,6 @@ final class Base {
 			},
 			$val
 		);
-		return preg_match('/^win/i',PHP_OS)?
-			iconv('Windows-1252',$this->hive['ENCODING'],$out):$out;
 	}
 
 	/**
@@ -709,12 +707,7 @@ final class Base {
 	*	@return string
 	*	@param $code string
 	**/
-	function language($code=NULL) {
-		if (!$code) {
-			$headers=$this->hive['HEADERS'];
-			if (isset($headers['Accept-Language']))
-				$code=$headers['Accept-Language'];
-		}
+	function language($code) {
 		$code=str_replace('-','_',preg_replace('/;q=.+?(?=,|$)/','',$code));
 		$code.=($code?',':'').$this->fallback;
 		$this->languages=array();
@@ -737,7 +730,7 @@ final class Base {
 				$parts=explode('_',$locale);
 				$locale=@constant('ISO::LC_'.$parts[0]);
 				if (isset($parts[1]) &&
-					$country=@constant('ISO::CC_'.$parts[1]))
+					$country=@constant('ISO::CC_'.strtolower($parts[1])))
 					$locale.='_'.$country;
 			}
 			$this->locales[]=$locale;
@@ -770,8 +763,8 @@ final class Base {
 					foreach ($matches as $match)
 						if (isset($match[1]) &&
 							!array_key_exists($match[1],$lex))
-							$lex[$match[1]]=preg_replace(
-								'/\\\\\h*\r?\n/','',$match[2]);
+							$lex[$match[1]]=trim(preg_replace(
+								'/(?<!\\\\)"|\\\\\h*\r?\n/','',$match[2]));
 			}
 		}
 		return $lex;
@@ -1285,8 +1278,7 @@ final class Base {
 								return $val+0;
 							if (preg_match('/^\w+$/i',$val) && defined($val))
 								return constant($val);
-							return preg_replace(
-								'/\\\\\h*\r?\n/','',$val);
+							return preg_replace('/\\\\\h*\r?\n/','',$val);
 						},
 						// Mark quoted strings with 0x00 whitespace
 						str_getcsv(preg_replace(
@@ -1572,18 +1564,29 @@ final class Base {
 		register_shutdown_function(array($this,'unload'));
 	}
 
+}
+
+//! Prefab for classes with constructors and static factory methods
+abstract class Prefab {
+
 	/**
-	*	Wrap-up
-	*	@return NULL
+	*	Return class instance
+	*	@return object
 	**/
-	function __destruct() {
-		Registry::clear(__CLASS__);
+	static function instance() {
+		if (!Registry::exists($class=get_called_class())) {
+			$ref=new Reflectionclass($class);
+			$args=func_get_args();
+			Registry::set($class,
+				$args?$ref->newinstanceargs($args):new $class);
+		}
+		return Registry::get($class);
 	}
 
 }
 
 //! Cache engine
-final class Cache {
+class Cache extends Prefab {
 
 	private
 		//! Cache DSN
@@ -1757,8 +1760,8 @@ final class Cache {
 	*	@param $dsn bool|string
 	**/
 	function load($dsn) {
+		$fw=Base::instance();
 		if ($dsn=trim($dsn)) {
-			$fw=Base::instance();
 			if (preg_match('/^memcache=(.+)/',$dsn,$parts) &&
 				extension_loaded('memcache'))
 				foreach ($fw->split($parts[1]) as $server) {
@@ -1784,60 +1787,18 @@ final class Cache {
 				!is_dir($parts[1]))
 				mkdir($parts[1],Base::MODE,TRUE);
 		}
+		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
 		return $this->dsn=$dsn;
 	}
 
 	/**
-	*	Return class instance
+	*	Class constructor
 	*	@return object
+	*	@param $dsn bool|string
 	**/
-	static function instance() {
-		if (!Registry::exists($class=__CLASS__))
-			Registry::set($class,new $class);
-		return Registry::get($class);
-	}
-
-	//! Prohibit cloning
-	private function __clone() {
-	}
-
-	//! Prohibit instantiation
-	private function __construct() {
-		$fw=Base::instance();
-		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
-	}
-
-	/**
-	*	Wrap-up
-	*	@return NULL
-	**/
-	function __destruct() {
-		Registry::clear(__CLASS__);
-	}
-
-}
-
-//! Prefab for classes with constructors and static factory methods
-abstract class Prefab {
-
-	/**
-	*	Return class instance
-	*	@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=get_called_class())) {
-			$ref=new Reflectionclass($class);
-			Registry::set($class,$ref->newinstanceargs(func_get_args()));
-		}
-		return Registry::get($class);
-	}
-
-	/**
-	*	Wrap-up
-	*	@return NULL
-	**/
-	function __destruct() {
-		Registry::clear(get_called_class());
+	function __construct($dsn=FALSE) {
+		if ($dsn)
+			$this->load($dsn);
 	}
 
 }
@@ -2300,15 +2261,6 @@ final class Registry {
 	**/
 	static function get($key) {
 		return self::$table[$key];
-	}
-
-	/**
-	*	Remove object from catalog
-	*	@return NULL
-	*	@param $key string
-	**/
-	static function clear($key) {
-		unset(self::$table[$key]);
 	}
 
 	//! Prohibit cloning

@@ -49,6 +49,7 @@
 			<li>The <code>Base</code> class requires all listed PHP modules enabled to function properly.</li>
 			<li>The <code>Cache</code> class will use any available module in the list. If none can be found, it will use the filesystem as fallback.</li>
 			<li>The <code>DB\SQL</code> class requires the <code>pdo</code> module and a PDO driver relevant to your application.</li>
+			<li>The <code>Bcrypt</code> class will use the <code>mcrypt</code> or <code>openssl</code> module for entropy generation. Otherwise, it employs a custom random function.</li>
 			<li>The <code>Web</code> class will use the <code>curl</code> module for HTTP requests to another server. If this is not detected, it will use other transports available, such as the HTTP stream wrapper or native sockets.</li>
 			<li>The <code>geoip</code> module listed in the <code>Web\Geo</code> class is optional; the class will use an alternative Web service for geo-location.</li>
 			<li>Other framework classes in the list need all its listed modules enabled.</li>
@@ -63,7 +64,7 @@
 			<p>If you feel that this software is one great weapon to have in your programming arsenal, it saves you a lot of time and money, use it for commercial gain or in your business organization, please consider making a donation to the project. A significant amount of time, effort, and money has been spent on this project. Your donations help keep this project alive and the development team motivated. Donors and sponsors get priority support (24-hour response time on business days).</p>
 			<h3>Support F3</h3>
 			<p>F3 is community-driven open-source software. Support the development of the Fat-Free Framework. Your contributions help keep this project alive.</p>
-			<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY"><img src="ui/images/donate.png" title="Donate" /></a>
+			<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY" target="_blank"><img src="ui/images/donate.png" title="Donate" /></a><a href="https://coinbase.com/checkouts/7986a0da214006256d470f2f8e1a15cf" target="_blank"><img src="ui/images/bitcoin.png" /></a></p>
 			<p/>
 		</div>
 		<div class="footer center">

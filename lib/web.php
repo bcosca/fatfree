@@ -72,7 +72,7 @@ class Web extends Prefab {
 				'zip'=>'application/zip'
 			);
 			foreach ($map as $key=>$val)
-				if (preg_match('/'.$key.'/',$ext[0]))
+				if (preg_match('/'.$key.'/',strtolower($ext[0])))
 					return $val;
 		}
 		return 'application/octet-stream';
@@ -122,7 +122,7 @@ class Web extends Prefab {
 		if (!is_file($file))
 			return FALSE;
 		if (PHP_SAPI!='cli') {
-			header('Content-Type: '.$mime?:$this->mime($file));
+			header('Content-Type: '.($mime?:$this->mime($file)));
 			if ($force)
 				header('Content-Disposition: attachment; '.
 					'filename='.basename($file));
@@ -651,6 +651,33 @@ class Web extends Prefab {
 			return FALSE;
 		Base::instance()->scrub($out,$tags);
 		return $out;
+	}
+
+	/**
+	*	Retrieve information from whois server
+	*	@return string|FALSE
+	*	@param $addr string
+	*	@param $server string
+	**/
+	function whois($addr,$server='whois.internic.net') {
+		$socket=@fsockopen($server,43,$errno,$errstr);
+		if (!$socket)
+			// Can't establish connection
+			return FALSE;
+		// Set connection timeout parameters
+		stream_set_blocking($socket,TRUE);
+		stream_set_timeout($socket,ini_get('default_socket_timeout'));
+		// Send request
+		fputs($socket,$addr."\r\n");
+		$info=stream_get_meta_data($socket);
+		// Get response
+		$response='';
+		while (!feof($socket) && !$info['timed_out']) {
+			$response.=fgets($socket,4096); // MDFK97
+			$info=stream_get_meta_data($socket);
+		}
+		fclose($socket);
+		return $info['timed_out']?FALSE:trim($response);
 	}
 
 	/**

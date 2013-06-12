@@ -302,13 +302,13 @@ class SQL extends \PDO {
 	**/
 	function quotekey($key) {
 		if ($this->engine=='mysql')
-			$key='`'.$key.'`';
+			$key="`".$key."`";
 		elseif (preg_match('/sybase|dblib/',$this->engine))
 			$key="'".$key."'";
 		elseif (preg_match('/sqlite2?|pgsql/',$this->engine))
 			$key='"'.$key.'"';
-		elseif (preg_match('/mssql|odbc|sqlsrv/',$this->engine))
-			$key='['.$key.']';
+		elseif (preg_match('/mssql|sqlsrv|odbc/',$this->engine))
+			$key="[".$key."]";
 		elseif ($this->engine=='oci')
 			$key='"'.strtoupper($key).'"';
 		return $key;

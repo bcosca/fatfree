@@ -40,6 +40,11 @@ $f3->route('GET /',
 				),
 			'Auth'=>
 				array('ldap','pdo'),
+			'Bcrypt'=>
+				array(
+					'mcrypt',
+					'openssl'
+				),
 			'Image'=>
 				array('gd'),
 			'Lexicon'=>

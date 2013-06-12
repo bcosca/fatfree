@@ -147,21 +147,16 @@ class Mapper extends \DB\Cursor {
 				$cursor=$cursor->skip($options['offset']);
 			if ($options['group'])
 				$tmp->drop();
-			$result=iterator_to_array($cursor,FALSE);
+			$result=array();
+			while ($cursor->hasnext())
+				$result[]=$cursor->getnext();
 			if ($fw->get('CACHE') && $ttl)
 				// Save to cache backend
 				$cache->set($hash,$result,$ttl);
 		}
 		$out=array();
-		foreach ($result as &$doc) {
-			foreach ($doc as &$val) {
-				if (is_array($val))
-					$val=json_decode(json_encode($val));
-				unset($val);
-			}
+		foreach ($result as $doc)
 			$out[]=$this->factory($doc);
-			unset($doc);
-		}
 		return $out;
 	}
 
@@ -221,7 +216,10 @@ class Mapper extends \DB\Cursor {
 	**/
 	function update() {
 		$this->collection->update(
-			array('_id'=>$this->document['_id']),$this->document);
+			array('_id'=>$this->document['_id']),
+			$this->document,
+			array('upsert'=>TRUE)
+		);
 		return $this->document;
 	}
 

@@ -1932,7 +1932,7 @@ Want to make your site run even faster? Fat-Free works best with either Alternat
 A fast application that processes all HTTP requests and responds to them at the shortest time possible is not always a good idea - specially if your bandwidth is limited or traffic on your Web site is particularly heavy. Serving pages ASAP also makes your application vulnerable to Denial-of-Service (DOS) attacks. F3 has a bandwidth throttling feature that allows you to control how fast your Web pages are served. Your can specifies how much time it should take to process a request:-
 
 ``` php
-$f3->set('/throttledpage','MyApp->handler',0,128);
+$f3->route('/throttledpage','MyApp->handler',0,128);
 ```
 
 In this example, the framework will serve the Web page at a rate of 128KiBps.
@@ -2285,6 +2285,18 @@ Once you get the hang of testing the smallest units of your application, you can
 </repeat>
 ```
 * Repeat `text-block` as many times as there are elements in the array variable `@group` or the expression `expr`. `@key` and `@value` function in the same manner as the key-value pair in the equivalent PHP `foreach()` statement. Variable represented by `key` in `counter` attribute increments by `1` with every iteration.
+
+```
+<switch expr="{{ scalar expr }}">
+    <case value="{{ scalar @value|expr }}" break="{{ bool TRUE|FALSE }}">
+        text-block
+    </case>
+    .
+    .
+    .
+</switch>
+```
+* Equivalent of the PHP switch-case jump table structure.
 
 ```
 {{* text-block *}}
