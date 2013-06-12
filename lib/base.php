@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.0.9-Dev';
+		VERSION='3.1.0-Dev';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)

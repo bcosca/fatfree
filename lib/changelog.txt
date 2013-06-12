@@ -1,5 +1,26 @@
 CHANGELOG
 
+3.0.9 (12 June 2013)
+*	NEW: Web->whois()
+*	NEW: Template <switch> <case> tags
+*	Improve CACHE consistency
+*	Case-insensitive MIME type detection
+*	Support pre-PHP 5.3.4 in Prefab->instance()
+*	Refactor isdesktop() and ismobile(); Add isbot()
+*	Add support for Markdown strike-through
+*	Work around ODBC's lack of quote() support
+*	Remove useless Prefab destructor
+*	Support multiple cache instances
+*	Bug fix: Underscores in OpenId keys mangled
+*	Refactor format()
+*	Numerous tweaks
+*	Bug fix: MongoId object not preserved
+*	Bug fix: Double-quotes included in lexicon() string (Issue #341)
+*	Bug fix: UTF-8 formatting mangled on Windows (Issue #342)
+*	Bug fix: Cache->load() error when CACHE is FALSE (Issue #344)
+*	Bug fix: send() ternary expression
+*	Bug fix: Country code constants
+
 3.0.8 (17 May 2013)
 *	NEW: Bcrypt lightweight hashing library\
 *	Return total number of records in superset in Cursor->paginate()
