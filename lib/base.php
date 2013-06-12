@@ -1589,7 +1589,7 @@ abstract class Prefab {
 //! Cache engine
 class Cache extends Prefab {
 
-	private
+	protected
 		//! Cache DSN
 		$dsn,
 		//! Prefix for cache entries
