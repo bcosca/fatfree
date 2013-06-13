@@ -1,7 +1,6 @@
 # Enable rewrite engine and route requests to framework
 RewriteEngine On
 
-RewriteBase /dev/
 RewriteCond %{REQUEST_URI} \.ini$
 RewriteRule \.ini$ - [R=404]
 
