@@ -9,7 +9,6 @@
 	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
 	PURPOSE.
-
 	Please see the license.txt file for more information.
 */
 
@@ -193,7 +192,6 @@ class Web extends Prefab {
 						!move_uploaded_file($file['tmp_name'],$dst))
 						return FALSE;
 				}
-				return TRUE;
 			}
 		return FALSE;
 	}
