@@ -150,9 +150,8 @@ class Web extends Prefab {
 	}
 
 	/**
-	*	Receive file(s) from HTTP client; Return file size if successful,
-	*	FALSE otherwise
-	*	@return int|FALSE
+	*	Receive file(s) from HTTP client
+	*	@return array|bool
 	*	@param $func callback
 	*	@param $overwrite bool
 	*	@param $slug bool
@@ -166,36 +165,34 @@ class Web extends Prefab {
 			$fw->write($dir.basename($fw->get('URI')),$fw->get('BODY'));
 			return TRUE;
 		}
-		if ($fw->get('VERB')=='POST')
-			foreach ($_FILES as $item) {
-				if (is_array($item['name'])) {
-					// Transpose array
-					$out=array();
-					foreach ($item as $keyx=>$cols)
-						foreach ($cols as $keyy=>$valy)
-							$out[$keyy][$keyx]=$valy;
-					$item=$out;
-				}
-				else
-					$item=array($item);
-				foreach ($item as $file) {
-					if (empty($file['name']))
-						return FALSE;
-					$base=basename($file['name']);
-					$dst=$dir.
-						($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
-							$this->slug($parts[1]).
-							(isset($parts[2])?$parts[2]:''):$base);
-					if ($file['error'] ||
-						$file['type']!=$this->mime($file['name']) ||
-						$overwrite && file_exists($dst) ||
-						$func && !$fw->call($func,array($file)) ||
-						!move_uploaded_file($file['tmp_name'],$dst))
-						return FALSE;
-				}
-				return TRUE;
+		$out=array();
+		foreach ($_FILES as $item) {
+			if (is_array($item['name'])) {
+				// Transpose array
+				$tmp=array();
+				foreach ($item as $keyx=>$cols)
+					foreach ($cols as $keyy=>$valy)
+						$tmp[$keyy][$keyx]=$valy;
+				$item=$tmp;
 			}
-		return FALSE;
+			else
+				$item=array($item);
+			foreach ($item as $file) {
+				if (empty($file['name']))
+					continue;
+				$base=basename($file['name']);
+				$dst=$dir.
+					($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
+						($this->slug($parts[1]).
+						(isset($parts[2])?$parts[2]:'')):$base);
+				$out[$dst]=!$file['error'] &&
+					$file['type']==$this->mime($file['name']) &&
+					(!file_exists($dst) || $overwrite) &&
+					(!$func || $fw->call($func,array($file))) &&
+					move_uploaded_file($file['tmp_name'],$dst);
+			}
+		}
+		return $out;
 	}
 
 	/**
