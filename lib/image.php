@@ -209,13 +209,14 @@ class Image {
 
 	/**
 	*	Resize image (Maintain aspect ratio); Crop relative to center
-	*	if flag is enabled
+	*	if flag is enabled; Enlargement allowed if flag is enabled
 	*	@return object
 	*	@param $width int
 	*	@param $height int
 	*	@param $crop bool
+	*	@param $enlarge bool
 	**/
-	function resize($width,$height,$crop=TRUE) {
+	function resize($width,$height,$crop=TRUE,$enlarge=TRUE) {
 		// Adjust dimensions; retain aspect ratio
 		$ratio=($origw=imagesx($this->data))/($origh=imagesy($this->data));
 		if (!$crop)
@@ -223,6 +224,10 @@ class Image {
 				$height=$width/$ratio;
 			else
 				$width=$height*$ratio;
+		if (!$enlarge) {
+			$width=min($origw,$width);
+			$height=min($origh,$height);
+		}
 		// Create blank image
 		$tmp=imagecreatetruecolor($width,$height);
 		imagesavealpha($tmp,TRUE);
