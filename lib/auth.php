@@ -191,12 +191,23 @@ class Auth {
 	function basic($func=NULL,$halt=TRUE) {
 		$fw=Base::instance();
 		$realm=$fw->get('REALM');
+        if(isset($_SERVER['PHP_AUTH_PW']))
+        {   
+            
+            $algo = $fw->get('ENCRYPTION')?$fw->get('ENCRYPTION'):"";            
+            if($algo=='sha1')
+                $pass = sha1($_SERVER['PHP_AUTH_PW']);
+            elseif($algo=='md5')
+                $pass = md5($_SERVER['PHP_AUTH_PW']);
+            else
+                $pass = $_SERVER['PHP_AUTH_PW'];                
+        }    
 		if (isset($_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']) &&
 			$this->login(
 				$_SERVER['PHP_AUTH_USER'],
 				$func?
-					$func($_SERVER['PHP_AUTH_PW']):
-					$_SERVER['PHP_AUTH_PW'],
+					$func($pass):
+					$pass,
 				$realm
 			))
 			return TRUE;
