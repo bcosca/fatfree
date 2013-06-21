@@ -120,11 +120,6 @@ class Internals extends Controller {
 			\Registry::exists($class=get_class($obj)),
 			'instance() saves object to framework registry'
 		);
-		unset($obj);
-		$test->expect(
-			\Registry::exists($class),
-			'Destruction of object removes instance from registry'
-		);
 		$f3->set('results',$test->results());
 	}
 

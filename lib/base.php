@@ -2264,6 +2264,16 @@ final class Registry {
 		return self::$table[$key];
 	}
 
+	/**
+	*	Delete object from catalog
+	*	@return NULL
+	*	@param $key string
+	**/
+	static function clear($key) {
+		self::$table[$key]=NULL;
+		unset(self::$table[$key]);
+	}
+
 	//! Prohibit cloning
 	private function __clone() {
 	}

@@ -199,7 +199,7 @@ class Auth {
 			$this->login(
 				$_SERVER['PHP_AUTH_USER'],
 				$func?
-					$func($_SERVER['PHP_AUTH_PW']):
+					$fw->call($func,$_SERVER['PHP_AUTH_PW']):
 					$_SERVER['PHP_AUTH_PW'],
 				$realm
 			))
