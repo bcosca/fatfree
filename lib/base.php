@@ -1465,7 +1465,7 @@ final class Base {
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
 			isset($headers['X-Forwarded-Proto']) &&
 			$headers['X-Forwarded-Proto']=='https'?'https':'http';
-		$base=preg_replace('/\/[^\/]+$/','',$_SERVER['PHP_SELF']);
+		$base=preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME']);
 		call_user_func_array('session_set_cookie_params',
 			$jar=array(
 				'expire'=>0,
@@ -1533,7 +1533,7 @@ final class Base {
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'php',
 			'TEMP'=>'tmp/',
 			'TIME'=>microtime(TRUE),
-			'TZ'=>@date_default_timezone_get('date.timezone'),
+			'TZ'=>@date_default_timezone_get('date.timezone')?:'UTC',
 			'UI'=>'./',
 			'UNLOAD'=>NULL,
 			'UPLOADS'=>'./',
@@ -1559,6 +1559,7 @@ final class Base {
 			// Error detected
 			$this->error(500,sprintf(self::E_Fatal,$error['message']),
 				array($error));
+		date_default_timezone_set($this->hive['TZ']);
 		// Register framework autoloader
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler
