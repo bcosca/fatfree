@@ -16,6 +16,11 @@
 //! Session-based pseudo-mapper
 class Basket {
 
+	//@{ Error messages
+	const
+		E_Field='Undefined field %s';
+	//@}
+
 	protected
 		//! Session key
 		$key,
@@ -75,7 +80,7 @@ class Basket {
 	function find($key,$val) {
 		if (isset($_SESSION[$this->key]))
 			foreach ($_SESSION[$this->key] as $id=>$item)
-				if ($item[$key]==$val) {
+				if (array_key_exists($key,$item) && $item[$key]==$val) {
 					$obj=clone($this);
 					$obj->id=$id;
 					$obj->item=$item;
@@ -122,7 +127,9 @@ class Basket {
 	function save() {
 		if (!$this->id)
 			$this->id=uniqid();
-		return $_SESSION[$this->key][$this->id]=$this->item;
+		$_SESSION[$this->key][$this->id]=$this->item;
+		session_commit();
+		return $this->item;
 	}
 
 	/**
@@ -132,8 +139,10 @@ class Basket {
 	*	@param $val mixed
 	**/
 	function erase($key,$val) {
-		if ($id=$this->find($key,$val)->id) {
+		$found=$this->find($key,$val);
+		if ($found && $id=$found->id) {
 			unset($_SESSION[$this->key][$id]);
+			session_commit();
 			if ($id==$this->id)
 				$this->reset();
 			return TRUE;
@@ -156,6 +165,7 @@ class Basket {
 	**/
 	function drop() {
 		unset($_SESSION[$this->key]);
+		session_commit();
 	}
 
 	/**
