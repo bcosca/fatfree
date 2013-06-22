@@ -892,7 +892,7 @@ final class Base {
 			'text'=>$text,
 			'trace'=>$trace
 		);
-		if (ob_get_level())
+		if (!$debug && ob_get_level())
 			ob_end_clean();
 		$handler=$this->hive['ONERROR'];
 		$this->hive['ONERROR']=NULL;
