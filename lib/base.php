@@ -1612,6 +1612,7 @@ class Cache extends Prefab {
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
+			case 'apcu':
 				$raw=apc_fetch($ndx);
 				break;
 			case 'memcache':
@@ -1656,6 +1657,7 @@ class Cache extends Prefab {
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
+			case 'apcu':
 				return apc_store($ndx,$data,$ttl);
 			case 'memcache':
 				return memcache_set($this->ref,$ndx,$data,0,$ttl);
@@ -1690,6 +1692,7 @@ class Cache extends Prefab {
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
+			case 'apcu':
 				return apc_delete($ndx);
 			case 'memcache':
 				return memcache_delete($this->ref,$ndx);
@@ -1722,7 +1725,6 @@ class Cache extends Prefab {
 					if (preg_match($regex,$item['info']) &&
 						$item['mtime']+$lifetime<time())
 						apc_delete($item['info']);
-				return TRUE;
 			case 'memcache':
 				foreach (memcache_get_extended_stats(
 					$this->ref,'slabs') as $slabs)
@@ -1741,7 +1743,7 @@ class Cache extends Prefab {
 				foreach ($info['ucache_entries'] as $item)
 					if (preg_match($regex,$item['key_name']) &&
 						$item['use_time']+$lifetime<time())
-					apc_delete($item['key_name']);
+					wincache_ucache_delete($item['key_name']);
 				return TRUE;
 			case 'xcache':
 				return TRUE; /* Not supported */
