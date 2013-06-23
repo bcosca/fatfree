@@ -259,7 +259,8 @@ class Image {
 	*	@param $angle int
 	**/
 	function rotate($angle) {
-		$this->data=imagerotate($this->data,$angle,IMG_COLOR_TRANSPARENT);
+		$this->data=imagerotate($this->data,$angle,
+			imagecolorallocatealpha($this->data,0,0,0,127));
 		imagesavealpha($this->data,TRUE);
 		return $this->save();
 	}
@@ -344,12 +345,12 @@ class Image {
 				}
 				$sprite=imagerotate($sprite,
 					90*(hexdec($hash[($j*$blocks+$i)*2+1])%4),
-					IMG_COLOR_TRANSPARENT);
+					imagecolorallocatealpha($sprite,0,0,0,127));
 				for ($k=0;$k<4;$k++) {
 					imagecopyresampled($this->data,$sprite,
 						$i*$dim/2,$j*$dim/2,0,0,$dim/2,$dim/2,$dim,$dim);
 					$this->data=imagerotate($this->data,90,
-						IMG_COLOR_TRANSPARENT);
+						imagecolorallocatealpha($this->data,0,0,0,127));
 				}
 				imagedestroy($sprite);
 			}
@@ -382,8 +383,8 @@ class Image {
 					imagettftext($char,$size*2,0,
 						($block-$w)/2,$block-($block-$h)/2,
 						0xFFFFFF,$path,$seed[$i]);
-					$char=imagerotate($char,
-						mt_rand(-30,30),IMG_COLOR_TRANSPARENT);
+					$char=imagerotate($char,mt_rand(-30,30),
+						imagecolorallocatealpha($char,0,0,0,127));
 					// Reduce to normal size
 					$tmp[$i]=imagecreatetruecolor(
 						($w=imagesx($char))/2,($h=imagesy($char))/2);
