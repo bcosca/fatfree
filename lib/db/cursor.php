@@ -107,19 +107,19 @@ abstract class Cursor extends \Magic {
 	}
 
 	/**
-	*	Move pointer to first record in cursor
+	*	Map to first record in cursor
 	*	@return mixed
 	**/
 	function first() {
-		return $this->query[$this->ptr=0];
+		return $this->skip(-$this->ptr);
 	}
 
 	/**
-	*	Move pointer to last record in cursor
+	*	Map to last record in cursor
 	*	@return mixed
 	**/
 	function last() {
-		return $this->query[$this->ptr=($ctr=count($this->query))?$ctr-1:0];
+		return $this->skip(($ofs=count($this->query)-$this->ptr)?$ofs-1:0);
 	}
 
 	/**
