@@ -2408,6 +2408,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Дмитриев Иван
 * IT_GAP
 * Sergeev Andrey
+* Lars Brandi Jensen
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
