@@ -110,6 +110,10 @@ class Web extends Controller {
 			$whois=$web->whois('sourceforge.net'),
 			'WHOIS: '.nl2br($f3->stringify($whois))
 		);
+		$test->expect(
+			$lorem=$web->filler(),
+			'Filler: '.$lorem
+		);
 		$f3->set('ESCAPE',FALSE);
 		$f3->set('results',$test->results());
 	}

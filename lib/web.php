@@ -737,6 +737,45 @@ class Web extends Prefab {
 			))))),'-');
 	}
 
+	/**
+	*	Return chunk of text from standard Lorem Ipsum passage
+	*	@return string
+	*	@param $count int
+	*	@param $max int
+	*	@param $std bool
+	**/
+	function filler($count=1,$max=20,$std=TRUE) {
+		$out='';
+		if ($std)
+			$out='Lorem ipsum dolor sit amet, consectetur adipisicing elit, '.
+				'sed do eiusmod tempor incididunt ut labore et dolore magna '.
+				'aliqua.';
+		$rnd=explode(' ',
+			'a ab ad accusamus adipisci alias aliquam amet animi aperiam '.
+			'architecto asperiores aspernatur assumenda at atque aut beatae '.
+			'blanditiis cillum commodi consequatur corporis corrupti culpa '.
+			'cum cupiditate debitis delectus deleniti deserunt dicta '.
+			'dignissimos distinctio dolor ducimus duis ea eaque earum eius '.
+			'eligendi enim eos error esse est eum eveniet ex excepteur '.
+			'exercitationem expedita explicabo facere facilis fugiat harum '.
+			'hic id illum impedit in incidunt ipsa iste itaque iure iusto '.
+			'laborum laudantium libero magnam maiores maxime minim minus '.
+			'modi molestiae mollitia nam natus necessitatibus nemo neque '.
+			'nesciunt nihil nisi nobis non nostrum nulla numquam occaecati '.
+			'odio officia omnis optio pariatur perferendis perspiciatis '.
+			'placeat porro possimus praesentium proident quae quia quibus '.
+			'quo ratione recusandae reiciendis rem repellat reprehenderit '.
+			'repudiandae rerum saepe sapiente sequi similique sint soluta '.
+			'suscipit tempora tenetur totam ut ullam unde vel veniam vero '.
+			'vitae voluptas');
+		for ($i=0,$add=$count-(int)$std;$i<$add;$i++) {
+			shuffle($rnd);
+			$words=array_slice($rnd,0,mt_rand(3,$max));
+			$out.=' '.ucfirst(implode(' ',$words)).'.';
+		}
+		return $out;
+	}
+
 }
 
 if (!function_exists('gzdecode')) {
