@@ -111,8 +111,12 @@ class Web extends Controller {
 			'WHOIS: '.nl2br($f3->stringify($whois))
 		);
 		$test->expect(
-			$lorem=$web->filler(),
-			'Filler: '.$lorem
+			$filler=nl2br(wordwrap($web->filler(3))),
+			'Filler (standard):<br />'.$filler
+		);
+		$test->expect(
+			$filler=nl2br(wordwrap($web->filler(5,20,FALSE))),
+			'Filler (random):<br />'.$filler
 		);
 		$f3->set('ESCAPE',FALSE);
 		$f3->set('results',$test->results());
