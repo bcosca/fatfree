@@ -365,10 +365,11 @@ class Image {
 	*	@param $size int
 	*	@param $len int
 	*	@param $key string
+	*	@param $path string
 	**/
-	function captcha($font,$size=24,$len=5,$key=NULL) {
+	function captcha($font,$size=24,$len=5,$key=NULL,$path='') {
 		$fw=Base::instance();
-		foreach ($fw->split($fw->get('UI')) as $dir)
+		foreach ($fw->split($path?:$fw->get('UI')) as $dir)
 			if (is_file($path=$dir.$font)) {
 				$seed=strtoupper(substr(uniqid(),-$len));
 				$block=$size*3;
@@ -513,14 +514,15 @@ class Image {
 	*	Instantiate image
 	*	@param $file string
 	*	@param $flag bool
+	*	@param $path string
 	**/
-	function __construct($file=NULL,$flag=FALSE) {
+	function __construct($file=NULL,$flag=FALSE,$path='') {
 		$this->flag=$flag;
 		if ($file) {
 			$fw=Base::instance();
 			// Create image from file
 			$this->file=$file;
-			foreach ($fw->split($fw->get('UI')) as $dir)
+			foreach ($fw->split($path?:$fw->get('UI')) as $dir)
 				if (is_file($dir.$file)) {
 					$this->data=imagecreatefromstring($fw->read($dir.$file));
 					imagesavealpha($this->data,TRUE);
