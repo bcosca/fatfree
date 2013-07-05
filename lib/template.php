@@ -302,7 +302,7 @@ class Template extends View {
 			mkdir($tmp,Base::MODE,TRUE);
 		foreach ($fw->split($fw->get('UI')) as $dir)
 			if (is_file($view=$fw->fixslashes($dir.$file))) {
-				if (!is_file($this->view=($tmp.'/'.
+				if (!is_file($this->view=($tmp.
 					$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 					$fw->hash($view).'.php')) ||
 					filemtime($this->view)<filemtime($view)) {
