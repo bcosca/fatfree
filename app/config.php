@@ -10,7 +10,7 @@ class Config extends Controller {
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$f3->config('config.ini');
+		$f3->config('app.ini');
 		$test->expect(
 			$f3->get('test')=='',
 			'Empty string'
