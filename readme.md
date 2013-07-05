@@ -271,12 +271,10 @@ server {
     root /var/www/html;
     location / {
         index index.php index.html index.htm;
-        try_files $uri /index.php;
+        try_files $uri $uri/ /index.php?$query_string;
     }
     location ~ \.php$ {
         fastcgi_pass ip_address:port;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
         include fastcgi_params;
     }
 }
