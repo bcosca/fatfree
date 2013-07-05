@@ -595,8 +595,9 @@ class Web extends Prefab {
 							}
 							if (ctype_space($src[$ptr])) {
 								if ($ptr+1<strlen($src) &&
-									preg_match('/([\w'.($ext[0]=='css'?
-										'#\.+\-*()\[\]':'\$').']){2}/',
+									preg_match('/[\w'.($ext[0]=='css'?
+										'#\.+\-*()\[\]':'\$').']{2}|'.
+										'[+\-]{2}/',
 										substr($data,-1).$src[$ptr+1]))
 									$data.=' ';
 								$ptr++;
