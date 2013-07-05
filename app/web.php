@@ -77,6 +77,12 @@ class Web extends Controller {
 				\View::instance()->render('js/underscore.min.js'),
 			'Minify Javascript ('.round(1e3*(microtime(TRUE)-$now),1).' msecs)'
 		);
+		$now=microtime(TRUE);
+		$test->expect(
+			$web->minify('js/operators.js')==
+				'(this.id="ui-id-"+ ++a);var a=5;var b="test"+ ++a;',
+			'Minify tricky JS ('.round(1e3*(microtime(TRUE)-$now),1).' msecs)'
+		);
 		foreach ($f3->split('curl,stream,socket') as $wrapper) {
 			if (preg_match('/curl/i',$wrapper) &&
 				extension_loaded('curl') ||
@@ -118,6 +124,7 @@ class Web extends Controller {
 			$filler=nl2br(wordwrap($web->filler(5,20,FALSE))),
 			'Filler (random):<br />'.$filler
 		);
+		$f3->clear('CACHE');
 		$f3->set('ESCAPE',FALSE);
 		$f3->set('results',$test->results());
 	}
