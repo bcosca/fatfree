@@ -1725,6 +1725,7 @@ class Cache extends Prefab {
 					if (preg_match($regex,$item['info']) &&
 						$item['mtime']+$lifetime<time())
 						apc_delete($item['info']);
+				return TRUE;
 			case 'memcache':
 				foreach (memcache_get_extended_stats(
 					$this->ref,'slabs') as $slabs)
