@@ -81,7 +81,7 @@ abstract class Cursor extends \Magic {
 	function paginate($pos=0,$size=10,$filter=NULL,array $options=NULL) {
 		$total=$this->count($filter,$options);
 		$count=ceil($total/$size);
-		$position=$pos/10;
+		$position=$pos/$size;
 		return array(
 			'subset'=>$this->find($filter,
 				array_merge(
