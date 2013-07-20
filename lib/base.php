@@ -1629,7 +1629,7 @@ class Cache extends Prefab {
 					$raw=$fw->read($file);
 				break;
 		}
-		if (!isset($raw)) {
+		if (!empty($raw)) {
 			list($val,$time,$ttl)=(array)$fw->unserialize($raw);
 			if ($ttl===0 || $time+$ttl>microtime(TRUE))
 				return array($time,$ttl);
