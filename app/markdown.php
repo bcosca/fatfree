@@ -35,7 +35,7 @@ class Markdown extends Controller {
 			'Amps and angle encoding',
 			'Backslash escapes',
 			'Literal quotes in titles',
-			'PHP-Specific Bugs',
+			'PHP-specific bugs',
 			'Tricky combinations'
 		);
 		foreach ($cases as $case) {
