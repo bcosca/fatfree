@@ -779,8 +779,6 @@ final class Base {
 		switch (strtolower($this->hive['SERIALIZER'])) {
 			case 'igbinary':
 				return igbinary_serialize($arg);
-			case 'json':
-				return json_encode($arg);
 			default:
 				return serialize($arg);
 		}
@@ -795,8 +793,6 @@ final class Base {
 		switch (strtolower($this->hive['SERIALIZER'])) {
 			case 'igbinary':
 				return igbinary_unserialize($arg);
-			case 'json':
-				return json_decode($arg);
 			default:
 				return unserialize($arg);
 		}
@@ -1630,9 +1626,7 @@ class Cache extends Prefab {
 				break;
 		}
 		if (!empty($raw)) {
-			list($val,$time,$ttl,$cast)=(array)$fw->unserialize($raw);
-			if ($cast)
-				$val=(array)$val;
+			list($val,$time,$ttl)=(array)$fw->unserialize($raw);
 			if ($ttl===0 || $time+$ttl>microtime(TRUE))
 				return array($time,$ttl);
 			$this->clear($key);
@@ -1655,7 +1649,7 @@ class Cache extends Prefab {
 		$time=microtime(TRUE);
 		if ($cached=$this->exists($key))
 			list($time,$ttl)=$cached;
-		$data=$fw->serialize(array($val,$time,$ttl,is_array($val)));
+		$data=$fw->serialize(array($val,$time,$ttl));
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
