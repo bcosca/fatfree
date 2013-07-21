@@ -1630,7 +1630,9 @@ class Cache extends Prefab {
 				break;
 		}
 		if (!empty($raw)) {
-			list($val,$time,$ttl)=(array)$fw->unserialize($raw);
+			list($val,$time,$ttl,$cast)=(array)$fw->unserialize($raw);
+			if ($cast)
+				$val=(array)$val;
 			if ($ttl===0 || $time+$ttl>microtime(TRUE))
 				return array($time,$ttl);
 			$this->clear($key);
@@ -1653,7 +1655,7 @@ class Cache extends Prefab {
 		$time=microtime(TRUE);
 		if ($cached=$this->exists($key))
 			list($time,$ttl)=$cached;
-		$data=$fw->serialize(array($val,$time,$ttl));
+		$data=$fw->serialize(array($val,$time,$ttl,is_array($val)));
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
