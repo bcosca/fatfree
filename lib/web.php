@@ -142,8 +142,8 @@ class Web extends Prefab {
 				if ($ctr/$kbps>$elapsed=microtime(TRUE)-$start)
 					usleep(1e6*($ctr/$kbps-$elapsed));
 			}
-			// Send 1KiB and reset timer
-			echo fread($handle,1024);
+			// Send 1KiB, flush buffer, reset timer
+			echo fread($handle,1024); ob_flush(); flush();
 		}
 		fclose($handle);
 		return $size;
