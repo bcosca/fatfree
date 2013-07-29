@@ -362,7 +362,7 @@ class Web extends Prefab {
 	*	@return string
 	*	@param $arg string
 	**/
-	function engine($arg='socket') {
+	function engine($arg='curl') {
 		$arg=strtolower($arg);
 		$flags=array(
 			'curl'=>extension_loaded('curl'),
