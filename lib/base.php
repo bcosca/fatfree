@@ -1125,7 +1125,7 @@ final class Base {
 				else
 					$this->expire(0);
 				if (!strlen($body)) {
-					ob_start();
+					ob_start(NULL,1024);
 					// Call route handler
 					$this->call($handler,array($this,$args),
 						'beforeroute,afterroute');
@@ -1825,7 +1825,7 @@ class View extends Prefab {
 	**/
 	protected function sandbox() {
 		extract($this->hive);
-		ob_start();
+		ob_start(NULL,1024);
 		require($this->view);
 		return ob_get_clean();
 	}
