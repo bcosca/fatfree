@@ -450,7 +450,7 @@ class Image {
 	function dump() {
 		$args=func_get_args();
 		$format=$args?array_shift($args):'png';
-		ob_start(NULL,1024);
+		ob_start();
 		call_user_func_array('image'.$format,
 			array_merge(array($this->data),$args));
 		return ob_get_clean();

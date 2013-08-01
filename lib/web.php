@@ -242,7 +242,7 @@ class Web extends Prefab {
 			}
 		);
 		curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,FALSE);
-		ob_start(NULL,1024);
+		ob_start();
 		curl_exec($curl);
 		curl_close($curl);
 		$body=ob_get_clean();
@@ -793,7 +793,7 @@ if (!function_exists('gzdecode')) {
 		file_put_contents($file=$tmp.'/'.
 			$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash(uniqid()).'.gz',$str,LOCK_EX);
-		ob_start(NULL,1024);
+		ob_start();
 		readgzfile($file);
 		$out=ob_get_clean();
 		@unlink($file);
