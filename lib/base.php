@@ -978,7 +978,7 @@ final class Base {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
 			$this->hive['ROUTES'][str_replace('@',"\x00".'@',$parts[2])]
-				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps);
+				[$type][strtoupper($verb)]=array(trim($handler),$ttl,$kbps);
 		}
 	}
 
