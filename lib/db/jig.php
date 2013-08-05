@@ -30,7 +30,7 @@ class Jig {
 		//! Current storage format
 		$format,
 		//! Jig log
-		$log;
+		$log=array();
 
 	/**
 	*	Read data from file
@@ -74,11 +74,12 @@ class Jig {
 	}
 
 	/**
-	*	Return SQL profiler results
+	*	Return JIG profiler results
+	*	@param bool $count
 	*	@return string
-	**/
-	function log() {
-		return $this->log;
+	*/
+	function log($count=false) {
+		return $count?count($this->log):implode($this->log);
 	}
 
 	/**
@@ -88,7 +89,7 @@ class Jig {
 	**/
 	function jot($frame) {
 		if ($frame)
-			$this->log.=date('r').' '.$frame.PHP_EOL;
+			$this->log[]=date('r').' '.$frame.PHP_EOL;
 	}
 
 	/**
