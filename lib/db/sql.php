@@ -28,7 +28,7 @@ class SQL extends \PDO {
 		//! Number of rows affected by query
 		$rows=0,
 		//! SQL log
-		$log;
+		$log=array();
 
 	/**
 	*	Begin SQL transaction
@@ -162,7 +162,7 @@ class SQL extends \PDO {
 				}
 			}
 			if ($log)
-				$this->log.=date('r').' ('.
+				$this->log[]=date('r').' ('.
 					sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 					preg_replace($keys,$vals,$cmd,1).PHP_EOL;
 		}
@@ -181,10 +181,11 @@ class SQL extends \PDO {
 
 	/**
 	*	Return SQL profiler results
+	*	@param bool $count
 	*	@return string
-	**/
-	function log() {
-		return $this->log;
+	*/
+	function log($count=false) {
+		return $count?count($this->log):implode($this->log);
 	}
 
 	/**

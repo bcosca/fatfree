@@ -25,17 +25,18 @@ class Mongo extends \MongoDB {
 
 	private
 		//! MongoDB log
-		$log;
+		$log=array();
 
 	/**
 	*	Return MongoDB profiler results
+	*	@param bool $count
 	*	@return string
 	**/
-	function log() {
+	function log($count=false) {
 		$cursor=$this->selectcollection('system.profile')->find();
 		foreach (iterator_to_array($cursor) as $frame)
 			if (!preg_match('/\.system\..+$/',$frame['ns']))
-				$this->log.=date('r',$frame['ts']->sec).' ('.
+				$this->log[]=date('r',$frame['ts']->sec).' ('.
 					sprintf('%.1f',$frame['millis']).'ms) '.
 					$frame['ns'].' ['.$frame['op'].'] '.
 					(empty($frame['query'])?
@@ -43,7 +44,7 @@ class Mongo extends \MongoDB {
 					(empty($frame['command'])?
 						'':json_encode($frame['command'])).
 					PHP_EOL;
-		return $this->log;
+		return $count?count($this->log):implode($this->log);
 	}
 
 	/**
