@@ -244,8 +244,9 @@ class Mapper extends \DB\Cursor {
 	*	Count records that match criteria
 	*	@return int
 	*	@param $filter string|array
+	*	@param $ttl int
 	**/
-	function count($filter=NULL) {
+	function count($filter=NULL,$ttl=0) {
 		$sql='SELECT COUNT(*) AS rows FROM '.$this->table;
 		$args=array();
 		if ($filter) {
@@ -258,7 +259,7 @@ class Mapper extends \DB\Cursor {
 			}
 			$sql.=' WHERE '.$filter;
 		}
-		$result=$this->db->exec($sql.';',$args);
+		$result=$this->db->exec($sql.';',$args,$ttl);
 		return $result[0]['rows'];
 	}
 
