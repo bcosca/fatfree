@@ -110,9 +110,9 @@ class Mapper extends \DB\Cursor {
 		);
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
-		if (!$fw->get('CACHE') || !$ttl || !($cached=$cache->exists(
-			$hash=$fw->hash($fw->stringify(array($fields,$filter,$options))).
-				'.mongo',$result)) || $cached[0]+$ttl<microtime(TRUE)) {
+		if (!($cached=$cache->exists($hash=$fw->hash($fw->stringify(
+			array($fields,$filter,$options))).'.mongo',$result)) || !$ttl ||
+			$cached[0]+$ttl<microtime(TRUE)) {
 			if ($options['group']) {
 				$tmp=$this->db->selectcollection(
 					$fw->get('HOST').'.'.$fw->get('BASE').'.'.uniqid().'.tmp'
@@ -183,9 +183,20 @@ class Mapper extends \DB\Cursor {
 	*	Count records that match criteria
 	*	@return int
 	*	@param $filter array
+	*	@param $ttl int
 	**/
-	function count($filter=NULL) {
-		return $this->collection->count($filter);
+	function count($filter=NULL,$ttl=0) {
+		$fw=\Base::instance();
+		$cache=\Cache::instance();
+		if (!($cached=$cache->exists($hash=$fw->hash($fw->stringify(
+			array($filter))).'.mongo',$result)) || !$ttl ||
+			$cached[0]+$ttl<microtime(TRUE)) {
+			$result=$this->collection->count($filter);
+			if ($fw->get('CACHE') && $ttl)
+				// Save to cache backend
+				$cache->set($hash,$result,$ttl);
+		}
+		return $result;
 	}
 
 	/**

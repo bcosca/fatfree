@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.0.9-Release';
+		VERSION='3.1.0-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -779,8 +779,6 @@ final class Base {
 		switch (strtolower($this->hive['SERIALIZER'])) {
 			case 'igbinary':
 				return igbinary_serialize($arg);
-			case 'json':
-				return json_encode($arg);
 			default:
 				return serialize($arg);
 		}
@@ -795,8 +793,6 @@ final class Base {
 		switch (strtolower($this->hive['SERIALIZER'])) {
 			case 'igbinary':
 				return igbinary_unserialize($arg);
-			case 'json':
-				return json_decode($arg);
 			default:
 				return unserialize($arg);
 		}
@@ -892,10 +888,11 @@ final class Base {
 			'text'=>$text,
 			'trace'=>$trace
 		);
-		if (ob_get_level())
+		if (!$debug && ob_get_level())
 			ob_end_clean();
-		if ((!$this->hive['ONERROR'] ||
-			$this->call($this->hive['ONERROR'],$this)===FALSE) &&
+		$handler=$this->hive['ONERROR'];
+		$this->hive['ONERROR']=NULL;
+		if ((!$handler || $this->call($handler,$this)===FALSE) &&
 			!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo $this->hive['AJAX']?
 				json_encode($this->hive['ERROR']):
@@ -1464,7 +1461,7 @@ final class Base {
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
 			isset($headers['X-Forwarded-Proto']) &&
 			$headers['X-Forwarded-Proto']=='https'?'https':'http';
-		$base=preg_replace('/\/[^\/]+$/','',$_SERVER['PHP_SELF']);
+		$base=preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME']);
 		call_user_func_array('session_set_cookie_params',
 			$jar=array(
 				'expire'=>0,
@@ -1476,6 +1473,12 @@ final class Base {
 				'httponly'=>TRUE
 			)
 		);
+		if (function_exists('apache_setenv')) {
+			// Work around Apache pre-2.4 VirtualDocumentRoot bug
+			$_SERVER['DOCUMENT_ROOT']=str_replace($_SERVER['SCRIPT_NAME'],'',
+				$_SERVER['SCRIPT_FILENAME']);
+			apache_setenv("DOCUMENT_ROOT",$_SERVER['DOCUMENT_ROOT']);
+		}
 		// Default configuration
 		$this->hive=array(
 			'AGENT'=>isset($headers['X-Operamini-Phone-UA'])?
@@ -1532,7 +1535,7 @@ final class Base {
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'php',
 			'TEMP'=>'tmp/',
 			'TIME'=>microtime(TRUE),
-			'TZ'=>@date_default_timezone_get('date.timezone'),
+			'TZ'=>@date_default_timezone_get('date.timezone')?:'UTC',
 			'UI'=>'./',
 			'UNLOAD'=>NULL,
 			'UPLOADS'=>'./',
@@ -1558,6 +1561,7 @@ final class Base {
 			// Error detected
 			$this->error(500,sprintf(self::E_Fatal,$error['message']),
 				array($error));
+		date_default_timezone_set($this->hive['TZ']);
 		// Register framework autoloader
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler
@@ -1588,7 +1592,7 @@ abstract class Prefab {
 //! Cache engine
 class Cache extends Prefab {
 
-	private
+	protected
 		//! Cache DSN
 		$dsn,
 		//! Prefix for cache entries
@@ -1610,6 +1614,7 @@ class Cache extends Prefab {
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
+			case 'apcu':
 				$raw=apc_fetch($ndx);
 				break;
 			case 'memcache':
@@ -1626,8 +1631,8 @@ class Cache extends Prefab {
 					$raw=$fw->read($file);
 				break;
 		}
-		if (isset($raw)) {
-			list($val,$time,$ttl)=$fw->unserialize($raw);
+		if (!empty($raw)) {
+			list($val,$time,$ttl)=(array)$fw->unserialize($raw);
 			if ($ttl===0 || $time+$ttl>microtime(TRUE))
 				return array($time,$ttl);
 			$this->clear($key);
@@ -1654,6 +1659,7 @@ class Cache extends Prefab {
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
+			case 'apcu':
 				return apc_store($ndx,$data,$ttl);
 			case 'memcache':
 				return memcache_set($this->ref,$ndx,$data,0,$ttl);
@@ -1688,6 +1694,7 @@ class Cache extends Prefab {
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
+			case 'apcu':
 				return apc_delete($ndx);
 			case 'memcache':
 				return memcache_delete($this->ref,$ndx);
@@ -1739,7 +1746,7 @@ class Cache extends Prefab {
 				foreach ($info['ucache_entries'] as $item)
 					if (preg_match($regex,$item['key_name']) &&
 						$item['use_time']+$lifetime<time())
-					apc_delete($item['key_name']);
+					wincache_ucache_delete($item['key_name']);
 				return TRUE;
 			case 'xcache':
 				return TRUE; /* Not supported */
@@ -1787,7 +1794,7 @@ class Cache extends Prefab {
 				!is_dir($parts[1]))
 				mkdir($parts[1],Base::MODE,TRUE);
 		}
-		$this->prefix=$fw->hash($fw->get('ROOT').$fw->get('BASE'));
+		$this->prefix=$fw->hash($_SERVER['SERVER_NAME'].$fw->get('BASE'));
 		return $this->dsn=$dsn;
 	}
 
@@ -2261,6 +2268,16 @@ final class Registry {
 	**/
 	static function get($key) {
 		return self::$table[$key];
+	}
+
+	/**
+	*	Delete object from catalog
+	*	@return NULL
+	*	@param $key string
+	**/
+	static function clear($key) {
+		self::$table[$key]=NULL;
+		unset(self::$table[$key]);
 	}
 
 	//! Prohibit cloning

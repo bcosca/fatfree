@@ -209,13 +209,14 @@ class Image {
 
 	/**
 	*	Resize image (Maintain aspect ratio); Crop relative to center
-	*	if flag is enabled
+	*	if flag is enabled; Enlargement allowed if flag is enabled
 	*	@return object
 	*	@param $width int
 	*	@param $height int
 	*	@param $crop bool
+	*	@param $enlarge bool
 	**/
-	function resize($width,$height,$crop=TRUE) {
+	function resize($width,$height,$crop=TRUE,$enlarge=TRUE) {
 		// Adjust dimensions; retain aspect ratio
 		$ratio=($origw=imagesx($this->data))/($origh=imagesy($this->data));
 		if (!$crop)
@@ -223,6 +224,10 @@ class Image {
 				$height=$width/$ratio;
 			else
 				$width=$height*$ratio;
+		if (!$enlarge) {
+			$width=min($origw,$width);
+			$height=min($origh,$height);
+		}
 		// Create blank image
 		$tmp=imagecreatetruecolor($width,$height);
 		imagesavealpha($tmp,TRUE);
@@ -254,7 +259,8 @@ class Image {
 	*	@param $angle int
 	**/
 	function rotate($angle) {
-		$this->data=imagerotate($this->data,$angle,IMG_COLOR_TRANSPARENT);
+		$this->data=imagerotate($this->data,$angle,
+			imagecolorallocatealpha($this->data,0,0,0,127));
 		imagesavealpha($this->data,TRUE);
 		return $this->save();
 	}
@@ -339,12 +345,12 @@ class Image {
 				}
 				$sprite=imagerotate($sprite,
 					90*(hexdec($hash[($j*$blocks+$i)*2+1])%4),
-					IMG_COLOR_TRANSPARENT);
+					imagecolorallocatealpha($sprite,0,0,0,127));
 				for ($k=0;$k<4;$k++) {
 					imagecopyresampled($this->data,$sprite,
 						$i*$dim/2,$j*$dim/2,0,0,$dim/2,$dim/2,$dim,$dim);
 					$this->data=imagerotate($this->data,90,
-						IMG_COLOR_TRANSPARENT);
+						imagecolorallocatealpha($this->data,0,0,0,127));
 				}
 				imagedestroy($sprite);
 			}
@@ -359,10 +365,11 @@ class Image {
 	*	@param $size int
 	*	@param $len int
 	*	@param $key string
+	*	@param $path string
 	**/
-	function captcha($font,$size=24,$len=5,$key=NULL) {
+	function captcha($font,$size=24,$len=5,$key=NULL,$path='') {
 		$fw=Base::instance();
-		foreach ($fw->split($fw->get('UI')) as $dir)
+		foreach ($fw->split($path?:$fw->get('UI')) as $dir)
 			if (is_file($path=$dir.$font)) {
 				$seed=strtoupper(substr(uniqid(),-$len));
 				$block=$size*3;
@@ -377,8 +384,8 @@ class Image {
 					imagettftext($char,$size*2,0,
 						($block-$w)/2,$block-($block-$h)/2,
 						0xFFFFFF,$path,$seed[$i]);
-					$char=imagerotate($char,
-						mt_rand(-30,30),IMG_COLOR_TRANSPARENT);
+					$char=imagerotate($char,mt_rand(-30,30),
+						imagecolorallocatealpha($char,0,0,0,127));
 					// Reduce to normal size
 					$tmp[$i]=imagecreatetruecolor(
 						($w=imagesx($char))/2,($h=imagesy($char))/2);
@@ -507,14 +514,15 @@ class Image {
 	*	Instantiate image
 	*	@param $file string
 	*	@param $flag bool
+	*	@param $path string
 	**/
-	function __construct($file=NULL,$flag=FALSE) {
+	function __construct($file=NULL,$flag=FALSE,$path='') {
 		$this->flag=$flag;
 		if ($file) {
 			$fw=Base::instance();
 			// Create image from file
 			$this->file=$file;
-			foreach ($fw->split($fw->get('UI')) as $dir)
+			foreach ($fw->split($path?:$fw->get('UI')) as $dir)
 				if (is_file($dir.$file)) {
 					$this->data=imagecreatefromstring($fw->read($dir.$file));
 					imagesavealpha($this->data,TRUE);

@@ -39,7 +39,7 @@
 					<td><code><?php echo $class; ?></code></td>
 					<td>
 						<?php foreach ($modules as $module): ?>
-						<input type="checkbox" <?php echo extension_loaded($module)?'checked="checked"':''?> /> <code><?php echo $module; ?></code><br />
+						<input type="checkbox" <?php echo extension_loaded($module)?'checked="checked"':''?> onclick="return false" /> <code><?php echo $module; ?></code><br />
 						<?php endforeach; ?>
 					</td>
 				</tr>
@@ -69,7 +69,7 @@
 		</div>
 		<div class="footer center">
 			<p>Fat-Free Framework is licensed under the terms of the GPL v3<br />
-			Copyright &copy; 2009-2011 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;</p>
+			Copyright &copy; 2009-2013 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;</p>
 			<p><code><?php echo Base::instance()->format('Page rendered in {0} msecs / Memory usage {1} Kibytes',round(1e3*(microtime(TRUE)-$TIME),2),round(memory_get_usage(TRUE)/1e3,1)); ?></code></p>
 		</div>
 	</body>

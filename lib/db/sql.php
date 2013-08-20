@@ -32,29 +32,32 @@ class SQL extends \PDO {
 
 	/**
 	*	Begin SQL transaction
-	*	@return NULL
+	*	@return bool
 	**/
 	function begin() {
-		parent::begintransaction();
+		$out=parent::begintransaction();
 		$this->trans=TRUE;
+		return $out;
 	}
 
 	/**
 	*	Rollback SQL transaction
-	*	@return NULL
+	*	@return bool
 	**/
 	function rollback() {
-		parent::rollback();
+		$out=parent::rollback();
 		$this->trans=FALSE;
+		return $out;
 	}
 
 	/**
 	*	Commit SQL transaction
-	*	@return NULL
+	*	@return bool
 	**/
 	function commit() {
-		parent::commit();
+		$out=parent::commit();
 		$this->trans=FALSE;
+		return $out;
 	}
 
 	/**
@@ -139,7 +142,8 @@ class SQL extends \PDO {
 					user_error('PDOStatement: '.$error[2]);
 				}
 				if (preg_match(
-					'/\b(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW)\b/i',$cmd)) {
+					'/\b(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING)\b/i',
+					$cmd)) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);
 					$this->rows=count($result);
 					if ($fw->get('CACHE') && $ttl)

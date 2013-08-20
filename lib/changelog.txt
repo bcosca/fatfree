@@ -1,5 +1,33 @@
 CHANGELOG
 
+3.1.0 (20 August 2013)
+*	NEW: NEW: Web->filler() returns a chunk of text from the standard
+	Lorem Ipsum passage
+*	Change in behavior: Drop support for JSON serialization
+*	SQL->exec() now returns value of RETURNING clause
+*	Add support for $ttl argument in count() (Issue #393)
+*	Allow UI to be overridden by custom $path
+*	Return result of PDO primitives: begintransaction(), rollback(), and
+	commit()
+*	Full support for PHP 5.5
+*	Flush buffers only when DEBUG=0
+*	Support class->method, class::method, and lambda functions as
+	Web->basic() arguments
+*	Commit session on Basket->save()
+*	Optional enlargement in Image->resize()
+*	Support authentication on hosts running PHP-CGI
+*	Change visibility level of Cache properties
+*	Prevent ONERROR recursion
+*	Work around Apache pre-2.4 VirtualDocumentRoot bug
+*	Prioritize cURL in HTTP engine detection
+*	Bug fix: Minify tricky JS
+*	Bug fix: desktop() detection
+*	Bug fix: Double-slash on TEMP-relative path
+*	Bug fix: Cursor mapping of first() and last() records
+*	Bug fix: Premature end of Web->receive() on multiple files
+*	Bug fix: German umlaute to its corresponding grammatically-correct
+	equivalent
+
 3.0.9 (12 June 2013)
 *	NEW: Web->whois()
 *	NEW: Template <switch> <case> tags

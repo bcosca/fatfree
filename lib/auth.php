@@ -191,11 +191,15 @@ class Auth {
 	function basic($func=NULL,$halt=TRUE) {
 		$fw=Base::instance();
 		$realm=$fw->get('REALM');
+		if (isset($_SERVER['HTTP_AUTHORIZATION']))
+			list($_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW'])=
+				explode(':',base64_decode(
+					substr($_SERVER['HTTP_AUTHORIZATION'],6)));
 		if (isset($_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']) &&
 			$this->login(
 				$_SERVER['PHP_AUTH_USER'],
 				$func?
-					$func($_SERVER['PHP_AUTH_PW']):
+					$fw->call($func,$_SERVER['PHP_AUTH_PW']):
 					$_SERVER['PHP_AUTH_PW'],
 				$realm
 			))

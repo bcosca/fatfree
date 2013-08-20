@@ -150,9 +150,8 @@ class Web extends Prefab {
 	}
 
 	/**
-	*	Receive file(s) from HTTP client; Return file size if successful,
-	*	FALSE otherwise
-	*	@return int|FALSE
+	*	Receive file(s) from HTTP client
+	*	@return array|bool
 	*	@param $func callback
 	*	@param $overwrite bool
 	*	@param $slug bool
@@ -166,36 +165,34 @@ class Web extends Prefab {
 			$fw->write($dir.basename($fw->get('URI')),$fw->get('BODY'));
 			return TRUE;
 		}
-		if ($fw->get('VERB')=='POST')
-			foreach ($_FILES as $item) {
-				if (is_array($item['name'])) {
-					// Transpose array
-					$out=array();
-					foreach ($item as $keyx=>$cols)
-						foreach ($cols as $keyy=>$valy)
-							$out[$keyy][$keyx]=$valy;
-					$item=$out;
-				}
-				else
-					$item=array($item);
-				foreach ($item as $file) {
-					if (empty($file['name']))
-						return FALSE;
-					$base=basename($file['name']);
-					$dst=$dir.
-						($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
-							$this->slug($parts[1]).
-							(isset($parts[2])?$parts[2]:''):$base);
-					if ($file['error'] ||
-						$file['type']!=$this->mime($file['name']) ||
-						$overwrite && file_exists($dst) ||
-						$func && !$fw->call($func,array($file)) ||
-						!move_uploaded_file($file['tmp_name'],$dst))
-						return FALSE;
-				}
-				return TRUE;
+		$out=array();
+		foreach ($_FILES as $item) {
+			if (is_array($item['name'])) {
+				// Transpose array
+				$tmp=array();
+				foreach ($item as $keyx=>$cols)
+					foreach ($cols as $keyy=>$valy)
+						$tmp[$keyy][$keyx]=$valy;
+				$item=$tmp;
 			}
-		return FALSE;
+			else
+				$item=array($item);
+			foreach ($item as $file) {
+				if (empty($file['name']))
+					continue;
+				$base=basename($file['name']);
+				$dst=$dir.
+					($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
+						($this->slug($parts[1]).
+						(isset($parts[2])?$parts[2]:'')):$base);
+				$out[$dst]=!$file['error'] &&
+					$file['type']==$this->mime($file['name']) &&
+					(!file_exists($dst) || $overwrite) &&
+					(!$func || $fw->call($func,array($file))) &&
+					move_uploaded_file($file['tmp_name'],$dst);
+			}
+		}
+		return $out;
 	}
 
 	/**
@@ -365,7 +362,7 @@ class Web extends Prefab {
 	*	@return string
 	*	@param $arg string
 	**/
-	function engine($arg='socket') {
+	function engine($arg='curl') {
 		$arg=strtolower($arg);
 		$flags=array(
 			'curl'=>extension_loaded('curl'),
@@ -493,8 +490,9 @@ class Web extends Prefab {
 	*	@param $files string|array
 	*	@param $mime string
 	*	@param $header bool
+	*	@param $path string
 	**/
-	function minify($files,$mime=NULL,$header=TRUE) {
+	function minify($files,$mime=NULL,$header=TRUE,$path='') {
 		$fw=Base::instance();
 		if (is_string($files))
 			$files=$fw->split($files);
@@ -503,7 +501,7 @@ class Web extends Prefab {
 		preg_match('/\w+$/',$files[0],$ext);
 		$cache=Cache::instance();
 		$dst='';
-		foreach ($fw->split($fw->get('UI')) as $dir)
+		foreach ($fw->split($path?:$fw->get('UI')) as $dir)
 			foreach ($files as $file)
 				if (is_file($save=$fw->fixslashes($dir.$file))) {
 					if ($fw->get('CACHE') &&
@@ -597,8 +595,9 @@ class Web extends Prefab {
 							}
 							if (ctype_space($src[$ptr])) {
 								if ($ptr+1<strlen($src) &&
-									preg_match('/([\w'.($ext[0]=='css'?
-										'#\.+\-*()\[\]':'\$').']){2}/',
+									preg_match('/[\w'.($ext[0]=='css'?
+										'#\.+\-*()\[\]':'\$').']{2}|'.
+										'[+\-]{2}/',
 										substr($data,-1).$src[$ptr+1]))
 									$data.=' ';
 								$ptr++;
@@ -691,7 +690,7 @@ class Web extends Prefab {
 			Base::instance()->get('DIACRITICS')+
 			array(
 				'Ǎ'=>'A','А'=>'A','Ā'=>'A','Ă'=>'A','Ą'=>'A','Å'=>'A',
-				'Ǻ'=>'A','Ä'=>'A','Á'=>'A','À'=>'A','Ã'=>'A','Â'=>'A',
+				'Ǻ'=>'A','Ä'=>'Ae','Á'=>'A','À'=>'A','Ã'=>'A','Â'=>'A',
 				'Æ'=>'AE','Ǽ'=>'AE','Б'=>'B','Ç'=>'C','Ć'=>'C','Ĉ'=>'C',
 				'Č'=>'C','Ċ'=>'C','Ц'=>'C','Ч'=>'Ch','Ð'=>'Dj','Đ'=>'Dj',
 				'Ď'=>'Dj','Д'=>'Dj','É'=>'E','Ę'=>'E','Ё'=>'E','Ė'=>'E',
@@ -704,17 +703,17 @@ class Web extends Prefab {
 				'Л'=>'L','Ł'=>'L','Ŀ'=>'L','Ļ'=>'L','Ľ'=>'L','М'=>'M',
 				'Н'=>'N','Ń'=>'N','Ñ'=>'N','Ņ'=>'N','Ň'=>'N','Ō'=>'O',
 				'О'=>'O','Ǿ'=>'O','Ǒ'=>'O','Ơ'=>'O','Ŏ'=>'O','Ő'=>'O',
-				'Ø'=>'O','Ö'=>'O','Õ'=>'O','Ó'=>'O','Ò'=>'O','Ô'=>'O',
+				'Ø'=>'O','Ö'=>'Oe','Õ'=>'O','Ó'=>'O','Ò'=>'O','Ô'=>'O',
 				'Œ'=>'OE','П'=>'P','Ŗ'=>'R','Р'=>'R','Ř'=>'R','Ŕ'=>'R',
 				'Ŝ'=>'S','Ş'=>'S','Š'=>'S','Ș'=>'S','Ś'=>'S','С'=>'S',
 				'Ш'=>'Sh','Щ'=>'Shch','Ť'=>'T','Ŧ'=>'T','Ţ'=>'T','Ț'=>'T',
 				'Т'=>'T','Ů'=>'U','Ű'=>'U','Ŭ'=>'U','Ũ'=>'U','Ų'=>'U',
-				'Ū'=>'U','Ǜ'=>'U','Ǚ'=>'U','Ù'=>'U','Ú'=>'U','Ü'=>'U',
+				'Ū'=>'U','Ǜ'=>'U','Ǚ'=>'U','Ù'=>'U','Ú'=>'U','Ü'=>'Ue',
 				'Ǘ'=>'U','Ǖ'=>'U','У'=>'U','Ư'=>'U','Ǔ'=>'U','Û'=>'U',
 				'В'=>'V','Ŵ'=>'W','Ы'=>'Y','Ŷ'=>'Y','Ý'=>'Y','Ÿ'=>'Y',
 				'Ź'=>'Z','З'=>'Z','Ż'=>'Z','Ž'=>'Z','Ж'=>'Zh','á'=>'a',
 				'ă'=>'a','â'=>'a','à'=>'a','ā'=>'a','ǻ'=>'a','å'=>'a',
-				'ä'=>'a','ą'=>'a','ǎ'=>'a','ã'=>'a','а'=>'a','ª'=>'a',
+				'ä'=>'ae','ą'=>'a','ǎ'=>'a','ã'=>'a','а'=>'a','ª'=>'a',
 				'æ'=>'ae','ǽ'=>'ae','б'=>'b','č'=>'c','ç'=>'c','ц'=>'c',
 				'ċ'=>'c','ĉ'=>'c','ć'=>'c','ч'=>'ch','ð'=>'dj','ď'=>'dj',
 				'д'=>'dj','đ'=>'dj','э'=>'e','é'=>'e','ё'=>'e','ë'=>'e',
@@ -727,17 +726,56 @@ class Web extends Prefab {
 				'ľ'=>'l','ł'=>'l','ŀ'=>'l','ĺ'=>'l','ļ'=>'l','л'=>'l',
 				'м'=>'m','ņ'=>'n','ñ'=>'n','ń'=>'n','н'=>'n','ň'=>'n',
 				'ŉ'=>'n','ó'=>'o','ò'=>'o','ǒ'=>'o','ő'=>'o','о'=>'o',
-				'ō'=>'o','º'=>'o','ơ'=>'o','ŏ'=>'o','ô'=>'o','ö'=>'o',
+				'ō'=>'o','º'=>'o','ơ'=>'o','ŏ'=>'o','ô'=>'o','ö'=>'oe',
 				'õ'=>'o','ø'=>'o','ǿ'=>'o','œ'=>'oe','п'=>'p','р'=>'r',
 				'ř'=>'r','ŕ'=>'r','ŗ'=>'r','ſ'=>'s','ŝ'=>'s','ș'=>'s',
 				'š'=>'s','ś'=>'s','с'=>'s','ş'=>'s','ш'=>'sh','щ'=>'shch',
 				'ß'=>'ss','ţ'=>'t','т'=>'t','ŧ'=>'t','ť'=>'t','ț'=>'t',
 				'у'=>'u','ǘ'=>'u','ŭ'=>'u','û'=>'u','ú'=>'u','ų'=>'u',
 				'ù'=>'u','ű'=>'u','ů'=>'u','ư'=>'u','ū'=>'u','ǚ'=>'u',
-				'ǜ'=>'u','ǔ'=>'u','ǖ'=>'u','ũ'=>'u','ü'=>'u','в'=>'v',
+				'ǜ'=>'u','ǔ'=>'u','ǖ'=>'u','ũ'=>'u','ü'=>'ue','в'=>'v',
 				'ŵ'=>'w','ы'=>'y','ÿ'=>'y','ý'=>'y','ŷ'=>'y','ź'=>'z',
 				'ž'=>'z','з'=>'z','ż'=>'z','ж'=>'zh'
 			))))),'-');
+	}
+
+	/**
+	*	Return chunk of text from standard Lorem Ipsum passage
+	*	@return string
+	*	@param $count int
+	*	@param $max int
+	*	@param $std bool
+	**/
+	function filler($count=1,$max=20,$std=TRUE) {
+		$out='';
+		if ($std)
+			$out='Lorem ipsum dolor sit amet, consectetur adipisicing elit, '.
+				'sed do eiusmod tempor incididunt ut labore et dolore magna '.
+				'aliqua.';
+		$rnd=explode(' ',
+			'a ab ad accusamus adipisci alias aliquam amet animi aperiam '.
+			'architecto asperiores aspernatur assumenda at atque aut beatae '.
+			'blanditiis cillum commodi consequatur corporis corrupti culpa '.
+			'cum cupiditate debitis delectus deleniti deserunt dicta '.
+			'dignissimos distinctio dolor ducimus duis ea eaque earum eius '.
+			'eligendi enim eos error esse est eum eveniet ex excepteur '.
+			'exercitationem expedita explicabo facere facilis fugiat harum '.
+			'hic id illum impedit in incidunt ipsa iste itaque iure iusto '.
+			'laborum laudantium libero magnam maiores maxime minim minus '.
+			'modi molestiae mollitia nam natus necessitatibus nemo neque '.
+			'nesciunt nihil nisi nobis non nostrum nulla numquam occaecati '.
+			'odio officia omnis optio pariatur perferendis perspiciatis '.
+			'placeat porro possimus praesentium proident quae quia quibus '.
+			'quo ratione recusandae reiciendis rem repellat reprehenderit '.
+			'repudiandae rerum saepe sapiente sequi similique sint soluta '.
+			'suscipit tempora tenetur totam ut ullam unde vel veniam vero '.
+			'vitae voluptas');
+		for ($i=0,$add=$count-(int)$std;$i<$add;$i++) {
+			shuffle($rnd);
+			$words=array_slice($rnd,0,mt_rand(3,$max));
+			$out.=' '.ucfirst(implode(' ',$words)).'.';
+		}
+		return $out;
 	}
 
 }
