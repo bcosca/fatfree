@@ -23,7 +23,9 @@ class OpenID extends \Magic {
 		E_EndPoint='Unable to find OpenID provider';
 	//@}
 
-	var
+	protected
+		//! OpenID provider endpoint URL
+		$url,
 		//! HTTP request parameters
 		$args=array();
 
@@ -111,6 +113,7 @@ class OpenID extends \Magic {
 		}
 		elseif (isset($this->args['server'])) {
 			// OpenID 1.1
+			$this->args['ns']='http://openid.net/signon/1.1';
 			if (isset($this->args['delegate']))
 				$this->args['identity']=$this->args['delegate'];
 		}
@@ -141,11 +144,11 @@ class OpenID extends \Magic {
 		if (empty($this->args['return_to']))
 			$this->args['return_to']=$root.$_SERVER['REQUEST_URI'];
 		$this->args['mode']='checkid_setup';
-		if ($url=$this->discover($proxy)) {
+		if ($this->url=$this->discover($proxy)) {
 			$var=array();
 			foreach ($this->args as $key=>$val)
 				$var['openid.'.$key]=$val;
-			$fw->reroute($url.'?'.http_build_query($var));
+			$fw->reroute($this->url.'?'.http_build_query($var));
 		}
 		return FALSE;
 	}
@@ -160,13 +163,14 @@ class OpenID extends \Magic {
 			$_SERVER['QUERY_STRING'],$matches,PREG_SET_ORDER);
 		foreach ($matches as $match)
 			$this->args[$match[1]]=urldecode($match[2]);
-		if ($this->args['mode']!='error' && $url=$this->discover($proxy)) {
+		if ($this->args['mode']!='error' &&
+			$this->url=$this->discover($proxy)) {
 			$this->args['mode']='check_authentication';
 			$var=array();
 			foreach ($this->args as $key=>$val)
 				$var['openid.'.$key]=$val;
 			$req=\Web::instance()->request(
-				$url,
+				$this->url,
 				array(
 					'method'=>'POST',
 					'content'=>http_build_query($var),
