@@ -161,6 +161,16 @@ class Mapper extends \DB\Cursor {
 			$obj->fields+$obj->adhoc
 		);
 	}
+	
+	/**
+	*	Return all mappers as an array of associative arrays
+	*	@param $mapper_multi; multiple mappers in one object, typically from mapper->find() operation
+        *       @return array
+	**/
+	function castall($mapper_multi=NULL) {
+		if (!$mapper_multi) return NULL;
+		return array_map( array($this,'cast'), $mapper_multi);
+	}
 
 	/**
 	*	Build query string and execute

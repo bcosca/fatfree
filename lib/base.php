@@ -1567,6 +1567,45 @@ final class Base {
 		// Register shutdown handler
 		register_shutdown_function(array($this,'unload'));
 	}
+	
+	/** 
+        *      Return time elapsed since f3 loaded
+        *      @param $label bool; TRUE? add units label, return string
+        *      @return string | float
+        **/
+        function elapsed($label=TRUE) {
+            $elapsed = microtime(TRUE) - $this->get('TIME') ; // seconds
+            if ($label) { 
+		$units = array(' microseconds',' milliseconds',' seconds'); // 0,1,2
+                $unit=$units[2]; // default to seconds
+                if ( $elapsed < 0.001 ) // micro
+                    { $elapsed *= 1e6; $unit=$units[0]; }
+                elseif ( $elapsed > 0.001 && $elapsed < 0.09 ) // milli
+                    { $elapsed *= 1e3; $unit=$units[1]; }
+                $elapsed=round($elapsed,3).$unit; // 3 decimals, add label
+            }
+    	return $elapsed;
+        }
+        
+        
+        /** 
+        *      Return memory used by script
+        *      @param $peak bool; TRUE? get peak usage
+        *      @param $label bool; TRUE? add units label, return string
+        *      @return string | int
+        **/
+        function memory($peak=TRUE,$label=TRUE) {   
+                $mem_used = ($peak)? memory_get_peak_usage() : memory_get_usage(); // bytes
+                if ($label) { 
+                    $units = array(' KB',' MB'); // 0,1
+                    if ( $mem_used < 1e6 ) // KB
+                        { $mem_used /= 1e3; $unit=$units[0]; }
+                    else // MB
+                        { $mem_used /= 1e6; $unit=$units[1]; }
+                    $mem_used=round($mem_used,3).$unit; // 3 decimals, add label
+                }
+                return $mem_used;
+        }
 
 }
 
