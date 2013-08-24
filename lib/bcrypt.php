@@ -18,9 +18,13 @@ class Bcrypt extends Prefab {
 
 	//@{ Error messages
 	const
-		E_Cost='Invalid cost parameter',
-		E_Salt='Invalid salt (must be at least 22 alphanumeric characters)';
+		E_CostArg='Invalid cost parameter',
+		E_SaltArg='Salt must be at least 22 alphanumeric characters';
 	//@}
+
+	//! Default cost
+	const
+		COST=10;
 
 	/**
 	*	Generate bcrypt hash of string
@@ -29,7 +33,7 @@ class Bcrypt extends Prefab {
 	*	@param $salt string
 	*	@param $cost int
 	**/
-	function hash($pw,$salt=NULL,$cost=10) {
+	function hash($pw,$salt=NULL,$cost=self::COST) {
 		if ($cost<4 || $cost>31)
 			trigger_error(self::E_Cost);
 		$len=22;
@@ -52,6 +56,17 @@ class Bcrypt extends Prefab {
 		$salt=substr($salt,0,$len);
 		$hash=crypt($pw,sprintf('$2y$%02d$',$cost).$salt);
 		return strlen($hash)>13?$hash:FALSE;
+	}
+
+	/**
+	*	Check if password is still strong enough
+	*	@return bool
+	*	@param $hash string
+	*	@param $cost int
+	**/
+	function needs_rehash($hash,$cost=self::COST) {
+		list($pwcost)=sscanf($hash,"$2y$%d$");
+		return $pwcost!=$cost;
 	}
 
 	/**
