@@ -877,7 +877,8 @@ final class Base {
 			if (isset($frame['function']))
 				$line.=$frame['function'].'('.(isset($frame['args'])?
 					$this->csv($frame['args']):'').')';
-			$src=$this->fixslashes($frame['file']).':'.$frame['line'].' ';
+			$src=$this->fixslashes(str_replace($_SERVER['DOCUMENT_ROOT'].
+				'/','',$frame['file'])).':'.$frame['line'].' ';
 			error_log('- '.$src.$line);
 			$out.='• '.($highlight?
 				($this->highlight($src).' '.$this->highlight($line)):
@@ -1479,6 +1480,7 @@ final class Base {
 				$_SERVER['SCRIPT_FILENAME']);
 			apache_setenv("DOCUMENT_ROOT",$_SERVER['DOCUMENT_ROOT']);
 		}
+		$_SERVER['DOCUMENT_ROOT']=realpath($_SERVER['DOCUMENT_ROOT']);
 		// Default configuration
 		$this->hive=array(
 			'AGENT'=>isset($headers['X-Operamini-Phone-UA'])?
