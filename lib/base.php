@@ -165,7 +165,7 @@ final class Base {
 					$var=array();
 				$var=&$var[$part];
 			}
-			elseif (isset($var[$part]))
+			elseif (array_key_exists($part,$var))
 				$var=$var[$part];
 			else
 				return $this->null;
