@@ -248,7 +248,7 @@ class Mapper extends \DB\Cursor {
 			$out[]=$this->factory($id,$doc);
 			unset($doc);
 		}
-		if ($log) {
+		if ($log && isset($args)) {
 			if ($filter)
 				foreach ($args as $key=>$val) {
 					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
