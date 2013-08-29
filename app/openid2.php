@@ -19,8 +19,10 @@ class OpenID2 extends Controller {
 		$test->expect(
 			$response=$openid->response(),
 			'OpenID attributes in response: '.
-				$response['ext1.value.firstname'].' '.
-				$response['ext1.value.lastname']
+				(isset($response['ext1.value.firstname'])?
+					$response['ext1.value.firstname']:'').
+				(isset($response['ext1.value.lastname'])?
+					(' '.$response['ext1.value.lastname']):'')
 		);
 		$f3->set('results',$test->results());
 	}
