@@ -17,7 +17,16 @@ class OpenID extends Controller {
 			$f3->get('BASE').'/'.'openid2');
 		// auth() should always redirect if successful; fail if displayed
 		$test->expect(
-			$openid->auth(),
+			$openid->auth(
+				NULL,
+				array(
+					'country'=>'http://axschema.org/contact/country/home',
+					'email'=>'http://axschema.org/contact/email',
+					'firstname'=>'http://axschema.org/namePerson/first',
+					'lastname'=>'http://axschema.org/namePerson/last'
+				),
+				array('firstname,lastname')
+			),
 			'OpenID authentication'
 		);
 		$f3->set('results',$test->results());

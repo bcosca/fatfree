@@ -16,7 +16,12 @@ class OpenID2 extends Controller {
 			$openid->verified(),
 			'OpenID '.$openid->get('identity').' verified'
 		);
+		$test->expect(
+			$openid->response(),
+			'OpenID attributes in response'
+		);
 		$f3->set('results',$test->results());
 	}
 
 }
+

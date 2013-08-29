@@ -136,7 +136,7 @@ class OpenID extends \Magic {
 	*	@return bool
 	*	@param $proxy string
 	**/
-	function auth($proxy=NULL) {
+	function auth($proxy=NULL,$attr=array(),array $reqd=array()) {
 		$fw=\Base::instance();
 		$root=$fw->get('SCHEME').'://'.$fw->get('HOST');
 		if (empty($this->args['trust_root']))
@@ -145,6 +145,13 @@ class OpenID extends \Magic {
 			$this->args['return_to']=$root.$_SERVER['REQUEST_URI'];
 		$this->args['mode']='checkid_setup';
 		if ($this->url=$this->discover($proxy)) {
+			if ($attr) {
+				$this->args['ns.ax']='http://openid.net/srv/ax/1.0';
+				$this->args['ax.mode']='fetch_request';
+				foreach ($attr as $key=>$val)
+					$this->args['ax.type.'.$key]=$val;
+				$this->args['ax.required']=implode(',',$reqd);
+			}
 			$var=array();
 			foreach ($this->args as $key=>$val)
 				$var['openid.'.$key]=$val;
@@ -180,6 +187,20 @@ class OpenID extends \Magic {
 			return preg_match('/is_valid:true/i',$req['body']);
 		}
 		return FALSE;
+	}
+
+	/**
+	*	Return OpenID response fields
+	*	@return array|FALSE
+	**/
+	function response() {
+		preg_match_all('/(?<=^|&)openid\.([^=]+)=([^&]+)/',
+			$_SERVER['QUERY_STRING'],$matches,PREG_SET_ORDER);
+		if (!$matches)
+			return FALSE;
+		foreach ($matches as $match)
+			$this->args[$match[1]]=urldecode($match[2]);
+		return $this->args;
 	}
 
 	/**
@@ -220,3 +241,4 @@ class OpenID extends \Magic {
 	}
 
 }
+
