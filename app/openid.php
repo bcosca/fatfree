@@ -25,7 +25,7 @@ class OpenID extends Controller {
 					'firstname'=>'http://axschema.org/namePerson/first',
 					'lastname'=>'http://axschema.org/namePerson/last'
 				),
-				array('firstname,lastname')
+				array('firstname','lastname')
 			),
 			'OpenID authentication'
 		);
