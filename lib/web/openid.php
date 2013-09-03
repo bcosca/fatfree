@@ -184,7 +184,7 @@ class OpenID extends \Magic {
 					'proxy'=>$proxy
 				)
 			);
-			return preg_match('/is_valid:true/i',$req['body']);
+			return (bool)preg_match('/is_valid:true/i',$req['body']);
 		}
 		return FALSE;
 	}
