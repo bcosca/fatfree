@@ -910,7 +910,8 @@ final class Base {
 					($debug?('<pre>'.$out.'</pre>'.$eol):'').
 				'</body>'.$eol.
 				'</html>');
-		die;
+		if (!$this->hive['BAIL'])
+			die;
 	}
 
 	/**
@@ -1492,6 +1493,7 @@ final class Base {
 			'AJAX'=>isset($headers['X-Requested-With']) &&
 				$headers['X-Requested-With']=='XMLHttpRequest',
 			'AUTOLOAD'=>'./',
+			'BAIL'=>FALSE,
 			'BASE'=>$base,
 			'BODY'=>file_get_contents('php://input'),
 			'CACHE'=>FALSE,
