@@ -299,11 +299,13 @@ class Web extends Prefab {
 		$headers=array();
 		$body='';
 		$parts=parse_url($url);
+		$empty=empty($parts['port']);
 		if ($parts['scheme']=='https') {
 			$parts['host']='ssl://'.$parts['host'];
-			$parts['port']=443;
+			if ($empty)
+				$parts['port']=443;
 		}
-		else
+		elseif ($empty)
 			$parts['port']=80;
 		if (empty($parts['path']))
 			$parts['path']='/';
