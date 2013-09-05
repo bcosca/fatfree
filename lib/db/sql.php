@@ -19,6 +19,8 @@ namespace DB;
 class SQL extends \PDO {
 
 	private
+		//! UUID
+		$uuid,
 		//! Data source name
 		$dsn,
 		//! Database engine
@@ -284,7 +286,7 @@ class SQL extends \PDO {
 	*	@return string
 	**/
 	function uuid() {
-		return \Base::instance()->hash($this->dsn);
+		return $this->uuid;
 	}
 
 	/**
@@ -338,7 +340,8 @@ class SQL extends \PDO {
 	*	@param $options array
 	**/
 	function __construct($dsn,$user=NULL,$pw=NULL,array $options=NULL) {
-		$this->dsn=$dsn;
+		$fw=\Base::instance();
+		$this->uuid=$fw->hash($this->dsn=$dsn);
 		if (preg_match('/^.+?(?:dbname|database)=(.+?)(?=;|$)/i',$dsn,$parts))
 			$this->dbname=$parts[1];
 		if (!$options)
@@ -346,8 +349,7 @@ class SQL extends \PDO {
 		$options+=array(\PDO::ATTR_EMULATE_PREPARES=>FALSE);
 		if (isset($parts[0]) && strstr($parts[0],':',TRUE)=='mysql')
 			$options+=array(\PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES '.
-				strtolower(str_replace('-','',
-					\Base::instance()->get('ENCODING'))).';');
+				strtolower(str_replace('-','',$fw->get('ENCODING'))).';');
 		parent::__construct($dsn,$user,$pw,$options);
 		$this->engine=parent::getattribute(parent::ATTR_DRIVER_NAME);
 	}

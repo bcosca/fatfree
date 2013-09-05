@@ -24,17 +24,27 @@ class Mongo extends \MongoDB {
 	//@}
 
 	private
+		//! UUID
+		$uuid,
 		//! Data source name
 		$dsn,
 		//! MongoDB log
 		$log;
 
 	/**
+	*	Return data source name
+	*	@return string
+	**/
+	function dsn() {
+		return $this->dsn;
+	}
+
+	/**
 	*	Return UUID
 	*	@return string
 	**/
 	function uuid() {
-		return \Base::instance()->hash($this->dsn);
+		return $this->uuid;
 	}
 
 	/**
@@ -73,7 +83,7 @@ class Mongo extends \MongoDB {
 	*	@param $options array
 	**/
 	function __construct($dsn,$dbname,array $options=NULL) {
-		$this->dsn=$dsn;
+		$this->uuid=\Base::instance()->hash($this->dsn=$dsn);
 		$class=class_exists('\MongoClient')?'\MongoClient':'\Mongo';
 		parent::__construct(new $class($dsn,$options?:array()),$dbname);
 		$this->setprofilinglevel(2);

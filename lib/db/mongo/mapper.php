@@ -110,7 +110,7 @@ class Mapper extends \DB\Cursor {
 		);
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
-		if (!($cached=$cache->exists($hash=$fw->hash($this->db->dsn.
+		if (!($cached=$cache->exists($hash=$fw->hash($this->db->dsn().
 			$fw->stringify(array($fields,$filter,$options))).'.mongo',
 			$result)) || !$ttl || $cached[0]+$ttl<microtime(TRUE)) {
 			if ($options['group']) {
