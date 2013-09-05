@@ -151,8 +151,9 @@ class Mapper extends \DB\Cursor {
 		$db=$this->db;
 		$now=microtime(TRUE);
 		if (!$fw->get('CACHE') || !$ttl || !($cached=$cache->exists(
-			$hash=$fw->hash($fw->stringify(array($filter,$options))).'.jig',
-				$data)) || $cached[0]+$ttl<microtime(TRUE)) {
+			$hash=$fw->hash($this->db->dir.
+				$fw->stringify(array($filter,$options))).'.jig',$data)) ||
+			$cached[0]+$ttl<microtime(TRUE)) {
 			$data=$db->read($this->file);
 			foreach ($data as $id=>&$doc) {
 				$doc['_id']=$id;
