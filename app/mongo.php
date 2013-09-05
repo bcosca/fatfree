@@ -26,6 +26,10 @@ class Mongo extends Controller {
 				'DB wrapper initialized (Version '.\Mongo::VERSION.')'
 			);
 			if ($db) {
+				$test->expect(
+					$uuid=$db->uuid(),
+					'UUID: '.$uuid
+				);
 				$movie=new \DB\Mongo\Mapper($db,'movies');
 				$test->expect(
 					is_object($movie),

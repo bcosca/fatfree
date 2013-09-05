@@ -24,8 +24,18 @@ class Mongo extends \MongoDB {
 	//@}
 
 	private
+		//! Data source name
+		$dsn,
 		//! MongoDB log
 		$log;
+
+	/**
+	*	Return UUID
+	*	@return string
+	**/
+	function uuid() {
+		return \Base::instance()->hash($this->dsn);
+	}
 
 	/**
 	*	Return MongoDB profiler results
@@ -63,6 +73,7 @@ class Mongo extends \MongoDB {
 	*	@param $options array
 	**/
 	function __construct($dsn,$dbname,array $options=NULL) {
+		$this->dsn=$dsn;
 		$class=class_exists('\MongoClient')?'\MongoClient':'\Mongo';
 		parent::__construct(new $class($dsn,$options?:array()),$dbname);
 		$this->setprofilinglevel(2);

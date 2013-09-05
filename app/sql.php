@@ -30,6 +30,10 @@ class SQL extends Controller {
 				is_object($db),
 				'DB wrapper initialized ('.$engine.' '.$db->version().')'
 			);
+			$test->expect(
+				$uuid=$db->uuid(),
+				'UUID: '.$uuid
+			);
 			if ($engine=='mysql') {
 				$db->exec(
 					array(

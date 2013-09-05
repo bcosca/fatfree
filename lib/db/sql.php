@@ -19,6 +19,8 @@ namespace DB;
 class SQL extends \PDO {
 
 	private
+		//! Data source name
+		$dsn,
 		//! Database engine
 		$engine,
 		//! Database name
@@ -112,8 +114,9 @@ class SQL extends \PDO {
 			$now=microtime(TRUE);
 			$keys=$vals=array();
 			if ($fw->get('CACHE') && $ttl && ($cached=$cache->exists(
-				$hash=$fw->hash($cmd.$fw->stringify($arg)).'.sql',
-				$result)) && $cached[0]+$ttl>microtime(TRUE)) {
+				$hash=$fw->hash($this->dsn.$cmd.
+				$fw->stringify($arg)).'.sql',$result)) &&
+				$cached[0]+$ttl>microtime(TRUE)) {
 				foreach ($arg as $key=>$val) {
 					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
 					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
@@ -277,6 +280,14 @@ class SQL extends \PDO {
 	}
 
 	/**
+	*	Return UUID
+	*	@return string
+	**/
+	function uuid() {
+		return \Base::instance()->hash($this->dsn);
+	}
+
+	/**
 	*	Return database engine
 	*	@return string
 	**/
@@ -327,6 +338,7 @@ class SQL extends \PDO {
 	*	@param $options array
 	**/
 	function __construct($dsn,$user=NULL,$pw=NULL,array $options=NULL) {
+		$this->dsn=$dsn;
 		if (preg_match('/^.+?(?:dbname|database)=(.+?)(?=;|$)/i',$dsn,$parts))
 			$this->dbname=$parts[1];
 		if (!$options)

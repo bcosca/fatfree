@@ -16,6 +16,10 @@ class Jig extends Controller {
 			is_object($db),
 			'DB wrapper initialized'
 		);
+		$test->expect(
+			$uuid=$db->uuid(),
+			'UUID: '.$uuid
+		);
 		$movie=new \DB\Jig\Mapper($db,'movies');
 		$test->expect(
 			is_object($movie),

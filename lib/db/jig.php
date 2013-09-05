@@ -74,6 +74,14 @@ class Jig {
 	}
 
 	/**
+	*	Return UUID
+	*	@return string
+	**/
+	function uuid() {
+		return \Base::instance()->hash($this->dir);
+	}
+
+	/**
 	*	Return SQL profiler results
 	*	@return string
 	**/
