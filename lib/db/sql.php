@@ -167,6 +167,7 @@ class SQL extends \PDO {
 			if ($log)
 				$this->log.=date('r').' ('.
 					sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+					(empty($cached)?'':'[CACHED] ').
 					preg_replace($keys,$vals,$cmd,1).PHP_EOL;
 		}
 		if ($this->trans && $auto)
