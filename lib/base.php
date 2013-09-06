@@ -1394,14 +1394,14 @@ final class Base {
 	*	@return NULL
 	**/
 	function unload() {
-		if (($error=error_get_last()) &&
+		if (isset($this->hive['UNLOAD']))
+			$this->hive['UNLOAD']($this);
+		elseif (($error=error_get_last()) &&
 			in_array($error['type'],
 				array(E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR)))
 			// Fatal error detected
 			$this->error(500,sprintf(self::E_Fatal,$error['message']),
 				array($error));
-		if (isset($this->hive['UNLOAD']))
-			$this->hive['UNLOAD']($this);
 	}
 
 	/**
