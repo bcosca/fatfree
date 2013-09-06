@@ -1309,7 +1309,7 @@ final class Base {
 			filemtime($lock)+ini_get('max_execution_time')<microtime(TRUE))
 			// Stale lock
 			@unlink($lock);
-		while (!$handle=@fopen($lock,'x') && !connection_aborted())
+		while (!($handle=@fopen($lock,'x')) && !connection_aborted())
 			usleep(mt_rand(0,100));
 		$out=$this->call($func,$args);
 		fclose($handle);
