@@ -139,7 +139,7 @@ final class Base {
 			$this->sync('SESSION');
 		}
 		elseif (!preg_match('/^\w+$/',$parts[0]))
-			trigger_error(sprintf(self::E_Hive,$this->stringify($key)));
+			user_error(sprintf(self::E_Hive,$this->stringify($key)));
 		if ($add)
 			$var=&$this->hive;
 		else
