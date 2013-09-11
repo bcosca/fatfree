@@ -189,10 +189,11 @@ class Router extends Controller {
 				$f3->set('blocked',FALSE);
 			}
 		);
+		$mark=microtime(TRUE);
 		$f3->mock('GET /forum');
 		$test->expect(
 			!$f3->get('blocked'),
-			'DNSBL lookup'
+			'DNSBL lookup: '.sprintf('%.1f',(microtime(TRUE)-$mark)*1e3).'ms'
 		);
 		$f3->set('QUIET',FALSE);
 		$f3->clear('ROUTES');
