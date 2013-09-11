@@ -794,7 +794,7 @@ if (!function_exists('gzdecode')) {
 			mkdir($tmp,Base::MODE,TRUE);
 		file_put_contents($file=$tmp.'/'.
 			$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-			$fw->hash(uniqid()).'.gz',$str,LOCK_EX);
+			$fw->hash(uniqid(NULL,TRUE)).'.gz',$str,LOCK_EX);
 		ob_start();
 		readgzfile($file);
 		$out=ob_get_clean();

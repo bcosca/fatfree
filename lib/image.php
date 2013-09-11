@@ -371,7 +371,7 @@ class Image {
 		$fw=Base::instance();
 		foreach ($fw->split($path?:$fw->get('UI')) as $dir)
 			if (is_file($path=$dir.$font)) {
-				$seed=strtoupper(substr(uniqid(),-$len));
+				$seed=strtoupper(substr(uniqid(NULL,TRUE),-$len));
 				$block=$size*3;
 				$tmp=array();
 				for ($i=0,$width=0,$height=0;$i<$len;$i++) {

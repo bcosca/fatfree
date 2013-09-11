@@ -115,7 +115,8 @@ class Mapper extends \DB\Cursor {
 			$result)) || !$ttl || $cached[0]+$ttl<microtime(TRUE)) {
 			if ($options['group']) {
 				$tmp=$this->db->selectcollection(
-					$fw->get('HOST').'.'.$fw->get('BASE').'.'.uniqid().'.tmp'
+					$fw->get('HOST').'.'.$fw->get('BASE').'.'.
+					uniqid(NULL,TRUE).'.tmp'
 				);
 				$tmp->batchinsert(
 					$this->collection->group(

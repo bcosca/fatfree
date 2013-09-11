@@ -126,7 +126,7 @@ class Basket {
 	**/
 	function save() {
 		if (!$this->id)
-			$this->id=uniqid();
+			$this->id=uniqid(NULL,TRUE);
 		$_SESSION[$this->key][$this->id]=$this->item;
 		session_commit();
 		return $this->item;
