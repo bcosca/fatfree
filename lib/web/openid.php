@@ -135,8 +135,10 @@ class OpenID extends \Magic {
 	*	or redirect to OpenID provider URL
 	*	@return bool
 	*	@param $proxy string
+	*	@param $attr array
+	*	@param $reqd string|array
 	**/
-	function auth($proxy=NULL,$attr=array(),array $reqd=array()) {
+	function auth($proxy=NULL,$attr=array(),array $reqd=NULL) {
 		$fw=\Base::instance();
 		$root=$fw->get('SCHEME').'://'.$fw->get('HOST');
 		if (empty($this->args['trust_root']))
@@ -150,7 +152,8 @@ class OpenID extends \Magic {
 				$this->args['ax.mode']='fetch_request';
 				foreach ($attr as $key=>$val)
 					$this->args['ax.type.'.$key]=$val;
-				$this->args['ax.required']=implode(',',$reqd);
+				$this->args['ax.required']=is_string($reqd)?
+					$reqd:implode(',',$reqd);
 			}
 			$var=array();
 			foreach ($this->args as $key=>$val)
