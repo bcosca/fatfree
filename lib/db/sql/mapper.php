@@ -192,13 +192,24 @@ class Mapper extends \DB\Cursor {
 			$sql.=' WHERE '.$filter;
 		}
 		if ($options['group'])
-			$sql.=' GROUP BY '.$options['group'];
-		if ($options['order'])
-			$sql.=' ORDER BY '.$options['order'];
+			$sql.=' GROUP BY '.implode(',',array_map(
+				array($this->db,'quotekey'),
+				explode(',',$options['group'])));
+		if ($options['order']) {
+			$db=$this->db;
+			$sql.=' ORDER BY '.implode(',',array_map(
+				function($str) use($db) {
+					return preg_match('/(\w+)(?:\h+(ASC|DESC))?/i',
+						$str,$parts)?
+						($db->quotekey($parts[1]).
+						(isset($parts[2])?(' '.$parts[2]):'')):'';
+				},
+				explode(',',$options['order'])));
+		}
 		if ($options['limit'])
-			$sql.=' LIMIT '.$options['limit'];
+			$sql.=' LIMIT '.(int)$options['limit'];
 		if ($options['offset'])
-			$sql.=' OFFSET '.$options['offset'];
+			$sql.=' OFFSET '.(int)$options['offset'];
 		$result=$this->db->exec($sql.';',$args,$ttl);
 		$out=array();
 		foreach ($result as &$row) {
