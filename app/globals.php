@@ -77,6 +77,11 @@ class Globals extends Controller {
 			($charset=$f3->get('ENCODING'))=='UTF-8',
 			'ENCODING (character set): '.$f3->stringify($charset)
 		);
+		if (extension_loaded('mbstring'))
+			$test->expect(
+				($charset=mb_internal_encoding())=='UTF-8',
+				'Multibyte encoding: '.$f3->stringify($charset)
+			);
 		$test->expect(
 			($language=$f3->get('LANGUAGE')),
 			'LANGUAGE: '.$f3->stringify($language)

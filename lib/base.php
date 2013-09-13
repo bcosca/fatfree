@@ -206,6 +206,8 @@ final class Base {
 				break;
 			case 'ENCODING':
 				$val=ini_set('default_charset',$val);
+				if (extension_loaded('mbstring'))
+					mb_internal_encoding($val);
 				break;
 			case 'FALLBACK':
 				$this->fallback=$val;
@@ -1421,6 +1423,8 @@ final class Base {
 	private function __construct() {
 		// Managed directives
 		ini_set('default_charset',$charset='UTF-8');
+		if (extension_loaded('mbstring'))
+			mb_internal_encoding($charset);
 		ini_set('display_errors',0);
 		// Deprecated directives
 		@ini_set('magic_quotes_gpc',0);
