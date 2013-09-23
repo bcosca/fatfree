@@ -30,6 +30,8 @@ class Mapper extends \DB\Cursor {
 		$engine,
 		//! SQL table
 		$table,
+		//! quoted SQL table
+		$quotedtable,
 		//! Last insert ID
 		$_id,
 		//! Defined fields
@@ -179,7 +181,7 @@ class Mapper extends \DB\Cursor {
 			'limit'=>0,
 			'offset'=>0
 		);
-		$sql='SELECT '.$fields.' FROM '.$this->table;
+		$sql='SELECT '.$fields.' FROM '.$this->quotedtable;
 		$args=array();
 		if ($filter) {
 			if (is_array($filter)) {
@@ -258,7 +260,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $ttl int
 	**/
 	function count($filter=NULL,$ttl=0) {
-		$sql='SELECT COUNT(*) AS rows FROM '.$this->table;
+		$sql='SELECT COUNT(*) AS rows FROM '.$this->quotedtable;
 		$args=array();
 		if ($filter) {
 			if (is_array($filter)) {
@@ -327,7 +329,7 @@ class Mapper extends \DB\Cursor {
 		}
 		if ($fields)
 			$this->db->exec(
-				'INSERT INTO '.$this->table.' ('.$fields.') '.
+				'INSERT INTO '.$this->quotedtable.' ('.$fields.') '.
 				'VALUES ('.$values.');',$args
 			);
 		$seq=NULL;
@@ -372,7 +374,7 @@ class Mapper extends \DB\Cursor {
 				$ctr++;
 			}
 		if ($pairs) {
-			$sql='UPDATE '.$this->table.' SET '.$pairs;
+			$sql='UPDATE '.$this->quotedtable.' SET '.$pairs;
 			if ($filter)
 				$sql.=' WHERE '.$filter;
 			return $this->db->exec($sql.';',$args);
@@ -395,7 +397,7 @@ class Mapper extends \DB\Cursor {
 				list($filter)=$filter;
 			}
 			return $this->db->
-				exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
+				exec('DELETE FROM '.$this->quotedtable.' WHERE '.$filter.';',$args);
 		}
 		$args=array();
 		$ctr=0;
@@ -419,7 +421,7 @@ class Mapper extends \DB\Cursor {
 		parent::erase();
 		$this->skip(0);
 		return $this->db->
-			exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
+			exec('DELETE FROM '.$this->quotedtable.' WHERE '.$filter.';',$args);
 	}
 
 	/**
@@ -486,7 +488,8 @@ class Mapper extends \DB\Cursor {
 	function __construct(\DB\SQL $db,$table,$ttl=60) {
 		$this->db=$db;
 		$this->engine=$db->driver();
-		$this->table=$this->db->quotekey($table);
+		$this->table=$table;
+		$this->quotedtable=$this->db->quotekey($table);
 		$this->fields=$db->schema($table,$ttl);
 		$this->reset();
 	}
