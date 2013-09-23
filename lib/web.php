@@ -181,15 +181,15 @@ class Web extends Prefab {
 				if (empty($file['name']))
 					continue;
 				$base=basename($file['name']);
-				$dst=$dir.
+				$file['name']=$dir.
 					($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
 						($this->slug($parts[1]).
 						(isset($parts[2])?$parts[2]:'')):$base);
-				$out[$dst]=!$file['error'] &&
+				$out[$file['name']]=!$file['error'] &&
 					$file['type']==$this->mime($file['name']) &&
-					(!file_exists($dst) || $overwrite) &&
+					(!file_exists($file['name']) || $overwrite) &&
 					(!$func || $fw->call($func,array($file))) &&
-					move_uploaded_file($file['tmp_name'],$dst);
+					move_uploaded_file($file['tmp_name'],$file['name']);
 			}
 		}
 		return $out;
