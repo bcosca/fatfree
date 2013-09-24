@@ -29,6 +29,8 @@ class Mapper extends \DB\Cursor {
 		//! Database engine
 		$engine,
 		//! SQL table
+		$source,
+		//! SQL table (quoted)
 		$table,
 		//! Last insert ID
 		$_id,
@@ -332,7 +334,7 @@ class Mapper extends \DB\Cursor {
 			);
 		$seq=NULL;
 		if ($this->engine=='pgsql')
-			$seq=$this->table.'_'.end($pkeys).'_seq';
+			$seq=$this->source.'_'.end($pkeys).'_seq';
 		$this->_id=$this->db->lastinsertid($seq);
 		if (!$inc) {
 			$ctr=0;
@@ -486,6 +488,7 @@ class Mapper extends \DB\Cursor {
 	function __construct(\DB\SQL $db,$table,$ttl=60) {
 		$this->db=$db;
 		$this->engine=$db->driver();
+		$this->source=$table;
 		$this->table=$this->db->quotekey($table);
 		$this->fields=$db->schema($table,$ttl);
 		$this->reset();
