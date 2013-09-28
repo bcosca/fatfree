@@ -27,6 +27,8 @@ class SQL extends \PDO {
 		$engine,
 		//! Database name
 		$dbname,
+		//! User name
+		$user,
 		//! Transaction flag
 		$trans=FALSE,
 		//! Number of rows affected by query
@@ -246,7 +248,24 @@ class SQL extends \PDO {
 							'c.table_catalog':'c.table_schema').
 							'='.$this->quote($this->dbname)):'').
 				';',
-				'field','type','defval','nullable','YES','pkey','PRIMARY KEY')
+				'field','type','defval','nullable','YES','pkey','PRIMARY KEY'),
+			'oci'=>array(
+				'SELECT c.column_name AS field, '.
+					'c.data_type AS type, '.
+					'c.data_default AS defval, '.
+					'c.nullable AS nullable, '.
+					'(SELECT t.constraint_type '.
+						'FROM all_cons_columns acc '.
+						'LEFT OUTER JOIN all_constraints t '.
+						'ON acc.constraint_name=t.constraint_name '.
+						'WHERE acc.table_name='.$this->quote(strtoupper($table)).' '.
+						'AND acc.owner='.$this->quote(strtoupper($this->user)).' '.
+						'AND acc.column_name=c.column_name '.
+						'AND constraint_type='.$this->quote('P').') AS pkey '.
+				'FROM all_tab_cols c '.
+				'WHERE c.table_name='.$this->quote(strtoupper($table)).' '.
+				'AND c.owner='.$this->quote(strtoupper($this->user)).' ',
+				'FIELD','TYPE','DEFVAL','NULLABLE','Y','PKEY','P')
 		);
 		foreach ($cmd as $key=>$val)
 			if (preg_match('/'.$key.'/',$this->engine)) {
@@ -328,7 +347,7 @@ class SQL extends \PDO {
 		elseif (preg_match('/mssql|sqlsrv|odbc/',$this->engine))
 			$key="[".$key."]";
 		elseif ($this->engine=='oci')
-			$key='"'.strtoupper($key).'"';
+			$key='"'.$key.'"';
 		return $key;
 	}
 
@@ -344,6 +363,7 @@ class SQL extends \PDO {
 		$this->uuid=$fw->hash($this->dsn=$dsn);
 		if (preg_match('/^.+?(?:dbname|database)=(.+?)(?=;|$)/i',$dsn,$parts))
 			$this->dbname=$parts[1];
+		$this->user=$user;
 		if (!$options)
 			$options=array();
 		$options+=array(\PDO::ATTR_EMULATE_PREPARES=>FALSE);
