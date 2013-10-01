@@ -212,7 +212,7 @@ class Mapper extends \DB\Cursor {
 			$sql.=' LIMIT '.(int)$options['limit'];
 		if ($options['offset'])
 			$sql.=' OFFSET '.(int)$options['offset'];
-		$result=$this->db->exec($sql.';',$args,$ttl);
+		$result=$this->db->exec($sql,$args,$ttl);
 		$out=array();
 		foreach ($result as &$row) {
 			foreach ($row as $field=>&$val) {
@@ -260,7 +260,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $ttl int
 	**/
 	function count($filter=NULL,$ttl=0) {
-		$sql='SELECT COUNT(*) AS rows FROM '.$this->table;
+		$sql='SELECT COUNT(*) AS '.$this->db->quotekey('rows').' FROM '.$this->table;
 		$args=array();
 		if ($filter) {
 			if (is_array($filter)) {
@@ -272,7 +272,7 @@ class Mapper extends \DB\Cursor {
 			}
 			$sql.=' WHERE '.$filter;
 		}
-		$result=$this->db->exec($sql.';',$args,$ttl);
+		$result=$this->db->exec($sql,$args,$ttl);
 		return $result[0]['rows'];
 	}
 
@@ -330,12 +330,13 @@ class Mapper extends \DB\Cursor {
 		if ($fields)
 			$this->db->exec(
 				'INSERT INTO '.$this->table.' ('.$fields.') '.
-				'VALUES ('.$values.');',$args
+				'VALUES ('.$values.')',$args
 			);
 		$seq=NULL;
 		if ($this->engine=='pgsql')
 			$seq=$this->source.'_'.end($pkeys).'_seq';
-		$this->_id=$this->db->lastinsertid($seq);
+		if ($this->engine!='oci')
+			$this->_id=$this->db->lastinsertid($seq);
 		if (!$inc) {
 			$ctr=0;
 			$query='';
@@ -377,7 +378,7 @@ class Mapper extends \DB\Cursor {
 			$sql='UPDATE '.$this->table.' SET '.$pairs;
 			if ($filter)
 				$sql.=' WHERE '.$filter;
-			return $this->db->exec($sql.';',$args);
+			return $this->db->exec($sql,$args);
 		}
 	}
 
