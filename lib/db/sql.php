@@ -27,8 +27,6 @@ class SQL extends \PDO {
 		$engine,
 		//! Database name
 		$dbname,
-		//! User name
-		$user,
 		//! Transaction flag
 		$trans=FALSE,
 		//! Number of rows affected by query
@@ -258,13 +256,11 @@ class SQL extends \PDO {
 						'FROM all_cons_columns acc '.
 						'LEFT OUTER JOIN all_constraints t '.
 						'ON acc.constraint_name=t.constraint_name '.
-						'WHERE acc.table_name='.$this->quote(strtoupper($table)).' '.
-						'AND acc.owner='.$this->quote(strtoupper($this->user)).' '.
+						'WHERE acc.table_name='.$this->quote($table).' '.
 						'AND acc.column_name=c.column_name '.
 						'AND constraint_type='.$this->quote('P').') AS pkey '.
 				'FROM all_tab_cols c '.
-				'WHERE c.table_name='.$this->quote(strtoupper($table)).' '.
-				'AND c.owner='.$this->quote(strtoupper($this->user)).' ',
+				'WHERE c.table_name='.$this->quote($table),
 				'FIELD','TYPE','DEFVAL','NULLABLE','Y','PKEY','P')
 		);
 		foreach ($cmd as $key=>$val)
@@ -363,7 +359,6 @@ class SQL extends \PDO {
 		$this->uuid=$fw->hash($this->dsn=$dsn);
 		if (preg_match('/^.+?(?:dbname|database)=(.+?)(?=;|$)/i',$dsn,$parts))
 			$this->dbname=$parts[1];
-		$this->user=$user;
 		if (!$options)
 			$options=array();
 		$options+=array(\PDO::ATTR_EMULATE_PREPARES=>FALSE);

@@ -260,7 +260,8 @@ class Mapper extends \DB\Cursor {
 	*	@param $ttl int
 	**/
 	function count($filter=NULL,$ttl=0) {
-		$sql='SELECT COUNT(*) AS '.$this->db->quotekey('rows').' FROM '.$this->table;
+		$sql='SELECT COUNT(*) AS '.
+			$this->db->quotekey('rows').' FROM '.$this->table;
 		$args=array();
 		if ($filter) {
 			if (is_array($filter)) {
@@ -489,6 +490,8 @@ class Mapper extends \DB\Cursor {
 	function __construct(\DB\SQL $db,$table,$ttl=60) {
 		$this->db=$db;
 		$this->engine=$db->driver();
+		if ($this->engine=='oci')
+			$table=strtoupper($table);
 		$this->source=$table;
 		$this->table=$this->db->quotekey($table);
 		$this->fields=$db->schema($table,$ttl);
