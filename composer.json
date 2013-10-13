@@ -5,6 +5,12 @@
 	"license": "GPL-3.0",
 	"require": {
 		"php": ">=5.3.0"
-	}
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/bcosca/fatfree"
+		}
+	]
 }
 
