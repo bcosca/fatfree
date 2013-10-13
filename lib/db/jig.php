@@ -25,6 +25,8 @@ class Jig {
 	//@}
 
 	protected
+		//! UUID
+		$uuid,
 		//! Storage location
 		$dir,
 		//! Current storage format
@@ -74,6 +76,22 @@ class Jig {
 	}
 
 	/**
+	*	Return directory
+	*	@return string
+	**/
+	function dir() {
+		return $this->dir;
+	}
+
+	/**
+	*	Return UUID
+	*	@return string
+	**/
+	function uuid() {
+		return $this->uuid;
+	}
+
+	/**
 	*	Return SQL profiler results
 	*	@return string
 	**/
@@ -109,7 +127,7 @@ class Jig {
 	function __construct($dir,$format=self::FORMAT_JSON) {
 		if (!is_dir($dir))
 			mkdir($dir,\Base::MODE,TRUE);
-		$this->dir=$dir;
+		$this->uuid=\Base::instance()->hash($this->dir=$dir);
 		$this->format=$format;
 	}
 

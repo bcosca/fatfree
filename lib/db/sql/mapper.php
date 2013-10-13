@@ -29,6 +29,8 @@ class Mapper extends \DB\Cursor {
 		//! Database engine
 		$engine,
 		//! SQL table
+		$source,
+		//! SQL table (quoted)
 		$table,
 		//! Last insert ID
 		$_id,
@@ -192,14 +194,25 @@ class Mapper extends \DB\Cursor {
 			$sql.=' WHERE '.$filter;
 		}
 		if ($options['group'])
-			$sql.=' GROUP BY '.$options['group'];
-		if ($options['order'])
-			$sql.=' ORDER BY '.$options['order'];
+			$sql.=' GROUP BY '.implode(',',array_map(
+				array($this->db,'quotekey'),
+				explode(',',$options['group'])));
+		if ($options['order']) {
+			$db=$this->db;
+			$sql.=' ORDER BY '.implode(',',array_map(
+				function($str) use($db) {
+					return preg_match('/(\w+)(?:\h+(ASC|DESC))?/i',
+						$str,$parts)?
+						($db->quotekey($parts[1]).
+						(isset($parts[2])?(' '.$parts[2]):'')):'';
+				},
+				explode(',',$options['order'])));
+		}
 		if ($options['limit'])
-			$sql.=' LIMIT '.$options['limit'];
+			$sql.=' LIMIT '.(int)$options['limit'];
 		if ($options['offset'])
-			$sql.=' OFFSET '.$options['offset'];
-		$result=$this->db->exec($sql.';',$args,$ttl);
+			$sql.=' OFFSET '.(int)$options['offset'];
+		$result=$this->db->exec($sql,$args,$ttl);
 		$out=array();
 		foreach ($result as &$row) {
 			foreach ($row as $field=>&$val) {
@@ -247,7 +260,8 @@ class Mapper extends \DB\Cursor {
 	*	@param $ttl int
 	**/
 	function count($filter=NULL,$ttl=0) {
-		$sql='SELECT COUNT(*) AS rows FROM '.$this->table;
+		$sql='SELECT COUNT(*) AS '.
+			$this->db->quotekey('rows').' FROM '.$this->table;
 		$args=array();
 		if ($filter) {
 			if (is_array($filter)) {
@@ -259,7 +273,7 @@ class Mapper extends \DB\Cursor {
 			}
 			$sql.=' WHERE '.$filter;
 		}
-		$result=$this->db->exec($sql.';',$args,$ttl);
+		$result=$this->db->exec($sql,$args,$ttl);
 		return $result[0]['rows'];
 	}
 
@@ -317,12 +331,13 @@ class Mapper extends \DB\Cursor {
 		if ($fields)
 			$this->db->exec(
 				'INSERT INTO '.$this->table.' ('.$fields.') '.
-				'VALUES ('.$values.');',$args
+				'VALUES ('.$values.')',$args
 			);
 		$seq=NULL;
 		if ($this->engine=='pgsql')
-			$seq=$this->table.'_'.end($pkeys).'_seq';
-		$this->_id=$this->db->lastinsertid($seq);
+			$seq=$this->source.'_'.end($pkeys).'_seq';
+		if ($this->engine!='oci')
+			$this->_id=$this->db->lastinsertid($seq);
 		if (!$inc) {
 			$ctr=0;
 			$query='';
@@ -364,7 +379,7 @@ class Mapper extends \DB\Cursor {
 			$sql='UPDATE '.$this->table.' SET '.$pairs;
 			if ($filter)
 				$sql.=' WHERE '.$filter;
-			return $this->db->exec($sql.';',$args);
+			return $this->db->exec($sql,$args);
 		}
 	}
 
@@ -475,6 +490,9 @@ class Mapper extends \DB\Cursor {
 	function __construct(\DB\SQL $db,$table,$ttl=60) {
 		$this->db=$db;
 		$this->engine=$db->driver();
+		if ($this->engine=='oci')
+			$table=strtoupper($table);
+		$this->source=$table;
 		$this->table=$this->db->quotekey($table);
 		$this->fields=$db->schema($table,$ttl);
 		$this->reset();

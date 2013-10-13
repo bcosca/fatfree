@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.1.0-Release';
+		VERSION='3.1.1-Dev';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -139,7 +139,7 @@ final class Base {
 			$this->sync('SESSION');
 		}
 		elseif (!preg_match('/^\w+$/',$parts[0]))
-			trigger_error(sprintf(self::E_Hive,$this->stringify($key)));
+			user_error(sprintf(self::E_Hive,$this->stringify($key)));
 		if ($add)
 			$var=&$this->hive;
 		else
@@ -165,7 +165,7 @@ final class Base {
 					$var=array();
 				$var=&$var[$part];
 			}
-			elseif (isset($var[$part]))
+			elseif (is_array($var) && isset($var[$part]))
 				$var=$var[$part];
 			else
 				return $this->null;
@@ -877,7 +877,8 @@ final class Base {
 			if (isset($frame['function']))
 				$line.=$frame['function'].'('.(isset($frame['args'])?
 					$this->csv($frame['args']):'').')';
-			$src=$this->fixslashes($frame['file']).':'.$frame['line'].' ';
+			$src=$this->fixslashes(str_replace($_SERVER['DOCUMENT_ROOT'].
+				'/','',$frame['file'])).':'.$frame['line'].' ';
 			error_log('- '.$src.$line);
 			$out.='• '.($highlight?
 				($this->highlight($src).' '.$this->highlight($line)):
@@ -909,7 +910,8 @@ final class Base {
 					($debug?('<pre>'.$out.'</pre>'.$eol):'').
 				'</body>'.$eol.
 				'</html>');
-		die;
+		if (!$this->hive['BAIL'])
+			die;
 	}
 
 	/**
@@ -1307,7 +1309,7 @@ final class Base {
 			filemtime($lock)+ini_get('max_execution_time')<microtime(TRUE))
 			// Stale lock
 			@unlink($lock);
-		while (!$handle=@fopen($lock,'x') && !connection_aborted())
+		while (!($handle=@fopen($lock,'x')) && !connection_aborted())
 			usleep(mt_rand(0,100));
 		$out=$this->call($func,$args);
 		fclose($handle);
@@ -1392,14 +1394,13 @@ final class Base {
 	*	@return NULL
 	**/
 	function unload() {
-		if (($error=error_get_last()) &&
-			in_array($error['type'],
-				array(E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR)))
+		$handler=$this->hive['UNLOAD'];
+		if ((!$handler || $this->call($handler,$this)===FALSE) &&
+			($error=error_get_last()) && in_array($error['type'],
+			array(E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR)))
 			// Fatal error detected
 			$this->error(500,sprintf(self::E_Fatal,$error['message']),
 				array($error));
-		if (isset($this->hive['UNLOAD']))
-			$this->hive['UNLOAD']($this);
 	}
 
 	/**
@@ -1479,6 +1480,7 @@ final class Base {
 				$_SERVER['SCRIPT_FILENAME']);
 			apache_setenv("DOCUMENT_ROOT",$_SERVER['DOCUMENT_ROOT']);
 		}
+		$_SERVER['DOCUMENT_ROOT']=realpath($_SERVER['DOCUMENT_ROOT']);
 		// Default configuration
 		$this->hive=array(
 			'AGENT'=>isset($headers['X-Operamini-Phone-UA'])?
@@ -1490,6 +1492,7 @@ final class Base {
 			'AJAX'=>isset($headers['X-Requested-With']) &&
 				$headers['X-Requested-With']=='XMLHttpRequest',
 			'AUTOLOAD'=>'./',
+			'BAIL'=>FALSE,
 			'BASE'=>$base,
 			'BODY'=>file_get_contents('php://input'),
 			'CACHE'=>FALSE,

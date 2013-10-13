@@ -19,6 +19,10 @@ namespace DB;
 class SQL extends \PDO {
 
 	private
+		//! UUID
+		$uuid,
+		//! Data source name
+		$dsn,
 		//! Database engine
 		$engine,
 		//! Database name
@@ -112,8 +116,9 @@ class SQL extends \PDO {
 			$now=microtime(TRUE);
 			$keys=$vals=array();
 			if ($fw->get('CACHE') && $ttl && ($cached=$cache->exists(
-				$hash=$fw->hash($cmd.$fw->stringify($arg)).'.sql',
-				$result)) && $cached[0]+$ttl>microtime(TRUE)) {
+				$hash=$fw->hash($this->dsn.$cmd.
+				$fw->stringify($arg)).'.sql',$result)) &&
+				$cached[0]+$ttl>microtime(TRUE)) {
 				foreach ($arg as $key=>$val) {
 					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
 					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
@@ -167,6 +172,7 @@ class SQL extends \PDO {
 			if ($log)
 				$this->log.=date('r').' ('.
 					sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+					(empty($cached)?'':'[CACHED] ').
 					preg_replace($keys,$vals,$cmd,1).PHP_EOL;
 		}
 		if ($this->trans && $auto)
@@ -240,7 +246,22 @@ class SQL extends \PDO {
 							'c.table_catalog':'c.table_schema').
 							'='.$this->quote($this->dbname)):'').
 				';',
-				'field','type','defval','nullable','YES','pkey','PRIMARY KEY')
+				'field','type','defval','nullable','YES','pkey','PRIMARY KEY'),
+			'oci'=>array(
+				'SELECT c.column_name AS field, '.
+					'c.data_type AS type, '.
+					'c.data_default AS defval, '.
+					'c.nullable AS nullable, '.
+					'(SELECT t.constraint_type '.
+						'FROM all_cons_columns acc '.
+						'LEFT OUTER JOIN all_constraints t '.
+						'ON acc.constraint_name=t.constraint_name '.
+						'WHERE acc.table_name='.$this->quote($table).' '.
+						'AND acc.column_name=c.column_name '.
+						'AND constraint_type='.$this->quote('P').') AS pkey '.
+				'FROM all_tab_cols c '.
+				'WHERE c.table_name='.$this->quote($table),
+				'FIELD','TYPE','DEFVAL','NULLABLE','Y','PKEY','P')
 		);
 		foreach ($cmd as $key=>$val)
 			if (preg_match('/'.$key.'/',$this->engine)) {
@@ -273,6 +294,14 @@ class SQL extends \PDO {
 				\Base::instance()->stringify(str_replace('\'','\'\'',$val)):
 				$val):
 			parent::quote($val,$type);
+	}
+
+	/**
+	*	Return UUID
+	*	@return string
+	**/
+	function uuid() {
+		return $this->uuid;
 	}
 
 	/**
@@ -314,7 +343,7 @@ class SQL extends \PDO {
 		elseif (preg_match('/mssql|sqlsrv|odbc/',$this->engine))
 			$key="[".$key."]";
 		elseif ($this->engine=='oci')
-			$key='"'.strtoupper($key).'"';
+			$key='"'.$key.'"';
 		return $key;
 	}
 
@@ -326,6 +355,8 @@ class SQL extends \PDO {
 	*	@param $options array
 	**/
 	function __construct($dsn,$user=NULL,$pw=NULL,array $options=NULL) {
+		$fw=\Base::instance();
+		$this->uuid=$fw->hash($this->dsn=$dsn);
 		if (preg_match('/^.+?(?:dbname|database)=(.+?)(?=;|$)/i',$dsn,$parts))
 			$this->dbname=$parts[1];
 		if (!$options)
@@ -333,8 +364,7 @@ class SQL extends \PDO {
 		$options+=array(\PDO::ATTR_EMULATE_PREPARES=>FALSE);
 		if (isset($parts[0]) && strstr($parts[0],':',TRUE)=='mysql')
 			$options+=array(\PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES '.
-				strtolower(str_replace('-','',
-					\Base::instance()->get('ENCODING'))).';');
+				strtolower(str_replace('-','',$fw->get('ENCODING'))).';');
 		parent::__construct($dsn,$user,$pw,$options);
 		$this->engine=parent::getattribute(parent::ATTR_DRIVER_NAME);
 	}

@@ -181,15 +181,15 @@ class Web extends Prefab {
 				if (empty($file['name']))
 					continue;
 				$base=basename($file['name']);
-				$dst=$dir.
+				$file['name']=$dir.
 					($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
 						($this->slug($parts[1]).
 						(isset($parts[2])?$parts[2]:'')):$base);
-				$out[$dst]=!$file['error'] &&
+				$out[$file['name']]=!$file['error'] &&
 					$file['type']==$this->mime($file['name']) &&
-					(!file_exists($dst) || $overwrite) &&
+					(!file_exists($file['name']) || $overwrite) &&
 					(!$func || $fw->call($func,array($file))) &&
-					move_uploaded_file($file['tmp_name'],$dst);
+					move_uploaded_file($file['tmp_name'],$file['name']);
 			}
 		}
 		return $out;
@@ -299,11 +299,13 @@ class Web extends Prefab {
 		$headers=array();
 		$body='';
 		$parts=parse_url($url);
+		$empty=empty($parts['port']);
 		if ($parts['scheme']=='https') {
 			$parts['host']='ssl://'.$parts['host'];
-			$parts['port']=443;
+			if ($empty)
+				$parts['port']=443;
 		}
-		else
+		elseif ($empty)
 			$parts['port']=80;
 		if (empty($parts['path']))
 			$parts['path']='/';
@@ -792,7 +794,7 @@ if (!function_exists('gzdecode')) {
 			mkdir($tmp,Base::MODE,TRUE);
 		file_put_contents($file=$tmp.'/'.
 			$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-			$fw->hash(uniqid()).'.gz',$str,LOCK_EX);
+			$fw->hash(uniqid(NULL,TRUE)).'.gz',$str,LOCK_EX);
 		ob_start();
 		readgzfile($file);
 		$out=ob_get_clean();

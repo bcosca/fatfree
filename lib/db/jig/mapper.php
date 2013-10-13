@@ -151,8 +151,9 @@ class Mapper extends \DB\Cursor {
 		$db=$this->db;
 		$now=microtime(TRUE);
 		if (!$fw->get('CACHE') || !$ttl || !($cached=$cache->exists(
-			$hash=$fw->hash($fw->stringify(array($filter,$options))).'.jig',
-				$data)) || $cached[0]+$ttl<microtime(TRUE)) {
+			$hash=$fw->hash($this->db->dir().
+				$fw->stringify(array($filter,$options))).'.jig',$data)) ||
+			$cached[0]+$ttl<microtime(TRUE)) {
 			$data=$db->read($this->file);
 			foreach ($data as $id=>&$doc) {
 				$doc['_id']=$id;
@@ -248,7 +249,7 @@ class Mapper extends \DB\Cursor {
 			$out[]=$this->factory($id,$doc);
 			unset($doc);
 		}
-		if ($log) {
+		if ($log && isset($args)) {
 			if ($filter)
 				foreach ($args as $key=>$val) {
 					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
@@ -296,7 +297,7 @@ class Mapper extends \DB\Cursor {
 			return $this->update();
 		$db=$this->db;
 		$now=microtime(TRUE);
-		while (($id=uniqid()) &&
+		while (($id=uniqid(NULL,TRUE)) &&
 			($data=$db->read($this->file)) && isset($data[$id]) &&
 			!connection_aborted())
 			usleep(mt_rand(0,100));

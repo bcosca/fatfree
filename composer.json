@@ -1,0 +1,10 @@
+{
+	"name": "bcosca/fatfree",
+	"description": "A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!",
+	"homepage": "https://github.com/bcosca/fatfree",
+	"license": "GPL-3.0",
+	"require": {
+		"php": ">=5.3.0"
+	}
+}
+

@@ -53,9 +53,15 @@ The philosophy behind the framework and its approach to software architecture is
 
 [![Twitter](ui/images/twitter.png)](https://twitter.com/phpfatfree)
 
-### Version 3.0 Is Finally Here!
+## Introducing FatFreeFramework.com
 
-The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that took several months to develop and refine, version 3.0 is finally available for download. The code base has been rewritten from the ground up to provide enterprise-class architecture and performance but with the same user-friendly features and lightweight footprint.
+**Detailed API documentation with lots of code examples and a graphic guide can now be found at [http://fatfreeframework.com/](http://fatfreeframework.com/).**
+
+Of course this handy online reference is powered by F3! It showcases the framework's capability and performance. Check it out now.
+
+### Version 3.1 Is Finally Here!
+
+The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.1 is finally available for download. The code base has been rewritten from the ground up to provide enterprise-class architecture and performance but with the same user-friendly features and lightweight footprint.
 
 It is highly recommended that experienced users develop new applications with this version to take advantage of the latest features and significant improvements.
 
@@ -2303,7 +2309,9 @@ Once you get the hang of testing the smallest units of your application, you can
 
 ### API Documentation
 
-The framework API documentation is contained in `lib/api.chm` of the distribution package. F3 uses [Doxygen](http://www.stack.nl/~dimitri/doxygen/) to generate output in compiled HTML format. You need a CHM reader to view its tree-structured contents. For Mac users, there's [Chmox](http://chmox.sourceforge.net/) and [iChm](http://code.google.com/p/ichm/). Linux users have more choices: [xCHM](http://xchm.sourceforge.net/), [GnoCHM](http://gnochm.sourceforge.net/), [ChmSee](http://code.google.com/p/chmsee/), and [Kchmviewer](http://www.ulduzsoft.com/linux/kchmviewer/). Windows supports `.chm` files right out of the box.
+The most up-to-date documentation is located at [http://fatfreeframework.com/](http://fatfreeframework.com/). It contains examples of usage of the various framework components.
+
+The framework API documentation can also be viewed offline. It is contained in `lib/api.chm` of the distribution package. F3 uses [Doxygen](http://www.stack.nl/~dimitri/doxygen/) to generate output in compiled HTML format. You need a CHM reader to view its tree-structured contents. For Mac users, there's [Chmox](http://chmox.sourceforge.net/) and [iChm](http://code.google.com/p/ichm/). Linux users have more choices: [xCHM](http://xchm.sourceforge.net/), [GnoCHM](http://gnochm.sourceforge.net/), [ChmSee](http://code.google.com/p/chmsee/), and [Kchmviewer](http://www.ulduzsoft.com/linux/kchmviewer/). Windows supports `.chm` files right out of the box.
 
 ## Support and Licensing
 
@@ -2340,6 +2348,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * S2 Development, Ltd.
 * PHP Experts, Inc.
 * Sascha Ohms
+* Christian Knuth
 * Jermaine Maree
 * Sergey Zaretsky
 * Daniel Kloke
@@ -2380,7 +2389,6 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * LucidStorm
 * Nevatech
 * Matt Wielgos
-* Christian Knuth
 * Maximilian Summe
 * Caspar Frey
 * FocusHeart
@@ -2408,6 +2416,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Sergeev Andrey
 * Lars Brandi Jensen
 * Sashank Tadepalli
+* Steven J Mixon
 * Roland Fath
 * Justin Parker
 * Costas Menico
