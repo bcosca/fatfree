@@ -1,7 +1,33 @@
 CHANGELOG
 
+3.1.1 (13 October 2013)
+*	NEW: Support OpenID attribute exchange
+*	NEW: BAIL variable enables/disables continuance of execution on non-fatal
+	errors
+*	Add support for Oracle
+*	Mark cached queries in log (Feature Request #405)
+*	Implement Bcrypt->needs_reshash()
+*	Add entropy to SQL cache hash; Add uuid() method to DB backends
+*	Find real document root; Simplify debug paths
+*	Permit OpenID required fields to be declared as comma-separated string or
+	array
+*	Pass modified filename as argument to user-defined function in
+	Web->receive()
+*	Quote keys in optional SQL clauses (Issue #408)
+*	Allow UNLOAD to override fatal error detection (Issue #404)
+*	Mutex operator precedence error (Issue #406)
+*	Bug fix: exists() malfunction (Issue #401)
+*	Bug fix: Jig mapper triggers error when loading from CACHE (Issue #403)
+*	Bug fix: Array index check
+*	Bug fix: OpenID verified() return value
+*	Bug fix: Basket->find() should return a set of results (Issue #407);
+	Also implemented findone() for consistency with mappers
+*	Bug fix: PostgreSQL last insert ID (Issue #410)
+*	Bug fix: $port component URL overwritten by _socket()
+*	Bug fix: Calculation of elapsed time
+
 3.1.0 (20 August 2013)
-*	NEW: NEW: Web->filler() returns a chunk of text from the standard
+*	NEW: Web->filler() returns a chunk of text from the standard
 	Lorem Ipsum passage
 *	Change in behavior: Drop support for JSON serialization
 *	SQL->exec() now returns value of RETURNING clause
