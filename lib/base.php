@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.1.1-Dev';
+		VERSION='3.1.1-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -206,6 +206,8 @@ final class Base {
 				break;
 			case 'ENCODING':
 				$val=ini_set('default_charset',$val);
+				if (extension_loaded('mbstring'))
+					mb_internal_encoding($val);
 				break;
 			case 'FALLBACK':
 				$this->fallback=$val;
@@ -1143,7 +1145,7 @@ final class Base {
 						foreach (str_split($body,1024) as $part) {
 							// Throttle output
 							$ctr++;
-							if ($ctr/$kbps>$elapsed=microtime(TRUE)-$now &&
+							if ($ctr/$kbps>($elapsed=microtime(TRUE)-$now) &&
 								!connection_aborted())
 								usleep(1e6*($ctr/$kbps-$elapsed));
 							echo $part;
@@ -1421,6 +1423,8 @@ final class Base {
 	private function __construct() {
 		// Managed directives
 		ini_set('default_charset',$charset='UTF-8');
+		if (extension_loaded('mbstring'))
+			mb_internal_encoding($charset);
 		ini_set('display_errors',0);
 		// Deprecated directives
 		@ini_set('magic_quotes_gpc',0);
@@ -1566,6 +1570,9 @@ final class Base {
 				array($error));
 		date_default_timezone_set($this->hive['TZ']);
 		// Register framework autoloader
+		if ($funcs=spl_autoload_functions())
+			foreach ($funcs as $func)
+				spl_autoload_unregister($func);
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler
 		register_shutdown_function(array($this,'unload'));
