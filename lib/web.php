@@ -69,7 +69,7 @@ class Web extends Prefab {
 				'wav'=>'audio/wav',
 				'xls'=>'application/vnd.ms-excel',
 				'xml'=>'application/xml',
-				'zip'=>'application/zip'
+				'zip'=>'application/x-zip-compressed'
 			);
 			foreach ($map as $key=>$val)
 				if (preg_match('/'.$key.'/',strtolower($ext[0])))
