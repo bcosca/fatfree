@@ -1570,9 +1570,6 @@ final class Base {
 				array($error));
 		date_default_timezone_set($this->hive['TZ']);
 		// Register framework autoloader
-		if ($funcs=spl_autoload_functions())
-			foreach ($funcs as $func)
-				spl_autoload_unregister($func);
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler
 		register_shutdown_function(array($this,'unload'));
