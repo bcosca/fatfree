@@ -1387,7 +1387,7 @@ final class Base {
 		foreach ($this->split($this->hive['PLUGINS'].';'.
 			$this->hive['AUTOLOAD']) as $auto)
 			if (is_file($file=$auto.$class.'.php') ||
-				is_file($file=strtolower($auto.$class).'.php'))
+				is_file($file=$auto.strtolower($class).'.php'))
 				return require($file);
 	}
 
