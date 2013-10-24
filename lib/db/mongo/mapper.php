@@ -124,12 +124,10 @@ class Mapper extends \DB\Cursor {
 						$options['group']['initial'],
 						$options['group']['reduce'],
 						array(
-							'condition'=>array(
-								$filter,
-								$options['group']['finalize']
-							)
+							'condition'=>$filter,
+							'finalize'=>$options['group']['finalize']
 						)
-					),
+					)['retval'],
 					array('safe'=>TRUE)
 				);
 				$filter=array();
@@ -146,11 +144,11 @@ class Mapper extends \DB\Cursor {
 				$cursor=$cursor->limit($options['limit']);
 			if ($options['offset'])
 				$cursor=$cursor->skip($options['offset']);
-			if ($options['group'])
-				$tmp->drop();
 			$result=array();
 			while ($cursor->hasnext())
 				$result[]=$cursor->getnext();
+			if ($options['group'])
+				$tmp->drop();
 			if ($fw->get('CACHE') && $ttl)
 				// Save to cache backend
 				$cache->set($hash,$result,$ttl);
