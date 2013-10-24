@@ -114,20 +114,21 @@ class Mapper extends \DB\Cursor {
 			$fw->stringify(array($fields,$filter,$options))).'.mongo',
 			$result)) || !$ttl || $cached[0]+$ttl<microtime(TRUE)) {
 			if ($options['group']) {
+				$grp=$this->collection->group(
+					$options['group']['keys'],
+					$options['group']['initial'],
+					$options['group']['reduce'],
+					array(
+						'condition'=>$filter,
+						'finalize'=>$options['group']['finalize']
+					)
+				);
 				$tmp=$this->db->selectcollection(
 					$fw->get('HOST').'.'.$fw->get('BASE').'.'.
 					uniqid(NULL,TRUE).'.tmp'
 				);
 				$tmp->batchinsert(
-					$this->collection->group(
-						$options['group']['keys'],
-						$options['group']['initial'],
-						$options['group']['reduce'],
-						array(
-							'condition'=>$filter,
-							'finalize'=>$options['group']['finalize']
-						)
-					)['retval'],
+					$grp['retval'],
 					array('safe'=>TRUE)
 				);
 				$filter=array();
