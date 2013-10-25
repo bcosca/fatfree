@@ -1857,12 +1857,17 @@ class View extends Prefab {
 					@session_start();
 				$fw->sync('SESSION');
 				if (!$hive)
-					$hive=$fw->hive();
+					foreach ($fw->hive() as $key=>$val) {
+						$hive[$key]=$val;
+						if (is_array($val))
+							$hive[$key]=(array)(object)$val;
+					}
+				if ($fw->get('ESCAPE'))
+					$hive=$fw->esc($hive);
 				if (PHP_SAPI!='cli')
 					header('Content-Type: '.$mime.'; '.
 						'charset='.$fw->get('ENCODING'));
-				return $this->sandbox($fw->get('ESCAPE')?
-					$fw->esc($hive):$hive);
+				return $this->sandbox($hive);
 			}
 		user_error(sprintf(Base::E_Open,$file));
 	}
