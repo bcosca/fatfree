@@ -569,20 +569,18 @@ final class Base {
 	*	Encode characters to equivalent HTML entities
 	*	@return string
 	*	@param $arg mixed
-	*	@param $lvl int
 	**/
-	function esc($arg,$lvl=0) {
+	function esc($arg) {
 		if (is_string($arg))
 			return $this->encode($arg);
 		if (is_array($arg) || is_a($arg,'ArrayAccess'))
-			foreach ($arg as $key=>&$val)
-				if ($lvl || !preg_match('/'.self::GLOBALS.'/',$key)) {
-					$val=$this->esc($val,$lvl+1);
-					unset($val);
-				}
+			foreach ($arg as &$val) {
+				$val=$this->esc($val);
+				unset($val);
+			}
 		if (is_object($arg))
 			foreach (get_object_vars($arg) as $key=>$val)
-				$arg->$key=$this->esc($val,$lvl+1);
+				$arg->$key=$this->esc($val);
 		return $arg;
 	}
 
@@ -590,17 +588,15 @@ final class Base {
 	*	Decode HTML entities to equivalent characters
 	*	@return string
 	*	@param $arg mixed
-	*	@param $lvl int
 	**/
-	function raw($arg,$lvl=0) {
+	function raw($arg) {
 		if (is_string($arg))
 			return $this->decode($arg);
 		if (is_array($arg) || is_a($arg,'ArrayAccess'))
-			foreach ($arg as $key=>&$val)
-				if ($lvl || !preg_match('/'.self::GLOBALS.'/',$key)) {
-					$val=$this->raw($val,$lvl+1);
-					unset($val);
-				}
+			foreach ($arg as &$val) {
+				$val=$this->raw($val,$lvl+1);
+				unset($val);
+			}
 		if (is_object($arg))
 			foreach (get_object_vars($arg) as $key=>$val)
 				$arg->$key=$this->raw($val,$lvl+1);
@@ -1835,8 +1831,8 @@ class View extends Prefab {
 	*	Create sandbox for template execution
 	*	@return string
 	**/
-	protected function sandbox() {
-		extract($this->hive);
+	protected function sandbox($hive) {
+		extract($hive);
 		ob_start();
 		require($this->view);
 		return ob_get_clean();
@@ -1858,11 +1854,12 @@ class View extends Prefab {
 				$fw->sync('SESSION');
 				if (!$hive)
 					$hive=$fw->hive();
-				$this->hive=$fw->get('ESCAPE')?$hive=$fw->esc($hive):$hive;
+				if ($fw->get('ESCAPE'))
+					$hive=$fw->esc($hive);
 				if (PHP_SAPI!='cli')
 					header('Content-Type: '.$mime.'; '.
 						'charset='.$fw->get('ENCODING'));
-				return $this->sandbox();
+				return $this->sandbox($hive);
 			}
 		user_error(sprintf(Base::E_Open,$file));
 	}

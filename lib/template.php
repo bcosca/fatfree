@@ -378,11 +378,12 @@ class Template extends View {
 				$fw->sync('SESSION');
 				if (!$hive)
 					$hive=$fw->hive();
-				$this->hive=$fw->get('ESCAPE')?$fw->esc($hive):$hive;
+				if ($fw->get('ESCAPE'))
+					$hive=$fw->esc($hive);
 				if (PHP_SAPI!='cli')
 					header('Content-Type: '.($this->mime=$mime).'; '.
 						'charset='.$fw->get('ENCODING'));
-				return $this->sandbox();
+				return $this->sandbox($hive);
 			}
 		user_error(sprintf(Base::E_Open,$file));
 	}
