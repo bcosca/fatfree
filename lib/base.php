@@ -594,12 +594,12 @@ final class Base {
 			return $this->decode($arg);
 		if (is_array($arg) || is_a($arg,'ArrayAccess'))
 			foreach ($arg as &$val) {
-				$val=$this->raw($val,$lvl+1);
+				$val=$this->raw($val);
 				unset($val);
 			}
 		if (is_object($arg))
 			foreach (get_object_vars($arg) as $key=>$val)
-				$arg->$key=$this->raw($val,$lvl+1);
+				$arg->$key=$this->raw($val);
 		return $arg;
 	}
 
