@@ -569,18 +569,20 @@ final class Base {
 	*	Encode characters to equivalent HTML entities
 	*	@return string
 	*	@param $arg mixed
+	*	@param $lvl int
 	**/
-	function esc($arg) {
+	function esc($arg,$lvl=0) {
 		if (is_string($arg))
 			return $this->encode($arg);
 		if (is_array($arg) || is_a($arg,'ArrayAccess'))
-			foreach ($arg as &$val) {
-				$val=$this->esc($val);
-				unset($val);
-			}
+			foreach ($arg as $key=>&$val)
+				if ($lvl || !preg_match('/'.self::GLOBALS.'/',$key)) {
+					$val=$this->esc($val,$lvl+1);
+					unset($val);
+				}
 		if (is_object($arg))
 			foreach (get_object_vars($arg) as $key=>$val)
-				$arg->$key=$this->esc($val);
+				$arg->$key=$this->esc($val,$lvl+1);
 		return $arg;
 	}
 
@@ -588,18 +590,20 @@ final class Base {
 	*	Decode HTML entities to equivalent characters
 	*	@return string
 	*	@param $arg mixed
+	*	@param $lvl int
 	**/
-	function raw($arg) {
+	function raw($arg,$lvl=0) {
 		if (is_string($arg))
 			return $this->decode($arg);
 		if (is_array($arg) || is_a($arg,'ArrayAccess'))
-			foreach ($arg as &$val) {
-				$val=$this->raw($val);
-				unset($val);
-			}
+			foreach ($arg as $key=>&$val)
+				if ($lvl || !preg_match('/'.self::GLOBALS.'/',$key)) {
+					$val=$this->raw($val,$lvl+1);
+					unset($val);
+				}
 		if (is_object($arg))
 			foreach (get_object_vars($arg) as $key=>$val)
-				$arg->$key=$this->raw($val);
+				$arg->$key=$this->raw($val,$lvl+1);
 		return $arg;
 	}
 
