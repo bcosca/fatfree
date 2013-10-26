@@ -335,8 +335,8 @@ class Mapper extends \DB\Cursor {
 		$now=microtime(TRUE);
 		$data=$db->read($this->file);
 		if ($filter)
-			foreach ($this->find($filter, NULL, FALSE) as $mapper)
-				unset($data[$mapper->_id]);
+			foreach ($this->find($filter,NULL,FALSE) as $mapper)
+				unset($data[$mapper->id]);
 		elseif (isset($this->id)) {
 			unset($data[$this->id]);
 			parent::erase();

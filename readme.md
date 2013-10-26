@@ -1527,7 +1527,7 @@ In the above scenario, F3 will retrieve records that match the criteria `'visits
 [pos] actual subset position
 ```
 
-The actual subset position returned will be NULL if the first argument of `paginate()` is a negative number or exceeeds the number of subsets found.
+The actual subset position returned will be NULL if the first argument of `paginate()` is a negative number or exceeds the number of subsets found.
 
 ### Virtual Fields
 
@@ -2341,6 +2341,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 
 * GitHub
 * Square Lines, LLC
+* Talis Group, Ltd.
 * Mirosystems
 * Tecnilógica
 * Stehlik & Company
