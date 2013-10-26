@@ -377,11 +377,7 @@ class Template extends View {
 					@session_start();
 				$fw->sync('SESSION');
 				if (!$hive)
-					foreach ($fw->hive() as $key=>$val) {
-						$hive[$key]=$val;
-						if (is_array($val))
-							$hive[$key]=(array)(object)$val;
-					}
+					$hive=$this->deref($fw->hive());
 				if ($fw->get('ESCAPE'))
 					$hive=$fw->esc($hive);
 				if (PHP_SAPI!='cli')

@@ -452,7 +452,8 @@ final class Base {
 				foreach ($arg as $key=>$val) {
 					$str.=($str?',':'').
 						($num?'':($this->stringify($key).'=>')).
-						($arg==$val?'*RECURSION*':$this->stringify($val));
+						($arg==$val && !is_scalar($val)?
+							'*RECURSION*':$this->stringify($val));
 				}
 				return 'array('.$str.')';
 			default:
@@ -1843,6 +1844,27 @@ class View extends Prefab {
 	}
 
 	/**
+	*	Return dereferenced value
+	*	@return mixed
+	*	@param mixed
+	**/
+	function deref($arg) {
+		if (is_object($arg)) {
+			// Not all objects are cloneable
+			$arg=(object)(array)$arg;
+			foreach (get_object_vars($arg) as $key=>$val)
+				$arg->$key=$this->deref($val);
+			return $arg;
+		}
+		if (is_array($arg)) {
+			foreach ($arg as $key=>$val)
+				$arg[$key]=$this->deref($val);
+			return $arg;
+		}
+		return json_decode(json_encode($arg));
+	}
+
+	/**
 	*	Render template
 	*	@return string
 	*	@param $file string
@@ -1857,11 +1879,7 @@ class View extends Prefab {
 					@session_start();
 				$fw->sync('SESSION');
 				if (!$hive)
-					foreach ($fw->hive() as $key=>$val) {
-						$hive[$key]=$val;
-						if (is_array($val))
-							$hive[$key]=(array)(object)$val;
-					}
+					$hive=$this->deref($fw->hive());
 				if ($fw->get('ESCAPE'))
 					$hive=$fw->esc($hive);
 				if (PHP_SAPI!='cli')
