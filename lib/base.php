@@ -1850,18 +1850,18 @@ class View extends Prefab {
 	**/
 	function deref($arg) {
 		if (is_object($arg)) {
-			// Not all objects are cloneable
 			$arg=(object)(array)$arg;
 			foreach (get_object_vars($arg) as $key=>$val)
 				$arg->$key=$this->deref($val);
 			return $arg;
 		}
 		if (is_array($arg)) {
+			$tmp=array();
 			foreach ($arg as $key=>$val)
-				$arg[$key]=$this->deref($val);
-			return $arg;
+				$tmp[$key]=$this->deref($val);
+			return $tmp;
 		}
-		return json_decode(json_encode($arg));
+		return unserialize(serialize($arg));
 	}
 
 	/**

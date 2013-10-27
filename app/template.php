@@ -248,15 +248,19 @@ class Template extends Controller {
 		$obj=new \stdclass;
 		$obj->content='<ok>';
 		$f3->set('object',$obj);
+		$f3->set('ENV.content',$obj->content);
 		$test->expect(
 			$f3->get('string')=='<test>' &&
 			$f3->get('object')->content=='<ok>' &&
+			$f3->get('ENV.content')=='<ok>' &&
 			$tpl->render('templates/test12.htm')==
-				'&lt;test&gt;&lt;ok&gt;' &&
+				'&lt;test&gt;&lt;ok&gt;&lt;ok&gt;' &&
 			$f3->get('string')=='<test>' &&
-			$f3->get('object')->content=='<ok>',
+			$f3->get('object')->content=='<ok>' &&
+			$f3->get('ENV.content')=='<ok>',
 			'Escaped values'
 		);
+		/*
 		$f3->set('div',
 			array_fill(0,1000,array_combine(range('a','j'),range(0,9))));
 		$now=microtime(TRUE);
@@ -271,6 +275,7 @@ class Template extends Controller {
 			'Use template engine: '.
 				round(1e3*(microtime(TRUE)-$now),2).' msecs'
 		);
+		*/
 		foreach (glob($f3->get('TEMP').
 			$f3->hash($f3->get('ROOT').$f3->get('BASE')).'.*.php') as $file)
 			unlink($file);
