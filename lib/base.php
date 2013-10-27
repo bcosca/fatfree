@@ -1516,9 +1516,8 @@ final class Base {
 			'HOST'=>$_SERVER['SERVER_NAME'],
 			'IP'=>isset($headers['Client-IP'])?
 				$headers['Client-IP']:
-				(isset($headers['X-Forwarded-For']) &&
-				($ip=strstr($headers['X-Forwarded-For'],',',TRUE))?
-					$ip:
+				(isset($headers['X-Forwarded-For'])?
+					$headers['X-Forwarded-For']:
 					(isset($_SERVER['REMOTE_ADDR'])?
 						$_SERVER['REMOTE_ADDR']:'')),
 			'JAR'=>$jar,
