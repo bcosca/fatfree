@@ -1849,9 +1849,9 @@ class View extends Prefab {
 	**/
 	function deref($arg) {
 		if (is_object($arg)) {
-			$arg=(object)(array)$arg;
-			foreach (get_object_vars($arg) as $key=>$val)
-				$arg->$key=$this->deref($val);
+			$ref=new ReflectionClass($arg);
+			if ($ref->iscloneable())
+				$arg=clone $arg;
 			return $arg;
 		}
 		if (is_array($arg)) {
