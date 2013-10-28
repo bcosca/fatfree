@@ -187,9 +187,9 @@ class Web extends Prefab {
 						(isset($parts[2])?$parts[2]:'')):$base);
 				$out[$file['name']]=!$file['error'] &&
 					$file['type']==$this->mime($file['name']) &&
+					is_uploaded_file($file['tmp_name']) &&
 					(!file_exists($file['name']) || $overwrite) &&
 					(!$func || $fw->call($func,array($file))) &&
-					is_uploaded_file($file['tmp_name']) &&
 					move_uploaded_file($file['tmp_name'],$file['name']);
 			}
 		}
