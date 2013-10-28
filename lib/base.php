@@ -567,21 +567,36 @@ final class Base {
 	}
 
 	/**
+	*	Attempt to clone object
+	*	@return object
+	*	@return $arg object
+	**/
+	function dupe($arg) {
+		if (method_exists('ReflectionClass','iscloneable')) {
+			$ref=new ReflectionClass($arg);
+			if ($ref->iscloneable())
+				$arg=clone($arg);
+		}
+		return $arg;
+	}
+
+	/**
 	*	Encode characters to equivalent HTML entities
 	*	@return string
 	*	@param $arg mixed
 	**/
 	function esc($arg) {
-		if (is_string($arg))
-			return $this->encode($arg);
-		if (is_array($arg) || is_a($arg,'ArrayAccess'))
-			foreach ($arg as &$val) {
-				$val=$this->esc($val);
-				unset($val);
-			}
+		if (is_array($arg) || is_a($arg,'ArrayAccess')) {
+			$tmp=array();
+			foreach ($arg as $key=>$val)
+				$tmp[$key]=$this->esc($val);
+			return $tmp;
+		}
 		if (is_object($arg))
-			foreach (get_object_vars($arg) as $key=>$val)
-				$arg->$key=$this->esc($val);
+			return $this->dupe($arg);
+		$arg=unserialize(serialize($arg));
+		if (is_string($arg))
+			$arg=$this->encode($arg);
 		return $arg;
 	}
 
@@ -591,16 +606,17 @@ final class Base {
 	*	@param $arg mixed
 	**/
 	function raw($arg) {
-		if (is_string($arg))
-			return $this->decode($arg);
-		if (is_array($arg) || is_a($arg,'ArrayAccess'))
-			foreach ($arg as &$val) {
-				$val=$this->raw($val);
-				unset($val);
-			}
+		if (is_array($arg) || is_a($arg,'ArrayAccess')) {
+			$tmp=array();
+			foreach ($arg as $key=>$val)
+				$tmp[$key]=$this->raw($val);
+			return $tmp;
+		}
 		if (is_object($arg))
-			foreach (get_object_vars($arg) as $key=>$val)
-				$arg->$key=$this->raw($val);
+			return $this->dupe($arg);
+		$arg=unserialize(serialize($arg));
+		if (is_string($arg))
+			$arg=$this->decode($arg);
 		return $arg;
 	}
 
@@ -1843,29 +1859,6 @@ class View extends Prefab {
 	}
 
 	/**
-	*	Return dereferenced value
-	*	@return mixed
-	*	@param mixed
-	**/
-	function deref($arg) {
-		if (is_object($arg)) {
-			if (method_exists('ReflectionClass','iscloneable')) {
-				$ref=new ReflectionClass($arg);
-				if ($ref->iscloneable())
-					$arg=clone($arg);
-			}
-			return $arg;
-		}
-		if (is_array($arg)) {
-			$tmp=array();
-			foreach ($arg as $key=>$val)
-				$tmp[$key]=$this->deref($val);
-			return $tmp;
-		}
-		return unserialize(serialize($arg));
-	}
-
-	/**
 	*	Render template
 	*	@return string
 	*	@param $file string
@@ -1880,7 +1873,7 @@ class View extends Prefab {
 					@session_start();
 				$fw->sync('SESSION');
 				if (!$hive)
-					$hive=$this->deref($fw->hive());
+					$hive=$fw->hive();
 				if ($fw->get('ESCAPE'))
 					$hive=$fw->esc($hive);
 				if (PHP_SAPI!='cli')
