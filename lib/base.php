@@ -1851,7 +1851,7 @@ class View extends Prefab {
 		if (is_object($arg)) {
 			$ref=new ReflectionClass($arg);
 			if ($ref->iscloneable())
-				$arg=clone $arg;
+				$arg=clone($arg);
 			return $arg;
 		}
 		if (is_array($arg)) {
