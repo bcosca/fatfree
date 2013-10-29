@@ -586,7 +586,7 @@ final class Base {
 	*	@param $arg mixed
 	**/
 	function esc($arg) {
-		if (is_array($arg) || is_a($arg,'ArrayAccess')) {
+		if (is_array($arg)) {
 			$tmp=array();
 			foreach ($arg as $key=>$val)
 				$tmp[$key]=$this->esc($val);
@@ -606,7 +606,7 @@ final class Base {
 	*	@param $arg mixed
 	**/
 	function raw($arg) {
-		if (is_array($arg) || is_a($arg,'ArrayAccess')) {
+		if (is_array($arg)) {
 			$tmp=array();
 			foreach ($arg as $key=>$val)
 				$tmp[$key]=$this->raw($val);
