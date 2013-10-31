@@ -90,6 +90,7 @@ abstract class Cursor extends \Magic {
 				)
 			),
 			'total'=>$total,
+			'limit'=>$size,
 			'count'=>$count,
 			'pos'=>$pos<$count?$pos:0
 		);
