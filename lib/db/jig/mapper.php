@@ -155,6 +155,8 @@ class Mapper extends \DB\Cursor {
 				$fw->stringify(array($filter,$options))).'.jig',$data)) ||
 			$cached[0]+$ttl<microtime(TRUE)) {
 			$data=$db->read($this->file);
+			if (is_null($data))
+				return FALSE;
 			foreach ($data as $id=>&$doc) {
 				$doc['_id']=$id;
 				unset($doc);
