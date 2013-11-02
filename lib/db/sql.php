@@ -265,6 +265,9 @@ class SQL extends \PDO {
 		);
 		foreach ($cmd as $key=>$val)
 			if (preg_match('/'.$key.'/',$this->engine)) {
+				// Improve InnoDB performance on MySQL with
+				// SET GLOBAL innodb_stats_on_metadata=0;
+				// This requires SUPER privilege!
 				$rows=array();
 				foreach ($this->exec($val[0],NULL,$ttl) as $row)
 					$rows[$row[$val[1]]]=array(
