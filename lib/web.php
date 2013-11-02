@@ -513,7 +513,7 @@ class Web extends Prefab {
 						$dst.=$data;
 					else {
 						$data='';
-						$src=$fw->read($save);
+						$src=Template::instance()->render($file);
 						for ($ptr=0,$len=strlen($src);$ptr<$len;) {
 							if (preg_match('/^@import\h+url'.
 								'\(\h*([\'"])(.+?)\1\h*\)[^;]*;/',
