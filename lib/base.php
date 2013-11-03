@@ -592,8 +592,12 @@ final class Base {
 				$tmp[$key]=$this->esc($val);
 			return $tmp;
 		}
-		if (is_object($arg))
-			return $this->dupe($arg);
+		if (is_object($arg)) {
+			$obj=$this->dupe($arg);
+			foreach (get_object_vars($obj) as $key=>$val)
+				$obj->$key=$this->esc($val);
+			return $obj;
+		}
 		$arg=unserialize(serialize($arg));
 		if (is_string($arg))
 			$arg=$this->encode($arg);
