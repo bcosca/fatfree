@@ -934,7 +934,7 @@ final class Base {
 					($debug?('<pre>'.$out.'</pre>'.$eol):'').
 				'</body>'.$eol.
 				'</html>');
-		if (!$this->hive['BAIL'])
+		if ($this->hive['HALT'])
 			die;
 	}
 
@@ -1521,7 +1521,6 @@ final class Base {
 			'AJAX'=>isset($headers['X-Requested-With']) &&
 				$headers['X-Requested-With']=='XMLHttpRequest',
 			'AUTOLOAD'=>'./',
-			'BAIL'=>TRUE,
 			'BASE'=>$base,
 			'BODY'=>file_get_contents('php://input'),
 			'CACHE'=>FALSE,
@@ -1535,6 +1534,7 @@ final class Base {
 			'EXEMPT'=>NULL,
 			'FALLBACK'=>$this->fallback,
 			'HEADERS'=>$headers,
+			'HALT'=>FALSE,
 			'HIGHLIGHT'=>TRUE,
 			'HOST'=>$_SERVER['SERVER_NAME'],
 			'IP'=>isset($headers['Client-IP'])?
