@@ -186,9 +186,8 @@ class Auth {
 	*	HTTP basic auth mechanism
 	*	@return bool
 	*	@param $func callback
-	*	@param $halt bool
 	**/
-	function basic($func=NULL,$halt=TRUE) {
+	function basic($func=NULL) {
 		$fw=Base::instance();
 		$realm=$fw->get('REALM');
 		if (isset($_SERVER['HTTP_AUTHORIZATION']))
@@ -206,8 +205,7 @@ class Auth {
 			return TRUE;
 		if (PHP_SAPI!='cli')
 			header('WWW-Authenticate: Basic realm="'.$realm.'"');
-		if ($halt)
-			$fw->error(401);
+		$fw->status(401);
 		return FALSE;
 	}
 

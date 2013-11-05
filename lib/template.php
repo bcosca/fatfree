@@ -252,7 +252,8 @@ class Template extends View {
 					$str=trim($self->token($expr[1]));
 					if (preg_match('/^(.+?)\h*\|\h*(raw|esc|format)$/',
 						$str,$parts))
-						$str='Base::instance()->'.$parts[2].'('.$parts[1].')';
+						$str='Base::instance()->'.$parts[2].
+							'('.$parts[1].')';
 					return '<?php echo '.$str.'; ?>';
 				},
 				$node
@@ -307,12 +308,15 @@ class Template extends View {
 					$fw->hash($view).'.php')) ||
 					filemtime($this->view)<filemtime($view)) {
 					// Remove PHP code and comments
-					$text=preg_replace('/<\?(?:php)?.+?\?>|{{\*.+?\*}}/is','',
+					$text=preg_replace(
+						'/<\?(?:php)?.+?\?>|{{\*.+?\*}}/is','',
 						$fw->read($view));
 					// Build tree structure
-					for ($ptr=0,$len=strlen($text),$tree=array(),$node=&$tree,
+					for ($ptr=0,$len=strlen($text),
+						$tree=array(),$node=&$tree,
 						$stack=array(),$depth=0,$tmp='';$ptr<$len;)
-						if (preg_match('/^<(\/?)(?:F3:)?('.$this->tags.')\b'.
+						if (preg_match('/^<(\/?)(?:F3:)?'.
+							'('.$this->tags.')\b'.
 							'((?:\h+\w+\h*=\h*(?:"(?:.+?)"|\'(?:.+?)\'))*)'.
 							'\h*(\/?)>/is',substr($text,$ptr),$match)) {
 							if (strlen($tmp))
@@ -378,11 +382,12 @@ class Template extends View {
 				$fw->sync('SESSION');
 				if (!$hive)
 					$hive=$fw->hive();
-				$this->hive=$fw->get('ESCAPE')?$fw->esc($hive):$hive;
+				if ($fw->get('ESCAPE'))
+					$hive=$fw->esc($hive);
 				if (PHP_SAPI!='cli')
 					header('Content-Type: '.($this->mime=$mime).'; '.
 						'charset='.$fw->get('ENCODING'));
-				return $this->sandbox();
+				return $this->sandbox($hive);
 			}
 		user_error(sprintf(Base::E_Open,$file));
 	}

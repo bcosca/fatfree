@@ -4,6 +4,7 @@ CHANGELOG
 *	NEW: Support OpenID attribute exchange
 *	NEW: BAIL variable enables/disables continuance of execution on non-fatal
 	errors
+*	Deprecate BAIL in favor of HALT (default: FALSE)
 *	Add support for Oracle
 *	Mark cached queries in log (Feature Request #405)
 *	Implement Bcrypt->needs_reshash()

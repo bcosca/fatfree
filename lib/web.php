@@ -69,7 +69,7 @@ class Web extends Prefab {
 				'wav'=>'audio/wav',
 				'xls'=>'application/vnd.ms-excel',
 				'xml'=>'application/xml',
-				'zip'=>'application/zip'
+				'zip'=>'application/x-zip-compressed'
 			);
 			foreach ($map as $key=>$val)
 				if (preg_match('/'.$key.'/',strtolower($ext[0])))
@@ -186,7 +186,7 @@ class Web extends Prefab {
 						($this->slug($parts[1]).
 						(isset($parts[2])?$parts[2]:'')):$base);
 				$out[$file['name']]=!$file['error'] &&
-					$file['type']==$this->mime($file['name']) &&
+					is_uploaded_file($file['tmp_name']) &&
 					(!file_exists($file['name']) || $overwrite) &&
 					(!$func || $fw->call($func,array($file))) &&
 					move_uploaded_file($file['tmp_name'],$file['name']);

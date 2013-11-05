@@ -70,8 +70,8 @@ abstract class Cursor extends \Magic {
 
 	/**
 	*	Return array containing subset of records matching criteria,
-	*	total number of records in superset, number of subsets available,
-	*	and actual subset position
+	*	total number of records in superset, specified limit, number of
+	*	subsets available, and actual subset position
 	*	@return array
 	*	@param $pos int
 	*	@param $size int
@@ -90,6 +90,7 @@ abstract class Cursor extends \Magic {
 				)
 			),
 			'total'=>$total,
+			'limit'=>$size,
 			'count'=>$count,
 			'pos'=>$pos<$count?$pos:0
 		);
