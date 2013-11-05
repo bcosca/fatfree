@@ -908,6 +908,7 @@ final class Base {
 				($src.$line)).$eol;
 		}
 		$this->hive['ERROR']=array(
+			'status'=>$header,
 			'code'=>$code,
 			'text'=>$text,
 			'trace'=>$trace
@@ -1520,7 +1521,7 @@ final class Base {
 			'AJAX'=>isset($headers['X-Requested-With']) &&
 				$headers['X-Requested-With']=='XMLHttpRequest',
 			'AUTOLOAD'=>'./',
-			'BAIL'=>FALSE,
+			'BAIL'=>TRUE,
 			'BASE'=>$base,
 			'BODY'=>file_get_contents('php://input'),
 			'CACHE'=>FALSE,
