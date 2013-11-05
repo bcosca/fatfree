@@ -123,8 +123,13 @@ class Session extends Mapper {
 	**/
 	function __construct(\DB\SQL $db,$table='sessions') {
 		$db->exec(
-			'CREATE TABLE IF NOT EXISTS '.
-				(($name=$db->name())?($name.'.'):'').$table.' ('.
+			(preg_match('/mssql|sqlsrv|sybase/',$db->driver())?
+				('IF NOT EXISTS (SELECT * FROM sysobjects WHERE '.
+					'name='.$db->quote($table).' AND xtype=\'U\') '.
+					'CREATE TABLE dbo.'):
+				('CREATE TABLE IF NOT EXISTS '.
+					(($name=$db->name())?($name.'.'):''))).
+			$table.' ('.
 				'session_id VARCHAR(40),'.
 				'data TEXT,'.
 				'ip VARCHAR(40),'.

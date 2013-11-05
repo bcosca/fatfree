@@ -2048,6 +2048,10 @@ Once you get the hang of testing the smallest units of your application, you can
 
 * Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (`|`), comma (`,`), or semi-colon (`;`) as path separator.
 
+`bool BAIL`
+
+* If TRUE, framework continues execution after a non-fatal error is detected (default).
+
 `string BASE`
 
 * Path to the `index.php` main/front controller.
@@ -2311,7 +2315,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 The most up-to-date documentation is located at [http://fatfreeframework.com/](http://fatfreeframework.com/). It contains examples of usage of the various framework components.
 
-The framework API documentation can also be viewed offline. It is contained in `lib/api.chm` of the distribution package. F3 uses [Doxygen](http://www.stack.nl/~dimitri/doxygen/) to generate output in compiled HTML format. You need a CHM reader to view its tree-structured contents. For Mac users, there's [Chmox](http://chmox.sourceforge.net/) and [iChm](http://code.google.com/p/ichm/). Linux users have more choices: [xCHM](http://xchm.sourceforge.net/), [GnoCHM](http://gnochm.sourceforge.net/), [ChmSee](http://code.google.com/p/chmsee/), and [Kchmviewer](http://www.ulduzsoft.com/linux/kchmviewer/). Windows supports `.chm` files right out of the box.
+The framework API documentation can also be viewed offline. It is contained in `lib/api/` folder of the distribution package. Use your favorite browser and point it to the `lib/api/index.html` file.
 
 ## Support and Licensing
 
@@ -2341,6 +2345,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 
 * GitHub
 * Square Lines, LLC
+* Talis Group, Ltd.
 * Mirosystems
 * Tecnilógica
 * Stehlik & Company
@@ -2348,7 +2353,6 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * S2 Development, Ltd.
 * PHP Experts, Inc.
 * Sascha Ohms
-* Christian Knuth
 * Jermaine Maree
 * Sergey Zaretsky
 * Daniel Kloke
@@ -2389,6 +2393,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * LucidStorm
 * Nevatech
 * Matt Wielgos
+* Christian Knuth
 * Maximilian Summe
 * Caspar Frey
 * FocusHeart
@@ -2420,6 +2425,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Roland Fath
 * Justin Parker
 * Costas Menico
+* Mathieu-Philippe Bourgeois
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 

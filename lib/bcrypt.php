@@ -39,7 +39,7 @@ class Bcrypt extends Prefab {
 		$len=22;
 		if ($salt) {
 			if (!preg_match('/^[[:alnum:]\.\/]{'.$len.',}$/',$salt))
-				user_error(self::E_Salt);
+				user_error(self::E_SaltArg);
 		}
 		else {
 			$raw=16;
