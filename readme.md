@@ -2315,7 +2315,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 The most up-to-date documentation is located at [http://fatfreeframework.com/](http://fatfreeframework.com/). It contains examples of usage of the various framework components.
 
-The framework API documentation can also be viewed offline. It is contained in `lib/api.chm` of the distribution package. F3 uses [Doxygen](http://www.stack.nl/~dimitri/doxygen/) to generate output in compiled HTML format. You need a CHM reader to view its tree-structured contents. For Mac users, there's [Chmox](http://chmox.sourceforge.net/) and [iChm](http://code.google.com/p/ichm/). Linux users have more choices: [xCHM](http://xchm.sourceforge.net/), [GnoCHM](http://gnochm.sourceforge.net/), [ChmSee](http://code.google.com/p/chmsee/), and [Kchmviewer](http://www.ulduzsoft.com/linux/kchmviewer/). Windows supports `.chm` files right out of the box.
+The framework API documentation can also be viewed offline. It is contained in `lib/api/` folder of the distribution package. Use your favorite browser and point it to the `lib/api/index.html` file.
 
 ## Support and Licensing
 
