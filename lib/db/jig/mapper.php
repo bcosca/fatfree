@@ -82,6 +82,7 @@ class Mapper extends \DB\Cursor {
 		$mapper->id=$id;
 		foreach ($row as $field=>$val)
 			$mapper->document[$field]=$val;
+		$mapper->document['_id']=$id;
 		$mapper->query=array(clone($mapper));
 		return $mapper;
 	}
