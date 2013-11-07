@@ -1,5 +1,25 @@
 CHANGELOG
 
+3.1.2 (5 November 2013)
+*	Abandon .chm help format; Package API documentation in plain HTML;
+	(Launch lib/api/index.html in your browser)
+*	Deprecate BAIL in favor of HALT (default: TRUE)
+*	Revert to 3.1.0 autoload behavior; Add support for lowercase folder
+	names
+*	Allow Spring-style HTTP method overrides
+*	Add support for SQL Server-based sessions
+*	Capture full X-Forwarded-For header
+*	Add protection against malicious scripts; Extra check if file was really
+	uploaded
+*	Pass-thru page limit in return value of Cursor->paginate()
+*	Optimize code: Implement single-pass escaping
+*	Short circuit Jig->find() if source file is empty
+*	Bug fix: PHP globals passed by reference in hive() result (Issue #424)
+*	Bug fix: ZIP mime type incorrect behavior
+*	Bug fix: Jig->erase() filter malfunction
+*	Bug fix: Mongo->select() group
+*	Bug fix: Unknown bcrypt constant
+
 3.1.1 (13 October 2013)
 *	NEW: Support OpenID attribute exchange
 *	NEW: BAIL variable enables/disables continuance of execution on non-fatal
