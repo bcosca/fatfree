@@ -309,7 +309,7 @@ class Template extends View {
 					filemtime($this->view)<filemtime($view)) {
 					// Remove PHP code and comments
 					$text=preg_replace(
-						'/<\?(?:php)?.+?\?>|{{\*.+?\*}}/is','',
+						'/<\?(?:php|\s*=).+?\?>|{{\*.+?\*}}/is','',
 						$fw->read($view));
 					// Build tree structure
 					for ($ptr=0,$len=strlen($text),
