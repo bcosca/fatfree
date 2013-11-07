@@ -108,6 +108,30 @@ abstract class Cursor extends \Magic {
 	}
 
 	/**
+	*	Returns cross-references to another mapper
+	*	@return array|FALSE
+	*	@param $mapper object
+	*	@param $filter string|array
+	*	@param $options array
+	**/
+	function xref($mapper,$filter=NULL,array $options=NULL) {
+		return $mapper->find($filter,$options);
+	}
+
+	/**
+	*	Return first cross-reference to another mapper
+	*	@return object|FALSE
+	*	@param $mapper object
+	*	@param $filter string|array
+	*	@param $options array
+	*	@param $ttl int
+	**/
+	function xrefone($mapper,$filter=NULL,array $options=NULL,$ttl=0) {
+		return ($data=$this->xref($mapper,$filter,$options,$ttl))?
+			$data[0]:FALSE;
+	}
+
+	/**
 	*	Map to first record in cursor
 	*	@return mixed
 	**/
