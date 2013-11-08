@@ -113,9 +113,10 @@ abstract class Cursor extends \Magic {
 	*	@param $mapper object
 	*	@param $filter string|array
 	*	@param $options array
+	*	@param $ttl int
 	**/
-	function xref($mapper,$filter=NULL,array $options=NULL) {
-		return $mapper->find($filter,$options);
+	function xref($mapper,$filter=NULL,array $options=NULL,$ttl=0) {
+		return $mapper->find($filter,$options,$ttl);
 	}
 
 	/**
