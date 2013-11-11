@@ -438,7 +438,7 @@ final class Base {
 		switch (gettype($arg)) {
 			case 'object':
 				$str='';
-				if ($this->hive['DEBUG']>2 && get_class($arg)!='Closure')
+				if (get_class($arg)!='Closure')
 					foreach ((array)$arg as $key=>$val) {
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
