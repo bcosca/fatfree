@@ -222,6 +222,8 @@ class Web extends Prefab {
 		curl_setopt($curl,CURLOPT_CUSTOMREQUEST,$options['method']);
 		if (isset($options['header']))
 			curl_setopt($curl,CURLOPT_HTTPHEADER,$options['header']);
+		if (isset($options['cookie_string']))
+			curl_setopt($curl,CURLOPT_COOKIE,$options['cookie_string']);
 		if (isset($options['user_agent']))
 			curl_setopt($curl,CURLOPT_USERAGENT,$options['user_agent']);
 		if (isset($options['content']))
