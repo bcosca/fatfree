@@ -2048,10 +2048,6 @@ Once you get the hang of testing the smallest units of your application, you can
 
 * Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (`|`), comma (`,`), or semi-colon (`;`) as path separator.
 
-`bool BAIL`
-
-* If TRUE, framework continues execution after a non-fatal error is detected (default).
-
 `string BASE`
 
 * Path to the `index.php` main/front controller.
@@ -2103,6 +2099,10 @@ Once you get the hang of testing the smallest units of your application, you can
 `string FALLBACK`
 
 * Language (and dictionary) to use if no translation is available.
+
+`bool HALT`
+
+* If TRUE (default), framework stops execution after a non-fatal error is detected.
 
 `array HEADERS`
 
