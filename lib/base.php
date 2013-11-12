@@ -1494,7 +1494,7 @@ final class Base {
 			$headers['X-Forwarded-Proto']=='https'?'https':'http';
 		$base=preg_replace('/\/[^\/]+$/','',$_SERVER['SCRIPT_NAME']);
 		preg_match('/'.preg_quote($base,'/').'(.*)/',
-			$_SERVER['REQUEST_URI'],$path);
+			parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),$path);
 		call_user_func_array('session_set_cookie_params',
 			$jar=array(
 				'expire'=>0,
