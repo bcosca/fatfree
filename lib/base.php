@@ -433,16 +433,17 @@ final class Base {
 	*	Convert PHP expression/value to compressed exportable string
 	*	@return string
 	*	@param $arg mixed
+	*	@param $detail bool
 	**/
-	function stringify($arg) {
+	function stringify($arg,$detail=TRUE) {
 		switch (gettype($arg)) {
 			case 'object':
 				$str='';
-				if (get_class($arg)!='Closure')
+				if (get_class($arg)!='Closure' && $detail)
 					foreach ((array)$arg as $key=>$val) {
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
-							$this->stringify($val);
+							$this->stringify($val,$detail);
 					}
 				return addslashes(get_class($arg)).'::__set_state('.$str.')';
 			case 'array':
@@ -453,7 +454,7 @@ final class Base {
 					$str.=($str?',':'').
 						($num?'':($this->stringify($key).'=>')).
 						($arg==$val && !is_scalar($val)?
-							'*RECURSION*':$this->stringify($val));
+							'*RECURSION*':$this->stringify($val,$detail));
 				}
 				return 'array('.$str.')';
 			default:
@@ -1396,7 +1397,7 @@ final class Base {
 	*	@param $expr mixed
 	**/
 	function dump($expr) {
-		echo $this->highlight($this->stringify($expr));
+		echo $this->highlight($this->stringify($expr,$this->hive['DEBUG']>2));
 	}
 
 	/**
