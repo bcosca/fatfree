@@ -23,6 +23,20 @@ class Image extends Controller {
 				'CAPTCHA<br />'.
 				'<img src="'.$src.'" title="CAPTCHA" />'
 			);
+                        $test->expect(
+                                $src=$f3->base64(
+                                        $img->captcha('fonts/thunder.ttf',24,5,NULL,'',0xFFF000,0x000FFF)->
+                                        dump(),'image/png'),
+                                'Custom color CAPTCHA<br />'.
+                                '<img src="'.$src.'" title="CAPTCHA" />'
+                        );
+                        $test->expect(
+                                $src=$f3->base64(
+                                        $img->captcha('fonts/thunder.ttf',24,5,NULL,'',array(0xFF0000,0x00AA00,0X555555,0xAAAAAA),array(0x0000AA,0xFFFFFF))->
+                                        dump(),'image/png'),
+                                'Random color CAPTCHA<br />'.
+                                '<img src="'.$src.'" title="CAPTCHA" />'
+                        );
 			$test->expect(
 				$src=$f3->base64(
 					$img->identicon(md5(mt_rand()),48)->dump(),'image/png'),
