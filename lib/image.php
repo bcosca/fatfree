@@ -367,7 +367,7 @@ class Image {
 	*	@param $key string
 	*	@param $path string
 	**/
-	function captcha($font,$size=24,$len=5,$key=NULL,$path='') {
+	function captcha($font,$size=24,$len=5,$key=NULL,$path='',$bg=0x000000,$color=0xFFFFFF) {
 		$fw=Base::instance();
 		foreach ($fw->split($path?:$fw->get('UI')) as $dir)
 			if (is_file($path=$dir.$font)) {
@@ -380,10 +380,10 @@ class Image {
 					$w=$box[2]-$box[0];
 					$h=$box[1]-$box[5];
 					$char=imagecreatetruecolor($block,$block);
-					imagefill($char,0,0,0);
+					imagefill($char,0,0,is_array($bg)?$bg[array_rand($bg)]:$bg);
 					imagettftext($char,$size*2,0,
 						($block-$w)/2,$block-($block-$h)/2,
-						0xFFFFFF,$path,$seed[$i]);
+						is_array($color)?$color[array_rand($color)]:$color,$path,$seed[$i]);
 					$char=imagerotate($char,mt_rand(-30,30),
 						imagecolorallocatealpha($char,0,0,0,127));
 					// Reduce to normal size
