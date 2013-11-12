@@ -113,6 +113,8 @@ class SQL extends \PDO {
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
 		foreach (array_combine($cmds,$args) as $cmd=>$arg) {
+			if (!preg_replace('/(^\s+|[\s;]+$)/','',$cmd))
+				continue;
 			$now=microtime(TRUE);
 			$keys=$vals=array();
 			if ($fw->get('CACHE') && $ttl && ($cached=$cache->exists(
@@ -364,7 +366,6 @@ class SQL extends \PDO {
 			$this->dbname=$parts[1];
 		if (!$options)
 			$options=array();
-		$options+=array(\PDO::ATTR_EMULATE_PREPARES=>FALSE);
 		if (isset($parts[0]) && strstr($parts[0],':',TRUE)=='mysql')
 			$options+=array(\PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES '.
 				strtolower(str_replace('-','',$fw->get('ENCODING'))).';');
