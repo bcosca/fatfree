@@ -436,27 +436,27 @@ final class Base {
 	*	@param $detail bool
 	**/
 	function stringify($arg,$detail=TRUE) {
+		$func=function($arg,$val) use($detail) {
+			return $arg===$val && !is_scalar($val)?
+				'*RECURSION*':$this->stringify($val,$detail);
+		};
 		switch (gettype($arg)) {
 			case 'object':
 				$str='';
-				if (!preg_match('/Base|Closure/',get_class($arg)) && $detail)
-					foreach ((array)$arg as $key=>$val) {
+				if (get_class($arg)!='Closure' && $detail)
+					foreach ((array)$arg as $key=>$val)
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
-							($arg===$val && !is_scalar($val)?
-								'*RECURSION*':$this->stringify($val,$detail));
-					}
+							$func($arg,$val);
 				return addslashes(get_class($arg)).'::__set_state('.$str.')';
 			case 'array':
 				$str='';
 				$num=isset($arg[0]) &&
 					ctype_digit(implode('',array_keys($arg)));
-				foreach ($arg as $key=>$val) {
+				foreach ($arg as $key=>$val)
 					$str.=($str?',':'').
 						($num?'':($this->stringify($key).'=>')).
-						($arg===$val && !is_scalar($val)?
-							'*RECURSION*':$this->stringify($val,$detail));
-				}
+						$func($arg,$val);
 				return 'array('.$str.')';
 			default:
 				return var_export($arg,TRUE);
