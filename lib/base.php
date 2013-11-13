@@ -439,11 +439,12 @@ final class Base {
 		switch (gettype($arg)) {
 			case 'object':
 				$str='';
-				if (get_class($arg)!='Closure' && $detail)
+				if (!preg_match('/Base|Closure/',get_class($arg)) && $detail)
 					foreach ((array)$arg as $key=>$val) {
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
-							$this->stringify($val,$detail);
+							($arg===$val && !is_scalar($val)?
+								'*RECURSION*':$this->stringify($val,$detail));
 					}
 				return addslashes(get_class($arg)).'::__set_state('.$str.')';
 			case 'array':
@@ -453,7 +454,7 @@ final class Base {
 				foreach ($arg as $key=>$val) {
 					$str.=($str?',':'').
 						($num?'':($this->stringify($key).'=>')).
-						($arg==$val && !is_scalar($val)?
+						($arg===$val && !is_scalar($val)?
 							'*RECURSION*':$this->stringify($val,$detail));
 				}
 				return 'array('.$str.')';
