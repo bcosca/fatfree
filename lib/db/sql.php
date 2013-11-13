@@ -148,8 +148,8 @@ class SQL extends \PDO {
 						$this->rollback();
 					user_error('PDOStatement: '.$error[2]);
 				}
-				if (preg_match(
-					'/\b(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING)\b/i',
+				if (preg_match('/^\s*'.
+					'(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING)\b/is',
 					$cmd)) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);
 					$this->rows=count($result);
