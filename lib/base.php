@@ -436,9 +436,10 @@ final class Base {
 	*	@param $detail bool
 	**/
 	function stringify($arg,$detail=TRUE) {
-		$func=function($arg,$val) use($detail) {
+		$fw=$this;
+		$func=function($arg,$val) use($detail,$fw) {
 			return $arg===$val && !is_scalar($val)?
-				'*RECURSION*':$this->stringify($val,$detail);
+				'*RECURSION*':$fw->stringify($val,$detail);
 		};
 		switch (gettype($arg)) {
 			case 'object':
