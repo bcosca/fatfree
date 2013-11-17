@@ -397,6 +397,14 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
+	*	Return field names
+	*	@return array
+	**/
+	function fields() {
+		return array_keys($this->document);
+	}
+
+	/**
 	*	Instantiate class
 	*	@return void
 	*	@param $db object
