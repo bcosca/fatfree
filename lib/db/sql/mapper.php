@@ -482,6 +482,16 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
+	*	Return field names
+	*	@return array
+	*	@param $adhoc bool
+	**/
+	function fields($adhoc=TRUE) {
+		return array_keys($this->fields+
+			($adhoc?$this->adhoc:array()));
+	}
+
+	/**
 	*	Instantiate class
 	*	@param $db object
 	*	@param $table string
