@@ -228,20 +228,21 @@ class Template extends Controller {
 					'email@address.com',
 			'<set>'
 		);
-		$tpl->extend('foo',
-			function($node) use($f3) {
-				return $f3->stringify($node['@attrib']);
-			}
-		);
 		$test->expect(
 			preg_replace('/[\t\r\n]/','',
 				$tpl->render('templates/test9.htm'))==
 				'<script type="text/javascript">var a=\'{{a}}\';</script>',
 			'<ignore>'
 		);
+		$tpl->extend('foo',
+			function($node) use($f3) {
+				return $f3->stringify($node['@attrib']);
+			}
+		);
 		$test->expect(
 			$tpl->render('templates/test10.htm')==
-				'array(\'bar\'=>\'123\',\'baz\'=>\'abc\')',
+				'array(\'bar\'=>\'123\',\'baz\'=>\'abc\','.
+					'0=>\'{{ \\\'hello\\\' }}\')',
 			'Custom tag'
 		);
 		$f3->set('string','<test>');

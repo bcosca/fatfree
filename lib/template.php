@@ -317,7 +317,8 @@ class Template extends View {
 						$stack=array(),$depth=0,$tmp='';$ptr<$len;)
 						if (preg_match('/^<(\/?)(?:F3:)?'.
 							'('.$this->tags.')\b'.
-							'((?:\h+\w+\h*=\h*(?:"(?:.+?)"|\'(?:.+?)\'))*)'.
+							'((?:\h+\w+\h*=\h*(?:"(?:.+?)"|\'(?:.+?)\')|'.
+							'\h*\{\{.+\}\})*)'.
 							'\h*(\/?)>/is',substr($text,$ptr),$match)) {
 							if (strlen($tmp))
 								$node[]=$tmp;
@@ -348,12 +349,16 @@ class Template extends View {
 								if ($match[3]) {
 									// Process attributes
 									preg_match_all(
-										'/\b([\w-]+)\h*=\h*'.
-										'(?:"(.+?)"|\'(.+?)\')/s',
+										'/(?:\b([\w-]+)\h*=\h*'.
+										'(?:"(.+?)"|\'(.+?)\')|'.
+										'(\{\{.+?\}\}))/s',
 										$match[3],$attr,PREG_SET_ORDER);
 									foreach ($attr as $kv)
-										$node['@attrib'][$kv[1]]=
-											$kv[2]?:$kv[3];
+										if (isset($kv[4]))
+											$node['@attrib'][]=$kv[4];
+										else
+											$node['@attrib'][$kv[1]]=
+												$kv[2]?:$kv[3];
 								}
 								if ($match[4])
 									// Empty tag
