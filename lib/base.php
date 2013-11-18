@@ -784,7 +784,7 @@ final class Base {
 					'(.+?)\h*=\h*'.
 					'((?:\\\\\h*\r?\n|.+?)*)'.
 					')(?=\r?\n|$)/',
-					file_get_contents($file),$matches,PREG_SET_ORDER);
+					$this->read($file),$matches,PREG_SET_ORDER);
 				if ($matches)
 					foreach ($matches as $match)
 						if (isset($match[1]) &&
@@ -929,7 +929,7 @@ final class Base {
 				'<head>'.
 					'<title>'.$code.' '.$header.'</title>'.
 					($highlight?
-						('<style>'.file_get_contents($css).'</style>'):'').
+						('<style>'.$this->read($css).'</style>'):'').
 				'</head>'.$eol.
 				'<body>'.$eol.
 					'<h1>'.$header.'</h1>'.$eol.
@@ -1016,7 +1016,6 @@ final class Base {
 	**/
 	function reroute($uri,$permanent=FALSE) {
 		if (PHP_SAPI!='cli') {
-			@session_commit();
 			header('Location: '.(preg_match('/^https?:\/\//',$uri)?
 				$uri:($this->hive['BASE'].$uri)));
 			$this->status($permanent?301:303);
@@ -1282,7 +1281,7 @@ final class Base {
 			'(.+?)\h*=\h*'.
 			'((?:\\\\\h*\r?\n|.+?)*)'.
 			')(?=\r?\n|$)/',
-			file_get_contents($file),$matches,PREG_SET_ORDER);
+			$this->read($file),$matches,PREG_SET_ORDER);
 		if ($matches) {
 			$sec='globals';
 			foreach ($matches as $match) {
@@ -1420,8 +1419,11 @@ final class Base {
 	/**
 	*	Execute framework/application shutdown sequence
 	*	@return NULL
+	*	@param $cwd string
 	**/
-	function unload() {
+	function unload($cwd) {
+		chdir($cwd);
+		@session_commit();
 		$handler=$this->hive['UNLOAD'];
 		if ((!$handler || $this->call($handler,$this)===FALSE) &&
 			($error=error_get_last()) && in_array($error['type'],
@@ -1602,7 +1604,7 @@ final class Base {
 		// Register framework autoloader
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler
-		register_shutdown_function(array($this,'unload'));
+		register_shutdown_function(array($this,'unload'),getcwd());
 	}
 
 }
