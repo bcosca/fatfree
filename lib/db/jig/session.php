@@ -42,7 +42,7 @@ class Session extends Mapper {
 	*	@param $id string
 	**/
 	function read($id) {
-		$this->load(array('@session_id==?',$id));
+		$this->load(array('@session_id=?',$id));
 		return $this->dry()?FALSE:$this->get('data');
 	}
 
@@ -55,7 +55,7 @@ class Session extends Mapper {
 	function write($id,$data) {
 		$fw=\Base::instance();
 		$headers=$fw->get('HEADERS');
-		$this->load(array('@session_id==?',$id));
+		$this->load(array('@session_id=?',$id));
 		$this->set('session_id',$id);
 		$this->set('data',$data);
 		$this->set('ip',$fw->get('IP'));
@@ -72,7 +72,7 @@ class Session extends Mapper {
 	*	@param $id string
 	**/
 	function destroy($id) {
-		$this->erase(array('@session_id==?',$id));
+		$this->erase(array('@session_id=?',$id));
 		return TRUE;
 	}
 
@@ -92,7 +92,7 @@ class Session extends Mapper {
 	*	@param $id string
 	**/
 	function ip($id=NULL) {
-		$this->load(array('@session_id==?',$id?:session_id()));
+		$this->load(array('@session_id=?',$id?:session_id()));
 		return $this->dry()?FALSE:$this->get('ip');
 	}
 
@@ -102,7 +102,7 @@ class Session extends Mapper {
 	*	@param $id string
 	**/
 	function stamp($id=NULL) {
-		$this->load(array('@session_id==?',$id?:session_id()));
+		$this->load(array('@session_id=?',$id?:session_id()));
 		return $this->dry()?FALSE:$this->get('stamp');
 	}
 
@@ -112,7 +112,7 @@ class Session extends Mapper {
 	*	@param $id string
 	**/
 	function agent($id=NULL) {
-		$this->load(array('@session_id==?',$id?:session_id()));
+		$this->load(array('@session_id=?',$id?:session_id()));
 		return $this->dry()?FALSE:$this->get('agent');
 	}
 
