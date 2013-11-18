@@ -81,11 +81,13 @@ class Template extends Controller {
 			$expr.': '.$eval
 		);
 		$test->expect(
-			$tpl->token($expr='@foo->bar[@qux.baz]')==($eval='$foo->bar[$qux[\'baz\']]'),
+			$tpl->token($expr='@foo->bar[@qux.baz]')==
+				($eval='$foo->bar[$qux[\'baz\']]'),
 			$expr.': '.$eval
 		);
 		$test->expect(
-			$tpl->token($expr='@foo->bar[@qux.@baz]')==($eval='$foo->bar[$qux.$baz]'),
+			$tpl->token($expr='@foo->bar[@qux.@baz]')==
+				($eval='$foo->bar[$qux.$baz]'),
 			$expr.': '.$eval
 		);
 		$test->expect(
@@ -105,11 +107,13 @@ class Template extends Controller {
 			$expr.': '.$eval
 		);
 		$test->expect(
-			$tpl->token($expr='@foo.zip(@bar,@baz)')==($eval='$foo[\'zip\']($bar,$baz)'),
+			$tpl->token($expr='@foo.zip(@bar,@baz)')==
+				($eval='$foo[\'zip\']($bar,$baz)'),
 			$expr.': '.$eval
 		);
 		$test->expect(
-			$tpl->token($expr='@foo.zip(@bar,\'qux\')')==($eval='$foo[\'zip\']($bar,\'qux\')'),
+			$tpl->token($expr='@foo.zip(@bar,\'qux\')')==
+				($eval='$foo[\'zip\']($bar,\'qux\')'),
 			$expr.': '.$eval
 		);
 		$test->expect(
@@ -117,11 +121,13 @@ class Template extends Controller {
 			$expr.': '.$eval
 		);
 		$test->expect(
-			$tpl->token($expr='@foo[google.com]')==($eval='$foo[\'google.com\']'),
+			$tpl->token($expr='@foo[google.com]')==
+				($eval='$foo[\'google.com\']'),
 			$expr.': '.$eval
 		);
 		$test->expect(
-			$tpl->token($expr='@foo.\'hello, world\'')==($eval='$foo.\'hello, world\''),
+			$tpl->token($expr='@foo.\'hello, world\'')==
+				($eval='$foo.\'hello, world\''),
 			$expr.': '.$eval
 		);
 		$f3->set('foo','bar');
@@ -235,15 +241,88 @@ class Template extends Controller {
 			'<ignore>'
 		);
 		$tpl->extend('foo',
-			function($node) use($f3) {
-				return $f3->stringify($node['@attrib']);
+			function ($node) use ($f3) {
+				return $f3->stringify($node);
 			}
 		);
+		$result=$tpl->render('templates/test10.htm');
+		$lines=array_map('trim',explode("\n",$result));
 		$test->expect(
-			$tpl->render('templates/test10.htm')==
-				'array(\'bar\'=>\'123\',\'baz\'=>\'abc\','.
-					'0=>\'{{ \\\'hello\\\' }}\')',
+			$lines[0]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'123','baz'=>'abc'))),
 			'Custom tag'
+		);
+		$test->expect(
+			isset($lines[1]) && $lines[1]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'test2'),'test2')),
+			'Custom tag with inner content'
+		);
+		$test->expect(
+			isset($lines[2]) && $lines[2]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'test3','disabled'=>NULL),'test3')),
+			'Custom tag with value-less attribute'
+		);
+		$test->expect(
+			isset($lines[3]) && $lines[3]==$f3->stringify(
+				array('@attrib'=>array('data-foo'=>'baz'),'test4')),
+			'Custom tag with hyphenated attribute'
+		);
+		$test->expect(
+			isset($lines[4]) && $lines[4]==$f3->stringify(
+				array('@attrib'=>array('foo'=>'{{ @t1 }}'),'param with token')),
+			'Custom tag with attribute containing token'
+		);
+		$test->expect(
+			isset($lines[5]) && $lines[5]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'{{ @baz }}','baz'=>'abc'),'multiple params')),
+			'Custom tag with mixed attributes'
+		);
+		$test->expect(
+			isset($lines[6]) && $lines[6]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'baz','baz'=>'{{ @abc }}'),'multiple params switched')),
+			'Custom tag with mixed attributes (switched)'
+		);
+		$test->expect(
+			isset($lines[7]) && $lines[7]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'baz','class'=>'{{ @class | esc }}'),'token with format')),
+			'Custom tag with attribute containing template engine formatting'
+		);
+		$test->expect(
+			isset($lines[8]) && $lines[8]==$f3->stringify(
+				array('@attrib'=>array('{{ @param }}'),'tag with inline token')),
+			'Custom tag with inline token'
+		);
+		$test->expect(
+			isset($lines[9]) && $lines[9]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'test10','{{ @param }}'),'param, inline token')),
+			'Custom tag with attribute and inline token'
+		);
+		$test->expect(
+			isset($lines[10]) && $lines[10]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'test11','rel'=>'foo','{{ @param }}'),
+	  			'params, inline token and space')),
+			'Custom tag with attributes, inline token, and ignored space'
+		);
+		$test->expect(
+			isset($lines[11]) && $lines[11]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'test12','{{ @param }}','rel'=>'foo'),
+				'param, token, param')),
+			'Custom tag with attribute, inline token, and another attribute'
+		);
+		$test->expect(
+			isset($lines[12]) && $lines[12]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'test13'),'simple tag')),
+			'Custom tag (simple)'
+		);
+		$test->expect(
+			isset($lines[13]) && $lines[13]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'test14'),'this {{ @token }} should NOT get resolved')),
+			'Custom tag with inner HTML containing template token'
+		);
+		$test->expect(
+			isset($lines[14]) && $lines[14]==$f3->stringify(
+				array('@attrib'=>array('bar'=>'test15','baz'=>'abc'),'multi-line start tag')),
+			'Custom tag spanning multiple lines'
 		);
 		$f3->set('string','<test>');
 		$obj=new \stdclass;

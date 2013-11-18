@@ -1,1 +1,16 @@
-<foo bar="123" baz="abc" {{ 'hello' }} />
+<foo bar="123" baz="abc" />
+<foo bar="test2">test2</foo>
+<foo bar="test3" disabled>test3</foo>
+<foo data-foo="baz">test4</foo>
+<foo foo="{{ @t1 }}">param with token</foo>
+<foo bar="{{ @baz }}" baz="abc">multiple params</foo>
+<foo bar="baz" baz="{{ @abc }}">multiple params switched</foo>
+<foo bar="baz" class="{{ @class | esc }}">token with format</foo>
+<foo {{ @param }}>tag with inline token</foo>
+<foo bar="test10" {{ @param }}>param, inline token</foo>
+<foo bar="test11" rel="foo" {{ @param }} >params, inline token and space</foo>
+<foo bar="test12" {{ @param }} rel="foo">param, token, param</foo>
+<foo bar="test13">simple tag</foo>
+<foo bar="test14">this {{ @token }} should NOT get resolved</foo>
+<foo bar="test15"
+        baz="abc">multi-line start tag</foo>

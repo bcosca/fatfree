@@ -316,10 +316,10 @@ class Template extends View {
 						$tree=array(),$node=&$tree,
 						$stack=array(),$depth=0,$tmp='';$ptr<$len;)
 						if (preg_match('/^<(\/?)(?:F3:)?'.
-							'('.$this->tags.')\b'.
-							'((?:\h+\w+\h*=\h*(?:"(?:.+?)"|\'(?:.+?)\')|'.
-							'\h*\{\{.+\}\})*)'.
-							'\h*(\/?)>/is',substr($text,$ptr),$match)) {
+							'('.$this->tags.')\b((?:\h+[\w-]+'.
+							'(?:\h*=\h*(?:"(?:.+?)"|\'(?:.+?)\'))?|'.
+							'\h*\{\{.+?\}\})*)\h*(\/?)>/is',
+							substr($text,$ptr),$match)) {
 							if (strlen($tmp))
 								$node[]=$tmp;
 							// Element node
@@ -349,8 +349,8 @@ class Template extends View {
 								if ($match[3]) {
 									// Process attributes
 									preg_match_all(
-										'/(?:\b([\w-]+)\h*=\h*'.
-										'(?:"(.+?)"|\'(.+?)\')|'.
+										'/(?:\b([\w-]+)'.
+										'(?:\h*=\h*(?:"(.+?)"|\'(.+?)\'))?|'.
 										'(\{\{.+?\}\}))/s',
 										$match[3],$attr,PREG_SET_ORDER);
 									foreach ($attr as $kv)
@@ -358,7 +358,8 @@ class Template extends View {
 											$node['@attrib'][]=$kv[4];
 										else
 											$node['@attrib'][$kv[1]]=
-												$kv[2]?:$kv[3];
+												(isset($kv[2])?$kv[2]:
+												(isset($kv[3])?$kv[3]:NULL));
 								}
 								if ($match[4])
 									// Empty tag
