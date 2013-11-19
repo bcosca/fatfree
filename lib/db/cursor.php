@@ -27,7 +27,9 @@ abstract class Cursor extends \Magic {
 		//! Query results
 		$query=array(),
 		//! Current position
-		$ptr=0;
+		$ptr=0,
+		//! Event listeners
+		$trigger=array();
 
 	/**
 	*	Return records (array of mapper objects) that match criteria
@@ -191,6 +193,38 @@ abstract class Cursor extends \Magic {
 		$this->query=array_slice($this->query,0,$this->ptr,TRUE)+
 			array_slice($this->query,$this->ptr,NULL,TRUE);
 		$this->ptr=0;
+	}
+
+	/**
+	*	Define onload trigger
+	*	@return closure
+	**/
+	function onload($func) {
+		return $this->trigger['load']=$func;
+	}
+
+	/**
+	*	Define oninsert trigger
+	*	@return closure
+	**/
+	function oninsert($func) {
+		return $this->trigger['insert']=$func;
+	}
+
+	/**
+	*	Define onupdate trigger
+	*	@return closure
+	**/
+	function onupdate($func) {
+		return $this->trigger['update']=$func;
+	}
+
+	/**
+	*	Define onerase trigger
+	*	@return closure
+	**/
+	function onerase($func) {
+		return $this->trigger['erase']=$func;
 	}
 
 	/**

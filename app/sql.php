@@ -376,7 +376,10 @@ class SQL extends Controller {
 				'Hydrate mapper from hive key'
 			);
 			$test->expect(
-				!$movie->next() && $movie->dry(),
+				!$movie->next() && $movie->dry() &&
+				!$movie->get('title') &&
+				!$movie->get('director') &&
+				!$movie->get('year'),
 				'Navigation beyond cursor limit'
 			);
 			$obj=$movie->findone(array($db->quotekey('title').'=?','Zodiac'));

@@ -284,25 +284,27 @@ class Mapper extends \DB\Cursor {
 	*	@param $ofs int
 	**/
 	function skip($ofs=1) {
-		if ($out=parent::skip($ofs)) {
-			foreach ($this->fields as $key=>&$field) {
-				$field['value']=$out->fields[$key]['value'];
-				$field['changed']=FALSE;
-				if ($field['pkey'])
-					$field['previous']=$out->fields[$key]['value'];
-				unset($field);
-			}
-			foreach ($this->adhoc as $key=>&$field) {
-				$field['value']=$out->adhoc[$key]['value'];
-				unset($field);
-			}
+		$out=parent::skip($ofs);
+		$dry=$this->dry();
+		foreach ($this->fields as $key=>&$field) {
+			$field['value']=$dry?NULL:$out->fields[$key]['value'];
+			$field['changed']=FALSE;
+			if ($field['pkey'])
+				$field['previous']=$dry?NULL:$out->fields[$key]['value'];
+			unset($field);
 		}
+		foreach ($this->adhoc as $key=>&$field) {
+			$field['value']=$dry?NULL:$out->adhoc[$key]['value'];
+			unset($field);
+		}
+		if (isset($this->trigger['load']))
+			\Base::instance()->call($this->trigger['load'],$this);
 		return $out;
 	}
 
 	/**
 	*	Insert new record
-	*	@return array
+	*	@return object
 	**/
 	function insert() {
 		$args=array();
@@ -347,16 +349,20 @@ class Mapper extends \DB\Cursor {
 				$args[$ctr+1]=$this->fields[$pkey]['value'];
 				$ctr++;
 			}
-			return $query?$this->load(array($query,$args)):$this;
+			$out=$query?$this->load(array($query,$args)):$this;
 		}
-		// Reload to obtain default and auto-increment field values
-		return $this->load(array($inc.'=?',
-			$this->value($this->fields[$inc]['pdo_type'],$this->_id)));
+		else
+			// Reload to obtain default and auto-increment field values
+			$out=$this->load(array($inc.'=?',
+				$this->value($this->fields[$inc]['pdo_type'],$this->_id)));
+		if (isset($this->trigger['insert']))
+			\Base::instance()->call($this->trigger['insert'],$this);
+		return $out;
 	}
 
 	/**
 	*	Update current record
-	*	@return array
+	*	@return object
 	**/
 	function update() {
 		$args=array();
@@ -379,8 +385,11 @@ class Mapper extends \DB\Cursor {
 			$sql='UPDATE '.$this->table.' SET '.$pairs;
 			if ($filter)
 				$sql.=' WHERE '.$filter;
-			return $this->db->exec($sql,$args);
+			$this->db->exec($sql,$args);
 		}
+		if (isset($this->trigger['update']))
+			\Base::instance()->call($this->trigger['update'],$this);
+		return $this;
 	}
 
 	/**
@@ -422,8 +431,11 @@ class Mapper extends \DB\Cursor {
 		}
 		parent::erase();
 		$this->skip(0);
-		return $this->db->
+		$out=$this->db->
 			exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
+		if (isset($this->trigger['erase']))
+			\Base::instance()->call($this->trigger['erase'],$this);
+		return $out;
 	}
 
 	/**

@@ -163,7 +163,10 @@ class Mongo extends Controller {
 					'Hydrate mapper from hive key'
 				);
 				$test->expect(
-					!$movie->next() && $movie->dry(),
+					!$movie->next() && $movie->dry() &&
+					!$movie->exists('title') &&
+					!$movie->exists('director') &&
+					!$movie->exists('year'),
 					'Navigation beyond cursor limit'
 				);
 				$obj=$movie->findone(array('title'=>'Zodiac'));

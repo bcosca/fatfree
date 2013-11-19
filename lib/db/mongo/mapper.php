@@ -204,6 +204,8 @@ class Mapper extends \DB\Cursor {
 	**/
 	function skip($ofs=1) {
 		$this->document=($out=parent::skip($ofs))?$out->document:array();
+		if ($this->document && isset($this->trigger['load']))
+			\Base::instance()->call($this->trigger['load'],$this);
 		return $out;
 	}
 
@@ -215,6 +217,8 @@ class Mapper extends \DB\Cursor {
 		if (isset($this->document['_id']))
 			return $this->update();
 		$this->collection->insert($this->document);
+		if (isset($this->trigger['insert']))
+			\Base::instance()->call($this->trigger['insert'],$this);
 		return $this->document;
 	}
 
@@ -228,6 +232,8 @@ class Mapper extends \DB\Cursor {
 			$this->document,
 			array('upsert'=>TRUE)
 		);
+		if (isset($this->trigger['update']))
+			\Base::instance()->call($this->trigger['update'],$this);
 		return $this->document;
 	}
 
@@ -243,6 +249,8 @@ class Mapper extends \DB\Cursor {
 			remove(array('_id'=>$this->document['_id']));
 		parent::erase();
 		$this->skip(0);
+		if (isset($this->trigger['erase']))
+			\Base::instance()->call($this->trigger['erase'],$this);
 		return $result;
 	}
 

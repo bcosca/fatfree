@@ -287,6 +287,8 @@ class Mapper extends \DB\Cursor {
 	function skip($ofs=1) {
 		$this->document=($out=parent::skip($ofs))?$out->document:array();
 		$this->id=$out?$out->id:NULL;
+		if ($this->document && isset($this->trigger['load']))
+			\Base::instance()->call($this->trigger['load'],$this);
 		return $out;
 	}
 
@@ -309,6 +311,8 @@ class Mapper extends \DB\Cursor {
 		parent::reset();
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [insert] '.json_encode($this->document));
+		if (isset($this->trigger['insert']))
+			\Base::instance()->call($this->trigger['insert'],$this);
 		return $this->document;
 	}
 
@@ -324,6 +328,8 @@ class Mapper extends \DB\Cursor {
 		$db->write($this->file,$data);
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [update] '.json_encode($this->document));
+		if (isset($this->trigger['update']))
+			\Base::instance()->call($this->trigger['update'],$this);
 		return $this->document;
 	}
 
@@ -361,6 +367,8 @@ class Mapper extends \DB\Cursor {
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [erase] '.
 			($filter?preg_replace($keys,$vals,$filter[0],1):''));
+		if (isset($this->trigger['erase']))
+			\Base::instance()->call($this->trigger['erase'],$this);
 		return TRUE;
 	}
 
