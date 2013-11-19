@@ -767,7 +767,7 @@ final class Base {
 
 	/**
 	*	Transfer lexicon entries to hive
-	*	@return NULL
+	*	@return array
 	*	@param $path string
 	**/
 	function lexicon($path) {
@@ -788,8 +788,10 @@ final class Base {
 				if ($matches)
 					foreach ($matches as $match)
 						if (isset($match[1]) &&
-							!array_key_exists($match[1],$lex))
-							$lex[$match[1]]=trim(preg_replace(
+							!array_key_exists($this->hive['PREFIX'].
+							$match[1],$lex))
+							$lex[$this->hive['PREFIX'].$match[1]]=
+								trim(preg_replace(
 								'/(?<!\\\\)"|\\\\\h*\r?\n/','',$match[2]));
 			}
 		}
@@ -1564,6 +1566,7 @@ final class Base {
 			'PLUGINS'=>$this->fixslashes(__DIR__).'/',
 			'PORT'=>isset($_SERVER['SERVER_PORT'])?
 				$_SERVER['SERVER_PORT']:NULL,
+			'PREFIX'=>NULL,
 			'QUIET'=>FALSE,
 			'REALM'=>$scheme.'://'.
 				$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'],
