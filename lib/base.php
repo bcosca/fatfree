@@ -218,7 +218,7 @@ final class Base {
 				$lex=$this->lexicon($this->hive['LOCALES']);
 			case 'LOCALES':
 				if (isset($lex) || $lex=$this->lexicon($val))
-					$this->mset($lex,NULL,$ttl);
+					$this->mset($lex,$this->hive['PREFIX'],$ttl);
 				break;
 			case 'TZ':
 				date_default_timezone_set($val);
@@ -788,10 +788,8 @@ final class Base {
 				if ($matches)
 					foreach ($matches as $match)
 						if (isset($match[1]) &&
-							!array_key_exists($this->hive['PREFIX'].
-							$match[1],$lex))
-							$lex[$this->hive['PREFIX'].$match[1]]=
-								trim(preg_replace(
+							!array_key_exists($match[1],$lex))
+							$lex[$match[1]]=trim(preg_replace(
 								'/(?<!\\\\)"|\\\\\h*\r?\n/','',$match[2]));
 			}
 		}
