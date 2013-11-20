@@ -2160,6 +2160,10 @@ Once you get the hang of testing the smallest units of your application, you can
 
 * TCP/IP listening port used by the Web server.
 
+`string PREFIX`
+
+* String prepended to language dictionary terms.
+
 `bool QUIET`
 
 * Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
