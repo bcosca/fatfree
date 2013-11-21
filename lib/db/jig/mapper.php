@@ -83,6 +83,8 @@ class Mapper extends \DB\Cursor {
 		foreach ($row as $field=>$val)
 			$mapper->document[$field]=$val;
 		$mapper->query=array(clone($mapper));
+		if (isset($mapper->trigger['load']))
+			\Base::instance()->call($mapper->trigger['load'],$mapper);
 		return $mapper;
 	}
 

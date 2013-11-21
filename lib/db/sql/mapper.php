@@ -145,6 +145,8 @@ class Mapper extends \DB\Cursor {
 				$mapper->{$var}[$key]['previous']=$val;
 		}
 		$mapper->query=array(clone($mapper));
+		if (isset($mapper->trigger['load']))
+			\Base::instance()->call($mapper->trigger['load'],$mapper);
 		return $mapper;
 	}
 
