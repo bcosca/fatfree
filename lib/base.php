@@ -444,7 +444,7 @@ final class Base {
 		switch (gettype($arg)) {
 			case 'object':
 				$str='';
-				if (get_class($arg)!='Closure' && $detail)
+				if (!preg_match('/Base|Closure/',get_class($arg)) && $detail)
 					foreach ((array)$arg as $key=>$val)
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
