@@ -18,18 +18,18 @@ class Image {
 
 	//@{ Messages
 	const
-		E_Color='Invalid color specified: %s',
-		E_Font='CAPTCHA font not found';
+		E_Color	='Couleur invalide spécifiée: %s',
+		E_Font	='Police de caractères pour le CAPTCHA pas trouvée';
 	//@}
 
 	//@{ Positional cues
 	const
-		POS_Left=1,
-		POS_Center=2,
-		POS_Right=4,
-		POS_Top=8,
-		POS_Middle=16,
-		POS_Bottom=32;
+		POS_Left	=1,
+		POS_Center	=2,
+		POS_Right	=4,
+		POS_Top		=8,
+		POS_Middle	=16,
+		POS_Bottom	=32;
 	//@}
 
 	private
