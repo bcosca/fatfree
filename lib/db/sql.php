@@ -209,7 +209,7 @@ class SQL extends \PDO {
 		$cmd=array(
 			'sqlite2?'=>array(
 				'PRAGMA table_info("'.$table.'");',
-				'name','type','dflt_value','notnull',0,'pk',1),
+				'name','type','dflt_value','notnull',0,'pk',TRUE),
 			'mysql'=>array(
 				'SHOW columns FROM `'.$this->dbname.'`.`'.$table.'`;',
 				'Field','Type','Default','Null','YES','Key','PRI'),
@@ -271,11 +271,11 @@ class SQL extends \PDO {
 				// SET GLOBAL innodb_stats_on_metadata=0;
 				// This requires SUPER privilege!
 				$rows=array();
-				foreach ($this->exec($val[0],NULL,$ttl) as $row) {
+				foreach ($this->exec($val[0],NULL,$ttl) as $row)
 					$rows[$row[$val[1]]]=array(
 						'type'=>$row[$val[2]],
 						'pdo_type'=>
-							preg_match('/int\b|int(?=eger)|bool/i',
+							preg_match('/int\b|int(?=eger)?|bool/i',
 								$row[$val[2]],$parts)?
 							constant('\PDO::PARAM_'.strtoupper($parts[0])):
 							\PDO::PARAM_STR,
@@ -283,7 +283,6 @@ class SQL extends \PDO {
 						'nullable'=>$row[$val[4]]==$val[5],
 						'pkey'=>$row[$val[6]]==$val[7]
 					);
-				}
 				return $rows;
 			}
 		return FALSE;
