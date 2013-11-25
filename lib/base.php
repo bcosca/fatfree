@@ -411,6 +411,17 @@ final class Base {
 	}
 
 	/**
+	*	Merge array with hive array variable
+	*	@return array
+	*	@param $key string
+	*	@param $src array
+	**/
+	function merge($key,$src) {
+		$ref=&$this->ref($key);
+		return array_merge($ref,$src);
+	}
+
+	/**
 	*	Convert backslashes to slashes
 	*	@return string
 	*	@param $str string
