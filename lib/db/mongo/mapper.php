@@ -230,12 +230,13 @@ class Mapper extends \DB\Cursor {
 	**/
 	function update() {
 		$this->collection->update(
-			array('_id'=>$this->document['_id']),
+			$pkey=array('_id'=>$this->document['_id']),
 			$this->document,
 			array('upsert'=>TRUE)
 		);
 		if (isset($this->trigger['update']))
-			\Base::instance()->call($this->trigger['update'],$this);
+			\Base::instance()->call($this->trigger['update'],
+				array($this,$pkey));
 		return $this->document;
 	}
 

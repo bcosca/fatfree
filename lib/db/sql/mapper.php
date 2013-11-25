@@ -377,10 +377,12 @@ class Mapper extends \DB\Cursor {
 				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
 			}
+		$pkey=array();
 		foreach ($this->fields as $key=>$field)
 			if ($field['pkey']) {
 				$filter.=($filter?' AND ':'').$this->db->quotekey($key).'=?';
 				$args[$ctr+1]=array($field['previous'],$field['pdo_type']);
+				$pkey[$key]=$field['previous'];
 				$ctr++;
 			}
 		if ($pairs) {
@@ -388,9 +390,10 @@ class Mapper extends \DB\Cursor {
 			if ($filter)
 				$sql.=' WHERE '.$filter;
 			$this->db->exec($sql,$args);
+			if (isset($this->trigger['update']))
+				\Base::instance()->call($this->trigger['update'],
+					array($this,$pkey));
 		}
-		if (isset($this->trigger['update']))
-			\Base::instance()->call($this->trigger['update'],$this);
 		return $this;
 	}
 

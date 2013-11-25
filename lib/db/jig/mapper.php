@@ -331,7 +331,8 @@ class Mapper extends \DB\Cursor {
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [update] '.json_encode($this->document));
 		if (isset($this->trigger['update']))
-			\Base::instance()->call($this->trigger['update'],$this);
+			\Base::instance()->call($this->trigger['update'],
+				array($this,array('_id'=>$this->id)));
 		return $this->document;
 	}
 
