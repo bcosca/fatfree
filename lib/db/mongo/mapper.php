@@ -219,8 +219,10 @@ class Mapper extends \DB\Cursor {
 		if (isset($this->document['_id']))
 			return $this->update();
 		$this->collection->insert($this->document);
+		$pkey=array('_id'=>$this->document['_id']);
 		if (isset($this->trigger['insert']))
-			\Base::instance()->call($this->trigger['insert'],$this);
+			\Base::instance()->call($this->trigger['insert'],
+				array($this,$pkey));
 		return $this->document;
 	}
 
@@ -248,12 +250,14 @@ class Mapper extends \DB\Cursor {
 	function erase($filter=NULL) {
 		if ($filter)
 			return $this->collection->remove($filter);
+		$pkey=array('_id'=>$this->document['_id']);
 		$result=$this->collection->
 			remove(array('_id'=>$this->document['_id']));
 		parent::erase();
 		$this->skip(0);
 		if (isset($this->trigger['erase']))
-			\Base::instance()->call($this->trigger['erase'],$this);
+			\Base::instance()->call($this->trigger['erase'],
+				array($this,$pkey));
 		return $result;
 	}
 
@@ -273,7 +277,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $func callback
 	**/
 	function copyfrom($key,$func=NULL) {
-		$var=&\Base::instance()->ref($key);
+		$var=\Base::instance()->get($key);
 		if ($func)
 			$var=$func($var);
 		foreach ($var as $key=>$val)

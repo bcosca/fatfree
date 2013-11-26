@@ -309,12 +309,14 @@ class Mapper extends \DB\Cursor {
 			usleep(mt_rand(0,100));
 		$this->id=$id;
 		$data[$id]=$this->document;
+		$pkey=array('_id'=>$this->id);
 		$db->write($this->file,$data);
 		parent::reset();
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [insert] '.json_encode($this->document));
 		if (isset($this->trigger['insert']))
-			\Base::instance()->call($this->trigger['insert'],$this);
+			\Base::instance()->call($this->trigger['insert'],
+				array($this,$pkey));
 		return $this->document;
 	}
 
@@ -345,10 +347,14 @@ class Mapper extends \DB\Cursor {
 		$db=$this->db;
 		$now=microtime(TRUE);
 		$data=$db->read($this->file);
-		if ($filter)
+		if ($filter) {
 			foreach ($this->find($filter,NULL,FALSE) as $mapper)
-				unset($data[$mapper->id]);
+				if (!$mapper->erase())
+					return FALSE;
+			return TRUE;
+		}
 		elseif (isset($this->id)) {
+			$pkey=array('_id'=>$this->id);
 			unset($data[$this->id]);
 			parent::erase();
 			$this->skip(0);
@@ -371,7 +377,8 @@ class Mapper extends \DB\Cursor {
 			$this->file.' [erase] '.
 			($filter?preg_replace($keys,$vals,$filter[0],1):''));
 		if (isset($this->trigger['erase']))
-			\Base::instance()->call($this->trigger['erase'],$this);
+			\Base::instance()->call($this->trigger['erase'],
+				array($this,$pkey));
 		return TRUE;
 	}
 
@@ -392,7 +399,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $func callback
 	**/
 	function copyfrom($key,$func=NULL) {
-		$var=&\Base::instance()->ref($key);
+		$var=\Base::instance()->get($key);
 		if ($func)
 			$var=$func($var);
 		foreach ($var as $key=>$val)

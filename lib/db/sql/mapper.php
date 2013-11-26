@@ -317,7 +317,7 @@ class Mapper extends \DB\Cursor {
 		$inc=NULL;
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
-				$pkeys[]=$key;
+				$pkeys[$key]=$field['previous'];
 				$field['previous']=$field['value'];
 				if (!$inc && $field['pdo_type']==\PDO::PARAM_INT &&
 					empty($field['value']) && !$field['nullable'])
@@ -338,15 +338,17 @@ class Mapper extends \DB\Cursor {
 				'VALUES ('.$values.')',$args
 			);
 		$seq=NULL;
-		if ($this->engine=='pgsql')
-			$seq=$this->source.'_'.end($pkeys).'_seq';
+		if ($this->engine=='pgsql') {
+			$names=array_keys($pkeys);
+			$seq=$this->source.'_'.end($names).'_seq';
+		}
 		if ($this->engine!='oci')
 			$this->_id=$this->db->lastinsertid($seq);
 		if (!$inc) {
 			$ctr=0;
 			$query='';
 			$args='';
-			foreach ($pkeys as $pkey) {
+			foreach (array_keys($pkeys) as $pkey) {
 				$query.=($query?' AND ':'').$this->db->quotekey($pkey).'=?';
 				$args[$ctr+1]=$this->fields[$pkey]['value'];
 				$ctr++;
@@ -358,7 +360,8 @@ class Mapper extends \DB\Cursor {
 			$out=$this->load(array($inc.'=?',
 				$this->value($this->fields[$inc]['pdo_type'],$this->_id)));
 		if (isset($this->trigger['insert']))
-			\Base::instance()->call($this->trigger['insert'],$this);
+			\Base::instance()->call($this->trigger['insert'],
+				array($this,$pkeys));
 		return $out;
 	}
 
@@ -377,12 +380,12 @@ class Mapper extends \DB\Cursor {
 				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
 			}
-		$pkey=array();
+		$pkeys=array();
 		foreach ($this->fields as $key=>$field)
 			if ($field['pkey']) {
 				$filter.=($filter?' AND ':'').$this->db->quotekey($key).'=?';
 				$args[$ctr+1]=array($field['previous'],$field['pdo_type']);
-				$pkey[$key]=$field['previous'];
+				$pkeys[$key]=$field['previous'];
 				$ctr++;
 			}
 		if ($pairs) {
@@ -392,7 +395,7 @@ class Mapper extends \DB\Cursor {
 			$this->db->exec($sql,$args);
 			if (isset($this->trigger['update']))
 				\Base::instance()->call($this->trigger['update'],
-					array($this,$pkey));
+					array($this,$pkeys));
 		}
 		return $this;
 	}
@@ -418,10 +421,12 @@ class Mapper extends \DB\Cursor {
 		$args=array();
 		$ctr=0;
 		$filter='';
+		$pkeys=array();
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
 				$filter.=($filter?' AND ':'').$this->db->quotekey($key).'=?';
 				$args[$ctr+1]=array($field['previous'],$field['pdo_type']);
+				$pkeys[$key]=$field['previous'];
 				$ctr++;
 			}
 			$field['value']=NULL;
@@ -439,7 +444,8 @@ class Mapper extends \DB\Cursor {
 		$out=$this->db->
 			exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
 		if (isset($this->trigger['erase']))
-			\Base::instance()->call($this->trigger['erase'],$this);
+			\Base::instance()->call($this->trigger['erase'],
+				array($this,$pkeys));
 		return $out;
 	}
 
@@ -469,7 +475,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $func callback
 	**/
 	function copyfrom($key,$func=NULL) {
-		$var=&\Base::instance()->ref($key);
+		$var=\Base::instance()->get($key);
 		if ($func)
 			$var=$func($var);
 		foreach ($var as $key=>$val)
