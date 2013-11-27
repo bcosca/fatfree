@@ -275,7 +275,7 @@ class SQL extends \PDO {
 					$rows[$row[$val[1]]]=array(
 						'type'=>$row[$val[2]],
 						'pdo_type'=>
-							preg_match('/int\b|int(?=eger)?|bool/i',
+							preg_match('/int\b|int(?=eger)|bool/i',
 								$row[$val[2]],$parts)?
 							constant('\PDO::PARAM_'.strtoupper($parts[0])):
 							\PDO::PARAM_STR,
