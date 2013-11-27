@@ -77,12 +77,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a373de39e7142db1af620f1aee97ee6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b538c1ce02240f0703fa679b24d81af"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a0b538c1ce02240f0703fa679b24d81af">shift</a> ($key)</td></tr>
 <tr class="separator:a0b538c1ce02240f0703fa679b24d81af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e3349a27f7e7d364163671c40034c4f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a6e3349a27f7e7d364163671c40034c4f">merge</a> ($key, $src)</td></tr>
+<tr class="separator:a6e3349a27f7e7d364163671c40034c4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53d239f70d01cf7d50b63ca471135621"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a53d239f70d01cf7d50b63ca471135621">fixslashes</a> ($str)</td></tr>
 <tr class="separator:a53d239f70d01cf7d50b63ca471135621"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1efebf1e125501f73ec189d46ca85dc6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a1efebf1e125501f73ec189d46ca85dc6">split</a> ($str)</td></tr>
 <tr class="separator:a1efebf1e125501f73ec189d46ca85dc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad73abbeb05f7d3c9c2024598856e7c67"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#ad73abbeb05f7d3c9c2024598856e7c67">stringify</a> ($arg)</td></tr>
-<tr class="separator:ad73abbeb05f7d3c9c2024598856e7c67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab69a060539ef2d79a8151ecba9541e3f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#ab69a060539ef2d79a8151ecba9541e3f">stringify</a> ($arg, $detail=TRUE)</td></tr>
+<tr class="separator:ab69a060539ef2d79a8151ecba9541e3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67f5cfa93b53742086f2572193eed77f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a67f5cfa93b53742086f2572193eed77f">csv</a> (array $args)</td></tr>
 <tr class="separator:a67f5cfa93b53742086f2572193eed77f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae55996eb5c87d49d492b5962cc1c812c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#ae55996eb5c87d49d492b5962cc1c812c">camelcase</a> ($str)</td></tr>
@@ -153,8 +155,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5ca3af2a18e2f828e1522f92446e1171"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66cf9f042525170d14da1e3abef580d7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a66cf9f042525170d14da1e3abef580d7">dump</a> ($expr)</td></tr>
 <tr class="separator:a66cf9f042525170d14da1e3abef580d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab83645cc118a3cc7222d94ea75a3f104"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#ab83645cc118a3cc7222d94ea75a3f104">unload</a> ()</td></tr>
-<tr class="separator:ab83645cc118a3cc7222d94ea75a3f104"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b5c8568d83bad5612c1f324caf020e7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a7b5c8568d83bad5612c1f324caf020e7">unload</a> ($cwd)</td></tr>
+<tr class="separator:a7b5c8568d83bad5612c1f324caf020e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -204,7 +206,7 @@ const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cla
 const&#160;</td><td class="memItemRight" valign="bottom"><b>PACKAGE</b> ='Fat-Free Framework'</td></tr>
 <tr class="separator:a9916b6900abf3efcd4c321af2731fa8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75c9c77d5802fb1b2d68b6440f7954a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a75c9c77d5802fb1b2d68b6440f7954a3"></a>
-const&#160;</td><td class="memItemRight" valign="bottom"><b>VERSION</b> ='3.1.2-Dev'</td></tr>
+const&#160;</td><td class="memItemRight" valign="bottom"><b>VERSION</b> ='3.1.3-Dev'</td></tr>
 <tr class="separator:a75c9c77d5802fb1b2d68b6440f7954a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a28627d9a9a37376138e5eb4b8e251790"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a28627d9a9a37376138e5eb4b8e251790"></a>
@@ -1130,7 +1132,7 @@ $arg object </dd></dl>
       </table>
 </div><div class="memdoc">
 <p>Transfer lexicon entries to hive </p>
-<dl class="section return"><dt>Returns</dt><dd>NULL </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>array </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">$path</td><td>string </td></tr>
@@ -1183,6 +1185,41 @@ $arg object </dd></dl>
     <tr><td class="paramname">$class</td><td>string </td></tr>
     <tr><td class="paramname">$ttl</td><td>int </td></tr>
     <tr><td class="paramname">$kbps</td><td>int </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a6e3349a27f7e7d364163671c40034c4f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Base::merge </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$src</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Merge array with hive array variable </p>
+<dl class="section return"><dt>Returns</dt><dd>array </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$key</td><td>string </td></tr>
+    <tr><td class="paramname">$src</td><td>array </td></tr>
   </table>
   </dd>
 </dl>
@@ -1832,7 +1869,7 @@ $arg object </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ad73abbeb05f7d3c9c2024598856e7c67"></a>
+<a class="anchor" id="ab69a060539ef2d79a8151ecba9541e3f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1840,8 +1877,18 @@ $arg object </dd></dl>
           <td class="memname">Base::stringify </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>$arg</em></td><td>)</td>
+          <td class="paramname"><em>$arg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$detail</em> = <code>TRUE</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1850,6 +1897,7 @@ $arg object </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">$arg</td><td>mixed </td></tr>
+    <tr><td class="paramname">$detail</td><td>bool </td></tr>
   </table>
   </dd>
 </dl>
@@ -1880,20 +1928,27 @@ $arg object </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ab83645cc118a3cc7222d94ea75a3f104"></a>
+<a class="anchor" id="a7b5c8568d83bad5612c1f324caf020e7"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">Base::unload </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$cwd</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Execute framework/application shutdown sequence </p>
 <dl class="section return"><dt>Returns</dt><dd>NULL </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$cwd</td><td>string </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

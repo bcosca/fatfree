@@ -81,8 +81,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a13305498a2d8b2de70a50e21b2b41c20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77aea9ee7d3ae071b23c24c889c18874"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a77aea9ee7d3ae071b23c24c889c18874">identicon</a> ($str, $size=64, $blocks=4)</td></tr>
 <tr class="separator:a77aea9ee7d3ae071b23c24c889c18874"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cc0ad03d7776978d31f47b22d2e15b3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a4cc0ad03d7776978d31f47b22d2e15b3">captcha</a> ($font, $size=24, $len=5, $key=NULL, $path='')</td></tr>
-<tr class="separator:a4cc0ad03d7776978d31f47b22d2e15b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a195ea2c6c93442109259c54b0479b977"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a195ea2c6c93442109259c54b0479b977">captcha</a> ($font, $size=24, $len=5, $key=NULL, $path='', $fg=0xFFFFFF, $bg=0x000000)</td></tr>
+<tr class="separator:a195ea2c6c93442109259c54b0479b977"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6ad5d2346d2028ef1e10235910e21e1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#ab6ad5d2346d2028ef1e10235910e21e1">width</a> ()</td></tr>
 <tr class="separator:ab6ad5d2346d2028ef1e10235910e21e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50738b4f19600b46c4db73c49d3ac0bf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a50738b4f19600b46c4db73c49d3ac0bf">height</a> ()</td></tr>
@@ -253,7 +253,7 @@ const&#160;</td><td class="memItemRight" valign="bottom"><b>POS_Bottom</b> =32</
 
 </div>
 </div>
-<a class="anchor" id="a4cc0ad03d7776978d31f47b22d2e15b3"></a>
+<a class="anchor" id="a195ea2c6c93442109259c54b0479b977"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -285,7 +285,19 @@ const&#160;</td><td class="memItemRight" valign="bottom"><b>POS_Bottom</b> =32</
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>$path</em> = <code>''</code>&#160;</td>
+          <td class="paramname"><em>$path</em> = <code>''</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$fg</em> = <code>0xFFFFFF</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$bg</em> = <code>0x000000</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -303,6 +315,8 @@ const&#160;</td><td class="memItemRight" valign="bottom"><b>POS_Bottom</b> =32</
     <tr><td class="paramname">$len</td><td>int </td></tr>
     <tr><td class="paramname">$key</td><td>string </td></tr>
     <tr><td class="paramname">$path</td><td>string </td></tr>
+    <tr><td class="paramname">$fg</td><td>int </td></tr>
+    <tr><td class="paramname">$bg</td><td>int </td></tr>
   </table>
   </dd>
 </dl>
