@@ -176,12 +176,14 @@ final class Base {
 	*	Return TRUE if hive key is not empty (or timestamp and TTL if cached)
 	*	@return bool
 	*	@param $key string
+	*	@param $val mixed
 	**/
-	function exists($key) {
-		$ref=&$this->ref($key,FALSE);
-		return isset($ref)?
-			TRUE:
-			Cache::instance()->exists($this->hash($key).'.var');
+	function exists($key,&$val=NULL) {
+		$val=&$this->ref($key,FALSE);
+		if (isset($val))
+			return TRUE;
+		return Cache::instance()->exists($this->hash($key).'.var',$val)?
+			$val:FALSE;
 	}
 
 	/**
