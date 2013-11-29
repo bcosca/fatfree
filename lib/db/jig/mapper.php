@@ -67,7 +67,8 @@ class Mapper extends \DB\Cursor {
 	*	@param $key string
 	**/
 	function clear($key) {
-		unset($this->document[$key]);
+		if ($key!='_id')
+			unset($this->document[$key]);
 	}
 
 	/**
@@ -152,6 +153,7 @@ class Mapper extends \DB\Cursor {
 		$cache=\Cache::instance();
 		$db=$this->db;
 		$now=microtime(TRUE);
+		$data=array();
 		if (!$fw->get('CACHE') || !$ttl || !($cached=$cache->exists(
 			$hash=$fw->hash($this->db->dir().
 				$fw->stringify(array($filter,$options))).'.jig',$data)) ||
