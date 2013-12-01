@@ -212,10 +212,12 @@ final class Base {
 			case 'FALLBACK':
 				$this->fallback=$val;
 				$lang=$this->language($this->hive['LANGUAGE']);
+				break;
 			case 'LANGUAGE':
 				if (isset($lang) || $lang=$this->language($val))
 					$val=$this->language($val);
 				$lex=$this->lexicon($this->hive['LOCALES']);
+				break;
 			case 'LOCALES':
 				if (isset($lex) || $lex=$this->lexicon($val))
 					$this->mset($lex,$this->hive['PREFIX'],$ttl);
@@ -223,6 +225,7 @@ final class Base {
 			case 'TZ':
 				date_default_timezone_set($val);
 				break;
+			//default:
 		}
 		$ref=&$this->ref($key);
 		$ref=$val;
