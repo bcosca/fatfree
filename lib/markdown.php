@@ -535,10 +535,8 @@ class Markdown extends Prefab {
 				}
 			}
 			else
-				foreach ($this->blocks as $func=>$regex) {
-					var_dump($func);
+				foreach ($this->blocks as $func=>$regex)
 					if (preg_match($regex,substr($str,$ptr),$match)) {
-						var_dump($match[0]);
 						$ptr+=strlen($match[0]);
 						$dst.=call_user_func_array(
 							array($this,'_'.$func),
@@ -546,7 +544,6 @@ class Markdown extends Prefab {
 						);
 						break;
 					}
-				}
 		}
 		return $dst;
 	}
