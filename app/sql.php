@@ -189,7 +189,7 @@ class SQL extends Controller {
 				'Parameterized query (named)'
 			);
 			$test->expect(
-				($schema=$db->schema('movies',60)) && count($schema)==3,
+				($schema=$db->schema('movies',NULL,60)) && count($schema)==3,
 				'Schema retrieved'
 			);
 			$movie=new \DB\SQL\Mapper($db,'movies');
