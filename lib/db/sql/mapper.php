@@ -522,16 +522,17 @@ class Mapper extends \DB\Cursor {
 	*	Instantiate class
 	*	@param $db object
 	*	@param $table string
+	*	@param $fields array|string
 	*	@param $ttl int
 	**/
-	function __construct(\DB\SQL $db,$table,$ttl=60) {
+	function __construct(\DB\SQL $db,$table,$fields=NULL,$ttl=60) {
 		$this->db=$db;
 		$this->engine=$db->driver();
 		if ($this->engine=='oci')
 			$table=strtoupper($table);
 		$this->source=$table;
 		$this->table=$this->db->quotekey($table);
-		$this->fields=$db->schema($table,$ttl);
+		$this->fields=$db->schema($table,$fields,$ttl);
 		$this->reset();
 	}
 

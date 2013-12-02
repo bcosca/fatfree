@@ -202,9 +202,10 @@ class SQL extends \PDO {
 	*	Retrieve schema of SQL table
 	*	@return array|FALSE
 	*	@param $table string
+	*	@param $fields array|string
 	*	@param $ttl int
 	**/
-	function schema($table,$ttl=0) {
+	function schema($table,$fields=NULL,$ttl=0) {
 		// Supported engines
 		$cmd=array(
 			'sqlite2?'=>array(
@@ -265,6 +266,8 @@ class SQL extends \PDO {
 				'WHERE c.table_name='.$this->quote($table),
 				'FIELD','TYPE','DEFVAL','NULLABLE','Y','PKEY','P')
 		);
+		if (is_string($fields))
+			$fields=\Base::instance()->split($fields);
 		foreach ($cmd as $key=>$val)
 			if (preg_match('/'.$key.'/',$this->engine)) {
 				// Improve InnoDB performance on MySQL with
@@ -272,17 +275,19 @@ class SQL extends \PDO {
 				// This requires SUPER privilege!
 				$rows=array();
 				foreach ($this->exec($val[0],NULL,$ttl) as $row)
-					$rows[$row[$val[1]]]=array(
-						'type'=>$row[$val[2]],
-						'pdo_type'=>
-							preg_match('/int\b|int(?=eger)|bool/i',
-								$row[$val[2]],$parts)?
-							constant('\PDO::PARAM_'.strtoupper($parts[0])):
-							\PDO::PARAM_STR,
-						'default'=>$row[$val[3]],
-						'nullable'=>$row[$val[4]]==$val[5],
-						'pkey'=>$row[$val[6]]==$val[7]
-					);
+					if (!$fields || in_array($row[$val[1]],$fields))
+						$rows[$row[$val[1]]]=array(
+							'type'=>$row[$val[2]],
+							'pdo_type'=>
+								preg_match('/int\b|int(?=eger)|bool/i',
+									$row[$val[2]],$parts)?
+								constant('\PDO::PARAM_'.
+									strtoupper($parts[0])):
+								\PDO::PARAM_STR,
+							'default'=>$row[$val[3]],
+							'nullable'=>$row[$val[4]]==$val[5],
+							'pkey'=>$row[$val[6]]==$val[7]
+						);
 				return $rows;
 			}
 		return FALSE;
