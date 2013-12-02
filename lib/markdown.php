@@ -279,11 +279,12 @@ class Markdown extends Prefab {
 	protected function _p($str) {
 		$str=trim($str);
 		if (strlen($str)) {
-			if (preg_match('/^(.+?\n)([>#].+)$/',$str,$parts))
+			if (preg_match('/^(.+?\n)([>#].+)$/s',$str,$parts))
 				return $this->_p($parts[1]).$this->build($parts[2]);
 			$self=$this;
 			$str=preg_replace_callback(
-				'/([^<>\[]+)?(<.+?>|\[.+?\]\s*\(.+?\))|(.+)/s',
+				'/([^<>\[]+)?(<[\?%].+?[\?%]>|<.+?>|\[.+?\]\s*\(.+?\))|'.
+				'(.+)/s',
 				function($expr) use($self) {
 					$tmp='';
 					if (isset($expr[4]))
@@ -534,8 +535,10 @@ class Markdown extends Prefab {
 				}
 			}
 			else
-				foreach ($this->blocks as $func=>$regex)
+				foreach ($this->blocks as $func=>$regex) {
+					var_dump($func);
 					if (preg_match($regex,substr($str,$ptr),$match)) {
+						var_dump($match[0]);
 						$ptr+=strlen($match[0]);
 						$dst.=call_user_func_array(
 							array($this,'_'.$func),
@@ -543,6 +546,7 @@ class Markdown extends Prefab {
 						);
 						break;
 					}
+				}
 		}
 		return $dst;
 	}
