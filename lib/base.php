@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.1.3-Dev';
+		VERSION='3.2.0-Dev';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -583,64 +583,6 @@ final class Base {
 	}
 
 	/**
-	*	Attempt to clone object
-	*	@return object
-	*	@return $arg object
-	**/
-	function dupe($arg) {
-		if (method_exists('ReflectionClass','iscloneable')) {
-			$ref=new ReflectionClass($arg);
-			if ($ref->iscloneable())
-				$arg=clone($arg);
-		}
-		return $arg;
-	}
-
-	/**
-	*	Encode characters to equivalent HTML entities
-	*	@return string
-	*	@param $arg mixed
-	**/
-	function esc($arg) {
-		if (is_array($arg)) {
-			$tmp=array();
-			foreach ($arg as $key=>$val)
-				$tmp[$key]=$this->esc($val);
-			return $tmp;
-		}
-		if (is_object($arg)) {
-			$obj=$this->dupe($arg);
-			foreach (get_object_vars($obj) as $key=>$val)
-				$obj->$key=$this->esc($val);
-			return $obj;
-		}
-		$arg=unserialize(serialize($arg));
-		if (is_string($arg))
-			$arg=$this->encode($arg);
-		return $arg;
-	}
-
-	/**
-	*	Decode HTML entities to equivalent characters
-	*	@return string
-	*	@param $arg mixed
-	**/
-	function raw($arg) {
-		if (is_array($arg)) {
-			$tmp=array();
-			foreach ($arg as $key=>$val)
-				$tmp[$key]=$this->raw($val);
-			return $tmp;
-		}
-		if (is_object($arg))
-			return $this->dupe($arg);
-		$arg=unserialize(serialize($arg));
-		if (is_string($arg))
-			$arg=$this->decode($arg);
-		return $arg;
-	}
-
-	/**
 	*	Return locale-aware formatted string
 	*	@return string
 	**/
@@ -933,7 +875,8 @@ final class Base {
 			ob_end_clean();
 		$handler=$this->hive['ONERROR'];
 		$this->hive['ONERROR']=NULL;
-		if ((!$handler || $this->call($handler,$this)===FALSE) &&
+		if ((!$handler ||
+			$this->call($handler,$this,'beforeroute,afterroute')===FALSE) &&
 			!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo $this->hive['AJAX']?
 				json_encode($this->hive['ERROR']):
@@ -1877,6 +1820,68 @@ class View extends Prefab {
 		$hive;
 
 	/**
+	*	Attempt to clone object
+	*	@return object
+	*	@return $arg object
+	**/
+	function dupe($arg) {
+		if (method_exists('ReflectionClass','iscloneable')) {
+			$ref=new ReflectionClass($arg);
+			if ($ref->iscloneable())
+				$arg=clone($arg);
+		}
+		return $arg;
+	}
+
+	/**
+	*	Encode characters to equivalent HTML entities
+	*	@return string
+	*	@param $arg mixed
+	**/
+	function esc($arg) {
+		if (is_array($arg)) {
+			$tmp=array();
+			foreach ($arg as $key=>$val)
+				$tmp[$key]=$this->esc($val);
+			return $tmp;
+		}
+		if (is_object($arg)) {
+			$obj=$this->dupe($arg);
+			foreach (get_object_vars($obj) as $key=>$val)
+				$obj->$key=$this->esc($val);
+			return $obj;
+		}
+		$arg=unserialize(serialize($arg));
+		if (is_string($arg))
+			$arg=\Base::instance()->encode($arg);
+		return $arg;
+	}
+
+	/**
+	*	Decode HTML entities to equivalent characters
+	*	@return string
+	*	@param $arg mixed
+	**/
+	function raw($arg) {
+		if (is_array($arg)) {
+			$tmp=array();
+			foreach ($arg as $key=>$val)
+				$tmp[$key]=$this->raw($val);
+			return $tmp;
+		}
+		if (is_object($arg)) {
+			$obj=$this->dupe($arg);
+			foreach (get_object_vars($obj) as $key=>$val)
+				$obj->$key=$this->raw($val);
+			return $obj;
+		}
+		$arg=unserialize(serialize($arg));
+		if (is_string($arg))
+			$arg=\Base::instance()->decode($arg);
+		return $arg;
+	}
+
+	/**
 	*	Create sandbox for template execution
 	*	@return string
 	**/
@@ -1909,7 +1914,7 @@ class View extends Prefab {
 				if (!$hive)
 					$hive=$fw->hive();
 				if ($fw->get('ESCAPE'))
-					$hive=$fw->esc($hive);
+					$hive=$this->esc($hive);
 				if (PHP_SAPI!='cli')
 					header('Content-Type: '.$mime.'; '.
 						'charset='.$fw->get('ENCODING'));

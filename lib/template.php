@@ -252,7 +252,7 @@ class Template extends View {
 					$str=trim($self->token($expr[1]));
 					if (preg_match('/^(.+?)\h*\|\h*(raw|esc|format)$/',
 						$str,$parts))
-						$str='Base::instance()->'.$parts[2].
+						$str='$this->'.$parts[2].
 							'('.$parts[1].')';
 					return '<?php echo '.$str.'; ?>';
 				},
@@ -394,7 +394,7 @@ class Template extends View {
 				if (!$hive)
 					$hive=$fw->hive();
 				if ($fw->get('ESCAPE'))
-					$hive=$fw->esc($hive);
+					$hive=$this->esc($hive);
 				if (PHP_SAPI!='cli')
 					header('Content-Type: '.($this->mime=$mime).'; '.
 						'charset='.$fw->get('ENCODING'));
