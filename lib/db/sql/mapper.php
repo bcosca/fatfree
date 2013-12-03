@@ -254,9 +254,9 @@ class Mapper extends \DB\Cursor {
 			'limit'=>0,
 			'offset'=>0
 		);
-		$adhoc='';
-		return $this->select(
-			implode(',',$this->fields()),$filter,$options,$ttl);
+		return $this->select(implode(',',
+			array_map(array($this->db,'quotekey'),$this->fields())),
+			$filter,$options,$ttl);
 	}
 
 	/**
@@ -518,8 +518,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $adhoc bool
 	**/
 	function fields($adhoc=TRUE) {
-		return array_map(array($this->db,'quotekey'),
-			array_keys($this->fields+($adhoc?$this->adhoc:array())));
+		return array_keys($this->fields+($adhoc?$this->adhoc:array()));
 	}
 
 	/**
