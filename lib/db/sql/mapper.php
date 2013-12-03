@@ -180,7 +180,6 @@ class Mapper extends \DB\Cursor {
 	*	@param $ttl int
 	**/
 	function select($fields,$filter=NULL,array $options=NULL,$ttl=0) {
-		var_dump($fields);
 		if (!$options)
 			$options=array();
 		$options+=array(
