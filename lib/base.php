@@ -1906,7 +1906,7 @@ class View extends Prefab {
 		$cached=$cache->exists($hash=$fw->hash($file),$data);
 		if ($cached && $cached[0]+$ttl>microtime(TRUE))
 			return $data;
-		foreach ($fw->split($fw->get('UI')) as $dir)
+		foreach ($fw->split($fw->get('UI').';./') as $dir)
 			if (is_file($this->view=$fw->fixslashes($dir.$file))) {
 				if (isset($_COOKIE[session_name()]))
 					@session_start();

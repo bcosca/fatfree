@@ -188,7 +188,7 @@ class Web extends Prefab {
 				$out[$file['name']]=!$file['error'] &&
 					is_uploaded_file($file['tmp_name']) &&
 					(!file_exists($file['name']) || $overwrite) &&
-					(!$func || $fw->call($func,$file)!==FALSE) &&
+					(!$func || $fw->call($func,array($file))!==FALSE) &&
 					move_uploaded_file($file['tmp_name'],$file['name']);
 			}
 		}
@@ -503,7 +503,7 @@ class Web extends Prefab {
 		preg_match('/\w+$/',$files[0],$ext);
 		$cache=Cache::instance();
 		$dst='';
-		foreach ($fw->split($path?:$fw->get('UI')) as $dir)
+		foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
 			foreach ($files as $file)
 				if (is_file($save=$fw->fixslashes($dir.$file))) {
 					if ($fw->get('CACHE') &&

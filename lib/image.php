@@ -372,7 +372,7 @@ class Image {
 	function captcha($font,$size=24,$len=5,
 		$key=NULL,$path='',$fg=0xFFFFFF,$bg=0x000000) {
 		$fw=Base::instance();
-		foreach ($fw->split($path?:$fw->get('UI')) as $dir)
+		foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
 			if (is_file($path=$dir.$font)) {
 				$seed=strtoupper(substr(uniqid(),-$len));
 				$block=$size*3;
@@ -525,7 +525,7 @@ class Image {
 			$fw=Base::instance();
 			// Create image from file
 			$this->file=$file;
-			foreach ($fw->split($path?:$fw->get('UI')) as $dir)
+			foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
 				if (is_file($dir.$file)) {
 					$this->data=imagecreatefromstring($fw->read($dir.$file));
 					imagesavealpha($this->data,TRUE);
