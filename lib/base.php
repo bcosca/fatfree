@@ -594,7 +594,8 @@ final class Base {
 		$conv=localeconv();
 		return preg_replace_callback(
 			'/\{(?P<pos>\d+)\s*(?:,\s*(?P<type>\w+)\s*'.
-			'(?:,(?P<mod>(?:\s*\w+(?:\s+\{.+?\}\s*,?)?)*))?)?\}/',
+			'(?:,\s*(?P<mod>(?:\w+(?:\s*\{.+?\}\s*,?)?)*)'.
+			'(?:,\s*(?P<prop>.+?))?)?)?\}/',
 			function($expr) use($args,$conv) {
 				extract($expr);
 				extract($conv);
@@ -666,6 +667,10 @@ final class Base {
 										return number_format(
 											$args[$pos]*100,0,$decimal_point,
 											$thousands_sep).'%';
+									case 'decimal':
+										return number_format(
+											$args[$pos],$prop,$decimal_point,
+												$thousands_sep);
 								}
 							break;
 						case 'date':
