@@ -139,7 +139,12 @@ class Mapper extends \DB\Cursor {
 		$mapper=clone($this);
 		$mapper->reset();
 		foreach ($row as $key=>$val) {
-			$var=array_key_exists($key,$this->fields)?'fields':'adhoc';
+			if (array_key_exists($key,$this->fields))
+				$var='fields';
+			elseif (array_key_exists($key,$this->adhoc))
+				$var='adhoc';
+			else
+				continue;
 			$mapper->{$var}[$key]['value']=$val;
 			if ($var=='fields' && $mapper->{$var}[$key]['pkey'])
 				$mapper->{$var}[$key]['previous']=$val;
@@ -175,6 +180,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $ttl int
 	**/
 	function select($fields,$filter=NULL,array $options=NULL,$ttl=0) {
+		var_dump($fields);
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -250,9 +256,8 @@ class Mapper extends \DB\Cursor {
 			'offset'=>0
 		);
 		$adhoc='';
-		foreach ($this->adhoc as $key=>$field)
-			$adhoc.=','.$field['expr'].' AS '.$this->db->quotekey($key);
-		return $this->select('*'.$adhoc,$filter,$options,$ttl);
+		return $this->select(
+			implode(',',$this->fields()),$filter,$options,$ttl);
 	}
 
 	/**
@@ -514,8 +519,8 @@ class Mapper extends \DB\Cursor {
 	*	@param $adhoc bool
 	**/
 	function fields($adhoc=TRUE) {
-		return array_keys($this->fields+
-			($adhoc?$this->adhoc:array()));
+		return array_map(array($this->db,'quotekey'),
+			array_keys($this->fields+($adhoc?$this->adhoc:array())));
 	}
 
 	/**
