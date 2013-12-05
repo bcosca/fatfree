@@ -605,7 +605,7 @@ final class Base {
 					switch ($type) {
 						case 'plural':
 							preg_match_all('/(?<tag>\w+)'.
-								'(?:\s+\{(?<data>.+?)\})/',
+								'(?:\s+\{\s*(?<data>.+?)\s*\})/',
 								$mod,$matches,PREG_SET_ORDER);
 							$ord=array('zero','one','two');
 							foreach ($matches as $match) {
