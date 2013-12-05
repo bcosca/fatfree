@@ -1363,6 +1363,16 @@ final class Base {
 	}
 
 	/**
+	*	Return path relative to the base directory
+	*	@return string
+	*	@param $url string
+	**/
+	function rel($url) {
+		return preg_replace('/(?:https?:\/\/)?'.
+			preg_quote($this->hive['BASE'],'/').'/','',rtrim($url,'/'));
+	}
+
+	/**
 	*	Namespace-aware class autoloader
 	*	@return mixed
 	*	@param $class string

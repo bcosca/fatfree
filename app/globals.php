@@ -241,6 +241,12 @@ class Globals extends Controller {
 				$f3->set('COOKIE.baz','qux'),
 				'HTTP cookie sent'
 			);
+		$test->expect(
+			$f3->rel(rtrim($_SERVER['REQUEST_URI'],'/').'/hello/world')==
+				'/hello/world' &&
+			$f3->rel($f3->get('BASE').'/hello/world')=='/hello/world',
+			'Relative links'
+		);
 		$f3->set('results',$test->results());
 	}
 
