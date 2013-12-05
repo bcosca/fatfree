@@ -516,7 +516,7 @@ class Image {
 	/**
 	*	Load string
 	*	@return object
-	*	@param string
+	*	@param $str string
 	**/
 	function load($str) {
 		$this->data=imagecreatefromstring($str);
