@@ -53,9 +53,12 @@ class Session {
 		$fw=Base::instance();
 		$headers=$fw->get('HEADERS');
 		$jar=session_get_cookie_params();
+		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+			$fw->hash(mt_rand());
 		Cache::instance()->set($id.'.@',
 			array(
 				'data'=>$data,
+				'csrf'=>$csrf,
 				'ip'=>$fw->get('IP'),
 				'agent'=>isset($headers['User-Agent'])?
 					$headers['User-Agent']:'',
@@ -63,6 +66,7 @@ class Session {
 			),
 			$jar['lifetime']
 		);
+		call_user_func_array('setcookie',array('CSRF',$csrf)+$jar);
 		return TRUE;
 	}
 
@@ -84,6 +88,16 @@ class Session {
 	function cleanup($max) {
 		Cache::instance()->reset('.@',$max);
 		return TRUE;
+	}
+
+	/**
+	*	Return anti-CSRF tokan associated with specified session ID
+	*	@return string|FALSE
+	*	@param $id string
+	**/
+	function csrf($id=NULL) {
+		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
+			$data['csrf']:FALSE;
 	}
 
 	/**
@@ -130,6 +144,12 @@ class Session {
 			array($this,'cleanup')
 		);
 		register_shutdown_function('session_commit');
+		@session_start();
+		if (($csrf=$this->csrf()) &&
+			(!isset($_COOKIE['CSRF']) || $_COOKIE['CSRF']!=$csrf)) {
+			\Base::instance()->status(403);
+			die;
+		}
 	}
 
 }

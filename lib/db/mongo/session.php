@@ -56,13 +56,18 @@ class Session extends Mapper {
 		$fw=\Base::instance();
 		$headers=$fw->get('HEADERS');
 		$this->load(array('session_id'=>$id));
+		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+			$fw->hash(mt_rand());
 		$this->set('session_id',$id);
 		$this->set('data',$data);
+		$this->set('csrf',$csrf);
 		$this->set('ip',$fw->get('IP'));
 		$this->set('agent',
 			isset($headers['User-Agent'])?$headers['User-Agent']:'');
 		$this->set('stamp',time());
 		$this->save();
+		call_user_func_array('setcookie',array('CSRF',$csrf)+
+			session_get_cookie_params());
 		return TRUE;
 	}
 
@@ -84,6 +89,16 @@ class Session extends Mapper {
 	function cleanup($max) {
 		$this->erase(array('$where'=>'this.stamp+'.$max.'<'.time()));
 		return TRUE;
+	}
+
+	/**
+	*	Return anti-CSRF tokan associated with specified session ID
+	*	@return string|FALSE
+	*	@param $id string
+	**/
+	function csrf($id=NULL) {
+		$this->load(array('session_id'=>$id?:session_id()));
+		return $this->dry()?FALSE:$this->get('csrf');
 	}
 
 	/**
@@ -132,6 +147,12 @@ class Session extends Mapper {
 			array($this,'cleanup')
 		);
 		register_shutdown_function('session_commit');
+		@session_start();
+		if (($csrf=$this->csrf()) &&
+			(!isset($_COOKIE['CSRF']) || $_COOKIE['CSRF']!=$csrf)) {
+			\Base::instance()->status(403);
+			die;
+		}
 	}
 
 }

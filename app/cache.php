@@ -143,11 +143,16 @@ class Cache extends Controller {
 			$cache->clear($hash);
 			$session=new \Session;
 			$test->expect(
-				session_start(),
+				@session_start(),
 				'Cache-based session started'
 			);
 			$_SESSION['foo']='hello world';
 			session_commit();
+			$test->expect(
+				preg_grep('/Set-Cookie:\sCSRF='.
+					preg_quote($session->csrf()).'/',headers_list()),
+				'Automatic CSRF protection'
+			);
 			$test->expect(
 				$ip=$session->ip(),
 				'IP address: '.$ip
