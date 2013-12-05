@@ -326,11 +326,11 @@ class Image {
 			array(0,.5,.5,.5,.5,0,1,0,.5,.5,1,.5,.5,1,.5,.5,0,1),
 			array(0,0,1,0,.5,.5,.5,0,0,.5,1,.5,.5,1,.5,.5,0,1)
 		);
+		$hash=sha1($str);
 		$this->data=imagecreatetruecolor($size,$size);
-		list($r,$g,$b)=$this->rgb(mt_rand(0x333,0xCCC));
+		list($r,$g,$b)=$this->rgb(hexdec(substr($hash,-3)));
 		$fg=imagecolorallocate($this->data,$r,$g,$b);
 		imagefill($this->data,0,0,IMG_COLOR_TRANSPARENT);
-		$hash=sha1($str);
 		$ctr=count($sprites);
 		$dim=$blocks*floor($size/$blocks)*2/$blocks;
 		for ($j=0,$y=ceil($blocks/2);$j<$y;$j++)
@@ -514,6 +514,18 @@ class Image {
 	}
 
 	/**
+	*	Load string
+	*	@return object
+	*	@param string
+	**/
+	function load($str) {
+		$this->data=imagecreatefromstring($str);
+		imagesavealpha($this->data,TRUE);
+		$this->save();
+		return $this;
+	}
+
+	/**
 	*	Instantiate image
 	*	@param $file string
 	*	@param $flag bool
@@ -526,11 +538,8 @@ class Image {
 			// Create image from file
 			$this->file=$file;
 			foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
-				if (is_file($dir.$file)) {
-					$this->data=imagecreatefromstring($fw->read($dir.$file));
-					imagesavealpha($this->data,TRUE);
-					$this->save();
-				}
+				if (is_file($dir.$file))
+					$this->load($fw->read($dir.$file));
 		}
 	}
 
