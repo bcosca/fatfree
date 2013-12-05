@@ -19,7 +19,7 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">Fat-Free Framework
-   &#160;<span id="projectnumber">3.1.2</span>
+   &#160;<span id="projectnumber">3.2.0</span>
    &#160;<span class="menu"><a href="index.html">Overview</a> <a href="annotated.html">Class List</a> <a href="hierarchy.html">Hierarchy</a></span>
    </div>
   </td>
@@ -102,8 +102,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afbb177708bbbea57811896189d336875"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a9afed2cc48ce8a50ac377aec476036"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDB_1_1SQL_1_1Mapper.html#a0a9afed2cc48ce8a50ac377aec476036">fields</a> ($adhoc=TRUE)</td></tr>
 <tr class="separator:a0a9afed2cc48ce8a50ac377aec476036"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8ab8e6ba470ca89992ff25f7258b153"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDB_1_1SQL_1_1Mapper.html#ad8ab8e6ba470ca89992ff25f7258b153">__construct</a> (\<a class="el" href="classDB_1_1SQL.html">DB\SQL</a> $db, $table, $ttl=60)</td></tr>
-<tr class="separator:ad8ab8e6ba470ca89992ff25f7258b153"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a369b7be4b0c72f5589ce17ca860b8e41"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDB_1_1SQL_1_1Mapper.html#a369b7be4b0c72f5589ce17ca860b8e41">__construct</a> (\<a class="el" href="classDB_1_1SQL.html">DB\SQL</a> $db, $table, $<a class="el" href="classDB_1_1SQL_1_1Mapper.html#a0a9afed2cc48ce8a50ac377aec476036">fields</a>=NULL, $ttl=60)</td></tr>
+<tr class="separator:a369b7be4b0c72f5589ce17ca860b8e41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classDB_1_1Cursor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classDB_1_1Cursor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classDB_1_1Cursor.html">DB\Cursor</a></td></tr>
 <tr class="memitem:a4d932faf2bdbc33e236fd4325c6dc7c9 inherit pub_methods_classDB_1_1Cursor"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDB_1_1Cursor.html#a4d932faf2bdbc33e236fd4325c6dc7c9">find</a> ($filter=NULL, array $options=NULL)</td></tr>
 <tr class="separator:a4d932faf2bdbc33e236fd4325c6dc7c9 inherit pub_methods_classDB_1_1Cursor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -236,7 +236,7 @@ Protected Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>SQL data mapper. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ad8ab8e6ba470ca89992ff25f7258b153"></a>
+<a class="anchor" id="a369b7be4b0c72f5589ce17ca860b8e41"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -256,6 +256,12 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$fields</em> = <code>NULL</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
           <td class="paramname"><em>$ttl</em> = <code>60</code>&#160;</td>
         </tr>
         <tr>
@@ -270,6 +276,7 @@ Protected Attributes</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">$db</td><td>object </td></tr>
     <tr><td class="paramname">$table</td><td>string </td></tr>
+    <tr><td class="paramname">$fields</td><td>array|string </td></tr>
     <tr><td class="paramname">$ttl</td><td>int </td></tr>
   </table>
   </dd>

@@ -19,7 +19,7 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">Fat-Free Framework
-   &#160;<span id="projectnumber">3.1.2</span>
+   &#160;<span id="projectnumber">3.2.0</span>
    &#160;<span class="menu"><a href="index.html">Overview</a> <a href="annotated.html">Class List</a> <a href="hierarchy.html">Hierarchy</a></span>
    </div>
   </td>
@@ -73,6 +73,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6745a3eea813eba466461048e16063d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a279b637022b5448815f3dc21c5137862"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDB_1_1Mongo_1_1Session.html#a279b637022b5448815f3dc21c5137862">cleanup</a> ($max)</td></tr>
 <tr class="separator:a279b637022b5448815f3dc21c5137862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0af8e62093a9fe8e247f452d1479f283"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDB_1_1Mongo_1_1Session.html#a0af8e62093a9fe8e247f452d1479f283">csrf</a> ($id=NULL)</td></tr>
+<tr class="separator:a0af8e62093a9fe8e247f452d1479f283"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cd47c5949b35462490000a16d460d4f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDB_1_1Mongo_1_1Session.html#a3cd47c5949b35462490000a16d460d4f">ip</a> ($id=NULL)</td></tr>
 <tr class="separator:a3cd47c5949b35462490000a16d460d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9459130d5719ec6d54aef0acc4b000db"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDB_1_1Mongo_1_1Session.html#a9459130d5719ec6d54aef0acc4b000db">stamp</a> ($id=NULL)</td></tr>
@@ -322,6 +324,30 @@ const&#160;</td><td class="memItemRight" valign="bottom"><b>E_Field</b> ='Undefi
 </div><div class="memdoc">
 <p>Close session </p>
 <dl class="section return"><dt>Returns</dt><dd>TRUE </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a0af8e62093a9fe8e247f452d1479f283"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DB\Mongo\Session::csrf </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$id</em> = <code>NULL</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return anti-CSRF tokan associated with specified session ID </p>
+<dl class="section return"><dt>Returns</dt><dd>string|FALSE </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$id</td><td>string </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
