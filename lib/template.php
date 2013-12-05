@@ -252,7 +252,8 @@ class Template extends View {
 					$str=trim($self->token($expr[1]));
 					if (preg_match('/^(.+?)\h*\|\h*(raw|esc|format)$/',
 						$str,$parts))
-						$str='$this->'.$parts[2].
+						$str=(($parts[2]=='format')?
+							'\Base::instance()':'$this').'->'.$parts[2].
 							'('.$parts[1].')';
 					return '<?php echo '.$str.'; ?>';
 				},
