@@ -254,9 +254,12 @@ class Mapper extends \DB\Cursor {
 			'limit'=>0,
 			'offset'=>0
 		);
+		$adhoc='';
+		foreach ($this->adhoc as $key=>$field)
+			$adhoc.=','.$field['expr'].' AS '.$this->db->quotekey($key);
 		return $this->select(implode(',',
-			array_map(array($this->db,'quotekey'),$this->fields())),
-			$filter,$options,$ttl);
+			array_map(array($this->db,'quotekey'),array_keys($this->fields))).
+			$adhoc,$filter,$options,$ttl);
 	}
 
 	/**
