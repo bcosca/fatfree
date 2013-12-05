@@ -24,7 +24,9 @@ class Mapper extends \DB\Cursor {
 		//! Mongo collection
 		$collection,
 		//! Mongo document
-		$document=array();
+		$document=array(),
+		//! Mongo cursor
+		$cursor;
 
 	/**
 	*	Return TRUE if field is defined
@@ -137,16 +139,16 @@ class Mapper extends \DB\Cursor {
 				$filter=$filter?:array();
 				$collection=$this->collection;
 			}
-			$cursor=$collection->find($filter,$fields?:array());
+			$this->cursor=$collection->find($filter,$fields?:array());
 			if ($options['order'])
-				$cursor=$cursor->sort($options['order']);
+				$this->cursor=$this->cursor->sort($options['order']);
 			if ($options['limit'])
-				$cursor=$cursor->limit($options['limit']);
+				$this->cursor=$this->cursor->limit($options['limit']);
 			if ($options['offset'])
-				$cursor=$cursor->skip($options['offset']);
+				$this->cursor=$this->cursor->skip($options['offset']);
 			$result=array();
-			while ($cursor->hasnext())
-				$result[]=$cursor->getnext();
+			while ($this->cursor->hasnext())
+				$result[]=$this->cursor->getnext();
 			if ($options['group'])
 				$tmp->drop();
 			if ($fw->get('CACHE') && $ttl)
@@ -301,6 +303,14 @@ class Mapper extends \DB\Cursor {
 	**/
 	function fields() {
 		return array_keys($this->document);
+	}
+
+	/**
+	*	Return the cursor from last query
+	*	@return object|NULL
+	**/
+	function cursor() {
+		return $this->cursor;
 	}
 
 	/**
