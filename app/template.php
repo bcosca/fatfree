@@ -140,7 +140,7 @@ class Template extends Controller {
 		$f3->clear('cond');
 		$f3->set('foo','baz');
 		$test->expect(
-			$tpl->render('templates/test3.htm')=='baz',
+			$tpl->render('templates/test3.htm')=='bazbazbaz',
 			'<exclude> and {{* comment *}}'
 		);
 		$f3->clear('foo');

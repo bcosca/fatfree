@@ -59,7 +59,7 @@ class Template extends View {
 			},
 			$str
 		);
-		return trim(preg_replace('/{{(.+?)}}/',trim('\1'),$str));
+		return trim(preg_replace('/\{\{(.+?)\}\}/s',trim('\1'),$str));
 	}
 
 	/**
@@ -71,7 +71,7 @@ class Template extends View {
 		$out='';
 		foreach ($node['@attrib'] as $key=>$val)
 			$out.='$'.$key.'='.
-				(preg_match('/{{(.+?)}}/',$val)?
+				(preg_match('/\{\{(.+?)\}\}/',$val)?
 					$this->token($val):
 					Base::instance()->stringify($val)).'; ';
 		return '<?php '.$out.'?>';
@@ -88,7 +88,7 @@ class Template extends View {
 			'<?php '.(isset($attrib['if'])?
 				('if ('.$this->token($attrib['if']).') '):'').
 				('echo $this->render('.
-					(preg_match('/{{(.+?)}}/',$attrib['href'])?
+					(preg_match('/\{\{(.+?)\}\}/',$attrib['href'])?
 						$this->token($attrib['href']):
 						Base::instance()->stringify($attrib['href'])).','.
 					'$this->mime,get_defined_vars()); ?>');
@@ -217,7 +217,7 @@ class Template extends View {
 		$attrib=$node['@attrib'];
 		unset($node['@attrib']);
 		return
-			'<?php case '.(preg_match('/{{(.+?)}}/',$attrib['value'])?
+			'<?php case '.(preg_match('/\{\{(.+?)\}\}/',$attrib['value'])?
 				$this->token($attrib['value']):
 				Base::instance()->stringify($attrib['value'])).': ?>'.
 				$this->build($node).
@@ -258,7 +258,7 @@ class Template extends View {
 					return '<?php echo '.$str.'; ?>';
 				},
 				preg_replace_callback(
-					'/\{\{?~(.+?)~\}?\}/',
+					'/\{\{?~(.+?)~\}?\}/s',
 					function($expr) {
 						return '<?php '.$this->token($expr[1]).' ?>';
 					},
@@ -321,7 +321,8 @@ class Template extends View {
 					filemtime($this->view)<filemtime($view)) {
 					// Remove PHP code and comments
 					$text=preg_replace(
-						'/<\?(?:php|\s*=).+?\?>|{{\*.+?\*}}|{\*.+?\*}/is','',
+						'/(?<!["\'])\h*<\?(?:php|\s*=).+?\?>\h*(?!["\'])|'.
+						'\{\{\*.+?\*\}\}|\{\*.+?\*\}/is','',
 						$fw->read($view));
 					// Build tree structure
 					for ($ptr=0,$len=strlen($text),
