@@ -247,7 +247,7 @@ class Template extends View {
 		if (is_string($node)) {
 			$self=$this;
 			return preg_replace_callback(
-				'/{{(.+?)}}/s',
+				'/\{\{(.+?)\}\}/s',
 				function($expr) use($self) {
 					$str=trim($self->token($expr[1]));
 					if (preg_match('/^(.+?)\h*\|\h*(raw|esc|format)$/',
@@ -257,7 +257,13 @@ class Template extends View {
 							'('.$parts[1].')';
 					return '<?php echo '.$str.'; ?>';
 				},
-				$node
+				preg_replace_callback(
+					'/\{\{?~(.+?)~\}?\}/',
+					function($expr) {
+						return '<?php '.$this->token($expr[1]).' ?>';
+					},
+					$node
+				)
 			);
 		}
 		$out='';
@@ -315,7 +321,7 @@ class Template extends View {
 					filemtime($this->view)<filemtime($view)) {
 					// Remove PHP code and comments
 					$text=preg_replace(
-						'/<\?(?:php|\s*=).+?\?>|{{\*.+?\*}}/is','',
+						'/<\?(?:php|\s*=).+?\?>|{{\*.+?\*}}|{\*.+?\*}/is','',
 						$fw->read($view));
 					// Build tree structure
 					for ($ptr=0,$len=strlen($text),
@@ -324,7 +330,7 @@ class Template extends View {
 						if (preg_match('/^<(\/?)(?:F3:)?'.
 							'('.$this->tags.')\b((?:\h+[\w-]+'.
 							'(?:\h*=\h*(?:"(?:.+?)"|\'(?:.+?)\'))?|'.
-							'\h*\{\{.+?\}\})*)\h*(\/?)>/is',
+							'\h*\{\{~?.+?~?\}\}|\h*\{~.+?~\})*)\h*(\/?)>/is',
 							substr($text,$ptr),$match)) {
 							if (strlen($tmp))
 								$node[]=$tmp;
