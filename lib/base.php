@@ -278,6 +278,7 @@ final class Base {
 				$jar['expire']=strtotime('-1 year');
 				call_user_func_array('setcookie',
 					array_merge(array($parts[1],''),$jar));
+				unset($_COOKIE[$parts[1]]);
 			}
 		}
 		elseif ($parts[0]=='SESSION') {

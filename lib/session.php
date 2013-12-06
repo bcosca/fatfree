@@ -148,12 +148,17 @@ class Session {
 		$fw=\Base::instance();
 		$headers=$fw->get('HEADERS');
 		if (($csrf=$this->csrf()) &&
-			(!isset($_COOKIE['CSRF']) || $_COOKIE['CSRF']!=$csrf) ||
+			((!isset($_COOKIE['CSRF']) || $_COOKIE['CSRF']!=$csrf) ||
 			($ip=$this->ip()) && $ip!=$fw->get('IP') ||
 			($agent=$this->agent()) && !isset($headers['User-Agent']) ||
-				$agent!=$headers['User-Agent']) {
-			\Base::instance()->status(403);
-			die;
+				$agent!=$headers['User-Agent'])) {
+			$jar=$fw->get('JAR');
+			$jar['expire']=strtotime('-1 year');
+			call_user_func_array('setcookie',
+				array_merge(array('CSRF',''),$jar));
+			unset($_COOKIE['CSRF']);
+			session_destroy();
+			\Base::instance()->error(403);
 		}
 	}
 
