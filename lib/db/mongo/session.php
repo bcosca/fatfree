@@ -148,8 +148,13 @@ class Session extends Mapper {
 		);
 		register_shutdown_function('session_commit');
 		@session_start();
+		$fw=\Base::instance();
+		$headers=$fw->get('HEADERS');
 		if (($csrf=$this->csrf()) &&
-			(!isset($_COOKIE['CSRF']) || $_COOKIE['CSRF']!=$csrf)) {
+			(!isset($_COOKIE['CSRF']) || $_COOKIE['CSRF']!=$csrf) ||
+			($ip=$this->ip()) && $ip!=$fw->get('IP') ||
+			($agent=$this->agent()) && !isset($headers['User-Agent']) ||
+				$agent!=$headers['User-Agent']) {
 			\Base::instance()->status(403);
 			die;
 		}
