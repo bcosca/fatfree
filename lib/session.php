@@ -55,10 +55,11 @@ class Session {
 		$jar=session_get_cookie_params();
 		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash(mt_rand());
+		$error=$fw->get('ERROR');
 		Cache::instance()->set($id.'.@',
 			array(
 				'data'=>$data,
-				'csrf'=>$csrf,
+				'csrf'=>$error?$this->csrf():$csrf,
 				'ip'=>$fw->get('IP'),
 				'agent'=>isset($headers['User-Agent'])?
 					$headers['User-Agent']:'',
@@ -66,7 +67,8 @@ class Session {
 			),
 			$jar['lifetime']
 		);
-		call_user_func_array('setcookie',array('CSRF',$csrf)+$jar);
+		if (!$error)
+			call_user_func_array('setcookie',array('_',$csrf)+$jar);
 		return TRUE;
 	}
 
@@ -148,15 +150,15 @@ class Session {
 		$fw=\Base::instance();
 		$headers=$fw->get('HEADERS');
 		if (($csrf=$this->csrf()) &&
-			((!isset($_COOKIE['CSRF']) || $_COOKIE['CSRF']!=$csrf) ||
+			((!isset($_COOKIE['_']) || $_COOKIE['_']!=$csrf) ||
 			($ip=$this->ip()) && $ip!=$fw->get('IP') ||
 			($agent=$this->agent()) && !isset($headers['User-Agent']) ||
 				$agent!=$headers['User-Agent'])) {
 			$jar=$fw->get('JAR');
 			$jar['expire']=strtotime('-1 year');
 			call_user_func_array('setcookie',
-				array_merge(array('CSRF',''),$jar));
-			unset($_COOKIE['CSRF']);
+				array_merge(array('_',''),$jar));
+			unset($_COOKIE['_']);
 			session_destroy();
 			\Base::instance()->error(403);
 		}
