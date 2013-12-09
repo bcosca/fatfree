@@ -211,7 +211,7 @@ class Mapper extends \DB\Cursor {
 					return preg_match('/(\w+)(?:\h+(ASC|DESC))?/i',
 						$str,$parts)?
 						($db->quotekey($parts[1]).
-						(isset($parts[2])?(' '.$parts[2]):'')):'';
+						(isset($parts[2])?(' '.$parts[2]):'')):$str;
 				},
 				explode(',',$options['order'])));
 		}
