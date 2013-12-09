@@ -340,6 +340,11 @@ class Template extends Controller {
 			$f3->get('ENV.content')=='<ok>',
 			'Escaped values'
 		);
+		$test->expect(
+			$tpl->resolve('{{ @string }}')=='<test>' &&
+			$tpl->resolve('{{ @ENV.content }}')=='<ok>',
+			'resolve() template strings'
+		);
 		$f3->set('div',
 			array_fill(0,1000,array_combine(range('a','j'),range(0,9))));
 		$now=microtime(TRUE);
