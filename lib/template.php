@@ -298,6 +298,21 @@ class Template extends View {
 	}
 
 	/**
+	*	Render template string
+	*	@return string
+	*	@param $str string
+	*	@param $hive array
+	**/
+	function resolve($str,array $hive=NULL) {
+		if (!$hive)
+			$hive=\Base::instance()->hive();
+		extract($hive);
+		ob_start();
+		eval(' ?>'.$this->build($str).'<?php ');
+		return ob_get_clean();
+	}
+
+	/**
 	*	Render template
 	*	@return string
 	*	@param $file string
@@ -414,6 +429,10 @@ class Template extends View {
 		user_error(sprintf(Base::E_Open,$file));
 	}
 
+	/**
+	*	Class constructor
+	*	return object
+	**/
 	function __construct() {
 		$ref=new ReflectionClass(__CLASS__);
 		$this->tags='';
