@@ -149,7 +149,7 @@ class Cache extends Controller {
 			$_SESSION['foo']='hello world';
 			session_commit();
 			$test->expect(
-				preg_grep('/Set-Cookie:\sCSRF='.
+				preg_grep('/Set-Cookie:\s_='.
 					preg_quote($session->csrf()).'/',headers_list()),
 				'Automatic CSRF protection'
 			);
