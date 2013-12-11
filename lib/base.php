@@ -584,7 +584,7 @@ final class Base {
 	}
 
 	/**
-	*	Similar to clean(), except that variable is passed by value
+	*	Similar to clean(), except that variable is passed by reference
 	*	@return mixed
 	*	@param $var mixed
 	*	@param $tags string
