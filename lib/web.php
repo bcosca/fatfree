@@ -786,7 +786,7 @@ if (!function_exists('gzdecode')) {
 
 	/**
 	*	Decode gzip-compressed string
-	*	@param $data string
+	*	@param $str string
 	**/
 	function gzdecode($str) {
 		$fw=Base::instance();
