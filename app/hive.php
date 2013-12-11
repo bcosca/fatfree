@@ -110,7 +110,8 @@ class Hive extends Controller {
 			'Value replaced; now an object'
 		);
 		$test->expect(
-			$f3->exists('a') && $f3->exists('a->hello'),
+			$f3->exists('a') && $f3->exists('a->hello',$hello) &&
+				$hello=='world',
 			'Existence confirmed'
 		);
 		$f3->set('a->z.x','foo');

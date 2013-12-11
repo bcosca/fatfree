@@ -179,7 +179,7 @@ final class Base {
 	*	@param $val mixed
 	**/
 	function exists($key,&$val=NULL) {
-		$val=&$this->ref($key,FALSE);
+		$val=$this->ref($key,FALSE);
 		if (isset($val))
 			return TRUE;
 		return Cache::instance()->exists($this->hash($key).'.var',$val)?
