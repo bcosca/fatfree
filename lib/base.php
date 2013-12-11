@@ -568,7 +568,7 @@ final class Base {
 	*	@param $var mixed
 	*	@param $tags string
 	**/
-	function scrub(&$var,$tags=NULL) {
+	function clean($var,$tags=NULL) {
 		if (is_string($var) && strlen($var)) {
 			if ($tags!='*')
 				$var=strip_tags($var,
@@ -577,10 +577,20 @@ final class Base {
 		}
 		elseif (is_array($var))
 			foreach ($var as &$val) {
-				$this->scrub($val,$tags);
+				$val=$this->clean($val,$tags);
 				unset($val);
 			}
 		return $var;
+	}
+
+	/**
+	*	Similar to clean(), except that variable is passed by value
+	*	@return mixed
+	*	@param $var mixed
+	*	@param $tags string
+	**/
+	function scrub(&$var,$tags=NULL) {
+		return $var=$this->clean($var,$tags);
 	}
 
 	/**
