@@ -173,17 +173,30 @@ final class Base {
 	}
 
 	/**
-	*	Return TRUE if hive key is not empty (or timestamp and TTL if cached)
+	*	Return TRUE if hive key is not set
+	*	(or return timestamp and TTL if cached)
 	*	@return bool
 	*	@param $key string
 	*	@param $val mixed
 	**/
 	function exists($key,&$val=NULL) {
 		$val=$this->ref($key,FALSE);
-		if (isset($val))
-			return TRUE;
-		return Cache::instance()->exists($this->hash($key).'.var',$val)?
-			$val:FALSE;
+		return isset($val)?
+			TRUE:
+			(Cache::instance()->exists($this->hash($key).'.var',$val)?
+				$val:FALSE);
+	}
+
+	/**
+	*	Return TRUE if hive key is empty and not cached
+	*	@return bool
+	*	@param $key string
+	**/
+	function devoid($key) {
+		$val=$this->ref($key,FALSE);
+		return empty($val) &&
+			(!Cache::instance()->exists($this->hash($key).'.var',$val) ||
+				!$val);
 	}
 
 	/**
@@ -342,7 +355,7 @@ final class Base {
 	*	@param $dst string
 	**/
 	function copy($src,$dst) {
-		$ref=&$this->ref($dst);
+		$ref=&$this->ref($dst,TRUE);
 		return $ref=$this->ref($src);
 	}
 
@@ -353,7 +366,7 @@ final class Base {
 	*	@param $val string
 	**/
 	function concat($key,$val) {
-		$ref=&$this->ref($key);
+		$ref=&$this->ref($key,TRUE);
 		$ref.=$val;
 		return $ref;
 	}
@@ -365,7 +378,7 @@ final class Base {
 	*	@public
 	**/
 	function flip($key) {
-		$ref=&$this->ref($key);
+		$ref=&$this->ref($key,TRUE);
 		return $ref=array_combine(array_values($ref),array_keys($ref));
 	}
 
@@ -376,7 +389,7 @@ final class Base {
 	*	@param $val mixed
 	**/
 	function push($key,$val) {
-		$ref=&$this->ref($key);
+		$ref=&$this->ref($key,TRUE);
 		array_push($ref,$val);
 		return $val;
 	}
@@ -387,7 +400,7 @@ final class Base {
 	*	@param $key string
 	**/
 	function pop($key) {
-		$ref=&$this->ref($key);
+		$ref=&$this->ref($key,TRUE);
 		return array_pop($ref);
 	}
 
@@ -398,7 +411,7 @@ final class Base {
 	*	@param $val mixed
 	**/
 	function unshift($key,$val) {
-		$ref=&$this->ref($key);
+		$ref=&$this->ref($key,TRUE);
 		array_unshift($ref,$val);
 		return $val;
 	}
@@ -409,7 +422,7 @@ final class Base {
 	*	@param $key string
 	**/
 	function shift($key) {
-		$ref=&$this->ref($key);
+		$ref=&$this->ref($key,TRUE);
 		return array_shift($ref);
 	}
 
@@ -420,7 +433,7 @@ final class Base {
 	*	@param $src array
 	**/
 	function merge($key,$src) {
-		$ref=&$this->ref($key);
+		$ref=&$this->ref($key,TRUE);
 		return array_merge($ref,$src);
 	}
 
