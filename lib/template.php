@@ -259,8 +259,8 @@ class Template extends View {
 				},
 				preg_replace_callback(
 					'/\{\{?~(.+?)~\}?\}/s',
-					function($expr) {
-						return '<?php '.$this->token($expr[1]).' ?>';
+					function($expr) use($self) {
+						return '<?php '.$self->token($expr[1]).' ?>';
 					},
 					$node
 				)
