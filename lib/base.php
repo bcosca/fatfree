@@ -210,9 +210,16 @@ final class Base {
 		if (preg_match('/^(GET|POST|COOKIE)\b(.+)/',$key,$expr)) {
 			$this->set('REQUEST'.$expr[2],$val);
 			if ($expr[1]=='COOKIE') {
+				if($ttl) {
+					$expire_default = $this->hive['JAR']['expire'];
+					$this->hive['JAR']['expire'] = time() + $ttl;
+					$ttl = 0;
+				}
 				$parts=$this->cut($key);
 				call_user_func_array('setcookie',
 					array_merge(array($parts[1],$val),$this->hive['JAR']));
+				if(isset($expire_default))
+					$this->hive['JAR']['expire'] = $expire_default;
 			}
 		}
 		else switch ($key) {
