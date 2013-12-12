@@ -1002,11 +1002,13 @@ final class Base {
 	*	@param $permanent bool
 	**/
 	function reroute($uri,$permanent=FALSE) {
+		var_dump($_SERVER);
+		die;
 		if (PHP_SAPI!='cli') {
 			header('Location: '.(preg_match('/^https?:\/\//',$uri)?
 				$uri:($this->hive['BASE'].$uri)));
 			$this->status($permanent?
-				301:($_SERVER['PROTOCOL']<'HTTP/1.1'?302:303));
+				301:($_SERVER['SERVER_PROTOCOL']<'HTTP/1.1'?302:303));
 			die;
 		}
 		$this->mock('GET '.$uri);
