@@ -882,11 +882,13 @@ final class Base {
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';
-			if (isset($frame['class']))
-				$line.=$frame['class'].$frame['type'];
-			if (isset($frame['function']))
-				$line.=$frame['function'].'('.(isset($frame['args'])?
-					$this->csv($frame['args']):'').')';
+			if ($debug>1) {
+				if (isset($frame['class']))
+					$line.=$frame['class'].$frame['type'];
+				if (isset($frame['function']))
+					$line.=$frame['function'].'('.(isset($frame['args'])?
+						$this->csv($frame['args']):'').')';
+			}
 			$src=$this->fixslashes(str_replace($_SERVER['DOCUMENT_ROOT'].
 				'/','',$frame['file'])).':'.$frame['line'].' ';
 			error_log('- '.$src.$line);
@@ -1003,7 +1005,8 @@ final class Base {
 		if (PHP_SAPI!='cli') {
 			header('Location: '.(preg_match('/^https?:\/\//',$uri)?
 				$uri:($this->hive['BASE'].$uri)));
-			$this->status($permanent?301:303);
+			$this->status($permanent?
+				301:($_SERVER['PROTOCOL']<'HTTP/1.1'?302:303));
 			die;
 		}
 		$this->mock('GET '.$uri);
