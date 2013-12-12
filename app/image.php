@@ -32,6 +32,13 @@ class Image extends Controller {
 			);
 			$test->expect(
 				$src=$f3->base64(
+					$img->captcha('fonts/thunder.ttf',24,5,NULL,'',
+					0xFFFFFF,0x000077,64)->dump(),'image/png'),
+					'Translucent CAPTCHA<br />'.
+				'<img src="'.$src.'" title="CAPTCHA" />'
+			);
+			$test->expect(
+				$src=$f3->base64(
 					$img->identicon(md5(mt_rand()),48)->dump(),'image/png'),
 				'Identicon<br />'.
 				'<img src="'.$src.'" title="Identicon" />'
