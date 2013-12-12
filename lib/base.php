@@ -211,8 +211,11 @@ final class Base {
 			$this->set('REQUEST'.$expr[2],$val);
 			if ($expr[1]=='COOKIE') {
 				$parts=$this->cut($key);
+				$jar=$this->hive['JAR'];
+				if ($ttl)
+					$jar['expire']=$ttl;
 				call_user_func_array('setcookie',
-					array_merge(array($parts[1],$val),$this->hive['JAR']));
+					array_merge(array($parts[1],$val),$jar));
 			}
 		}
 		else switch ($key) {
