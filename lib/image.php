@@ -369,13 +369,15 @@ class Image {
 	*	@param $path string
 	*	@param $fg int
 	*	@param $bg int
+	*	@param $alpha int
 	**/
 	function captcha($font,$size=24,$len=5,
-		$key=NULL,$path='',$fg=0xFFFFFF,$bg=0x000000) {
-		if ($len<4 || $len>23) {
+		$key=NULL,$path='',$fg=0xFFFFFF,$bg=0x000000,$alpha=0) {
+		if ($len<4 && $len>23) {
 			user_error(sprintf(self::E_Length,$len));
 			return FALSE;
 		}
+		list($r,$g,$b)=$this->rgb($bg);
 		$fw=Base::instance();
 		foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
 			if (is_file($path=$dir.$font)) {
@@ -388,7 +390,9 @@ class Image {
 					$w=$box[2]-$box[0];
 					$h=$box[1]-$box[5];
 					$char=imagecreatetruecolor($block,$block);
-					imagefill($char,0,0,$bg);
+					imagealphablending($char,TRUE);
+					imagefill($char,0,0,
+						imagecolorallocatealpha($char,$r,$g,$b,$alpha));
 					imagettftext($char,$size*2,0,
 						($block-$w)/2,$block-($block-$h)/2,
 						$fg,$path,$seed[$i]);
