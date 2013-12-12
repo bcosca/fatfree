@@ -372,7 +372,7 @@ class Image {
 	**/
 	function captcha($font,$size=24,$len=5,
 		$key=NULL,$path='',$fg=0xFFFFFF,$bg=0x000000) {
-		if ($len<4 && $len>23) {
+		if ($len<4 || $len>23) {
 			user_error(sprintf(self::E_Length,$len));
 			return FALSE;
 		}
