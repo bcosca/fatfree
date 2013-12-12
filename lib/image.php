@@ -20,6 +20,7 @@ class Image {
 	const
 		E_Color='Invalid color specified: %s',
 		E_Font='CAPTCHA font not found';
+		E_Length='CAPTCHA length param must be gt 4 & lt 23';
 	//@}
 
 	//@{ Positional cues
@@ -371,6 +372,10 @@ class Image {
 	**/
 	function captcha($font,$size=24,$len=5,
 		$key=NULL,$path='',$fg=0xFFFFFF,$bg=0x000000) {
+		if($len<5 || $len>23) {
+			user_error(self::E_Length); 
+			return FALSE; 
+		}
 		$fw=Base::instance();
 		foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
 			if (is_file($path=$dir.$font)) {
