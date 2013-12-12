@@ -1002,8 +1002,6 @@ final class Base {
 	*	@param $permanent bool
 	**/
 	function reroute($uri,$permanent=FALSE) {
-		var_dump($_SERVER);
-		die;
 		if (PHP_SAPI!='cli') {
 			header('Location: '.(preg_match('/^https?:\/\//',$uri)?
 				$uri:($this->hive['BASE'].$uri)));
