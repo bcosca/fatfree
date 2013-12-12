@@ -213,7 +213,7 @@ final class Base {
 				$parts=$this->cut($key);
 				$jar=$this->hive['JAR'];
 				if ($ttl)
-					$jar['expire']=$ttl;
+					$jar['expire']=time()+$ttl;
 				call_user_func_array('setcookie',
 					array_merge(array($parts[1],$val),$jar));
 			}
