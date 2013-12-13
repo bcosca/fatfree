@@ -479,7 +479,9 @@ final class Base {
 						$str.=($str?',':'').$this->stringify(
 							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
 							$func($arg,$val);
-				return addslashes(get_class($arg)).'::__set_state('.$str.')';
+				return method_exists($arg,'__tostring')?
+					$arg:
+					(addslashes(get_class($arg)).'::__set_state('.$str.')');
 			case 'array':
 				$str='';
 				$num=isset($arg[0]) &&
