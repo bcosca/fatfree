@@ -65,8 +65,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae99229b365eb1403610f1a36eec0a645"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9553b62c2d22142afab576611253131"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTemplate.html#af9553b62c2d22142afab576611253131">__call</a> ($func, array $args)</td></tr>
 <tr class="separator:af9553b62c2d22142afab576611253131"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2b39b59da08ae2ce5b97dce3fbf1e3c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTemplate.html#ac2b39b59da08ae2ce5b97dce3fbf1e3c">resolve</a> ($str, array $hive=NULL)</td></tr>
+<tr class="separator:ac2b39b59da08ae2ce5b97dce3fbf1e3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b77952de121b72b805a0951dccab522"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTemplate.html#a9b77952de121b72b805a0951dccab522">render</a> ($file, $mime='text/html', array $hive=NULL, $ttl=0)</td></tr>
 <tr class="separator:a9b77952de121b72b805a0951dccab522"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ec2b97fe1bacf9b31f56e5e4c40c3e2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTemplate.html#a8ec2b97fe1bacf9b31f56e5e4c40c3e2">__construct</a> ()</td></tr>
+<tr class="separator:a8ec2b97fe1bacf9b31f56e5e4c40c3e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classView"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classView')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classView.html">View</a></td></tr>
 <tr class="memitem:a4846858b26604ce20d089ad0cd016637 inherit pub_methods_classView"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView.html#a4846858b26604ce20d089ad0cd016637">dupe</a> ($arg)</td></tr>
 <tr class="separator:a4846858b26604ce20d089ad0cd016637 inherit pub_methods_classView"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,7 +153,24 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Template engine. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a8ec2b97fe1bacf9b31f56e5e4c40c3e2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Template::__construct </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Class constructor return object </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="af9553b62c2d22142afab576611253131"></a>
 <div class="memitem">
 <div class="memproto">
@@ -672,6 +693,41 @@ Additional Inherited Members</h2></td></tr>
     <tr><td class="paramname">$mime</td><td>string </td></tr>
     <tr><td class="paramname">$hive</td><td>array </td></tr>
     <tr><td class="paramname">$ttl</td><td>int </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ac2b39b59da08ae2ce5b97dce3fbf1e3c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Template::resolve </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array&#160;</td>
+          <td class="paramname"><em>$hive</em> = <code>NULL</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Render template string </p>
+<dl class="section return"><dt>Returns</dt><dd>string </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$str</td><td>string </td></tr>
+    <tr><td class="paramname">$hive</td><td>array </td></tr>
   </table>
   </dd>
 </dl>

@@ -53,6 +53,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a92a30bfaee6b74c11bcadde9c3b5e7b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad458fe7ed181fa91b1d00ce64bbacc6c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#ad458fe7ed181fa91b1d00ce64bbacc6c">exists</a> ($key, &amp;$val=NULL)</td></tr>
 <tr class="separator:ad458fe7ed181fa91b1d00ce64bbacc6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee1464381e7739bfa6d5e478c820e8ee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#aee1464381e7739bfa6d5e478c820e8ee">devoid</a> ($key)</td></tr>
+<tr class="separator:aee1464381e7739bfa6d5e478c820e8ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab983d5f36c247fc8cf60d039a755d44"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#aab983d5f36c247fc8cf60d039a755d44">set</a> ($key, $val, $ttl=0)</td></tr>
 <tr class="separator:aab983d5f36c247fc8cf60d039a755d44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae649e2503f9d0d3b7e8a81cafa840bc2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#ae649e2503f9d0d3b7e8a81cafa840bc2">get</a> ($key, $args=NULL)</td></tr>
@@ -101,6 +103,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a799ccd918201601be74d8e8cf578c0a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefb148aa6b7dca34f1371044fba88c25"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#aefb148aa6b7dca34f1371044fba88c25">decode</a> ($str)</td></tr>
 <tr class="separator:aefb148aa6b7dca34f1371044fba88c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f231c8539b24e64d9a147da23187984"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a4f231c8539b24e64d9a147da23187984">clean</a> ($var, $tags=NULL)</td></tr>
+<tr class="separator:a4f231c8539b24e64d9a147da23187984"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87ce2b666a6eb26f7b6adf00e47b732f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a87ce2b666a6eb26f7b6adf00e47b732f">scrub</a> (&amp;$var, $tags=NULL)</td></tr>
 <tr class="separator:a87ce2b666a6eb26f7b6adf00e47b732f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6bb673a3d47e168c8eb6c0eb8039932f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a6bb673a3d47e168c8eb6c0eb8039932f">format</a> ()</td></tr>
@@ -149,6 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5ca3af2a18e2f828e1522f92446e1171"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66cf9f042525170d14da1e3abef580d7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a66cf9f042525170d14da1e3abef580d7">dump</a> ($expr)</td></tr>
 <tr class="separator:a66cf9f042525170d14da1e3abef580d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5642022614ba268eb82e94a64d5ba496"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a5642022614ba268eb82e94a64d5ba496">rel</a> ($url)</td></tr>
+<tr class="separator:a5642022614ba268eb82e94a64d5ba496"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b5c8568d83bad5612c1f324caf020e7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a7b5c8568d83bad5612c1f324caf020e7">unload</a> ($cwd)</td></tr>
 <tr class="separator:a7b5c8568d83bad5612c1f324caf020e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -550,6 +556,41 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a4f231c8539b24e64d9a147da23187984"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Base::clean </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$var</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$tags</em> = <code>NULL</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Remove HTML tags (except those enumerated) and non-printable characters to mitigate XSS/code injection attacks </p>
+<dl class="section return"><dt>Returns</dt><dd>mixed </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$var</td><td>mixed </td></tr>
+    <tr><td class="paramname">$tags</td><td>string </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a8e39da8c33ab94ca97304960885a0a84"></a>
 <div class="memitem">
 <div class="memproto">
@@ -716,6 +757,30 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aee1464381e7739bfa6d5e478c820e8ee"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Base::devoid </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return TRUE if hive key is empty and not cached </p>
+<dl class="section return"><dt>Returns</dt><dd>bool </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$key</td><td>string </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a66cf9f042525170d14da1e3abef580d7"></a>
 <div class="memitem">
 <div class="memproto">
@@ -829,7 +894,7 @@ Protected Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return TRUE if hive key is not empty (or timestamp and TTL if cached) </p>
+<p>Return TRUE if hive key is not set (or return timestamp and TTL if cached) </p>
 <dl class="section return"><dt>Returns</dt><dd>bool </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -1449,6 +1514,30 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a5642022614ba268eb82e94a64d5ba496"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Base::rel </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$url</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return path relative to the base directory </p>
+<dl class="section return"><dt>Returns</dt><dd>string </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$url</td><td>string </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a87d08eed476f15a8735b9954c71270b8"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1608,7 +1697,7 @@ Protected Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Remove HTML tags (except those enumerated) and non-printable characters to mitigate XSS/code injection attacks </p>
+<p>Similar to clean(), except that variable is passed by reference </p>
 <dl class="section return"><dt>Returns</dt><dd>mixed </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
