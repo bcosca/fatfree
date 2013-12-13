@@ -379,9 +379,9 @@ class Image {
 		$fw=Base::instance();
 		foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
 			if (is_file($path=$dir.$font)) {
-				$seed=strtoupper($ssl?
-					bin2hex(openssl_random_pseudo_bytes(ceil($len/2))):
-					substr(uniqid(),-$len));
+				$seed=strtoupper(substr(
+					$ssl?bin2hex(openssl_random_pseudo_bytes($len)):uniqid(),
+					-$len));
 				$block=$size*3;
 				$tmp=array();
 				for ($i=0,$width=0,$height=0;$i<$len;$i++) {
