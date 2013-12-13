@@ -373,14 +373,14 @@ class Image {
 	**/
 	function captcha($font,$size=24,$len=5,
 		$key=NULL,$path='',$fg=0xFFFFFF,$bg=0x000000,$alpha=0) {
-		if ($len<4 && $len>23) {
+		if ($len<4 OR $len>13) {
 			user_error(sprintf(self::E_Length,$len));
 			return FALSE;
 		}
 		list($r,$g,$b)=$this->rgb($bg);
 		$fw=Base::instance();
 		foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
-			if (is_file($path=$dir.$font)) {
+			if (is_readable($path=$dir.$font)) {
 				$seed=strtoupper(substr(uniqid(),-$len));
 				$block=$size*3;
 				$tmp=array();
