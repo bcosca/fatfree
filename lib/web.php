@@ -154,7 +154,7 @@ class Web extends Prefab {
 	*	@return array|bool
 	*	@param $func callback
 	*	@param $overwrite bool
-	*	@param $slug bool
+	*	@param $slug callback|bool
 	**/
 	function receive($func=NULL,$overwrite=FALSE,$slug=TRUE) {
 		$fw=Base::instance();
@@ -162,8 +162,22 @@ class Web extends Prefab {
 		if (!is_dir($dir))
 			mkdir($dir,Base::MODE,TRUE);
 		if ($fw->get('VERB')=='PUT') {
-			$fw->write($dir.basename($fw->get('URI')),$fw->get('BODY'));
-			return TRUE;
+			$body=$fw->get('BODY');
+			$base=basename($fw->get('URI'));
+			$file=array(
+				'name'=>$dir.
+					($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
+						(is_callable($slug)?
+							$slug($base):
+							($this->slug($parts[1]).
+								(isset($parts[2])?$parts[2]:''))):
+						$base),
+				'type'=>$this->mime($base),
+				'size'=>strlen($body)
+			);
+			return (!file_exists($file['name']) || $overwrite) &&
+				(!$func || $fw->call($func,array($file))!==FALSE) &&
+				$fw->write($file['name'],$body);
 		}
 		$out=array();
 		foreach ($_FILES as $item) {
@@ -183,8 +197,11 @@ class Web extends Prefab {
 				$base=basename($file['name']);
 				$file['name']=$dir.
 					($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
-						($this->slug($parts[1]).
-						(isset($parts[2])?$parts[2]:'')):$base);
+						(is_callable($slug)?
+							$slug($base):
+							($this->slug($parts[1]).
+								(isset($parts[2])?$parts[2]:''))):
+						$base);
 				$out[$file['name']]=!$file['error'] &&
 					is_uploaded_file($file['tmp_name']) &&
 					(!file_exists($file['name']) || $overwrite) &&
