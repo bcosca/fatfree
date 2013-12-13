@@ -25,14 +25,14 @@ class Image extends Controller {
 			);
 			$test->expect(
 				$src=$f3->base64(
-					$img->captcha('fonts/thunder.ttf',24,5,NULL,'',
+					$img->captcha('fonts/thunder.ttf',24,4,NULL,'',
 					0xFF0000,0xFFF000)->dump(),'image/png'),
 					'Custom CAPTCHA<br />'.
 				'<img src="'.$src.'" title="CAPTCHA" />'
 			);
 			$test->expect(
 				$src=$f3->base64(
-					$img->captcha('fonts/thunder.ttf',24,5,NULL,'',
+					$img->captcha('fonts/thunder.ttf',24,7,NULL,'',
 					0xFFFFFF,0x000077,64)->dump(),'image/png'),
 					'Translucent CAPTCHA<br />'.
 				'<img src="'.$src.'" title="CAPTCHA" />'
