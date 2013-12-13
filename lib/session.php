@@ -51,24 +51,24 @@ class Session {
 	**/
 	function write($id,$data) {
 		$fw=Base::instance();
-		$headers=$fw->get('HEADERS');
-		$jar=session_get_cookie_params();
-		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-			$fw->hash(mt_rand());
-		$error=$fw->get('ERROR');
-		Cache::instance()->set($id.'.@',
-			array(
-				'data'=>$data,
-				'csrf'=>$error?$this->csrf():$csrf,
-				'ip'=>$fw->get('IP'),
-				'agent'=>isset($headers['User-Agent'])?
-					$headers['User-Agent']:'',
-				'stamp'=>time()
-			),
-			$jar['lifetime']
-		);
-		if (!$error)
+		if (!$error=$fw->get('ERROR')) {
+			$headers=$fw->get('HEADERS');
+			$jar=session_get_cookie_params();
+			$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+				$fw->hash(mt_rand());
+			Cache::instance()->set($id.'.@',
+				array(
+					'data'=>$data,
+					'csrf'=>$error?$this->csrf():$csrf,
+					'ip'=>$fw->get('IP'),
+					'agent'=>isset($headers['User-Agent'])?
+						$headers['User-Agent']:'',
+					'stamp'=>time()
+				),
+				$jar['expire']?($jar['expire']-time()):0
+			);
 			call_user_func_array('setcookie',array('_',$csrf)+$jar);
+		}
 		return TRUE;
 	}
 
@@ -79,6 +79,9 @@ class Session {
 	**/
 	function destroy($id) {
 		Cache::instance()->clear($id.'.@');
+		setcookie(session_name(),'',strtotime('-1 year'));
+		unset($_COOKIE[session_name()]);
+		header_remove('Set-Cookie');
 		return TRUE;
 	}
 

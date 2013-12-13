@@ -54,23 +54,24 @@ class Session extends Mapper {
 	**/
 	function write($id,$data) {
 		$fw=\Base::instance();
-		$headers=$fw->get('HEADERS');
-		$this->load(array('session_id=?',$id));
-		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-			$fw->hash(mt_rand());
-		$error=$fw->get('ERROR');
-		$this->set('session_id',$id);
-		$this->set('data',$data);
-		$this->set('csrf',$error?$this->csrf():$csrf);
-		$this->set('ip',$fw->get('IP'));
-		$this->set('agent',
-			isset($headers['User-Agent'])?$headers['User-Agent']:'');
-		$this->set('stamp',time());
-		$this->save();
-		if (!$error)
+		if (!$error=$fw->get('ERROR')) {
+			$headers=$fw->get('HEADERS');
+			$this->load(array('session_id=?',$id));
+			$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+				$fw->hash(mt_rand());
+			$this->set('session_id',$id);
+			$this->set('data',$data);
+			$this->set('csrf',$error?$this->csrf():$csrf);
+			$this->set('ip',$fw->get('IP'));
+			$this->set('agent',
+				isset($headers['User-Agent'])?$headers['User-Agent']:'');
+			$this->set('stamp',time());
+			$this->save();
 			call_user_func_array('setcookie',array('_',$csrf)+
 				session_get_cookie_params());
-		return TRUE;
+			return TRUE;
+		}
+		return FALSE;
 	}
 
 	/**
@@ -80,6 +81,9 @@ class Session extends Mapper {
 	**/
 	function destroy($id) {
 		$this->erase(array('session_id=?',$id));
+		setcookie(session_name(),'',strtotime('-1 year'));
+		unset($_COOKIE[session_name()]);
+		header_remove('Set-Cookie');
 		return TRUE;
 	}
 
