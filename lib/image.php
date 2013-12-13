@@ -373,16 +373,17 @@ class Image {
 	**/
 	function captcha($font,$size=24,$len=5,
 		$key=NULL,$path='',$fg=0xFFFFFF,$bg=0x000000,$alpha=0) {
-		if ($len<4 || $len>22) {
+		if ((!$ssl=extension_loaded('openssl')) && ($len<4 || $len>13)) {
 			user_error(sprintf(self::E_Length,$len));
 			return FALSE;
 		}
-		list($r,$g,$b)=$this->rgb($bg);
 		$fw=Base::instance();
 		foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
 			if (is_file($path=$dir.$font)) {
-				$seed=strtoupper(substr(
-					str_replace('.','',uniqid('',TRUE)),-$len));
+				$seed=strtoupper($ssl?
+					bin2hex(openssl_random_pseudo_bytes(ceil($len/2))):
+					substr(uniqid(),-$len));
+				list($r,$g,$b)=$this->rgb($bg);
 				$block=$size*3;
 				$tmp=array();
 				for ($i=0,$width=0,$height=0;$i<$len;$i++) {
