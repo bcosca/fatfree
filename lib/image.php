@@ -369,10 +369,9 @@ class Image {
 	*	@param $path string
 	*	@param $fg int
 	*	@param $bg int
-	*	@param $alpha int
 	**/
 	function captcha($font,$size=24,$len=5,
-		$key=NULL,$path='',$fg=0xFFFFFF,$bg=0x000000,$alpha=0) {
+		$key=NULL,$path='',$fg=0xFFFFFF,$bg=0x000000) {
 		if ((!$ssl=extension_loaded('openssl')) && ($len<4 || $len>13)) {
 			user_error(sprintf(self::E_Length,$len));
 			return FALSE;
@@ -383,7 +382,6 @@ class Image {
 				$seed=strtoupper($ssl?
 					bin2hex(openssl_random_pseudo_bytes(ceil($len/2))):
 					substr(uniqid(),-$len));
-				list($r,$g,$b)=$this->rgb($bg);
 				$block=$size*3;
 				$tmp=array();
 				for ($i=0,$width=0,$height=0;$i<$len;$i++) {
@@ -392,9 +390,7 @@ class Image {
 					$w=$box[2]-$box[0];
 					$h=$box[1]-$box[5];
 					$char=imagecreatetruecolor($block,$block);
-					imagealphablending($char,TRUE);
-					imagefill($char,0,0,
-						imagecolorallocatealpha($char,$r,$g,$b,$alpha));
+					imagefill($char,0,0,$bg);
 					imagettftext($char,$size*2,0,
 						($block-$w)/2,$block-($block-$h)/2,
 						$fg,$path,$seed[$i]);

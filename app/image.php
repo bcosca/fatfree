@@ -33,7 +33,7 @@ class Image extends Controller {
 			$test->expect(
 				$src=$f3->base64(
 					$img->captcha('fonts/thunder.ttf',24,7,NULL,'',
-					0xFFFFFF,0x000077,64)->dump(),'image/png'),
+					0xFFFFFF,0x33000000)->dump(),'image/png'),
 					'Translucent CAPTCHA<br />'.
 				'<img src="'.$src.'" title="CAPTCHA" />'
 			);
