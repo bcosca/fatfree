@@ -247,6 +247,10 @@ final class Base {
 		if (preg_match('/^JAR\b/',$key))
 			call_user_func_array(
 				'session_set_cookie_params',$this->hive['JAR']);
+		elseif (preg_match('/^SESSION\b/',$key)) {
+			session_commit();
+			session_start();
+		}
 		$cache=Cache::instance();
 		if ($cache->exists($hash=$this->hash($key).'.var') || $ttl)
 			// Persist the key-value pair
@@ -325,6 +329,10 @@ final class Base {
 					$out.='['.$this->stringify($part).']';
 			// PHP can't unset a referenced variable
 			eval('unset($this->hive'.$out.');');
+			if ($parts[0]=='SESSION') {
+				session_commit();
+				session_start();
+			}
 			if ($cache->exists($hash=$this->hash($key).'.var'))
 				// Remove from cache
 				$cache->clear($hash);
