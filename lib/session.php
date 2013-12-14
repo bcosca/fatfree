@@ -51,22 +51,25 @@ class Session {
 	**/
 	function write($id,$data) {
 		$fw=Base::instance();
-		if (!$error=$fw->get('ERROR')) {
-			$headers=$fw->get('HEADERS');
-			$jar=session_get_cookie_params();
-			$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-				$fw->hash(mt_rand());
-			Cache::instance()->set($id.'.@',
-				array(
-					'data'=>$data,
-					'csrf'=>$error?$this->csrf():$csrf,
-					'ip'=>$fw->get('IP'),
-					'agent'=>isset($headers['User-Agent'])?
-						$headers['User-Agent']:'',
-					'stamp'=>time()
-				),
-				$jar['expire']?($jar['expire']-time()):0
-			);
+		$sent=headers_sent();
+		$headers=$fw->get('HEADERS');
+		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+			$fw->hash(mt_rand());
+		$jar=$fw->get('JAR');
+		Cache::instance()->set($id.'.@',
+			array(
+				'data'=>$data,
+				'csrf'=>$sent?$this->csrf():$csrf,
+				'ip'=>$fw->get('IP'),
+				'agent'=>isset($headers['User-Agent'])?
+					$headers['User-Agent']:'',
+				'stamp'=>time()
+			),
+			$jar['expire']?($jar['expire']-time()):0
+		);
+		if (!$sent) {
+			if ($_COOKIE['_'])
+				setcookie('_','',strtotime('-1 year'));
 			call_user_func_array('setcookie',array('_',$csrf)+$jar);
 		}
 		return TRUE;
@@ -164,6 +167,17 @@ class Session {
 			unset($_COOKIE['_']);
 			session_destroy();
 			\Base::instance()->error(403);
+		}
+		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+			$fw->hash(mt_rand());
+		$jar=$fw->get('JAR');
+		if (Cache::instance()->exists($id=session_id().'.@',$data)) {
+			$data['csrf']=$csrf;
+			Cache::instance()->set($id.'.@',
+				$data,
+				$jar['expire']?($jar['expire']-time()):0
+			);
+			call_user_func_array('setcookie',array('_',$csrf)+$jar);
 		}
 	}
 
