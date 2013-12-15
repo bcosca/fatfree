@@ -10,7 +10,7 @@ class Template extends Controller {
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$tpl=\Template::instance();
+		$tpl=\Preview::instance();
 		$f3->set('foo','bar->baz');
 		$test->expect(
 			$tpl->render('templates/test1.htm')=='bar-&gt;baz',
@@ -130,6 +130,7 @@ class Template extends Controller {
 				($eval='$foo.\'hello, world\''),
 			$expr.': '.$eval
 		);
+		$tpl=\Template::instance();
 		$f3->set('foo','bar');
 		$f3->set('cond',TRUE);
 		$f3->set('file','templates/test1.htm');

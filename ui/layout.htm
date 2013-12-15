@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<base href="<?php echo $SCHEME.'://'.$HOST.$BASE.'/'.$UI; ?>" />
-		<meta charset="<?php echo $ENCODING; ?>" />
-		<title><?php echo $VERSION; ?>: <?php echo $active; ?></title>
+		<base href="{{ @SCHEME.'://'.@HOST.@BASE.'/'.@UI }}" />
+		<meta charset="{{ @ENCODING}}" />
+		<title>{{ @VERSION }}: {{ @active }}</title>
 		<link rel="stylesheet" type="text/css" href="css/theme.css" />
 		<style>
-			<?php if ($ERROR) echo file_get_contents('lib/code.css'); ?>
+			{~ if (@ERROR): ~}
+				{{ file_get_contents('lib/code.css') }}
+			{~ endif ~}
 		</style>
 	</head>
 	<body>
 		<div class="row">
 			<div class="sidebar">
-				<h1><?php echo $VERSION; ?></h1>
+				<h1>{{ @VERSION }}</h1>
 				<ul>
-					<?php foreach ($menu as $url=>$desc): ?>
-					<li><?php if ($active==$desc): ?><?php echo $desc; ?><?php else: ?><a href="<?php echo $BASE.$url; ?>"><?php echo $desc; ?></a><?php endif; ?></li>
-					<?php endforeach; ?>
+					{~ foreach (@menu as @url=>@desc): ~}
+					<li>{~ if (@active==@desc): ~}{{ @desc }}{~ else: ~}<a href="{{ @BASE.@url }}">{{ @desc }}</a>{~ endif ~}</li>
+					{~ endforeach ~}
 				</ul>
 			</div>
 			<div class="main">
-				<h1><?php echo $active; ?></h1>
-				<?php foreach ($results as $i=>$result): ?>
+				<h1>{{ @active }}</h1>
+				{~ foreach (@results as @i=>@result): ~}
 				<p>
-					<span class="status <?php echo $result['status']?'pass':'fail'; ?>"><?php echo $i+1; ?></span> <span class="text"><?php echo $result['text']; ?> <?php if (!$result['status'] && $result['source']) echo '('.$result['source'].')'; ?></span><br/>
+					<span class="status {{ @result.status?'pass':'fail' }}">{{ @i+1 }}</span>
+					<span class="text">{{ @result.text }} {~ if (!@result.status && @result.source) echo '('.@result.source.')' ~}</span><br/>
 				</p>
-				<?php endforeach; ?>
+				{~ endforeach ~}
 				<p><a href="http://fatfree.sf.net/"><img src="images/powered.png" title="Fat-Free Framework" /></a><br />
-				<p class="stats"><?php echo Base::instance()->format('Page rendered in {0} msecs / Memory usage {1} Kibytes',round(1e3*(microtime(TRUE)-$TIME),2),round(memory_get_usage(TRUE)/1e3,1)); ?></p>
+				<p class="stats">{{ 'Page rendered in {0} msecs / Memory usage {1} Kibytes',round(1e3*(microtime(TRUE)-$TIME),2),round(memory_get_usage(TRUE)/1e3,1) | format }}</p>
 			</div>
 		</div>
 	</body>
