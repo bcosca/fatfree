@@ -33,7 +33,6 @@
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classView-members.html">List of all members</a>  </div>
@@ -53,7 +52,8 @@
   <img src="classView.png" usemap="#View_map" alt=""/>
   <map id="View_map" name="View_map">
 <area href="classPrefab.html" title="Prefab for classes with constructors and static factory methods. " alt="Prefab" shape="rect" coords="0,0,62,24"/>
-<area href="classTemplate.html" title="Template engine. " alt="Template" shape="rect" coords="0,112,62,136"/>
+<area href="classPreview.html" title="Lightweight template engine. " alt="Preview" shape="rect" coords="0,112,62,136"/>
+<area href="classTemplate.html" title="XML-style template engine. " alt="Template" shape="rect" coords="0,168,62,192"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -68,17 +68,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad927807baa5a97b52e6bde2a4a0c48fa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView.html#ad927807baa5a97b52e6bde2a4a0c48fa">render</a> ($file, $mime='text/html', array $hive=NULL, $ttl=0)</td></tr>
 <tr class="separator:ad927807baa5a97b52e6bde2a4a0c48fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:aa7c918d2850baf194ba3bb7d9a96f077"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa7c918d2850baf194ba3bb7d9a96f077"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView.html#aa7c918d2850baf194ba3bb7d9a96f077">$hive</a></td></tr>
-<tr class="memdesc:aa7c918d2850baf194ba3bb7d9a96f077"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local hive. <br/></td></tr>
-<tr class="separator:aa7c918d2850baf194ba3bb7d9a96f077"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:abf7b340b8c8cdbd5c91e396ceaacbd7a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView.html#abf7b340b8c8cdbd5c91e396ceaacbd7a">sandbox</a> ($hive)</td></tr>
-<tr class="separator:abf7b340b8c8cdbd5c91e396ceaacbd7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bf1b210f2fe7efcc7089579e63b37e6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView.html#a2bf1b210f2fe7efcc7089579e63b37e6">sandbox</a> (array $hive=NULL)</td></tr>
+<tr class="separator:a2bf1b210f2fe7efcc7089579e63b37e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -213,7 +206,7 @@ $arg object </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="abf7b340b8c8cdbd5c91e396ceaacbd7a"></a>
+<a class="anchor" id="a2bf1b210f2fe7efcc7089579e63b37e6"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -223,8 +216,8 @@ $arg object </dd></dl>
         <tr>
           <td class="memname">View::sandbox </td>
           <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>$hive</em></td><td>)</td>
+          <td class="paramtype">array&#160;</td>
+          <td class="paramname"><em>$hive</em> = <code>NULL</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -236,6 +229,12 @@ $arg object </dd></dl>
 </div><div class="memdoc">
 <p>Create sandbox for template execution </p>
 <dl class="section return"><dt>Returns</dt><dd>string </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$hive</td><td>array </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
