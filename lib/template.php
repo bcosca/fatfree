@@ -414,10 +414,6 @@ class Template extends View {
 				if (isset($_COOKIE[session_name()]))
 					@session_start();
 				$fw->sync('SESSION');
-				if (!$hive)
-					$hive=$fw->hive();
-				if ($fw->get('ESCAPE'))
-					$hive=$this->esc($hive);
 				if (PHP_SAPI!='cli')
 					header('Content-Type: '.($this->mime=$mime).'; '.
 						'charset='.$fw->get('ENCODING'));

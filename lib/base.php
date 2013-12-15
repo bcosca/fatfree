@@ -1872,9 +1872,7 @@ class View extends Prefab {
 
 	protected
 		//! Template file
-		$view,
-		//! Local hive
-		$hive;
+		$view;
 
 	/**
 	*	Attempt to clone object
@@ -1941,9 +1939,17 @@ class View extends Prefab {
 	/**
 	*	Create sandbox for template execution
 	*	@return string
+	*	@param $hive array
 	**/
-	protected function sandbox($hive) {
+	protected function sandbox(array $hive=NULL) {
+		$fw=Base::instance();
+		if (!$hive)
+			$hive=$fw->hive();
+		if ($fw->get('ESCAPE'))
+			$hive=$this->esc($hive);
 		extract($hive);
+		unset($fw);
+		unset($hive);
 		ob_start();
 		require($this->view);
 		return ob_get_clean();
@@ -1968,10 +1974,6 @@ class View extends Prefab {
 				if (isset($_COOKIE[session_name()]))
 					@session_start();
 				$fw->sync('SESSION');
-				if (!$hive)
-					$hive=$fw->hive();
-				if ($fw->get('ESCAPE'))
-					$hive=$this->esc($hive);
 				if (PHP_SAPI!='cli')
 					header('Content-Type: '.$mime.'; '.
 						'charset='.$fw->get('ENCODING'));
