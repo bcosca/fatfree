@@ -273,7 +273,7 @@ class SQL extends \PDO {
 					$rows[$row[$val[1]]]=array(
 						'type'=>$row[$val[2]],
 						'pdo_type'=>
-							preg_match('/int|bool/i',$row[$val[2]],$parts)?
+							preg_match('/^int|^bool/i',$row[$val[2]],$parts)?
 							constant('\PDO::PARAM_'.strtoupper($parts[0])):
 							\PDO::PARAM_STR,
 						'default'=>$row[$val[3]],
