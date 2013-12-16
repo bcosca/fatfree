@@ -703,8 +703,8 @@ class Web extends Prefab {
 	*	@return string
 	*	@param $text string
 	**/
-	function slug($text) {
-		return trim(strtolower(preg_replace('/([^\pL\pN])+/u','-',
+	function slug($text, $format='-') {
+		return trim(strtolower(preg_replace('/([^\pL\pN])+/u',$format,
 			trim(strtr(str_replace('\'','',$text),
 			Base::instance()->get('DIACRITICS')+
 			array(
@@ -755,7 +755,7 @@ class Web extends Prefab {
 				'ǜ'=>'u','ǔ'=>'u','ǖ'=>'u','ũ'=>'u','ü'=>'ue','в'=>'v',
 				'ŵ'=>'w','ы'=>'y','ÿ'=>'y','ý'=>'y','ŷ'=>'y','ź'=>'z',
 				'ž'=>'z','з'=>'z','ż'=>'z','ж'=>'zh'
-			))))),'-');
+			))))),$format);
 	}
 
 	/**
