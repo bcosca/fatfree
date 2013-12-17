@@ -841,7 +841,10 @@ final class Base {
 	**/
 	function expire($secs=0) {
 		if (PHP_SAPI!='cli') {
+			header('X-Content-Type-Options: nosniff');
+			header('X-Frame-Options: SAMEORIGIN');
 			header('X-Powered-By: '.$this->hive['PACKAGE']);
+			header('X-XSS-Protection: 1; mode=block');
 			if ($secs) {
 				$time=microtime(TRUE);
 				header_remove('Pragma');
