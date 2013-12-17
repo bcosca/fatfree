@@ -952,17 +952,25 @@ final class Base {
 	**/
 	function mock($pattern,array $args=NULL,array $headers=NULL,$body=NULL) {
 		$types=array('sync','ajax');
-		preg_match('/([\|\w]+)\h+(?:@(\w+)|([^\h]+))'.
+		preg_match('/([\|\w]+)\h+(?:@(\w+)(?:(\(.+?)\))*|([^\h]+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
 		$verb=strtoupper($parts[1]);
 		if ($parts[2]) {
-			if (empty($this->hive['ALIAS'][$parts[2]]))
+			if (empty($this->hive['ALIAS'][$parts[2]])) {
+				var_dump($parts);
 				user_error(sprintf(self::E_Named,$parts[2]));
-			$parts[3]=$this->hive['ALIAS'][$parts[2]];
+			}
+			$parts[4]=$this->hive['ALIAS'][$parts[2]];
+			if (isset($parts[3]) &&
+				preg_match_all('/(\w+)=(.+?)(?=,|$)/',$parts[3],$pairs,
+					PREG_SET_ORDER))
+				foreach ($pairs as $pair)
+					$parts[4]=preg_replace('/@'.$pair[1].'\b/',
+						$pair[2],$parts[4]);
 		}
-		if (empty($parts[3]))
+		if (empty($parts[4]))
 			user_error(sprintf(self::E_Pattern,$pattern));
-		$url=parse_url($parts[3]);
+		$url=parse_url($parts[4]);
 		$query='';
 		if ($args)
 			$query.=http_build_query($args);
@@ -975,8 +983,8 @@ final class Base {
 			$_SERVER['HTTP_'.str_replace('-','_',strtoupper($key))]=$val;
 		$this->hive['VERB']=$verb;
 		$this->hive['URI']=$this->hive['BASE'].$url['path'];
-		$this->hive['AJAX']=isset($parts[4]) &&
-			preg_match('/ajax/i',$parts[4]);
+		$this->hive['AJAX']=isset($parts[5]) &&
+			preg_match('/ajax/i',$parts[5]);
 		if (preg_match('/GET|HEAD/',$verb) && $query)
 			$this->hive['URI'].='?'.$query;
 		else
@@ -1029,11 +1037,18 @@ final class Base {
 	**/
 	function reroute($uri,$permanent=FALSE) {
 		if (PHP_SAPI!='cli') {
-			if (preg_match('/^(?:@(\w+)|https?:\/\/)/',$uri,$parts)) {
+			if (preg_match('/^(?:@(\w+)(?:(\(.+?)\))*|https?:\/\/)/',
+				$uri,$parts)) {
 				if (isset($parts[1])) {
 					if (empty($this->hive['ALIAS'][$parts[1]]))
 						user_error(sprintf(self::E_Named,$parts[1]));
 					$uri=$this->hive['BASE'].$this->hive['ALIAS'][$parts[1]];
+					if (isset($parts[2]) &&
+						preg_match_all('/(\w+)=(.+?)(?=,|$)/',
+							$parts[2],$pairs,PREG_SET_ORDER))
+						foreach ($pairs as $pair)
+							$uri=preg_replace('/@'.$pair[1].'\b/',
+								$pair[2],$uri);
 				}
 			}
 			else

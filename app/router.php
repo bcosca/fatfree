@@ -111,29 +111,29 @@ class Router extends Controller {
 		);
 		$f3->clear('ERROR');
 		$f3->clear('ROUTES');
-		$f3->route('GET /food/@id',
+		$f3->route('GET @grub:/food/@id',
 			function($f3,$args) {
 				$f3->set('id',$args['id']);
 			}
 		);
-		$f3->mock('GET /food/fish');
+		$f3->mock('GET @grub(@id=fish)');
 		$test->expect(
 			$f3->get('PARAMS.id')=='fish' &&
 			$f3->get('id')=='fish',
 			'Parameter in route captured'
 		);
-		$f3->mock('GET /food/bread');
+		$f3->mock('GET @grub(@id=bread)');
 		$test->expect(
 			$f3->get('id')=='bread',
 			'Different parameter in route'
 		);
-		$f3->route('GET /food/@id/@quantity',
+		$f3->route('GET @grub:/food/@id/@quantity',
 			function($f3,$args) {
 				$f3->set('id',$args['id']);
 				$f3->set('quantity',$args['quantity']);
 			}
 		);
-		$f3->mock('GET /food/beef/789');
+		$f3->mock('GET @grub(@id=beef,@quantity=789)');
 		$test->expect(
 			$f3->get('PARAMS.id')=='beef' &&
 			$f3->get('PARAMS.quantity')==789 &&
@@ -156,7 +156,7 @@ class Router extends Controller {
 			$f3->get('id')=='chicken' && $f3->get('quantity')==999,
 			'Route parameters captured along with query'
 		);
-		$f3->mock('GET /food/%C3%B6%C3%A4%C3%BC/123');
+		$f3->mock('GET @grub(@id=%C3%B6%C3%A4%C3%BC,@quantity=123)');
 		$test->expect(
 			$f3->get('id')=='öäü' && $f3->get('quantity')==123,
 			'Unicode characters in URL (PCRE version: '.PCRE_VERSION.')'
