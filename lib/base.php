@@ -85,6 +85,8 @@ final class Base {
 	//@{ Error messages
 	const
 		E_Pattern='Invalid routing pattern: %s',
+        E_Route_Name='Invalid route name: %s',
+        E_Route_Param='Missing param: %s',
 		E_Fatal='Fatal error: %s',
 		E_Open='Unable to open %s',
 		E_Routes='No routes specified',
@@ -988,11 +990,20 @@ final class Base {
 	**/
 	function route($pattern,$handler,$ttl=0,$kbps=0) {
 		$types=array('sync','ajax');
-		if (is_array($pattern)) {
+		if (is_array($pattern) && count($pattern) > 1) {
 			foreach ($pattern as $item)
 				$this->route($item,$handler,$ttl,$kbps);
 			return;
 		}
+        //if the array contain only 1 item, we are dealing
+        //with a named route. we need to reset $pattern as
+        //a string.
+        $name=NULL;
+        if (is_array($pattern)) {
+            $info=each($pattern);
+            $name=$info['key'];
+            $pattern=$info['value'];
+        }
 		preg_match('/([\|\w]+)\h+([^\h]+)'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
 		if (empty($parts[2]))
@@ -1006,7 +1017,35 @@ final class Base {
 			$this->hive['ROUTES'][str_replace('@',"\x00".'@',$parts[2])]
 				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps);
 		}
+        if (is_string($name))
+            $this->hive['ROUTES_HELPER'][$name] = $parts[2];
 	}
+
+    /**
+     * Compile the url of a named route
+     * @param $route_name Name of the route
+     * @param array $params Parameters of the route
+     * @param bool $fqn Prepend the domain name
+     * @return mixed|string The compiled url
+     */
+    function url($route_name, $params=array(), $fqn=TRUE) {
+        if (!isset($this->hive['ROUTES_HELPER'][$route_name]))
+            user_error(sprintf(self::E_Route_Name, $route_name));
+        $route=$this->hive['ROUTES_HELPER'][$route_name];
+        $count_params=preg_match_all('/@(\w+\b)/', $route, $matches);
+        if ($count_params) {
+            $route_params=array_unique($matches[1]);
+            foreach($route_params as $pname) {
+                if (!array_key_exists($pname, $params))
+                    user_error(sprintf(self::E_Route_Param, $pname));
+                $route=str_replace('@'.$pname, $params[$pname],$route);
+            }
+        }
+        $route=$this->get('BASE').$route;
+        if ($fqn)
+            $route=$this->get('SCHEME').'://'.$this->get('HOST').':'.$this->get('PORT') . $route;
+        return $route;
+    }
 
 	/**
 	*	Reroute to specified URI
@@ -1034,18 +1073,27 @@ final class Base {
 	*	@param $kbps int
 	**/
 	function map($url,$class,$ttl=0,$kbps=0) {
-		if (is_array($url)) {
-			foreach ($url as $item)
-				$this->map($item,$class,$ttl,$kbps);
+		if (is_array($url) && count($url) > 1) {
+			foreach ($url as $name => $item)
+				$this->map(array($name => $item),$class,$ttl,$kbps);
 			return;
 		}
+        //if the array contain only 1 item, we are dealing
+        //with a named route. we need to reset $pattern as
+        //a string.
+        $name=0;
+        if (is_array($url)) {
+            $info=each($url);
+            $name=$info['key'];
+            $url=$info['value'];
+        }
 		$fluid=preg_match('/@\w+/',$class);
 		foreach (explode('|',self::VERBS) as $method)
 			if ($fluid ||
 				method_exists($class,$method) ||
 				method_exists($class,'__call'))
-				$this->route($method.' '.
-					$url,$class.'->'.strtolower($method),$ttl,$kbps);
+				$this->route(array($name => $method.' '.
+					$url),$class.'->'.strtolower($method),$ttl,$kbps);
 	}
 
 	/**
