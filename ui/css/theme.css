@@ -12,14 +12,15 @@ body {
 }
 h1 {
 	margin:0 0 0.5em 0;
+	font-size:1.7em;
 }
 .sidebar {
 	text-align:right;
 	color:#fc3;
-	background:#000;
+	background:#111;
 	padding:2% 2% 9999px 2%;
 	margin-bottom:-9999px;
-	width:21%;
+	width:23%;
 	float:left;
 	overflow:hidden;
 }
@@ -42,7 +43,7 @@ h1 {
 	color:#000;
 	padding:2% 2% 9999px 2%;
 	margin-bottom:-9979px;
-	width:71%;
+	width:69%;
 	float:left;
 	overflow:hidden;
 }
@@ -52,7 +53,6 @@ h1 {
 }
 .main p {
 	font-size:0.75em;
-	white-space:nowrap;
 	line-height:1.5em;
 	margin:0;
 }
@@ -68,9 +68,8 @@ h1 {
 	min-width:2em;
 }
 .main span.text {
+	white-space:nowrap;
 	margin:0.15em 0.5em;
-	display:block;
-	float:left;
 }
 .main span.pass {
 	color:#fff;
@@ -87,8 +86,8 @@ h1 {
 .main br {
 	clear:both;
 }
-@media screen and (max-width:960px) {
+@media screen and (max-width:720px) {
 	body {
-		font-size:0.9em;
+		font-size:0.8em;
 	}
 }

@@ -62,6 +62,10 @@ class Config extends Controller {
 			'Routes declared'
 		);
 		$test->expect(
+			$f3->get('ALIAS.named')=='/404',
+			'Named route defined'
+		);
+		$test->expect(
 			in_array('/map',$routes),
 			'ReST map declared'
 		);

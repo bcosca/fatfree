@@ -85,6 +85,7 @@ final class Base {
 	//@{ Error messages
 	const
 		E_Pattern='Invalid routing pattern: %s',
+		E_Named='Named route does not exist: %s',
 		E_Fatal='Fatal error: %s',
 		E_Open='Unable to open %s',
 		E_Routes='No routes specified',
@@ -951,12 +952,17 @@ final class Base {
 	**/
 	function mock($pattern,array $args=NULL,array $headers=NULL,$body=NULL) {
 		$types=array('sync','ajax');
-		preg_match('/([\|\w]+)\h+([^\h]+)'.
+		preg_match('/([\|\w]+)\h+(?:@(\w+)|([^\h]+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
-		if (empty($parts[2]))
-			user_error(sprintf(self::E_Pattern,$pattern));
 		$verb=strtoupper($parts[1]);
-		$url=parse_url($parts[2]);
+		if ($parts[2]) {
+			if (empty($this->hive['ALIAS'][$parts[2]]))
+				user_error(sprintf(self::E_Named,$parts[2]));
+			$parts[3]=$this->hive['ALIAS'][$parts[2]];
+		}
+		if (empty($parts[3]))
+			user_error(sprintf(self::E_Pattern,$pattern));
+		$url=parse_url($parts[3]);
 		$query='';
 		if ($args)
 			$query.=http_build_query($args);
@@ -969,8 +975,8 @@ final class Base {
 			$_SERVER['HTTP_'.str_replace('-','_',strtoupper($key))]=$val;
 		$this->hive['VERB']=$verb;
 		$this->hive['URI']=$this->hive['BASE'].$url['path'];
-		$this->hive['AJAX']=isset($parts[3]) &&
-			preg_match('/ajax/i',$parts[3]);
+		$this->hive['AJAX']=isset($parts[4]) &&
+			preg_match('/ajax/i',$parts[4]);
 		if (preg_match('/GET|HEAD/',$verb) && $query)
 			$this->hive['URI'].='?'.$query;
 		else
@@ -993,17 +999,24 @@ final class Base {
 				$this->route($item,$handler,$ttl,$kbps);
 			return;
 		}
-		preg_match('/([\|\w]+)\h+([^\h]+)'.
+		preg_match('/([\|\w]+)\h+(?:(?:@(\w+)\h*:\h*)?([^\h]+)|@(\w+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
-		if (empty($parts[2]))
+		if ($parts[2])
+			$this->hive['ALIAS'][$parts[2]]=$parts[3];
+		elseif (!empty($parts[4])) {
+			if (empty($this->hive['ALIAS'][$parts[4]]))
+				user_error(sprintf(self::E_Named,$parts[4]));
+			$parts[3]=$this->hive['ALIAS'][$parts[4]];
+		}
+		if (empty($parts[3]))
 			user_error(sprintf(self::E_Pattern,$pattern));
-		$type=empty($parts[3])?
+		$type=empty($parts[5])?
 			self::REQ_SYNC|self::REQ_AJAX:
-			constant('self::REQ_'.strtoupper($parts[3]));
+			constant('self::REQ_'.strtoupper($parts[5]));
 		foreach ($this->split($parts[1]) as $verb) {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
-			$this->hive['ROUTES'][str_replace('@',"\x00".'@',$parts[2])]
+			$this->hive['ROUTES'][str_replace('@',"\x00".'@',$parts[3])]
 				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps);
 		}
 	}
@@ -1016,8 +1029,16 @@ final class Base {
 	**/
 	function reroute($uri,$permanent=FALSE) {
 		if (PHP_SAPI!='cli') {
-			header('Location: '.(preg_match('/^https?:\/\//',$uri)?
-				$uri:($this->hive['BASE'].$uri)));
+			if (preg_match('/^(?:@(\w+)|https?:\/\/)/',$uri,$parts)) {
+				if (isset($parts[1])) {
+					if (empty($this->hive['ALIAS'][$parts[1]]))
+						user_error(sprintf(self::E_Named,$parts[1]));
+					$uri=$this->hive['BASE'].$this->hive['ALIAS'][$parts[1]];
+				}
+			}
+			else
+				$uri=$this->hive['BASE'].$uri;
+			header('Location: '.$uri);
 			$this->status($permanent?
 				301:($_SERVER['SERVER_PROTOCOL']<'HTTP/1.1'?302:303));
 			die;

@@ -23,10 +23,19 @@ class Router extends Controller {
 		if (is_file($file))
 			@unlink($file);
 		$f3->clear('ROUTES');
-		$f3->route('GET|POST /',
+		$f3->route('GET|POST @hello:/',
 			function($f3) {
 				$f3->set('bar','foo');
 			}
+		);
+		$f3->mock('GET @hello');
+		$test->expect(
+			$f3->get('bar')=='foo',
+			'Named route'
+		);
+		$test->expect(
+			$f3->get('ALIAS.hello')=='/',
+			'Named route retrieved'
 		);
 		$f3->mock('GET /');
 		$test->expect(
@@ -34,7 +43,7 @@ class Router extends Controller {
 			'Routed to anonymous/lambda function'
 		);
 		$f3->clear('bar');
-		$f3->mock('POST /');
+		$f3->mock('POST @hello');
 		$test->expect(
 			$f3->get('bar')=='foo',
 			'Mixed request routing pattern'
