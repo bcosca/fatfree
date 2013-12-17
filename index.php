@@ -39,4 +39,3 @@ $f3->map('/','App\Globals');
 $f3->map('/@controller','App\@controller');
 
 $f3->run();
-
