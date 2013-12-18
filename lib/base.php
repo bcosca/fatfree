@@ -19,7 +19,7 @@ final class Base {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.2.0-Release';
+		VERSION='3.2.1-Dev';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -1215,6 +1215,8 @@ final class Base {
 				else
 					$this->expire(0);
 				if (!strlen($body)) {
+					if (!$this->hive['RAW'])
+						$this->hive['BODY']=file_get_contents('php://input');
 					ob_start();
 					// Call route handler
 					$this->call($handler,array($this,$args),
@@ -1570,7 +1572,7 @@ final class Base {
 			$headers['X-Forwarded-Proto']=='https'?'https':'http';
 		$base='';
 		if (PHP_SAPI!='cli')
-			$base=dirname($_SERVER['SCRIPT_NAME']);
+			$base=rtrim(dirname($_SERVER['SCRIPT_NAME']),'/');
 		$path=substr($url=parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),
 			strpos($url,$base)+strlen($base));
 		call_user_func_array('session_set_cookie_params',
@@ -1604,7 +1606,7 @@ final class Base {
 			'ALIASES'=>array(),
 			'AUTOLOAD'=>'./',
 			'BASE'=>$base,
-			'BODY'=>file_get_contents('php://input'),
+			'BODY'=>NULL,
 			'CACHE'=>FALSE,
 			'CASELESS'=>TRUE,
 			'DEBUG'=>0,
@@ -1641,6 +1643,7 @@ final class Base {
 				$_SERVER['SERVER_PORT']:NULL,
 			'PREFIX'=>NULL,
 			'QUIET'=>FALSE,
+			'RAW'=>FALSE,
 			'REALM'=>$scheme.'://'.
 				$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'],
 			'RESPONSE'=>'',

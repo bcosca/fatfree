@@ -162,7 +162,23 @@ class Web extends Prefab {
 		if (!is_dir($dir))
 			mkdir($dir,Base::MODE,TRUE);
 		if ($fw->get('VERB')=='PUT') {
-			$body=$fw->get('BODY');
+			$tmp=$fw->get('TEMP').
+				$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+				$fw->hash(uniqid());
+			if (!$fw->get('RAW'))
+				$fw->write($tmp,$fw->get('BODY'));
+			else {
+				$src=@fopen('php://input','r');
+				$dst=@fopen($tmp,'w');
+				if (!$src || !$dst)
+					return FALSE;
+				while (!feof($src) &&
+					($info=stream_get_meta_data($src)) &&
+					!$info['timed_out'] && $str=fgets($src,4096))
+					fputs($dst,$str,strlen($str));
+				fclose($dst);
+				fclose($src);
+			}
 			$base=basename($fw->get('URI'));
 			$file=array(
 				'name'=>$dir.
@@ -172,12 +188,13 @@ class Web extends Prefab {
 							($this->slug($parts[1]).
 								(isset($parts[2])?$parts[2]:''))):
 						$base),
+				'tmp_name'=>$tmp,
 				'type'=>$this->mime($base),
-				'size'=>strlen($body)
+				'size'=>filesize($tmp)
 			);
 			return (!file_exists($file['name']) || $overwrite) &&
 				(!$func || $fw->call($func,array($file))!==FALSE) &&
-				$fw->write($file['name'],$body);
+				$fw->write($file['name'],$fw->read($tmp));
 		}
 		$out=array();
 		foreach ($_FILES as $item) {
