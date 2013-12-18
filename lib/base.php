@@ -1215,6 +1215,8 @@ final class Base {
 				else
 					$this->expire(0);
 				if (!strlen($body)) {
+					if (!$this->hive['RAW'])
+						$this->hive['BODY']=file_get_contents('php://input');
 					ob_start();
 					// Call route handler
 					$this->call($handler,array($this,$args),
@@ -1604,7 +1606,7 @@ final class Base {
 			'ALIASES'=>array(),
 			'AUTOLOAD'=>'./',
 			'BASE'=>$base,
-			'BODY'=>file_get_contents('php://input'),
+			'BODY'=>NULL,
 			'CACHE'=>FALSE,
 			'CASELESS'=>TRUE,
 			'DEBUG'=>0,
@@ -1641,6 +1643,7 @@ final class Base {
 				$_SERVER['SERVER_PORT']:NULL,
 			'PREFIX'=>NULL,
 			'QUIET'=>FALSE,
+			'RAW'=>FALSE,
 			'REALM'=>$scheme.'://'.
 				$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'],
 			'RESPONSE'=>'',
