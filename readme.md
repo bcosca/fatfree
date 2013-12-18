@@ -209,35 +209,38 @@ When you define a route, you can assign it a name. Use the route name in your co
 Let's name a route:-
 
 ``` php
-$f3->route('GET @beer_list : /beer', 'Beer->list');
+$f3->route('GET @beer_list: /beer', 'Beer->list');
 ```
 
-The name is inserted after the route VERB (GET) preceeded by an @symbol, and separated from the URL portion by a colon symbol. You can insert a space around the colon if that makes it easier to read your code (as shown here).
+The name is inserted after the route VERB (`GET` in this example) preceeded by an `@` symbol, and separated from the URL portion by a colon `:` symbol. You can insert a space around the colon if that makes it easier to read your code (as shown here).
 
-To access the named route in a template, get the value of the named route as the key of the ALIASES hive array:-
+To access the named route in a template, get the value of the named route as the key of the `ALIASES` hive array:-
 
 ``` html
-<a href="{{@ALIASES.beer_list}}">view beer list</a>
+<a href="{{ @ALIASES.beer_list }}">View beer list</a>
 ```
 
-To redirect the visitor to a new URL, call the named route inside the reroute function:-
+To redirect the visitor to a new URL, call the named route inside the `reroute() method like:-
 
 ``` php
-$f3->reroute('@beer_list'); // note the single quotes, named route will be rendered as a string value
+// a named route is a string value
+$f3->reroute('@beer_list'); // note the single quotes
 ```
 
 If you use tokens in your route, F3 will replace those tokens with their current value. If you want to change the token's value before calling reroute, pass it as the 2nd argument.:-
 
 ``` php
-$f3->route('GET @beer_list : /beer/@country', 'Beer->list');
-// ...
-$f3->reroute('@beer_list(@country=Germany)'); // a set of name=value vars is passed as arg to named route
-// if more than 1 token needed
+$f3->route('GET @beer_list: /beer/@country', 'Beer->bycountry');
+$f3->route('GET @beer_list: /beer/@country/@village', 'Beer->byvillage');
+
+// a set of key-value pairs is passed as argument to named route
+$f3->reroute('@beer_list(@country=Germany)');
+
+// if more than one token needed
 $f3->reroute('@beer_list(@country=Germany,@village=Rhine)');
 ```
 
-
-
+Don't forget to `urlencode()` your arguments if you have characters that do not comply with RFC 1738 guidelines for well-formed URLs.
 
 ### Dynamic Web Sites
 
