@@ -19,7 +19,7 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">Fat-Free Framework
-   &#160;<span id="projectnumber">3.1.2</span>
+   &#160;<span id="projectnumber">3.2.0</span>
    &#160;<span class="menu"><a href="index.html">Overview</a> <a href="annotated.html">Class List</a> <a href="hierarchy.html">Hierarchy</a></span>
    </div>
   </td>
@@ -81,8 +81,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a13305498a2d8b2de70a50e21b2b41c20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77aea9ee7d3ae071b23c24c889c18874"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a77aea9ee7d3ae071b23c24c889c18874">identicon</a> ($str, $size=64, $blocks=4)</td></tr>
 <tr class="separator:a77aea9ee7d3ae071b23c24c889c18874"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cc0ad03d7776978d31f47b22d2e15b3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a4cc0ad03d7776978d31f47b22d2e15b3">captcha</a> ($font, $size=24, $len=5, $key=NULL, $path='')</td></tr>
-<tr class="separator:a4cc0ad03d7776978d31f47b22d2e15b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a195ea2c6c93442109259c54b0479b977"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a195ea2c6c93442109259c54b0479b977">captcha</a> ($font, $size=24, $len=5, $key=NULL, $path='', $fg=0xFFFFFF, $bg=0x000000)</td></tr>
+<tr class="separator:a195ea2c6c93442109259c54b0479b977"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6ad5d2346d2028ef1e10235910e21e1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#ab6ad5d2346d2028ef1e10235910e21e1">width</a> ()</td></tr>
 <tr class="separator:ab6ad5d2346d2028ef1e10235910e21e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50738b4f19600b46c4db73c49d3ac0bf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a50738b4f19600b46c4db73c49d3ac0bf">height</a> ()</td></tr>
@@ -97,6 +97,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a64e645699181836d9bdfc30f2cb6375f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06bfb7b4e4a147f8dc2a8869fd3c75c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a06bfb7b4e4a147f8dc2a8869fd3c75c9">undo</a> ()</td></tr>
 <tr class="separator:a06bfb7b4e4a147f8dc2a8869fd3c75c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acda1c8fb6dd4e4fc38833481f991b019"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#acda1c8fb6dd4e4fc38833481f991b019">load</a> ($str)</td></tr>
+<tr class="separator:acda1c8fb6dd4e4fc38833481f991b019"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5356d2d7701a69e0a6cdd6503c9dea2b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a5356d2d7701a69e0a6cdd6503c9dea2b">__construct</a> ($file=NULL, $flag=FALSE, $path='')</td></tr>
 <tr class="separator:a5356d2d7701a69e0a6cdd6503c9dea2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a936d45b6c334cfec296de09a09ba9b11"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImage.html#a936d45b6c334cfec296de09a09ba9b11">__destruct</a> ()</td></tr>
@@ -123,6 +125,9 @@ const&#160;</td><td class="memItemRight" valign="bottom"><b>E_Color</b> ='Invali
 <tr class="memitem:a73c85aa476e19922d225100ee9f597cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73c85aa476e19922d225100ee9f597cd"></a>
 const&#160;</td><td class="memItemRight" valign="bottom"><b>E_Font</b> ='CAPTCHA font not found'</td></tr>
 <tr class="separator:a73c85aa476e19922d225100ee9f597cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abca40dc00f09f5689b0806f330ac9a6f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abca40dc00f09f5689b0806f330ac9a6f"></a>
+const&#160;</td><td class="memItemRight" valign="bottom"><b>E_Length</b> ='Invalid CAPTCHA length: %s'</td></tr>
+<tr class="separator:abca40dc00f09f5689b0806f330ac9a6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a768c4d51571f71b7117b6d81090a7ac7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a768c4d51571f71b7117b6d81090a7ac7"></a>
 const&#160;</td><td class="memItemRight" valign="bottom"><b>POS_Left</b> =1</td></tr>
@@ -253,7 +258,7 @@ const&#160;</td><td class="memItemRight" valign="bottom"><b>POS_Bottom</b> =32</
 
 </div>
 </div>
-<a class="anchor" id="a4cc0ad03d7776978d31f47b22d2e15b3"></a>
+<a class="anchor" id="a195ea2c6c93442109259c54b0479b977"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -285,7 +290,19 @@ const&#160;</td><td class="memItemRight" valign="bottom"><b>POS_Bottom</b> =32</
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>$path</em> = <code>''</code>&#160;</td>
+          <td class="paramname"><em>$path</em> = <code>''</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$fg</em> = <code>0xFFFFFF</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$bg</em> = <code>0x000000</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -303,6 +320,8 @@ const&#160;</td><td class="memItemRight" valign="bottom"><b>POS_Bottom</b> =32</
     <tr><td class="paramname">$len</td><td>int </td></tr>
     <tr><td class="paramname">$key</td><td>string </td></tr>
     <tr><td class="paramname">$path</td><td>string </td></tr>
+    <tr><td class="paramname">$fg</td><td>int </td></tr>
+    <tr><td class="paramname">$bg</td><td>int </td></tr>
   </table>
   </dd>
 </dl>
@@ -523,6 +542,30 @@ const&#160;</td><td class="memItemRight" valign="bottom"><b>POS_Bottom</b> =32</
 </div><div class="memdoc">
 <p>Invert image </p>
 <dl class="section return"><dt>Returns</dt><dd>object </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="acda1c8fb6dd4e4fc38833481f991b019"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Image::load </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Load string </p>
+<dl class="section return"><dt>Returns</dt><dd>object </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$str</td><td>string </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

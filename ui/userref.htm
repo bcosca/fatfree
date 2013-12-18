@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>Fat-Free Framework: User Reference</title>
-		<link rel="stylesheet" href="ui/css/base.css" type="text/css" />
-		<link rel="stylesheet" href="ui/css/theme.css" type="text/css" />
-		<style><?php include('lib/code.css'); ?></style>
-	</head>
-	<body>
-		<?php echo Markdown::instance()->
-			convert(Base::instance()->read('readme.md')); ?>
-	</body>
-</html>
+<div class="content">
+	<?php echo Markdown::instance()->
+		convert(Base::instance()->read('readme.md')); ?>
+</div>

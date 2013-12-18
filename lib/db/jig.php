@@ -71,8 +71,7 @@ class Jig {
 				$out=$fw->serialize($data);
 				break;
 		}
-		$out=$fw->write($this->dir.$file,$out);
-		return $out;
+		return $fw->write($this->dir.$file,$out);
 	}
 
 	/**

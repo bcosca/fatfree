@@ -1,4 +1,4 @@
-body{font-family:Ubuntu,sans-serif;color:#333;background:#fff;width:640px;margin:2em auto}
+body{font-family:Ubuntu,sans-serif;color:#666;background:#fff;width:640px;padding:0 20px;margin:2em auto}
 h1{color:#aaf;border-bottom:5px solid #aaf}
 h2{color:#88d;border-bottom:3px dotted #88d}
 h3{color:#66b}
@@ -24,6 +24,6 @@ code{background:#eee}
 .right{text-align:right}
 .header{border-bottom:5px solid #ccc}
 .header p{font-size:0.75em;text-transform:uppercase;letter-spacing:0.2em;margin:0}
-.footer{font-size:0.9em;border-top:3px solid #ccc}
+.footer{font-size:0.9em;border-top:1px solid #ccc}
 .footer p{margin-top:1em}
-@media screen and (max-width:960px){.wrapper{min-width:320px;width:90%}}
+

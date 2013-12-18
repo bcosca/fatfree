@@ -190,10 +190,14 @@ class Auth {
 	function basic($func=NULL) {
 		$fw=Base::instance();
 		$realm=$fw->get('REALM');
+		$hdr=NULL;
 		if (isset($_SERVER['HTTP_AUTHORIZATION']))
+			$hdr=$_SERVER['HTTP_AUTHORIZATION'];
+		elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']))
+			$hdr=$_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+		if (!empty($hdr))
 			list($_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW'])=
-				explode(':',base64_decode(
-					substr($_SERVER['HTTP_AUTHORIZATION'],6)));
+				explode(':',base64_decode(substr($hdr,6)));
 		if (isset($_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']) &&
 			$this->login(
 				$_SERVER['PHP_AUTH_USER'],
