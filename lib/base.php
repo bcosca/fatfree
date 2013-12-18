@@ -1572,7 +1572,7 @@ final class Base {
 			$headers['X-Forwarded-Proto']=='https'?'https':'http';
 		$base='';
 		if (PHP_SAPI!='cli')
-			$base=trim(dirname($_SERVER['SCRIPT_NAME']),'/');
+			$base=rtrim(dirname($_SERVER['SCRIPT_NAME']),'/');
 		$path=substr($url=parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),
 			strpos($url,$base)+strlen($base));
 		call_user_func_array('session_set_cookie_params',
