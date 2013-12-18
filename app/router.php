@@ -116,7 +116,8 @@ class Router extends Controller {
 				$f3->set('id',$args['id']);
 			}
 		);
-		$f3->mock('GET @grub(@id=fish)');
+		$f3->set('PARAMS.id','fish');
+		$f3->mock('GET @grub');
 		$test->expect(
 			$f3->get('PARAMS.id')=='fish' &&
 			$f3->get('id')=='fish',
@@ -133,6 +134,7 @@ class Router extends Controller {
 				$f3->set('quantity',$args['quantity']);
 			}
 		);
+		$f3->set('PARAMS.id','pork');
 		$f3->mock('GET @grub(@id=beef,@quantity=789)');
 		$test->expect(
 			$f3->get('PARAMS.id')=='beef' &&

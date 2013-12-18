@@ -970,6 +970,13 @@ final class Base {
 				foreach ($pairs as $pair)
 					$parts[4]=preg_replace('/@'.$pair[1].'\b/',
 						$pair[2],$parts[4]);
+			if (preg_match_all('/@(\w+)/',$parts[4],$matches,
+				PREG_SET_ORDER))
+				foreach ($matches as $match)
+					if (array_key_exists($match[1],
+						$this->hive['PARAMS']))
+						$parts[4]=str_replace($match[0],
+							$this->hive['PARAMS'][$match[1]],$parts[4]);
 		}
 		if (empty($parts[4]))
 			user_error(sprintf(self::E_Pattern,$pattern));
@@ -1052,6 +1059,13 @@ final class Base {
 						foreach ($pairs as $pair)
 							$uri=preg_replace('/@'.$pair[1].'\b/',
 								$pair[2],$uri);
+					if (preg_match_all('/@(\w+)/',$uri,$matches,
+						PREG_SET_ORDER))
+						foreach ($matches as $match)
+							if (array_key_exists($match[1],
+								$this->hive['PARAMS']))
+								$uri=str_replace($match[0],
+									$this->hive['PARAMS'][$match[1]],$uri);
 				}
 			}
 			else
