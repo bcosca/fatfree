@@ -127,6 +127,31 @@ final class Base {
 	}
 
 	/**
+	*	Replace tokenized URL with current route's token values
+	*	@return string
+	*	@param $name string
+	**/
+	function build($url) {
+		if (preg_match_all('/@(\w+)/',$url,$matches,PREG_SET_ORDER))
+			foreach ($matches as $match)
+				if (array_key_exists($match[1],$this->hive['PARAMS']))
+					$url=str_replace($match[0],
+						$this->hive['PARAMS'][$match[1]],$url);
+		return $url;
+	}
+
+	/**
+	*	Parse string containing key-value pairs and use as routing tokens
+	*	@return NULL
+	*	@param $str string
+	**/
+	function parse($str) {
+		preg_match_all('/(\w+)=(.+?)(?=,|$)/',$str,$pairs,PREG_SET_ORDER);
+		foreach ($pairs as $pair)
+			$this->hive['PARAMS'][$pair[1]]=$pair[2];
+	}
+
+	/**
 	*	Get hive key reference/contents; Add non-existent hive keys,
 	*	array elements, and object properties by default
 	*	@return mixed
@@ -170,6 +195,8 @@ final class Base {
 				$var=$var[$part];
 			else
 				return $this->null;
+		if ($parts[0]=='ALIASES')
+			$var=$this->build($var);
 		return $var;
 	}
 
@@ -959,24 +986,14 @@ final class Base {
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
 		$verb=strtoupper($parts[1]);
 		if ($parts[2]) {
-			if (empty($this->hive['ALIAS'][$parts[2]])) {
+			if (empty($this->hive['ALIASES'][$parts[2]])) {
 				var_dump($parts);
 				user_error(sprintf(self::E_Named,$parts[2]));
 			}
-			$parts[4]=$this->hive['ALIAS'][$parts[2]];
-			if (isset($parts[3]) &&
-				preg_match_all('/(\w+)=(.+?)(?=,|$)/',$parts[3],$pairs,
-					PREG_SET_ORDER))
-				foreach ($pairs as $pair)
-					$parts[4]=preg_replace('/@'.$pair[1].'\b/',
-						$pair[2],$parts[4]);
-			if (preg_match_all('/@(\w+)/',$parts[4],$matches,
-				PREG_SET_ORDER))
-				foreach ($matches as $match)
-					if (array_key_exists($match[1],
-						$this->hive['PARAMS']))
-						$parts[4]=str_replace($match[0],
-							$this->hive['PARAMS'][$match[1]],$parts[4]);
+			$parts[4]=$this->hive['ALIASES'][$parts[2]];
+			if (isset($parts[3]))
+				$this->parse($parts[3]);
+			$parts[4]=$this->build($parts[4]);
 		}
 		if (empty($parts[4]))
 			user_error(sprintf(self::E_Pattern,$pattern));
@@ -1020,11 +1037,11 @@ final class Base {
 		preg_match('/([\|\w]+)\h+(?:(?:@(\w+)\h*:\h*)?([^\h]+)|@(\w+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
 		if ($parts[2])
-			$this->hive['ALIAS'][$parts[2]]=$parts[3];
+			$this->hive['ALIASES'][$parts[2]]=$parts[3];
 		elseif (!empty($parts[4])) {
-			if (empty($this->hive['ALIAS'][$parts[4]]))
+			if (empty($this->hive['ALIASES'][$parts[4]]))
 				user_error(sprintf(self::E_Named,$parts[4]));
-			$parts[3]=$this->hive['ALIAS'][$parts[4]];
+			$parts[3]=$this->hive['ALIASES'][$parts[4]];
 		}
 		if (empty($parts[3]))
 			user_error(sprintf(self::E_Pattern,$pattern));
@@ -1042,40 +1059,31 @@ final class Base {
 	/**
 	*	Reroute to specified URI
 	*	@return NULL
-	*	@param $uri string
+	*	@param $url string
 	*	@param $permanent bool
 	**/
-	function reroute($uri,$permanent=FALSE) {
+	function reroute($url,$permanent=FALSE) {
 		if (PHP_SAPI!='cli') {
 			if (preg_match('/^(?:@(\w+)(?:(\(.+?)\))*|https?:\/\/)/',
-				$uri,$parts)) {
+				$url,$parts)) {
 				if (isset($parts[1])) {
-					if (empty($this->hive['ALIAS'][$parts[1]]))
+					if (empty($this->hive['ALIASES'][$parts[1]]))
 						user_error(sprintf(self::E_Named,$parts[1]));
-					$uri=$this->hive['BASE'].$this->hive['ALIAS'][$parts[1]];
-					if (isset($parts[2]) &&
-						preg_match_all('/(\w+)=(.+?)(?=,|$)/',
-							$parts[2],$pairs,PREG_SET_ORDER))
-						foreach ($pairs as $pair)
-							$uri=preg_replace('/@'.$pair[1].'\b/',
-								$pair[2],$uri);
-					if (preg_match_all('/@(\w+)/',$uri,$matches,
-						PREG_SET_ORDER))
-						foreach ($matches as $match)
-							if (array_key_exists($match[1],
-								$this->hive['PARAMS']))
-								$uri=str_replace($match[0],
-									$this->hive['PARAMS'][$match[1]],$uri);
+					$url=$this->hive['BASE'].
+						$this->hive['ALIASES'][$parts[1]];
+					if (isset($parts[2]))
+						$this->parse($parts[2]);
+					$url=$this->build($url);
 				}
 			}
 			else
-				$uri=$this->hive['BASE'].$uri;
-			header('Location: '.$uri);
+				$url=$this->hive['BASE'].$url;
+			header('Location: '.$url);
 			$this->status($permanent?
 				301:($_SERVER['SERVER_PROTOCOL']<'HTTP/1.1'?302:303));
 			die;
 		}
-		$this->mock('GET '.$uri);
+		$this->mock('GET '.$url);
 	}
 
 	/**
@@ -1593,6 +1601,7 @@ final class Base {
 						$headers['User-Agent']:'')),
 			'AJAX'=>isset($headers['X-Requested-With']) &&
 				$headers['X-Requested-With']=='XMLHttpRequest',
+			'ALIASES'=>array(),
 			'AUTOLOAD'=>'./',
 			'BASE'=>$base,
 			'BODY'=>file_get_contents('php://input'),
