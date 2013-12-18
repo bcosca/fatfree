@@ -1,5 +1,74 @@
 CHANGELOG
 
+3.2.0 (18 December 2013)
+*	NEW: Automatic CSRF protection (with IP and User-Agent checks) for
+	sessions mapped to SQL-, Jig-, Mongo- and Cache-based backends
+*	NEW: Named routes
+*	NEW: PATH variable; returns the URL relative to BASE
+*	NEW: Image->captcha() color parameters
+*	NEW: Ability to access MongoCuror thru the cursor() method
+*	NEW: Mapper->fields() method returns array of field names
+*	NEW: Mapper onload(), oninsert(), onupdate(), and onerase() event
+	listeners/triggers
+*	NEW: Preview class (a lightweight template engine)
+*	NEW: rel() method derives path from URL relative to BASE; useful for
+	rerouting
+*	NEW: PREFIX variable for prepending a string to a dictionary term;
+	Enable support for prefixed dictionary arrays and .ini files (Feature
+	request #440)
+*	NEW: Google static map plugin
+*	NEW: devoid() method
+*	Introduce clean(); similar to scrub(), except that arg is passed by
+	value
+*	Use $ttl for cookie expiration (Issue #457)
+*	Fix needs_rehash() cost comparison
+*	Add pass-by-reference argument to exists() so if method returns TRUE,
+	a subsequent get() is unnecessary
+*	Improve MySQL support
+*	Move esc(), raw(), and dupe() to View class where they more
+	appropriately belong
+*	Allow user-defined fields in SQL mapper constructor (Feature request
+	#450)
+*	Re-implement the pre-3.0 template resolve() feature
+*	Remove redundant instances of session_commit()
+*	Add support for input filtering in Mapper->copyfrom()
+*	Prevent intrusive behavior of Mapper->copyfrom()
+*	Support multiple SQL primary keys
+*	Support custom tag attributes/inline tokens defined at runtime
+	(Feature request #438)
+*	Broader support for HTTP basic auth
+*	Prohibit Jig _id clear()
+*	Add support for detailed stringify() output
+*	Add base directory to UI path as fallback
+*	Support Test->expect() chaining
+*	Support __tostring() in stringify()
+*	Trigger error on invalid CAPTCHA length (Issue #458)
+*	Bug fix: exists() pass-by-reference argument returns incorrect value
+*	Bug fix: DB Exec does not return affected row if query contains a
+	sub-SELECT (Issue #437)
+*	Improve seed generator and add code for detecting of acceptable
+	limits in Image->captcha() (Feature request #460)
+*	Add decimal format ICU extension
+*	Bug fix: 404-reported URI contains HTTP query
+*	Bug fix: Data type detection in DB->schema()
+*	Bug fix: TZ initialization
+*	Bug fix: paginate() passes incorrect argument to count()
+*	Bug fix: Incorrect query when reloading after insert()
+*	Bug fix: SQL preg_match error in pdo_type matching (Issue #447)
+*	Bug fix: Missing merge() function (Issue #444)
+*	Bug fix: BASE misdefined in command line mode
+*	Bug fix: Stringifying hive may run infinite (Issue #436)
+*	Bug fix: Incomplete stringify() when DEBUG<3 (Issue #432)
+*	Bug fix: Redirection of basic auth (Issue #430)
+*	Bug fix: Filter only PHP code (including short tags) in templates
+*	Bug fix: Markdown paragraph parser does not convert PHP code blocks
+	properly
+*	Bug fix: identicon() colors on same keys are randomized
+*	Bug fix: quotekey() fails on aliased keys
+*	Bug fix: Missing _id in Jig->find() return value
+*	Bug fix: LANGUAGE/LOCALES handling
+*	Bug fix: Loose comparison in stringify()
+
 3.1.2 (5 November 2013)
 *	Abandon .chm help format; Package API documentation in plain HTML;
 	(Launch lib/api/index.html in your browser)

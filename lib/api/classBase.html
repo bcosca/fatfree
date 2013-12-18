@@ -49,6 +49,10 @@
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a3f90ecb52563183ce6685b5e86a7343f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a3f90ecb52563183ce6685b5e86a7343f">sync</a> ($key)</td></tr>
 <tr class="separator:a3f90ecb52563183ce6685b5e86a7343f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1852e310ff9ed262c8c7f190adc2dac"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#af1852e310ff9ed262c8c7f190adc2dac">build</a> ($url)</td></tr>
+<tr class="separator:af1852e310ff9ed262c8c7f190adc2dac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0a6dfcaada94cfac4ee0e6c88c33cbb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#ac0a6dfcaada94cfac4ee0e6c88c33cbb">parse</a> ($str)</td></tr>
+<tr class="separator:ac0a6dfcaada94cfac4ee0e6c88c33cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92a30bfaee6b74c11bcadde9c3b5e7b4"><td class="memItemLeft" align="right" valign="top">&amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a92a30bfaee6b74c11bcadde9c3b5e7b4">ref</a> ($key, $add=TRUE)</td></tr>
 <tr class="separator:a92a30bfaee6b74c11bcadde9c3b5e7b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad458fe7ed181fa91b1d00ce64bbacc6c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#ad458fe7ed181fa91b1d00ce64bbacc6c">exists</a> ($key, &amp;$val=NULL)</td></tr>
@@ -127,8 +131,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3e2195b7fa2c88530f95c30b50b6a1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a074c4da03519fff81a04a2bc51447ded"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a074c4da03519fff81a04a2bc51447ded">route</a> ($pattern, $handler, $ttl=0, $kbps=0)</td></tr>
 <tr class="separator:a074c4da03519fff81a04a2bc51447ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d1d70d0ba53f8a621e4ebb9998c6dc7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a8d1d70d0ba53f8a621e4ebb9998c6dc7">reroute</a> ($uri, $permanent=FALSE)</td></tr>
-<tr class="separator:a8d1d70d0ba53f8a621e4ebb9998c6dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81cb805f2a7fd36868e9aada32c89309"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a81cb805f2a7fd36868e9aada32c89309">reroute</a> ($url, $permanent=FALSE)</td></tr>
+<tr class="separator:a81cb805f2a7fd36868e9aada32c89309"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88513f75c56dbcf8251c412362603d11"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#a88513f75c56dbcf8251c412362603d11">map</a> ($url, $class, $ttl=0, $kbps=0)</td></tr>
 <tr class="separator:a88513f75c56dbcf8251c412362603d11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9c76d100f9dab11e4f4d4bd3c4a9536"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBase.html#ad9c76d100f9dab11e4f4d4bd3c4a9536">blacklisted</a> ($ip)</td></tr>
@@ -340,6 +344,9 @@ const&#160;</td><td class="memItemRight" valign="bottom"><b>REQ_AJAX</b> =2</td>
 <tr class="memitem:a67235797ce860ce1f0b5af4a52d5d593"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a67235797ce860ce1f0b5af4a52d5d593"></a>
 const&#160;</td><td class="memItemRight" valign="bottom"><b>E_Pattern</b> ='Invalid routing pattern: %s'</td></tr>
 <tr class="separator:a67235797ce860ce1f0b5af4a52d5d593"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd1791da601006d50291791db6f494fb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acd1791da601006d50291791db6f494fb"></a>
+const&#160;</td><td class="memItemRight" valign="bottom"><b>E_Named</b> ='Named <a class="el" href="classBase.html#a074c4da03519fff81a04a2bc51447ded">route</a> does not exist: %s'</td></tr>
+<tr class="separator:acd1791da601006d50291791db6f494fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74741d820bcf6131616261a30061af70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a74741d820bcf6131616261a30061af70"></a>
 const&#160;</td><td class="memItemRight" valign="bottom"><b>E_Fatal</b> ='Fatal error: %s'</td></tr>
 <tr class="separator:a74741d820bcf6131616261a30061af70"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -449,6 +456,30 @@ Protected Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">$ip</td><td>string </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="af1852e310ff9ed262c8c7f190adc2dac"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Base::build </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$url</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Replace tokenized URL with current route's token values </p>
+<dl class="section return"><dt>Returns</dt><dd>string </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$url</td><td>string </td></tr>
   </table>
   </dd>
 </dl>
@@ -1385,6 +1416,30 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ac0a6dfcaada94cfac4ee0e6c88c33cbb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Base::parse </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>$str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Parse string containing key-value pairs and use as routing tokens </p>
+<dl class="section return"><dt>Returns</dt><dd>NULL </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">$str</td><td>string </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a947186a7f68bd4cc42a1fc14dac3d104"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1573,7 +1628,7 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a8d1d70d0ba53f8a621e4ebb9998c6dc7"></a>
+<a class="anchor" id="a81cb805f2a7fd36868e9aada32c89309"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1581,7 +1636,7 @@ Protected Member Functions</h2></td></tr>
           <td class="memname">Base::reroute </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>$uri</em>, </td>
+          <td class="paramname"><em>$url</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1600,7 +1655,7 @@ Protected Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>NULL </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">$uri</td><td>string </td></tr>
+    <tr><td class="paramname">$url</td><td>string </td></tr>
     <tr><td class="paramname">$permanent</td><td>bool </td></tr>
   </table>
   </dd>

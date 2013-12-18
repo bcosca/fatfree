@@ -34,7 +34,7 @@ class Router extends Controller {
 			'Named route'
 		);
 		$test->expect(
-			$f3->get('ALIAS.hello')=='/',
+			$f3->get('ALIASES.hello')=='/',
 			'Named route retrieved'
 		);
 		$f3->mock('GET /');
@@ -135,6 +135,11 @@ class Router extends Controller {
 			}
 		);
 		$f3->set('PARAMS.id','pork');
+		$f3->set('PARAMS.quantity',123);
+		$test->expect(
+			$f3->get('ALIASES.grub')=='/food/pork/123',
+			'Default tokens in named route substituted'
+		);
 		$f3->mock('GET @grub(@id=beef,@quantity=789)');
 		$test->expect(
 			$f3->get('PARAMS.id')=='beef' &&

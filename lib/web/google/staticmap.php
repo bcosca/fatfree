@@ -19,6 +19,7 @@ namespace Web\Google;
 class StaticMap {
 
 	const
+		//! API URL
 		URL_Static='http://maps.googleapis.com/maps/api/staticmap';
 
 	protected
