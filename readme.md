@@ -19,6 +19,7 @@ That's not all. F3 is packaged with other optional plug-ins that extend its capa
 * Atom/RSS feed reader,
 * Image processor,
 * Geodata handler,
+* Google static maps,
 * On-the-fly Javascript/CSS compressor,
 * OpenID (consumer),
 * Custom logger,
@@ -53,17 +54,19 @@ The philosophy behind the framework and its approach to software architecture is
 
 [![Twitter](ui/images/twitter.png)](https://twitter.com/phpfatfree)
 
+### Version 3.2 Is Finally Here!
+
+The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.2 is finally available for download. This edition is packed with a bunch of new usability and security features.
+
+F3 has a stable enterprise-class architecture. Unbeatable performance, user-friendly features and a lightweight footprint. What more can you ask for?
+
+It is highly recommended that experienced users develop new applications with this version to take advantage of the latest code base and its significant improvements.
+
 ## Introducing FatFreeFramework.com
 
 **Detailed API documentation with lots of code examples and a graphic guide can now be found at [http://fatfreeframework.com/](http://fatfreeframework.com/).**
 
 Of course this handy online reference is powered by F3! It showcases the framework's capability and performance. Check it out now.
-
-### Version 3.1 Is Finally Here!
-
-The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.1 is finally available for download. The code base has been rewritten from the ground up to provide enterprise-class architecture and performance but with the same user-friendly features and lightweight footprint.
-
-It is highly recommended that experienced users develop new applications with this version to take advantage of the latest features and significant improvements.
 
 ## Getting Started
 
