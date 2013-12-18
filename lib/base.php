@@ -146,9 +146,10 @@ final class Base {
 	*	@param $str string
 	**/
 	function parse($str) {
-		preg_match_all('/(\w+)=(.+?)(?=,|$)/',$str,$pairs,PREG_SET_ORDER);
+		preg_match_all('/(\w+)\h*=\h*(.+?)(?=,|$)/',
+			$str,$pairs,PREG_SET_ORDER);
 		foreach ($pairs as $pair)
-			$this->hive['PARAMS'][$pair[1]]=$pair[2];
+			$this->hive['PARAMS'][$pair[1]]=trim($pair[2]);
 	}
 
 	/**
