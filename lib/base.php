@@ -146,9 +146,10 @@ final class Base {
 	*	@param $str string
 	**/
 	function parse($str) {
-		preg_match_all('/(\w+)=(.+?)(?=,|$)/',$str,$pairs,PREG_SET_ORDER);
+		preg_match_all('/(\w+)\h*=\h*(.+?)(?=,|$)/',
+			$str,$pairs,PREG_SET_ORDER);
 		foreach ($pairs as $pair)
-			$this->hive['PARAMS'][$pair[1]]=$pair[2];
+			$this->hive['PARAMS'][$pair[1]]=trim($pair[2]);
 	}
 
 	/**
@@ -1573,8 +1574,8 @@ final class Base {
 		$base='';
 		if (PHP_SAPI!='cli')
 			$base=rtrim(dirname($_SERVER['SCRIPT_NAME']),'/');
-		$path=substr($url=parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),
-			strpos($url,$base)+strlen($base));
+		$path=preg_replace('/^'.preg_quote($base,'/').'/','',
+			parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH));
 		call_user_func_array('session_set_cookie_params',
 			$jar=array(
 				'expire'=>0,
