@@ -1574,8 +1574,13 @@ final class Base {
 		$base='';
 		if (PHP_SAPI!='cli')
 			$base=rtrim(dirname($_SERVER['SCRIPT_NAME']),'/');
-		$path=substr($url=parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),
-			strpos($url,$base)+strlen($base));
+// if base is empty string, strpos throws fatal err empty delim
+// hack start
+$cut_pos = 0;
+if ($base!='') { $cut_pos = strpos($url,$base)+strlen($base) ;}
+	$path=substr($url=parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),$cut_pos
+			);
+// hack end
 		call_user_func_array('session_set_cookie_params',
 			$jar=array(
 				'expire'=>0,
