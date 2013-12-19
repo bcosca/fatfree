@@ -1278,7 +1278,7 @@ final class Base {
 			if ($parts[2]=='->')
 				$parts[1]=is_subclass_of($parts[1],'Prefab')?
 					call_user_func($parts[1].'::instance'):
-					new $parts[1];
+					new $parts[1]($this);
 			$func=array($parts[1],$parts[3]);
 		}
 		if (!is_callable($func) && $hooks=='beforeroute,afterroute')
