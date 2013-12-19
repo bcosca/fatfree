@@ -89,6 +89,7 @@ final class Base {
 		E_Fatal='Fatal error: %s',
 		E_Open='Unable to open %s',
 		E_Routes='No routes specified',
+		E_Class='Invalid class %s',
 		E_Method='Invalid method %s',
 		E_Hive='Invalid hive key %s';
 	//@}
@@ -1274,7 +1275,9 @@ final class Base {
 			preg_match('/(.+)\h*(->|::)\h*(.+)/s',$func,$parts)) {
 			// Convert string to executable PHP callback
 			if (!class_exists($parts[1]))
-				$this->error(404);
+				$this->error(500,sprintf(self::E_Class, $parts[1]),
+				array(NULL));
+
 			if ($parts[2]=='->')
 				$parts[1]=is_subclass_of($parts[1],'Prefab')?
 					call_user_func($parts[1].'::instance'):
@@ -1283,7 +1286,9 @@ final class Base {
 		}
 		if (!is_callable($func) && $hooks=='beforeroute,afterroute')
 			// No route handler
-			$this->error(404);
+			$this->error(500,sprintf(self::E_Method, $parts[0] ),
+				array(NULL));
+
 		$obj=FALSE;
 		if (is_array($func)) {
 			$hooks=$this->split($hooks);
