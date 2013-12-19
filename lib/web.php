@@ -194,7 +194,7 @@ class Web extends Prefab {
 			);
 			return (!file_exists($file['name']) || $overwrite) &&
 				(!$func || $fw->call($func,array($file))!==FALSE) &&
-				$fw->write($file['name'],$fw->read($tmp));
+				rename($tmp,$file['name']);
 		}
 		$out=array();
 		foreach ($_FILES as $item) {
