@@ -950,7 +950,7 @@ final class Base {
 		);
 		if (!$debug && ob_get_level())
 			ob_end_clean();
-		$handler=$this->hive['ONERROR'];
+		$handler=isset($this->hive['ONERROR'])?:NULL;
 		$this->hive['ONERROR']=NULL;
 		if ((!$handler ||
 			$this->call($handler,$this,'beforeroute,afterroute')===FALSE) &&
