@@ -546,7 +546,7 @@ class Image {
 			$this->file=$file;
 			foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
 				if (is_file($dir.$file))
-					$this->load($fw->read($dir.$file));
+					return $this->load($fw->read($dir.$file));
 		}
 	}
 
