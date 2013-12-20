@@ -131,6 +131,7 @@ class Hive extends Controller {
 			is_array($f3->get('i')) && $f3->get('i.j')=='bar',
 			'Multilevel array'
 		);
+		$f3->clear('i');
 		$f3->set('i.j.k','foo');
 		$test->expect(
 			is_array($f3->get('i')) && is_array($f3->get('i.j')) &&

@@ -516,19 +516,15 @@ final class Base {
 	*	@param $detail bool
 	**/
 	function stringify($arg,$detail=TRUE) {
-		$fw=$this;
-		$func=function($arg,$val) use($detail,$fw) {
-			return $arg===$val && !is_scalar($val)?
-				'*RECURSION*':$fw->stringify($val,$detail);
-		};
 		switch (gettype($arg)) {
 			case 'object':
+				$ref=new ReflectionClass($arg);
 				$str='';
-				if (!preg_match('/Base|Closure/',get_class($arg)) && $detail)
-					foreach ((array)$arg as $key=>$val)
-						$str.=($str?',':'').$this->stringify(
-							preg_replace('/[\x00].+?[\x00]/','',$key)).'=>'.
-							$func($arg,$val);
+				if ($detail)
+					foreach ($ref->getproperties() as $prop)
+						$str.=($str?',':'').$this->encode(
+							preg_replace('/.*(\$\w+).*/s','\1',
+								$prop->__tostring()));
 				return method_exists($arg,'__tostring')?
 					$arg:
 					(addslashes(get_class($arg)).'::__set_state('.$str.')');
@@ -539,7 +535,7 @@ final class Base {
 				foreach ($arg as $key=>$val)
 					$str.=($str?',':'').
 						($num?'':($this->stringify($key).'=>')).
-						$func($arg,$val);
+							$this->stringify($val);
 				return 'array('.$str.')';
 			default:
 				return var_export($arg,TRUE);
@@ -1021,7 +1017,7 @@ final class Base {
 			parse_str($query,$GLOBALS['_REQUEST']);
 		}
 		foreach ($headers?:array() as $key=>$val)
-			$_SERVER['HTTP_'.str_replace('-','_',strtoupper($key))]=$val;
+			$_SERVER['HTTP_'.strtr(strtoupper($key),'-','_')]=$val;
 		$this->hive['VERB']=$verb;
 		$this->hive['URI']=$this->hive['BASE'].$url['path'];
 		$this->hive['AJAX']=isset($parts[5]) &&
@@ -1476,7 +1472,7 @@ final class Base {
 	*	@param $expr mixed
 	**/
 	function dump($expr) {
-		echo $this->highlight($this->stringify($expr,$this->hive['DEBUG']>2));
+		echo $this->highlight($this->stringify($expr));
 	}
 
 	/**
@@ -1584,6 +1580,13 @@ final class Base {
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
 			isset($headers['X-Forwarded-Proto']) &&
 			$headers['X-Forwarded-Proto']=='https'?'https':'http';
+		if (function_exists('apache_setenv')) {
+			// Work around Apache pre-2.4 VirtualDocumentRoot bug
+			$_SERVER['DOCUMENT_ROOT']=str_replace($_SERVER['SCRIPT_NAME'],'',
+				$_SERVER['SCRIPT_FILENAME']);
+			apache_setenv("DOCUMENT_ROOT",$_SERVER['DOCUMENT_ROOT']);
+		}
+		$_SERVER['DOCUMENT_ROOT']=realpath($_SERVER['DOCUMENT_ROOT']);
 		$base='';
 		if (PHP_SAPI!='cli')
 			$base=rtrim(dirname($_SERVER['SCRIPT_NAME']),'/');
@@ -1600,13 +1603,6 @@ final class Base {
 				'httponly'=>TRUE
 			)
 		);
-		if (function_exists('apache_setenv')) {
-			// Work around Apache pre-2.4 VirtualDocumentRoot bug
-			$_SERVER['DOCUMENT_ROOT']=str_replace($_SERVER['SCRIPT_NAME'],'',
-				$_SERVER['SCRIPT_FILENAME']);
-			apache_setenv("DOCUMENT_ROOT",$_SERVER['DOCUMENT_ROOT']);
-		}
-		$_SERVER['DOCUMENT_ROOT']=realpath($_SERVER['DOCUMENT_ROOT']);
 		// Default configuration
 		$this->hive=array(
 			'AGENT'=>isset($headers['X-Operamini-Phone-UA'])?

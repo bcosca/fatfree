@@ -120,7 +120,7 @@ class Globals extends Controller {
 			'Session restarted by get()'
 		);
 		$f3->clear('SESSION');
-		$result=$f3->exists('SESSION[hello]');
+		$result=$f3->exists('SESSION.hello');
 		$test->expect(
 			session_id() && empty($_SESSION['hello']) && $result===FALSE,
 			'No session variable instantiated by exists()'
