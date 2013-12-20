@@ -154,6 +154,30 @@ final class Base {
 	}
 
 	/**
+	*	Convert JS-style token to PHP expression
+	*	@return string
+	*	@param $str string
+	**/
+	function compile($str) {
+		$self=$this;
+		return preg_replace_callback(
+			'/(?<!\w)@(\w(?:[\w\.\[\]]|\->|::)*)/',
+			function($var) use($self) {
+				return '$'.preg_replace_callback(
+					'/\.(\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
+					function($expr) use($self) {
+						$fw=Base::instance();
+						return '['.var_export($expr[1]?:
+							$self->compile($expr[2]),TRUE).']';
+					},
+					$var[1]
+				);
+			},
+			$str
+		);
+	}
+
+	/**
 	*	Get hive key reference/contents; Add non-existent hive keys,
 	*	array elements, and object properties by default
 	*	@return mixed
@@ -346,19 +370,7 @@ final class Base {
 			// Reset global to default value
 			$this->hive[$parts[0]]=$this->init[$parts[0]];
 		else {
-			$out='';
-			$obj=FALSE;
-			foreach ($parts as $part)
-				if ($part=='->')
-					$obj=TRUE;
-				elseif ($obj) {
-					$obj=FALSE;
-					$out.='->'.$out;
-				}
-				else
-					$out.='['.$this->stringify($part).']';
-			// PHP can't unset a referenced variable
-			eval('unset($this->hive'.$out.');');
+			eval('unset('.$this->compile('@this->hive.'.$key).');');
 			if ($parts[0]=='SESSION') {
 				session_commit();
 				session_start();
@@ -2067,31 +2079,8 @@ class Preview extends View {
 	*	@param $str string
 	**/
 	function token($str) {
-		$self=$this;
-		$str=preg_replace_callback(
-			'/(?<!\w)@(\w(?:[\w\.\[\]]|\->|::)*)/',
-			function($var) use($self) {
-				// Convert from JS dot notation to PHP array notation
-				return '$'.preg_replace_callback(
-					'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
-					function($expr) use($self) {
-						$fw=Base::instance();
-						return
-							'['.
-							($expr[1]?
-								$fw->stringify(substr($expr[1],1)):
-								(preg_match('/^\w+/',
-									$mix=$self->token($expr[2]))?
-									$fw->stringify($mix):
-									$mix)).
-							']';
-					},
-					$var[1]
-				);
-			},
-			$str
-		);
-		return trim(preg_replace('/\{\{(.+?)\}\}/s',trim('\1'),$str));
+		return trim(preg_replace('/\{\{(.+?)\}\}/s',trim('\1'),
+			Base::instance()->compile($str)));
 	}
 
 	/**
