@@ -527,7 +527,8 @@ final class Base {
 								$prop->__tostring()));
 				return method_exists($arg,'__tostring')?
 					$arg:
-					(addslashes(get_class($arg)).'::__set_state('.$str.')');
+					(addslashes(get_class($arg)).'::'.
+						'__set_state(array('.$str.'))');
 			case 'array':
 				$str='';
 				$num=isset($arg[0]) &&
@@ -958,7 +959,7 @@ final class Base {
 		);
 		if (!$debug && ob_get_level())
 			ob_end_clean();
-		$handler=isset($this->hive['ONERROR'])?:NULL;
+		$handler=isset($this->hive['ONERROR'])?$this->hive['ONERROR']:NULL;
 		$this->hive['ONERROR']=NULL;
 		if ((!$handler ||
 			$this->call($handler,$this,'beforeroute,afterroute')===FALSE) &&
@@ -1283,7 +1284,8 @@ final class Base {
 			preg_match('/(.+)\h*(->|::)\h*(.+)/s',$func,$parts)) {
 			// Convert string to executable PHP callback
 			if (!class_exists($parts[1]))
-				$this->error(500,sprintf(self::E_Class,$parts[1]));
+				$this->error(500,sprintf(self::E_Class,
+					is_string($func)?$parts[1]:$this->stringify()));
 			if ($parts[2]=='->')
 				$parts[1]=is_subclass_of($parts[1],'Prefab')?
 					call_user_func($parts[1].'::instance'):
@@ -1293,7 +1295,7 @@ final class Base {
 		if (!is_callable($func) && $hooks=='beforeroute,afterroute')
 			// No route handler
 			$this->error(500,sprintf(self::E_Method,
-				is_string($func)?$parts[0]:get_class($func)));
+				is_string($func)?$parts[0]:$this->stringify($func)));
 		$obj=FALSE;
 		if (is_array($func)) {
 			$hooks=$this->split($hooks);
