@@ -54,7 +54,7 @@ class Internals extends Controller {
 			'Convert array to exportable string'
 		);
 		$test->expect(
-			$f3->stringify(new \stdClass)=='stdClass::__set_state()',
+			$f3->stringify(new \stdClass)=='stdClass::__set_state(array())',
 			'Convert object to exportable string'
 		);
 		$test->expect(
