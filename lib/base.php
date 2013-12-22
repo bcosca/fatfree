@@ -1292,7 +1292,8 @@ final class Base {
 		}
 		if (!is_callable($func) && $hooks=='beforeroute,afterroute')
 			// No route handler
-			$this->error(500,sprintf(self::E_Method,$parts[0]));
+			$this->error(500,sprintf(self::E_Method,
+				is_string($func)?$parts[0]:get_class($func)));
 		$obj=FALSE;
 		if (is_array($func)) {
 			$hooks=$this->split($hooks);
