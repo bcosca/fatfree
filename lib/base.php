@@ -13,8 +13,27 @@
 	Please see the license.txt file for more information.
 */
 
+//! Prefab for classes with constructors and static factory methods
+abstract class Prefab {
+
+	/**
+	*	Return class instance
+	*	@return object
+	**/
+	static function instance() {
+		if (!Registry::exists($class=get_called_class())) {
+			$ref=new Reflectionclass($class);
+			$args=func_get_args();
+			Registry::set($class,
+				$args?$ref->newinstanceargs($args):new $class);
+		}
+		return Registry::get($class);
+	}
+
+}
+
 //! Base structure
-final class Base {
+class Base extends Prefab {
 
 	//@{ Framework details
 	const
@@ -1520,22 +1539,12 @@ final class Base {
 				array($error));
 	}
 
-	/**
-	*	Return class instance
-	*	@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=__CLASS__))
-			Registry::set($class,new $class);
-		return Registry::get($class);
-	}
-
 	//! Prohibit cloning
 	private function __clone() {
 	}
 
 	//! Bootstrap
-	private function __construct() {
+	function __construct() {
 		// Managed directives
 		ini_set('default_charset',$charset='UTF-8');
 		if (extension_loaded('mbstring'))
@@ -1697,25 +1706,6 @@ final class Base {
 		spl_autoload_register(array($this,'autoload'));
 		// Register shutdown handler
 		register_shutdown_function(array($this,'unload'),getcwd());
-	}
-
-}
-
-//! Prefab for classes with constructors and static factory methods
-abstract class Prefab {
-
-	/**
-	*	Return class instance
-	*	@return object
-	**/
-	static function instance() {
-		if (!Registry::exists($class=get_called_class())) {
-			$ref=new Reflectionclass($class);
-			$args=func_get_args();
-			Registry::set($class,
-				$args?$ref->newinstanceargs($args):new $class);
-		}
-		return Registry::get($class);
 	}
 
 }
@@ -2101,7 +2091,7 @@ class Preview extends View {
 				return '<?php echo '.$str.'; ?>';
 			},
 			preg_replace_callback(
-				'/\{\{?~(.+?)~\}?\}/s',
+				'/\{~(.+?)~\}/s',
 				function($expr) use($self) {
 					return '<?php '.$self->token($expr[1]).' ?>';
 				},
@@ -2150,7 +2140,7 @@ class Preview extends View {
 					// Remove PHP code and comments
 					$text=preg_replace(
 						'/(?<!["\'])\h*<\?(?:php|\s*=).+?\?>\h*(?!["\'])|'.
-						'\{\{\*.+?\*\}\}|\{\*.+?\*\}/is','',
+						'\{\*.+?\*\}/is','',
 						$fw->read($view));
 					if (method_exists($this,'parse'))
 						$text=$this->parse($text);

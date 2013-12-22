@@ -141,8 +141,8 @@ class Template extends Controller {
 		$f3->clear('cond');
 		$f3->set('foo','baz');
 		$test->expect(
-			$tpl->render('templates/test3.htm')=='bazbazbaz',
-			'<exclude> and {{* comment *}}'
+			$tpl->render('templates/test3.htm')=='bazbaz',
+			'<exclude> and {* comment *}'
 		);
 		$f3->clear('foo');
 		$f3->set('div',
