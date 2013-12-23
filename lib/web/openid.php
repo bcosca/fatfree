@@ -18,11 +18,6 @@ namespace Web;
 //! OpenID consumer
 class OpenID extends \Magic {
 
-	//@{ Error messages
-	const
-		E_EndPoint='Unable to find OpenID provider';
-	//@}
-
 	protected
 		//! OpenID provider endpoint URL
 		$url,
