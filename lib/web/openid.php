@@ -19,8 +19,8 @@ namespace Web;
 class OpenID extends \Magic {
 
 	//@{ Error messages
-	const
-		E_EndPoint='Unable to find OpenID provider';
+//	const
+//		E_EndPoint='Unable to find OpenID provider';
 	//@}
 
 	protected
@@ -127,6 +127,7 @@ class OpenID extends \Magic {
 			// OpenID 1.1
 			return $this->args['server'];
 		else
+			user_error(self::E_EndPoint);
 			return FALSE;
 	}
 
