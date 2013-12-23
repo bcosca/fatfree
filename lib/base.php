@@ -1403,7 +1403,7 @@ class Base extends Prefab {
 						},
 						// Mark quoted strings with 0x00 whitespace
 						str_getcsv(preg_replace(
-							'/(")(.+?)\1/',"\\1\x00\\2\\1",$match[3]))
+							'/(")(.*?)\1/',"\\1\x00\\2\\1",$match[3]))
 					);
 					call_user_func_array(array($this,'set'),
 						array_merge(
