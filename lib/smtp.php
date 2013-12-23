@@ -142,9 +142,9 @@ class SMTP extends Magic {
 	*	@param $message string
 	**/
 	function send($message) {
-		if ($this->scheme=='ssl' && !extension_loaded('openssl'))
-			return FALSE;
 		$fw=Base::instance();
+		if ($this->scheme=='ssl' && $this->host==$fw->get('HOST') && !extension_loaded('openssl'))
+			return FALSE;
 		// Connect to the server
 		$socket=&$this->socket;
 		$socket=@fsockopen($this->host,$this->port);
