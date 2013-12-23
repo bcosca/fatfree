@@ -187,7 +187,7 @@ class UTF extends Prefab {
 	*	@return string
 	*	@param $str string
 	**/
-	function decode($str) {
+	function translate($str) {
 		return html_entity_decode(
 			preg_replace('/\\\\u([[:xdigit:]]+)/i','&#x\1;',$str));
 	}
@@ -210,7 +210,7 @@ class UTF extends Prefab {
 			':/'=>'\u1f623', // skeptic
 			'8O'=>'\u1f632', // oops
 		)+Base::instance()->get('EMOJI');
-		return $this->convert(str_replace(array_keys($map),
+		return $this->translate(str_replace(array_keys($map),
 			array_values($map),$str));
 	}
 
