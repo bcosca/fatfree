@@ -182,4 +182,36 @@ class UTF extends Prefab {
 		return chr(0xef).chr(0xbb).chr(0xbf);
 	}
 
+	/**
+	*	Convert code points to Unicode symbols
+	*	@return string
+	*	@param $str string
+	**/
+	function decode($str) {
+		return html_entity_decode(
+			preg_replace('/\\\\u([[:xdigit:]]+)/i','&#x\1;',$str));
+	}
+
+	/**
+	*	Translate emoji tokens to Unicode font-supported symbols
+	*	@return string
+	*	@param $str string
+	**/
+	function emojify($str) {
+		$map=array(
+			':('=>'\u2639', // frown
+			':)'=>'\u263a', // smile
+			'<3'=>'\u2665', // heart
+			':D'=>'\u1f603', // grin
+			'XD'=>'\u1f606', // laugh
+			';)'=>'\u1f609', // wink
+			':P'=>'\u1f60b', // tongue
+			':,'=>'\u1f60f', // think
+			':/'=>'\u1f623', // skeptic
+			'8O'=>'\u1f632', // oops
+		)+Base::instance()->get('EMOJI');
+		return $this->convert(str_replace(array_keys($map),
+			array_values($map),$str));
+	}
+
 }

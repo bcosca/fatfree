@@ -1634,6 +1634,7 @@ class Base extends Prefab {
 			'DEBUG'=>0,
 			'DIACRITICS'=>array(),
 			'DNSBL'=>'',
+			'EMOJI'=>array(),
 			'ENCODING'=>$charset,
 			'ERROR'=>NULL,
 			'ESCAPE'=>TRUE,
