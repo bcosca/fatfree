@@ -2090,7 +2090,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `string AUTOLOAD`
 
-* Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (`|`), comma (`,`), or semi-colon (`;`) as path separator.
+* Search path for user-defined PHP classes that the framework will attempt to autoload at runtime. Accepts a pipe (`|`), comma (`,`), or semi-colon (`;`) as path separator. Default value is the Web root.
 
 `string BASE`
 
@@ -2106,7 +2106,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool CASELESS`
 
-* Pattern matching of routes against incoming URIs is case-insensitive by default. Set to `FALSE` to make it case-sensitive.
+* Pattern matching of routes against incoming URIs is case-insensitive by default. Set to `FALSE` to make it case-sensitive. Default value is `TRUE`.
 
 `array COOKIE, GET, POST, REQUEST, SESSION, FILES, SERVER, ENV`
 
@@ -2124,6 +2124,10 @@ Once you get the hang of testing the smallest units of your application, you can
 
 * Key-value pairs for foreign-to-ASCII character translations.
 
+`array EMOJI`
+
+* emoji tokens to add to the basic set used when translating a string to Unicode font-supported symbols. (see \UTF->emojify())
+
 `string ENCODING`
 
 * Character set used for document encoding. Default value is `UTF-8`.
@@ -2134,7 +2138,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool ESCAPE`
 
-* Used to enable/disable auto-escaping.
+* Used to enable/disable auto-escaping. Default value is `TRUE`.
 
 `string EXEMPT`
 
@@ -2146,7 +2150,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool HALT`
 
-* If TRUE (default), framework stops execution after a non-fatal error is detected.
+* If `TRUE` (default), framework stops execution after a non-fatal error is detected.
 
 `array HEADERS`
 
@@ -2174,11 +2178,11 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `string LOCALES`
 
-* Location of the language dictionaries.
+* Location of the language dictionaries. Default value is the Web root.
 
 `string LOGS`
 
-* Location of custom logs.
+* Location of custom logs. Default value is the Web root.
 
 `mixed ONERROR`
 
@@ -2210,7 +2214,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `bool QUIET`
 
-* Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
+* Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing. Default value is `FALSE`.
 
 `string REALM`
 
@@ -2246,7 +2250,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `string UI`
 
-* Search path for user interface files used by the `View` and `Template` classes' `render()` method. Default value is the Web root. Accepts a pipe (`|`), comma (`,`), or semi-colon (`;`) as separator for multiple paths.
+* Search path for user interface files used by the `View` and `Preview` classes' `render()` method. Default value is the Web root. Accepts a pipe (`|`), comma (`,`), or semi-colon (`;`) as separator for multiple paths.
 
 `callback UNLOAD`
 
