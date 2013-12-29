@@ -178,16 +178,15 @@ class Base extends Prefab {
 	*	@param $str string
 	**/
 	function compile($str) {
-		$self=$this;
+		$fw=$this;
 		return preg_replace_callback(
 			'/(?<!\w)@(\w(?:[\w\.\[\]]|\->|::)*)/',
-			function($var) use($self) {
+			function($var) use($fw) {
 				return '$'.preg_replace_callback(
 					'/\.(\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
-					function($expr) use($self) {
-						$fw=Base::instance();
+					function($expr) use($fw) {
 						return '['.var_export($expr[1]?:
-							$self->compile($expr[2]),TRUE).']';
+							$fw->compile($expr[2]),TRUE).']';
 					},
 					$var[1]
 				);
@@ -287,8 +286,7 @@ class Base extends Prefab {
 				$jar=$this->hive['JAR'];
 				if ($ttl)
 					$jar['expire']=time()+$ttl;
-				call_user_func_array('setcookie',
-					array_merge(array($parts[1],$val),$jar));
+				call_user_func_array('setcookie',array($parts[1],$val)+$jar);
 			}
 		}
 		else switch ($key) {
@@ -646,25 +644,59 @@ class Base extends Prefab {
 	}
 
 	/**
+	*	Attempt to clone object
+	*	@return object
+	*	@return $arg object
+	**/
+	function dupe($arg) {
+		if (method_exists('ReflectionClass','iscloneable')) {
+			$ref=new ReflectionClass($arg);
+			if ($ref->iscloneable())
+				$arg=clone($arg);
+		}
+		return $arg;
+	}
+
+	/**
+	*	Invoke callback recursively for all data types
+	*	@return mixed
+	*	@param $arg mixed
+	*	@param $func callback
+	**/
+	function recursive($arg,$func) {
+		switch (gettype($arg)) {
+			case 'object':
+				$arg=$this->dupe($arg);
+				foreach (get_object_vars($arg) as $key=>$val)
+					$arg->$key=$this->recursive($val,$func);
+				return $arg;
+			case 'array':
+				$tmp=array();
+				foreach ($arg as $key=>$val)
+					$tmp[$key]=$this->recursive($val,$func);
+				return $tmp;
+		}
+		return $func($arg);
+	}
+
+	/**
 	*	Remove HTML tags (except those enumerated) and non-printable
 	*	characters to mitigate XSS/code injection attacks
 	*	@return mixed
 	*	@param $var mixed
 	*	@param $tags string
 	**/
-	function clean($var,$tags=NULL) {
-		if (is_string($var) && strlen($var)) {
-			if ($tags!='*')
-				$var=strip_tags($var,
-					'<'.implode('><',$this->split($tags)).'>');
-			$var=trim(preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/','',$var));
-		}
-		elseif (is_array($var))
-			foreach ($var as &$val) {
-				$val=$this->clean($val,$tags);
-				unset($val);
+	function clean($arg,$tags=NULL) {
+		$fw=$this;
+		return $this->recursive($arg,
+			function($val) use($fw,$tags) {
+				if ($tags!='*')
+					$val=trim(strip_tags($val,
+						'<'.implode('><',$fw->split($tags)).'>'));
+				return trim(preg_replace(
+					'/[\x00-\x08\x0B\x0C\x0E-\x1F]/','',$val));
 			}
-		return $var;
+		);
 	}
 
 	/**
@@ -1944,41 +1976,18 @@ class View extends Prefab {
 		$view;
 
 	/**
-	*	Attempt to clone object
-	*	@return object
-	*	@return $arg object
-	**/
-	function dupe($arg) {
-		if (method_exists('ReflectionClass','iscloneable')) {
-			$ref=new ReflectionClass($arg);
-			if ($ref->iscloneable())
-				$arg=clone($arg);
-		}
-		return $arg;
-	}
-
-	/**
 	*	Encode characters to equivalent HTML entities
 	*	@return string
 	*	@param $arg mixed
 	**/
 	function esc($arg) {
-		if (is_array($arg)) {
-			$tmp=array();
-			foreach ($arg as $key=>$val)
-				$tmp[$key]=$this->esc($val);
-			return $tmp;
-		}
-		if (is_object($arg)) {
-			if ($arg!=($obj=$this->dupe($arg)))
-				foreach (get_object_vars($obj) as $key=>$val)
-					$obj->$key=$this->esc($val);
-			return $obj;
-		}
-		$arg=unserialize(serialize($arg));
-		if (is_string($arg))
-			$arg=\Base::instance()->encode($arg);
-		return $arg;
+		$fw=Base::instance();
+		return $fw->recursive($arg,
+			function($val) use($fw) {
+				$val=unserialize(serialize($val));
+				return is_string($val)?$fw->encode($val):$val;
+			}
+		);
 	}
 
 	/**
@@ -1987,22 +1996,12 @@ class View extends Prefab {
 	*	@param $arg mixed
 	**/
 	function raw($arg) {
-		if (is_array($arg)) {
-			$tmp=array();
-			foreach ($arg as $key=>$val)
-				$tmp[$key]=$this->raw($val);
-			return $tmp;
-		}
-		if (is_object($arg)) {
-			if ($arg!=($obj=$this->dupe($arg)))
-				foreach (get_object_vars($obj) as $key=>$val)
-					$obj->$key=$this->raw($val);
-			return $obj;
-		}
-		$arg=unserialize(serialize($arg));
-		if (is_string($arg))
-			$arg=\Base::instance()->decode($arg);
-		return $arg;
+		$fw=Base::instance();
+		return $fw->recursive($arg,
+			function($val) use($fw) {
+				return is_string($val)?$fw->decode($val):$val;
+			}
+		);
 	}
 
 	/**
