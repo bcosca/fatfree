@@ -119,7 +119,7 @@ class SMTP extends Magic {
 			if (preg_match('/(?:^|\n)\d{3} .+?\r\n/s',$reply))
 				break;
 		}
-		if ($log) {
+		if ($log && Base::instance()->get('DEBUG')) {
 			$this->log.=$cmd."\n";
 			$this->log.=str_replace("\r",'',$reply);
 		}
