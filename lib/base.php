@@ -427,8 +427,8 @@ class Base extends Prefab {
 	*	@param $dst string
 	**/
 	function copy($src,$dst) {
-		$ref=&$this->ref($dst,TRUE);
-		return $ref=$this->ref($src);
+		$ref=&$this->ref($dst);
+		return $ref=$this->ref($src,FALSE);
 	}
 
 	/**
@@ -438,7 +438,7 @@ class Base extends Prefab {
 	*	@param $val string
 	**/
 	function concat($key,$val) {
-		$ref=&$this->ref($key,TRUE);
+		$ref=&$this->ref($key);
 		$ref.=$val;
 		return $ref;
 	}
@@ -450,7 +450,7 @@ class Base extends Prefab {
 	*	@public
 	**/
 	function flip($key) {
-		$ref=&$this->ref($key,TRUE);
+		$ref=&$this->ref($key);
 		return $ref=array_combine(array_values($ref),array_keys($ref));
 	}
 
@@ -461,7 +461,7 @@ class Base extends Prefab {
 	*	@param $val mixed
 	**/
 	function push($key,$val) {
-		$ref=&$this->ref($key,TRUE);
+		$ref=&$this->ref($key);
 		array_push($ref,$val);
 		return $val;
 	}
@@ -472,7 +472,7 @@ class Base extends Prefab {
 	*	@param $key string
 	**/
 	function pop($key) {
-		$ref=&$this->ref($key,TRUE);
+		$ref=&$this->ref($key);
 		return array_pop($ref);
 	}
 
@@ -483,7 +483,7 @@ class Base extends Prefab {
 	*	@param $val mixed
 	**/
 	function unshift($key,$val) {
-		$ref=&$this->ref($key,TRUE);
+		$ref=&$this->ref($key);
 		array_unshift($ref,$val);
 		return $val;
 	}
@@ -494,7 +494,7 @@ class Base extends Prefab {
 	*	@param $key string
 	**/
 	function shift($key) {
-		$ref=&$this->ref($key,TRUE);
+		$ref=&$this->ref($key);
 		return array_shift($ref);
 	}
 
@@ -505,7 +505,7 @@ class Base extends Prefab {
 	*	@param $src array
 	**/
 	function merge($key,$src) {
-		$ref=&$this->ref($key,TRUE);
+		$ref=&$this->ref($key);
 		return array_merge($ref,$src);
 	}
 
@@ -1563,7 +1563,7 @@ class Base extends Prefab {
 			}
 		);
 		set_error_handler(
-			function($code,$text) use($fw) {
+			function($code,$text) {
 				if (error_reporting())
 					throw new ErrorException($text,$code);
 			}
@@ -1970,9 +1970,9 @@ class View extends Prefab {
 			return $tmp;
 		}
 		if (is_object($arg)) {
-			$obj=$this->dupe($arg);
-			foreach (get_object_vars($obj) as $key=>$val)
-				$obj->$key=$this->esc($val);
+			if ($arg!=($obj=$this->dupe($arg)))
+				foreach (get_object_vars($obj) as $key=>$val)
+					$obj->$key=$this->esc($val);
 			return $obj;
 		}
 		$arg=unserialize(serialize($arg));
@@ -1994,9 +1994,9 @@ class View extends Prefab {
 			return $tmp;
 		}
 		if (is_object($arg)) {
-			$obj=$this->dupe($arg);
-			foreach (get_object_vars($obj) as $key=>$val)
-				$obj->$key=$this->raw($val);
+			if ($arg!=($obj=$this->dupe($arg)))
+				foreach (get_object_vars($obj) as $key=>$val)
+					$obj->$key=$this->raw($val);
 			return $obj;
 		}
 		$arg=unserialize(serialize($arg));
