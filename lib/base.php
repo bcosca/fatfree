@@ -1756,7 +1756,7 @@ class Cache extends Prefab {
 
 	/**
 	*	Return timestamp and TTL of cache entry or FALSE if not found
-	*	@return float|FALSE
+	*	@return array|FALSE
 	*	@param $key string
 	*	@param $val mixed
 	**/
