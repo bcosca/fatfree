@@ -103,9 +103,10 @@ abstract class Cursor extends \Magic {
 	*	@return array|FALSE
 	*	@param $filter string|array
 	*	@param $options array
+	*	@param $ttl int
 	**/
-	function load($filter=NULL,array $options=NULL) {
-		return ($this->query=$this->find($filter,$options)) &&
+	function load($filter=NULL,array $options=NULL,$ttl=0) {
+		return ($this->query=$this->find($filter,$options,$ttl)) &&
 			$this->skip(0)?$this->query[$this->ptr=0]:FALSE;
 	}
 
