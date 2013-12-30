@@ -163,7 +163,7 @@ class Audit extends Prefab {
 
 	/**
 	*	Return entropy estimate of a password (NIST 800-63)
-	*	@return int
+	*	@return int|float
 	*	@param $str string
 	**/
 	function entropy($str) {
