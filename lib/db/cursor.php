@@ -36,8 +36,9 @@ abstract class Cursor extends \Magic {
 	*	@return array
 	*	@param $filter string|array
 	*	@param $options array
+	*	@param $ttl int
 	**/
-	abstract function find($filter=NULL,array $options=NULL);
+	abstract function find($filter=NULL,array $options=NULL,$ttl=0);
 
 	/**
 	*	Insert new record
