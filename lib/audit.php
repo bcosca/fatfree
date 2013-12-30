@@ -51,7 +51,7 @@ class Audit extends Prefab {
 	*	@param $addr string
 	**/
 	function ipv4($addr) {
-		return filter_var($addr,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4);
+		return (bool)filter_var($addr,FILTER_VALIDATE_IP,FILTER_FLAG_IPV4);
 	}
 
 	/**
