@@ -208,7 +208,7 @@ class Mapper extends \DB\Cursor {
 			$db=$this->db;
 			$sql.=' ORDER BY '.implode(',',array_map(
 				function($str) use($db) {
-					return preg_match('/(\w+)(?:\h+(ASC|DESC))?/i',
+					return preg_match('/^(\w+)(?:\h+(ASC|DESC))?/i',
 						$str,$parts)?
 						($db->quotekey($parts[1]).
 						(isset($parts[2])?(' '.$parts[2]):'')):$str;
