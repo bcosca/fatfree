@@ -46,7 +46,7 @@ abstract class Magic implements ArrayAccess {
 	abstract function clear($key);
 
 	/**
-	*	Return TRUE if property has public visibility
+	*	Return TRUE if property has public/protected visibility
 	*	@return bool
 	*	@param $key string
 	**/
