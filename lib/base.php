@@ -149,10 +149,15 @@ class Base extends Prefab {
 	/**
 	*	Replace tokenized URL with current route's token values
 	*	@return string
-	*	@param $url string
+	*	@param $url array|string
 	**/
 	function build($url) {
-		if (preg_match_all('/@(\w+)/',$url,$matches,PREG_SET_ORDER))
+		if (is_array($url))
+			foreach ($url as &$var) {
+				$var=$this->build($var);
+				unset($var);
+			}
+		elseif (preg_match_all('/@(\w+)/',$url,$matches,PREG_SET_ORDER))
 			foreach ($matches as $match)
 				if (array_key_exists($match[1],$this->hive['PARAMS']))
 					$url=str_replace($match[0],
@@ -1048,10 +1053,8 @@ class Base extends Prefab {
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
 		$verb=strtoupper($parts[1]);
 		if ($parts[2]) {
-			if (empty($this->hive['ALIASES'][$parts[2]])) {
-				var_dump($parts);
+			if (empty($this->hive['ALIASES'][$parts[2]]))
 				user_error(sprintf(self::E_Named,$parts[2]));
-			}
 			$parts[4]=$this->hive['ALIASES'][$parts[2]];
 			if (isset($parts[3]))
 				$this->parse($parts[3]);
@@ -2015,6 +2018,7 @@ class View extends Prefab {
 			$hive=$fw->hive();
 		if ($fw->get('ESCAPE'))
 			$hive=$this->esc($hive);
+		$hive['ALIASES']=$fw->build($hive['ALIASES']);
 		extract($hive);
 		unset($fw);
 		unset($hive);
