@@ -35,7 +35,7 @@ class Bcrypt extends Prefab {
 	**/
 	function hash($pw,$salt=NULL,$cost=self::COST) {
 		if ($cost<4 || $cost>31)
-			user_error(self::E_Cost);
+			user_error(self::E_CostArg);
 		$len=22;
 		if ($salt) {
 			if (!preg_match('/^[[:alnum:]\.\/]{'.$len.',}$/',$salt))
