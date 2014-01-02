@@ -53,7 +53,7 @@ abstract class Magic implements ArrayAccess {
 	private function visible($key) {
 		if (property_exists($this,$key)) {
 			$ref=new ReflectionProperty(get_class($this),$key);
-			$out=$ref->ispublic();
+			$out=!$ref->isprivate();
 			unset($ref);
 			return $out;
 		}
