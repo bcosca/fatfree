@@ -71,17 +71,9 @@ class UTF extends Prefab {
 	*	@param $case bool
 	**/
 	function strrpos($stack,$needle,$ofs=0,$case=FALSE) {
-		if (!$needle)
-			return FALSE;
-		$len=$this->strlen($stack);
-		for ($ptr=$ofs;$ptr<$len;$ptr+=$this->strlen($match[0])) {
-			$sub=$this->substr($stack,$ptr);
-			if (!$sub || !preg_match('/^(.*?)'.
-				preg_quote($needle,'/').'/u'.($case?'i':''),$sub,$match))
-				break;
-			$ofs=$ptr+$this->strlen($match[1]);
-		}
-		return isset($sub)?$ofs:FALSE;
+		return preg_match('/^(.{'.$ofs.'}.*)'.
+			preg_quote($needle,'/').'.*?$/u'.($case?'i':''),$stack,$match)?
+			$this->strlen($match[1]):FALSE;
 	}
 
 	/**
