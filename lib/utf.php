@@ -117,10 +117,8 @@ class UTF extends Prefab {
 	*	@param $len int
 	**/
 	function substr($str,$start,$len=0) {
-		if ($start<0) {
-			$len=-$start;
+		if ($start<0)
 			$start=$this->strlen($str)+$start;
-		}
 		if (!$len)
 			$len=$this->strlen($str)-$start;
 		return preg_match('/^.{'.$start.'}(.{0,'.$len.'})/u',$str,$match)?
