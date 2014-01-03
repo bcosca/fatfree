@@ -41,6 +41,10 @@ class Unicode extends Controller {
 			'strpos'
 		);
 		$test->expect(
+			$utf->strpos('123 456 789 123 4','123',7)==12,
+			'strpos with offset'
+		);
+		$test->expect(
 			$utf->strrpos(
 				'Μπορώ να φάω σπασμένα γυαλιά χωρίς να πάθω τίποτα.','α')==48,
 			'strrpos'
