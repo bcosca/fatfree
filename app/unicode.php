@@ -37,6 +37,10 @@ class Unicode extends Controller {
 			'substr (negative offset)'
 		);
 		$test->expect(
+			$utf->substr('El pingüino Wenceslao hizo kilómetros',-10,4)=='kiló',
+			'substr with negative offset and length'
+		);
+		$test->expect(
 			$utf->strpos('Góa ē-tàng chia̍h po-lê','tàng')==6,
 			'strpos'
 		);
