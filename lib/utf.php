@@ -93,7 +93,7 @@ class UTF extends Prefab {
 	*	@param $before bool
 	**/
 	function stristr($stack,$needle,$before=FALSE) {
-		return strstr($stack,$needle,$before,TRUE);
+		return $this->strstr($stack,$needle,$before,TRUE);
 	}
 
 	/**
