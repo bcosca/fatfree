@@ -49,6 +49,14 @@ class Unicode extends Controller {
 				'Μπορώ να φάω σπασμένα γυαλιά χωρίς να πάθω τίποτα.','α')==48,
 			'strrpos'
 		);
+                $test->expect(
+                        $utf->strrpos('123 456 789 123 4','123',7)==0,
+                        'strrpos with offset (before needle)'
+                );
+                $test->expect(
+                        $utf->strrpos('123 456 789 123 4','123',13)==12,
+                        'strrpos with offset (after needle)'
+                );
 		$str='ᛋᚳᛖᚪᛚ᛫ᚦᛖᚪᚻ᛫ᛗᚪᚾᚾᚪ᛫ᚷᛖᚻᚹᛦᛚᚳ᛫ᛗᛁᚳᛚᚢᚾ᛫ᚻᛦᛏ᛫ᛞᚫᛚᚪᚾ';
 		$test->expect(
 			$utf->strstr($str,'ᛁᚳᛚᚢᚾ',TRUE)=='ᛋᚳᛖᚪᛚ᛫ᚦᛖᚪᚻ᛫ᛗᚪᚾᚾᚪ᛫ᚷᛖᚻᚹᛦᛚᚳ᛫ᛗ',
