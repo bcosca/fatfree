@@ -81,7 +81,7 @@ class UTF extends Prefab {
 				break;
 			$ofs=$ptr+$this->strlen($match[1]);
 		}
-		return $sub?$ofs:FALSE;
+		return isset($sub)?$ofs:FALSE;
 	}
 
 	/**
