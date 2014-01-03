@@ -140,8 +140,9 @@ class SMTP extends Magic {
 	*	Transmit message
 	*	@return bool
 	*	@param $message string
+	*	@param $log bool
 	**/
-	function send($message) {
+	function send($message,$log=TRUE) {
 		if ($this->scheme=='ssl' && !extension_loaded('openssl'))
 			return FALSE;
 		$fw=Base::instance();
