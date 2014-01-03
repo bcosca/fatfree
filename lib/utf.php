@@ -74,14 +74,16 @@ class UTF extends Prefab {
 		if (!$needle)
 			return FALSE;
 		$len=$this->strlen($stack);
+		$found=false;
 		for ($ptr=$ofs;$ptr<$len;$ptr+=$this->strlen($match[0])) {
 			$sub=$this->substr($stack,$ptr);
 			if (!$sub || !preg_match('/^(.*?)'.
 				preg_quote($needle,'/').'/u'.($case?'i':''),$sub,$match))
 				break;
 			$ofs=$ptr+$this->strlen($match[1]);
+			$found=true;
 		}
-		return $sub?$ofs:FALSE;
+		return $found?$ofs?:FALSE:FALSE;
 	}
 
 	/**
