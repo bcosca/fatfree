@@ -540,13 +540,12 @@ class Base extends Prefab {
 	function stringify($arg,$detail=TRUE) {
 		switch (gettype($arg)) {
 			case 'object':
-				$ref=new ReflectionClass($arg);
 				$str='';
 				if ($detail)
-					foreach ($ref->getproperties() as $prop)
-						$str.=($str?',':'').$this->encode(
-							preg_replace('/.*(\$\w+).*/s','\1',
-								$prop->__tostring()));
+					foreach (get_object_vars($arg) as $key=>$val)
+						$str.=($str?',':'').
+							var_export($key,TRUE).'=>'.
+							$this->stringify($val);
 				return method_exists($arg,'__tostring')?
 					$arg:
 					(addslashes(get_class($arg)).'::'.
@@ -1564,10 +1563,11 @@ class Base extends Prefab {
 	**/
 	function unload($cwd) {
 		chdir($cwd);
-		@session_commit();
+		if (!$error=error_get_last())
+			@session_commit();
 		$handler=$this->hive['UNLOAD'];
 		if ((!$handler || $this->call($handler,$this)===FALSE) &&
-			($error=error_get_last()) && in_array($error['type'],
+			$error && in_array($error['type'],
 			array(E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR)))
 			// Fatal error detected
 			$this->error(500,sprintf(self::E_Fatal,$error['message']),
