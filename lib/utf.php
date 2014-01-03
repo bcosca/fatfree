@@ -197,7 +197,7 @@ class UTF extends Prefab {
 	*	@return string
 	*	@param $str string
 	**/
-	function emojify($str) {
+	function emojify($str,$extraset=array()) {
 		$map=array(
 			':('=>'\u2639', // frown
 			':)'=>'\u263a', // smile
@@ -209,7 +209,7 @@ class UTF extends Prefab {
 			':,'=>'\u1f60f', // think
 			':/'=>'\u1f623', // skeptic
 			'8O'=>'\u1f632', // oops
-		)+Base::instance()->get('EMOJI');
+		)+(is_array($extraset)?$extraset:array());
 		return $this->translate(str_replace(array_keys($map),
 			array_values($map),$str));
 	}
