@@ -61,6 +61,10 @@ class Unicode extends Controller {
 			$utf->strrpos('123 456 789 123 4','123',13)===FALSE,
 			'strrpos with offset (after needle)'
 		);
+		$test->expect(
+			$utf->strrpos('abc 123 456 123 789','123',-8)==4,
+			'strrpos with negative offset'
+		);
 		$str='ᛋᚳᛖᚪᛚ᛫ᚦᛖᚪᚻ᛫ᛗᚪᚾᚾᚪ᛫ᚷᛖᚻᚹᛦᛚᚳ᛫ᛗᛁᚳᛚᚢᚾ᛫ᚻᛦᛏ᛫ᛞᚫᛚᚪᚾ';
 		$test->expect(
 			$utf->strstr($str,'ᛁᚳᛚᚢᚾ',TRUE)=='ᛋᚳᛖᚪᛚ᛫ᚦᛖᚪᚻ᛫ᛗᚪᚾᚾᚪ᛫ᚷᛖᚻᚹᛦᛚᚳ᛫ᛗ',
