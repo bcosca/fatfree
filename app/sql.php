@@ -21,7 +21,8 @@ class SQL extends Controller {
 			$db->exec(
 				array(
 					'PRAGMA temp_store=MEMORY;',
-					'PRAGMA journal_mode=MEMORY;'
+					'PRAGMA journal_mode=MEMORY;',
+					'PRAGMA foreign_keys=ON;'
 				)
 			);
 			//$db=new \DB\SQL('mysql:host=localhost');
@@ -413,7 +414,9 @@ class SQL extends Controller {
 					'DROP TABLE IF EXISTS '.$db->quotekey('tickets').';',
 					'CREATE TABLE tickets ('.
 						$db->quotekey('ticketno').' '.$inc.' PRIMARY KEY,'.
-						$db->quotekey('title').' VARCHAR(128) NOT NULL'.
+						$db->quotekey('title').' VARCHAR(128) NOT NULL,'.
+						'FOREIGN KEY ('.$db->quotekey('title').') '.
+						'REFERENCES movies ('.$db->quotekey('title').')'.
 					');'
 				)
 			);
