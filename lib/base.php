@@ -535,28 +535,23 @@ class Base extends Prefab {
 	*	Convert PHP expression/value to compressed exportable string
 	*	@return string
 	*	@param $arg mixed
-	*	@param $detail bool
 	**/
-	function stringify($arg,$detail=TRUE) {
+	function stringify($arg) {
 		switch (gettype($arg)) {
 			case 'object':
 				$str='';
-				if ($detail)
-					foreach (get_object_vars($arg) as $key=>$val)
-						$str.=($str?',':'').
-							var_export($key,TRUE).'=>'.
-							$this->stringify($val);
-				return method_exists($arg,'__tostring')?
-					$arg:
-					(addslashes(get_class($arg)).'::'.
-						'__set_state(array('.$str.'))');
+				foreach (get_object_vars($arg) as $key=>$val)
+					$str.=($str?',':'').
+						var_export($key,TRUE).'=>'.
+						$this->stringify($val);
+				return get_class($arg).'::'.'__set_state(array('.$str.'))');
 			case 'array':
 				$str='';
 				$num=isset($arg[0]) &&
 					ctype_digit(implode('',array_keys($arg)));
 				foreach ($arg as $key=>$val)
 					$str.=($str?',':'').
-						($num?'':($this->stringify($key).'=>')).
+						($num?'':(var_export($key,TRUE).'=>')).
 							$this->stringify($val);
 				return 'array('.$str.')';
 			default:
@@ -1636,7 +1631,8 @@ class Base extends Prefab {
 		$_SERVER['DOCUMENT_ROOT']=realpath($_SERVER['DOCUMENT_ROOT']);
 		$base='';
 		if (PHP_SAPI!='cli')
-			$base=rtrim(dirname($_SERVER['SCRIPT_NAME']),'/');
+			$base=$this->fixslashes(
+				rtrim(dirname($_SERVER['SCRIPT_NAME']),'/'));
 		$path=preg_replace('/^'.preg_quote($base,'/').'/','',
 			parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH));
 		call_user_func_array('session_set_cookie_params',
