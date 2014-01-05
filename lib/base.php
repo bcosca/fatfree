@@ -544,7 +544,7 @@ class Base extends Prefab {
 					$str.=($str?',':'').
 						var_export($key,TRUE).'=>'.
 						$this->stringify($val);
-				return get_class($arg).'::'.'__set_state(array('.$str.'))');
+				return get_class($arg).'::'.'__set_state(array('.$str.'))';
 			case 'array':
 				$str='';
 				$num=isset($arg[0]) &&
