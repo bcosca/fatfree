@@ -41,29 +41,12 @@ class Unicode extends Controller {
 			'substr (negative offset and specified length)'
 		);
 		$test->expect(
-			$utf->strpos('Góa ē-tàng chia̍h po-lê','tàng')==6,
+			$utf->strpos('Góa ē-tàng chia̍h po-lê','h')==12,
 			'strpos'
 		);
 		$test->expect(
 			$utf->strpos('123 456 789 123 4','123',7)==12,
 			'strpos with offset'
-		);
-		$test->expect(
-			$utf->strrpos(
-				'Μπορώ να φάω σπασμένα γυαλιά χωρίς να πάθω τίποτα.','α')==48,
-			'strrpos'
-		);
-		$test->expect(
-			$utf->strrpos('123 456 789 123 4','123',7)==12,
-			'strrpos with offset (before needle)'
-		);
-		$test->expect(
-			$utf->strrpos('123 456 789 123 4','123',13)===FALSE,
-			'strrpos with offset (after needle)'
-		);
-		$test->expect(
-			$utf->strrpos('abc 123 456 123 789','123',-8)==4,
-			'strrpos with negative offset'
 		);
 		$str='ᛋᚳᛖᚪᛚ᛫ᚦᛖᚪᚻ᛫ᛗᚪᚾᚾᚪ᛫ᚷᛖᚻᚹᛦᛚᚳ᛫ᛗᛁᚳᛚᚢᚾ᛫ᚻᛦᛏ᛫ᛞᚫᛚᚪᚾ';
 		$test->expect(

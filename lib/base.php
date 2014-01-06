@@ -535,16 +535,25 @@ class Base extends Prefab {
 	*	Convert PHP expression/value to compressed exportable string
 	*	@return string
 	*	@param $arg mixed
+	*	@param $stack array
 	**/
-	function stringify($arg) {
+	function stringify($arg,array $stack=NULL) {
+		if ($stack) {
+			foreach ($stack as $node)
+				if ($arg===$node)
+					return '*RECURSION*';
+		}
+		else
+			$stack=array();
 		switch (gettype($arg)) {
 			case 'object':
 				$str='';
 				foreach (get_object_vars($arg) as $key=>$val)
 					$str.=($str?',':'').
 						var_export($key,TRUE).'=>'.
-						$this->stringify($val);
-				return get_class($arg).'::'.'__set_state(array('.$str.'))';
+						$this->stringify($val,
+							array_merge($stack,array($arg)));
+				return get_class($arg).'::__set_state(array('.$str.'))';
 			case 'array':
 				$str='';
 				$num=isset($arg[0]) &&
@@ -552,7 +561,8 @@ class Base extends Prefab {
 				foreach ($arg as $key=>$val)
 					$str.=($str?',':'').
 						($num?'':(var_export($key,TRUE).'=>')).
-							$this->stringify($val);
+						$this->stringify($val,
+							array_merge($stack,array($arg)));
 				return 'array('.$str.')';
 			default:
 				return var_export($arg,TRUE);
