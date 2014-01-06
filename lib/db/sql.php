@@ -123,7 +123,7 @@ class SQL extends \PDO {
 				$cached[0]+$ttl>microtime(TRUE)) {
 				foreach ($arg as $key=>$val) {
 					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
-					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
+					$keys[]='/'.(is_numeric($key)?'\?':':'.preg_quote($key)).'/';
 				}
 			}
 			elseif (is_object($query=$this->prepare($cmd))) {
@@ -138,7 +138,7 @@ class SQL extends \PDO {
 						$query->bindvalue($key,$val,$this->type($val));
 						$vals[]=$fw->stringify($val);
 					}
-					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
+					$keys[]='/'.(is_numeric($key)?'\?':':'.preg_quote($key)).'/';
 				}
 				$query->execute();
 				$error=$query->errorinfo();
