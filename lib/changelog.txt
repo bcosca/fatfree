@@ -1,5 +1,31 @@
 CHANGELOG
 
+3.2.1 (7 January 2014)
+*	NEW: EMOJI variable, UTF->translate(), UTF->emojify(), and UTF->strrev()
+*	Allow empty strings in config()
+*	Add support for turning off php://input buffering via RAW
+	(FALSE by default)
+*	Add Cursor->load() and Cursor->find() TTL support
+*	Support Web->receive() large file downloads via PUT
+*	ONERROR safety check
+*	Fix session CSRF cookie detection
+*	Framework object now passed to route handler contructors
+*	Allow override of DIACRITICS
+*	Various code optimizations
+*	Support log disabling (Issue #483)
+*	Implicit mapper load() on authentication
+*	Declare abstract methods for Cursor derivatives
+*	Support single-quoted HTML/XML attributes (Feature request #503)
+*	Relax property visibility of mappers and derivatives
+*	Deprecated: {{~ ~}} instructions and {{* *}} comments; Use {~ ~} and
+	{* *} instead
+*	Minor fix: Audit->ipv4() return value
+*	Bug fix: Backslashes in BASE not converted on Windows
+*	Bug fix: UTF->substr() with negative offset and specified length
+*	Bug fix: Replace named URL tokens on render()
+*	Bug fix: BASE is not empty when run from document root
+*	Bug fix: stringify() recursion
+
 3.2.0 (18 December 2013)
 *	NEW: Automatic CSRF protection (with IP and User-Agent checks) for
 	sessions mapped to SQL-, Jig-, Mongo- and Cache-based backends

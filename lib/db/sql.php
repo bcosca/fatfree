@@ -1,9 +1,7 @@
 <?php
 
-namespace DB;
-
 /*
-	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -14,6 +12,8 @@ namespace DB;
 
 	Please see the license.txt file for more information.
 */
+
+namespace DB;
 
 //! PDO wrapper
 class SQL extends \PDO {

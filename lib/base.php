@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -13,7 +13,7 @@
 	Please see the license.txt file for more information.
 */
 
-//! Prefab for classes with constructors and static factory methods
+//! Factory class for single-instance objects
 abstract class Prefab {
 
 	/**
@@ -38,7 +38,7 @@ class Base extends Prefab {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.2.1-Dev';
+		VERSION='3.2.2-Dev';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -692,7 +692,7 @@ class Base extends Prefab {
 	*	Remove HTML tags (except those enumerated) and non-printable
 	*	characters to mitigate XSS/code injection attacks
 	*	@return mixed
-	*	@param $var mixed
+	*	@param $arg mixed
 	*	@param $tags string
 	**/
 	function clean($arg,$tags=NULL) {
