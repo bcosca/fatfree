@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -194,7 +194,7 @@ class Web extends Prefab {
 			);
 			return (!file_exists($file['name']) || $overwrite) &&
 				(!$func || $fw->call($func,array($file))!==FALSE) &&
-				$fw->write($file['name'],$fw->read($tmp));
+				rename($tmp,$file['name']);
 		}
 		$out=array();
 		foreach ($_FILES as $item) {
@@ -723,7 +723,6 @@ class Web extends Prefab {
 	function slug($text) {
 		return trim(strtolower(preg_replace('/([^\pL\pN])+/u','-',
 			trim(strtr(str_replace('\'','',$text),
-			Base::instance()->get('DIACRITICS')+
 			array(
 				'Ǎ'=>'A','А'=>'A','Ā'=>'A','Ă'=>'A','Ą'=>'A','Å'=>'A',
 				'Ǻ'=>'A','Ä'=>'Ae','Á'=>'A','À'=>'A','Ã'=>'A','Â'=>'A',
@@ -772,7 +771,7 @@ class Web extends Prefab {
 				'ǜ'=>'u','ǔ'=>'u','ǖ'=>'u','ũ'=>'u','ü'=>'ue','в'=>'v',
 				'ŵ'=>'w','ы'=>'y','ÿ'=>'y','ý'=>'y','ŷ'=>'y','ź'=>'z',
 				'ž'=>'z','з'=>'z','ż'=>'z','ж'=>'zh'
-			))))),'-');
+			)+Base::instance()->get('DIACRITICS'))))),'-');
 	}
 
 	/**

@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -17,11 +17,6 @@ namespace Web;
 
 //! OpenID consumer
 class OpenID extends \Magic {
-
-	//@{ Error messages
-	const
-		E_EndPoint='Unable to find OpenID provider';
-	//@}
 
 	protected
 		//! OpenID provider endpoint URL

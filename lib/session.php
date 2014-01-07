@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -68,7 +68,7 @@ class Session {
 			$jar['expire']?($jar['expire']-time()):0
 		);
 		if (!$sent) {
-			if ($_COOKIE['_'])
+			if (isset($_COOKIE['_']))
 				setcookie('_','',strtotime('-1 year'));
 			call_user_func_array('setcookie',array('_',$csrf)+$jar);
 		}

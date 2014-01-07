@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -284,8 +284,8 @@ class Template extends Preview {
 					if ($match[3]) {
 						// Process attributes
 						preg_match_all(
-							'/(?:\b([\w-]+)'.
-							'(?:\h*=\h*(?:"(.+?)"|\'(.+?)\'))?|'.
+							'/(?:\b([\w-]+)\h*'.
+							'(?:=\h*(?:"(.+?)"|\'(.+?)\'))?|'.
 							'(\{\{.+?\}\}))/s',
 							$match[3],$attr,PREG_SET_ORDER);
 						foreach ($attr as $kv)
@@ -293,8 +293,8 @@ class Template extends Preview {
 								$node['@attrib'][]=$kv[4];
 							else
 								$node['@attrib'][$kv[1]]=
-									(isset($kv[2])?$kv[2]:
-									(isset($kv[3])?$kv[3]:NULL));
+									(empty($kv[2])?
+										(empty($kv[3])?NULL:$kv[3]):$kv[2]);
 					}
 					if ($match[4])
 						// Empty tag

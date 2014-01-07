@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -32,12 +32,28 @@ abstract class Cursor extends \Magic {
 		$trigger=array();
 
 	/**
+	*	Return fields of mapper object as an associative array
+	*	@return array
+	*	@param $obj object
+	**/
+	abstract function cast($obj=NULL);
+
+	/**
 	*	Return records (array of mapper objects) that match criteria
 	*	@return array
 	*	@param $filter string|array
 	*	@param $options array
+	*	@param $ttl int
 	**/
-	abstract function find($filter=NULL,array $options=NULL);
+	abstract function find($filter=NULL,array $options=NULL,$ttl=0);
+
+	/**
+	*	Count records that match criteria
+	*	@return int
+	*	@param $filter array
+	*	@param $ttl int
+	**/
+	abstract function count($filter=NULL,$ttl=0);
 
 	/**
 	*	Insert new record
@@ -50,6 +66,21 @@ abstract class Cursor extends \Magic {
 	*	@return array
 	**/
 	abstract function update();
+
+	/**
+	*	Hydrate mapper object using hive array variable
+	*	@return NULL
+	*	@param $key string
+	*	@param $func callback
+	**/
+	abstract function copyfrom($key,$func=NULL);
+
+	/**
+	*	Populate hive array variable with mapper fields
+	*	@return NULL
+	*	@param $key string
+	**/
+	abstract function copyto($key);
 
 	/**
 	*	Return TRUE if current cursor position is not mapped to any record
@@ -103,9 +134,10 @@ abstract class Cursor extends \Magic {
 	*	@return array|FALSE
 	*	@param $filter string|array
 	*	@param $options array
+	*	@param $ttl int
 	**/
-	function load($filter=NULL,array $options=NULL) {
-		return ($this->query=$this->find($filter,$options)) &&
+	function load($filter=NULL,array $options=NULL,$ttl=0) {
+		return ($this->query=$this->find($filter,$options,$ttl)) &&
 			$this->skip(0)?$this->query[$this->ptr=0]:FALSE;
 	}
 

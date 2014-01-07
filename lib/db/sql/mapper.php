@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -351,25 +351,14 @@ class Mapper extends \DB\Cursor {
 		}
 		if ($this->engine!='oci')
 			$this->_id=$this->db->lastinsertid($seq);
-		if (!$inc) {
-			$ctr=0;
-			$query='';
-			$args='';
-			foreach (array_keys($pkeys) as $pkey) {
-				$query.=($query?' AND ':'').$this->db->quotekey($pkey).'=?';
-				$args[$ctr+1]=$this->fields[$pkey]['value'];
-				$ctr++;
-			}
-			$out=$query?$this->load(array($query,$args)):$this;
-		}
-		else
+		if ($inc)
 			// Reload to obtain default and auto-increment field values
-			$out=$this->load(array($inc.'=?',
+			$this->load(array($inc.'=?',
 				$this->value($this->fields[$inc]['pdo_type'],$this->_id)));
 		if (isset($this->trigger['insert']))
 			\Base::instance()->call($this->trigger['insert'],
 				array($this,$pkeys));
-		return $out;
+		return $this;
 	}
 
 	/**

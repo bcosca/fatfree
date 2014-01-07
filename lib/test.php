@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2009-2013 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
 
@@ -43,9 +43,7 @@ class Test {
 	**/
 	function expect($cond,$text=NULL) {
 		$out=(bool)$cond;
-		if ($this->level==self::FLAG_True && $out ||
-			$this->level==self::FLAG_False && !$out ||
-			$this->level==self::FLAG_Both) {
+		if ($this->level==$out || $this->level==self::FLAG_Both) {
 			$data=array('status'=>$out,'text'=>$text,'source'=>NULL);
 			foreach (debug_backtrace() as $frame)
 				if (isset($frame['file'])) {
