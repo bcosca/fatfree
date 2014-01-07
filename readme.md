@@ -110,7 +110,7 @@ Upgrade if necessary and come back here if you've made the jump to PHP 5.3 or a 
 Time to start writing our first application:-
 
 ``` php
-$f3=require('path/to/base.php');
+$f3 = require('path/to/base.php');
 $f3->route('GET /',
     function() {
         echo 'Hello, world!';
@@ -131,7 +131,7 @@ So we've established our first route. But that won't do much, except to let F3 k
 
 **Can't Get the Example Running?** If you're having trouble getting this simple program to run on your server, you may have to tweak your Web server settings a bit. Take a look at the sample Apache configuration in the following section (along with the Nginx and Lighttpd equivalents).
 
-**Still having trouble?** Make sure the `$f3->require()` method is the very first line of code on the page. `base.php` modifies the HTTP headers, so any character that is printed on the page before this will cause errors.
+**Still having trouble?** Make sure the `$f3 = require('path/to/base.php');` assignment comes before any output in your script. `base.php` modifies the HTTP headers, so any character that is output to the browser before this assignment will cause errors.
 
 ## Routing Engine
 
