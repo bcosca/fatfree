@@ -110,7 +110,7 @@ Upgrade if necessary and come back here if you've made the jump to PHP 5.3 or a 
 Time to start writing our first application:-
 
 ``` php
-$f3=require('path/to/base.php');
+$f3 = require('path/to/base.php');
 $f3->route('GET /',
     function() {
         echo 'Hello, world!';
@@ -131,7 +131,7 @@ So we've established our first route. But that won't do much, except to let F3 k
 
 **Can't Get the Example Running?** If you're having trouble getting this simple program to run on your server, you may have to tweak your Web server settings a bit. Take a look at the sample Apache configuration in the following section (along with the Nginx and Lighttpd equivalents).
 
-**Still having trouble?** Make sure the `$f3->require()` method is the very first line of code on the page. `base.php` modifies the HTTP headers, so any character that is printed on the page before this will cause errors.
+**Still having trouble?** Make sure the `$f3 = require('path/to/base.php');` assignment comes before any output in your script. `base.php` modifies the HTTP headers, so any character that is output to the browser before this assignment will cause errors.
 
 ## Routing Engine
 
@@ -179,7 +179,7 @@ $f3->route('GET /brew/@count',
 
 This example shows how we can specify a token `@count` to represent part of a URL. The framework will serve any request URL that matches the `/brew/` prefix, like `/brew/99`, `/brew/98`, etc. This will display `'99 bottles of beer on the wall'` and `'98 bottles of beer on the wall'`, respectively. Fat-Free will also accept a page request for `/brew/unbreakable`. (Expect this to display `'unbreakable bottles of beer on the wall'`.) When such a dynamic route is specified, Fat-Free automagically populates the global `PARAMS` array variable with the value of the captured strings in the URL. The `$f3->get()` call inside the callback function retrieves the value of a framework variable. You can certainly apply this method in your code as part of the presentation or business logic. But we'll discuss that in greater detail later.
 
-Notice that Fat-Free understands array dot-notation. You can certainly use `PARAMS['count']` regular notation, which is prone to typo errors and unbalanced braces. The framework also permits `@PARAMS.count` which is somehow similar to Javascript.
+Notice that Fat-Free understands array dot-notation. You can use `PARAMS['count']` regular notation instead in code, which is prone to typo errors and unbalanced braces. In views and templates, the framework permits `@PARAMS.count` notation which is somewhat similar to Javascript. (We'll cover views and templates later.)
 
 Here's another way to access tokens in a request pattern:-
 
@@ -279,7 +279,7 @@ You also need to set up Apache so it knows the physical location of `index.php` 
 ``` apache
 DocumentRoot "/var/www/html"
 <Directory "/var/www/html">
-    Options -Indexes FollowSymLinks Includes
+    Options -Indexes +FollowSymLinks +Includes
     AllowOverride All
     Order allow,deny
     Allow from All
@@ -294,7 +294,7 @@ NameVirtualHost *
     ServerName site1.com
     DocumentRoot "/var/www/site1"
     <Directory "/var/www/site1">
-        Options -Indexes FollowSymLinks Includes
+        Options -Indexes +FollowSymLinks +Includes
         AllowOverride All
         Order allow,deny
         Allow from All
@@ -304,7 +304,7 @@ NameVirtualHost *
     ServerName site2.com
     DocumentRoot "/var/www/site2"
     <Directory "/var/www/site2">
-        Options -Indexes FollowSymLinks Includes
+        Options -Indexes +FollowSymLinks +Includes
         AllowOverride All
         Order allow,deny
         Allow from All
