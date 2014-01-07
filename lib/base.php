@@ -1641,8 +1641,8 @@ class Base extends Prefab {
 		$_SERVER['DOCUMENT_ROOT']=realpath($_SERVER['DOCUMENT_ROOT']);
 		$base='';
 		if (PHP_SAPI!='cli')
-			$base=$this->fixslashes(
-				rtrim(dirname($_SERVER['SCRIPT_NAME']),'/'));
+			$base=rtrim($this->fixslashes(
+				dirname($_SERVER['SCRIPT_NAME'])),'/');
 		$path=preg_replace('/^'.preg_quote($base,'/').'/','',
 			parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH));
 		call_user_func_array('session_set_cookie_params',
