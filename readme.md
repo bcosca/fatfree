@@ -844,7 +844,7 @@ F3 allows you to embed expressions in templates. These expressions may take on v
 {{ @obj->property }}
 ```
 
-An additional note about array expressions: Take note that `@foo.@bar` is a string concatenation *`$foo.$bar`), whereas `@foo.bar` translates to `$foo['bar']`. If `$foo[$bar]` is what you intended, use the `@foo[@bar]` regular notation.
+An additional note about array expressions: Take note that `@foo.@bar` is a string concatenation `$foo.$bar`), whereas `@foo.bar` translates to `$foo['bar']`. If `$foo[$bar]` is what you intended, use the `@foo[@bar]` regular notation.
 
 Framework variables may also contain anonymous functions:
 
@@ -2481,6 +2481,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Ryan McKillop
 * Chris Clarke
 * Ngan Ting On
+* Eli Argon
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
