@@ -240,7 +240,7 @@ class Base extends Prefab {
 					$var=array();
 				$var=&$var[$part];
 			}
-			elseif (is_array($var) && isset($var[$part]))
+			elseif (isset($var[$part]))
 				$var=$var[$part];
 			else
 				return $this->null;
