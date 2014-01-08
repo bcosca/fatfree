@@ -38,7 +38,7 @@ class Base extends Prefab {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.2.2-Dev';
+		VERSION='3.2.1-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -1249,7 +1249,7 @@ class Base extends Prefab {
 							unset($args[$key]);
 				if (is_string($handler))
 					// Replace route pattern tokens in handler if any
-					$handler=preg_replace_callback('/@(\w+\b)/',
+					$handler=preg_replace_callback('/\{?\h*@(\w+\b)\h*\}?/',
 						function($id) use($args) {
 							return isset($args[$id[1]])?$args[$id[1]]:$id[0];
 						},
