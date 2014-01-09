@@ -279,10 +279,10 @@ class SQL extends \PDO {
 						$rows[$row[$val[1]]]=array(
 							'type'=>$row[$val[2]],
 							'pdo_type'=>
-								preg_match('/int\b|int(?=eger)|bool/i',
+								preg_match('/int\b|int(?=eger)|tinyint|bool/i',
 									$row[$val[2]],$parts)?
 								constant('\PDO::PARAM_'.
-									strtoupper($parts[0])):
+									strtoupper($parts[0]=='tinyint'?'bool':$parts[0])):
 								\PDO::PARAM_STR,
 							'default'=>$row[$val[3]],
 							'nullable'=>$row[$val[4]]==$val[5],
