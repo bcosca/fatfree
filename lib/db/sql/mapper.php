@@ -57,7 +57,7 @@ class Mapper extends \DB\Cursor {
 	function set($key,$val) {
 		if (array_key_exists($key,$this->fields)) {
 			$val=is_null($val) && $this->fields[$key]['nullable']?
-				NULL:$this->value($this->fields[$key]['pdo_type'],$val);
+				NULL:$this->db->value($this->fields[$key]['pdo_type'],$val);
 			if ($this->fields[$key]['value']!==$val ||
 				$this->fields[$key]['default']!==$val)
 				$this->fields[$key]['changed']=TRUE;
@@ -108,25 +108,6 @@ class Mapper extends \DB\Cursor {
 				return 'bool';
 			case \PDO::PARAM_STR:
 				return 'string';
-		}
-	}
-
-	/**
-	*	Cast value to PHP type
-	*	@return scalar
-	*	@param $type string
-	*	@param $val scalar
-	**/
-	function value($type,$val) {
-		switch ($type) {
-			case \PDO::PARAM_NULL:
-				return (unset)$val;
-			case \PDO::PARAM_INT:
-				return (int)$val;
-			case \PDO::PARAM_BOOL:
-				return (bool)$val;
-			case \PDO::PARAM_STR:
-				return (string)$val;
 		}
 	}
 
@@ -225,7 +206,7 @@ class Mapper extends \DB\Cursor {
 			foreach ($row as $field=>&$val) {
 				if (array_key_exists($field,$this->fields)) {
 					if (!is_null($val) || !$this->fields[$field]['nullable'])
-						$val=$this->value(
+						$val=$this->db->value(
 							$this->fields[$field]['pdo_type'],$val);
 				}
 				elseif (array_key_exists($field,$this->adhoc))
@@ -354,7 +335,8 @@ class Mapper extends \DB\Cursor {
 		if ($inc)
 			// Reload to obtain default and auto-increment field values
 			$this->load(array($inc.'=?',
-				$this->value($this->fields[$inc]['pdo_type'],$this->_id)));
+				$this->db->value($this->fields[$inc]['pdo_type'],
+					$this->_id)));
 		if (isset($this->trigger['insert']))
 			\Base::instance()->call($this->trigger['insert'],
 				array($this,$pkeys));

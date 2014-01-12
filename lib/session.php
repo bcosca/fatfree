@@ -155,7 +155,7 @@ class Session {
 		@session_start();
 		$fw=\Base::instance();
 		$headers=$fw->get('HEADERS');
-		if (($csrf=$this->csrf()) &&
+		if (!$fw->get('AJAX') && ($csrf=$this->csrf()) &&
 			((!isset($_COOKIE['_']) || $_COOKIE['_']!=$csrf) ||
 			($ip=$this->ip()) && $ip!=$fw->get('IP') ||
 			($agent=$this->agent()) && !isset($headers['User-Agent']) ||

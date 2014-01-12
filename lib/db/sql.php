@@ -82,6 +82,24 @@ class SQL extends \PDO {
 		}
 	}
 
+	/**
+	*	Cast value to PHP type
+	*	@return scalar
+	*	@param $type string
+	*	@param $val scalar
+	**/
+	function value($type,$val) {
+		switch ($type) {
+			case \PDO::PARAM_NULL:
+				return (unset)$val;
+			case \PDO::PARAM_INT:
+				return (int)$val;
+			case \PDO::PARAM_BOOL:
+				return (bool)$val;
+			case \PDO::PARAM_STR:
+				return (string)$val;
+		}
+	}
 
 	/**
 	*	Execute SQL statement(s)
@@ -131,12 +149,13 @@ class SQL extends \PDO {
 					if (is_array($val)) {
 						// User-specified data type
 						$query->bindvalue($key,$val[0],$val[1]);
-						$vals[]=$fw->stringify($val[0]);
+						$vals[]=$fw->stringify($this->value($val[1],$val[0]));
 					}
 					else {
 						// Convert to PDO data type
-						$query->bindvalue($key,$val,$this->type($val));
-						$vals[]=$fw->stringify($val);
+						$query->bindvalue($key,$val,
+							$type=$this->type($val));
+						$vals[]=$fw->stringify($this->value($type,$val));
 					}
 					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
 				}

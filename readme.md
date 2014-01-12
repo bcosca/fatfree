@@ -2408,6 +2408,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Christian Knuth
 * Sascha Ohms
 * Jermaine Maree
+* Lars Brandi Jensen
 * Sergey Zaretsky
 * Daniel Kloke
 * Brian Nelson
@@ -2472,7 +2473,6 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Дмитриев Иван
 * IT_GAP
 * Sergeev Andrey
-* Lars Brandi Jensen
 * Steven J Mixon
 * Roland Fath
 * Justin Parker
