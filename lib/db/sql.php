@@ -293,9 +293,10 @@ class SQL extends \PDO {
 				// SET GLOBAL innodb_stats_on_metadata=0;
 				// This requires SUPER privilege!
 				$rows=array();
-				foreach ($this->exec($val[0],NULL,$ttl) as $row)
+				foreach ($this->exec($val[0],NULL,$ttl) as $row) {
+					$field=trim($row[$val[1]],'\'"[]`');
 					if (!$fields || in_array($row[$val[1]],$fields))
-						$rows[trim($row[$val[1]],'\'"[]`')]=array(
+						$rows[$field]=array(
 							'type'=>$row[$val[2]],
 							'pdo_type'=>
 								preg_match('/int\b|int(?=eger)|bool/i',
@@ -307,6 +308,7 @@ class SQL extends \PDO {
 							'nullable'=>$row[$val[4]]==$val[5],
 							'pkey'=>$row[$val[6]]==$val[7]
 						);
+				}
 				return $rows;
 			}
 		return FALSE;
