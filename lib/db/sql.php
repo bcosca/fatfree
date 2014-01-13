@@ -302,9 +302,8 @@ class SQL extends \PDO {
 				// This requires SUPER privilege!
 				$rows=array();
 				foreach ($this->exec($val[0],NULL,$ttl) as $row) {
-					$field=trim($row[$val[1]],'\'"[]`');
-					if (!$fields || in_array($field,$fields))
-						$rows[$field]=array(
+					if (!$fields || in_array($row[$val[1]],$fields))
+						$rows[$row[$val[1]]]=array(
 							'type'=>$row[$val[2]],
 							'pdo_type'=>
 								preg_match('/int\b|int(?=eger)|bool/i',
