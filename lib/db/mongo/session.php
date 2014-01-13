@@ -159,8 +159,9 @@ class Session extends Mapper {
 		$fw=\Base::instance();
 		$headers=$fw->get('HEADERS');
 		if (($ip=$this->ip()) && $ip!=$fw->get('IP') ||
-			($agent=$this->agent()) && !isset($headers['User-Agent']) ||
-				$agent!=$headers['User-Agent']) {
+			($agent=$this->agent()) &&
+			(!isset($headers['User-Agent']) ||
+				$agent!=$headers['User-Agent'])) {
 			session_destroy();
 			$fw->error(403);
 		}
