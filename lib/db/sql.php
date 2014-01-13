@@ -171,6 +171,12 @@ class SQL extends \PDO {
 					'(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING)\b/is',
 					$cmd)) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);
+					foreach ($result as $pos=>$rec) {
+						unset($result[$pos]);
+						$result[$pos]=array();
+						foreach ($rec as $key=>$val)
+							$result[$pos][trim($key,'\'"[]`')]=$val;
+					}
 					$this->rows=count($result);
 					if ($fw->get('CACHE') && $ttl)
 						// Save to cache backend
