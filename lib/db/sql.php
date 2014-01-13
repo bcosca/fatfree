@@ -295,7 +295,7 @@ class SQL extends \PDO {
 				$rows=array();
 				foreach ($this->exec($val[0],NULL,$ttl) as $row) {
 					$field=trim($row[$val[1]],'\'"[]`');
-					if (!$fields || in_array($row[$val[1]],$fields))
+					if (!$fields || in_array($field,$fields))
 						$rows[$field]=array(
 							'type'=>$row[$val[2]],
 							'pdo_type'=>
