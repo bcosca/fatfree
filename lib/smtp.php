@@ -23,7 +23,7 @@ class SMTP extends Magic {
 		E_Attach='Attachment %s not found';
 	//@}
 
-	private
+	protected
 		//! Message properties
 		$headers,
 		//! E-mail attachments

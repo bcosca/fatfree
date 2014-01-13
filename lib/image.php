@@ -33,7 +33,7 @@ class Image {
 		POS_Bottom=32;
 	//@}
 
-	private
+	protected
 		//! Source filename
 		$file,
 		//! Image resource

@@ -18,7 +18,7 @@ namespace DB;
 //! PDO wrapper
 class SQL extends \PDO {
 
-	private
+	protected
 		//! UUID
 		$uuid,
 		//! Data source name

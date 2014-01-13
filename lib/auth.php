@@ -22,7 +22,7 @@ class Auth {
 		E_SMTP='SMTP connection failure';
 	//@}
 
-	private
+	protected
 		//! Auth storage
 		$storage,
 		//! Mapper object
