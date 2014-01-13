@@ -295,7 +295,7 @@ class SQL extends \PDO {
 				$rows=array();
 				foreach ($this->exec($val[0],NULL,$ttl) as $row)
 					if (!$fields || in_array($row[$val[1]],$fields))
-						$rows[$row[$val[1]]]=array(
+						$rows[trim($row[$val[1]],'\'"[]`')]=array(
 							'type'=>$row[$val[2]],
 							'pdo_type'=>
 								preg_match('/int\b|int(?=eger)|bool/i',

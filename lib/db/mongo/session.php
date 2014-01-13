@@ -158,16 +158,9 @@ class Session extends Mapper {
 		@session_start();
 		$fw=\Base::instance();
 		$headers=$fw->get('HEADERS');
-		if (!$fw->get('AJAX') && ($csrf=$this->csrf()) &&
-			((!isset($_COOKIE['_']) || $_COOKIE['_']!=$csrf) ||
-			($ip=$this->ip()) && $ip!=$fw->get('IP') ||
+		if (($ip=$this->ip()) && $ip!=$fw->get('IP') ||
 			($agent=$this->agent()) && !isset($headers['User-Agent']) ||
-				$agent!=$headers['User-Agent'])) {
-			$jar=$fw->get('JAR');
-			$jar['expire']=strtotime('-1 year');
-			call_user_func_array('setcookie',
-				array_merge(array('_',''),$jar));
-			unset($_COOKIE['_']);
+				$agent!=$headers['User-Agent']) {
 			session_destroy();
 			$fw->error(403);
 		}
@@ -176,8 +169,6 @@ class Session extends Mapper {
 		if ($this->load(array('session_id'=>session_id()))) {
 			$this->set('csrf',$csrf);
 			$this->save();
-			call_user_func_array('setcookie',
-				array('_',$csrf)+$fw->get('JAR'));
 		}
 	}
 
