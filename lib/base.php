@@ -120,8 +120,6 @@ class Base extends Prefab {
 		$init,
 		//! Language lookup sequence
 		$languages,
-		//! Equivalent Locales
-		$locales,
 		//! Default fallback language
 		$fallback='en',
 		//! NULL reference
@@ -225,25 +223,15 @@ class Base extends Prefab {
 				$obj=TRUE;
 			elseif ($obj) {
 				$obj=FALSE;
-				if ($add) {
-					if (!is_object($var))
-						$var=new stdclass;
-					$var=&$var->$part;
-				}
-				elseif (isset($var->$part))
-					$var=$var->$part;
-				else
-					return $this->null;
+				if (!is_object($var))
+					$var=new stdclass;
+				$var=&$var->$part;
 			}
-			elseif ($add) {
+			else {
 				if (!is_array($var))
 					$var=array();
 				$var=&$var[$part];
 			}
-			elseif (isset($var[$part]))
-				$var=$var[$part];
-			else
-				return $this->null;
 		if ($parts[0]=='ALIASES')
 			$var=$this->build($var);
 		return $var;
@@ -725,7 +713,6 @@ class Base extends Prefab {
 	function format() {
 		$args=func_get_args();
 		$val=array_shift($args);
-		setlocale(LC_ALL,str_replace('-','_',$this->locales));
 		// Get formatting rules
 		$conv=localeconv();
 		return preg_replace_callback(
@@ -845,7 +832,7 @@ class Base extends Prefab {
 			}
 		}
 		$this->languages=array_unique($this->languages);
-		$this->locales=array();
+		$locales=array();
 		$windows=preg_match('/^win/i',PHP_OS);
 		foreach ($this->languages as $locale) {
 			if ($windows) {
@@ -855,9 +842,10 @@ class Base extends Prefab {
 					$country=@constant('ISO::CC_'.strtolower($parts[1])))
 					$locale.='-'.$country;
 			}
-			$this->locales[]=$locale;
-			$this->locales[]=$locale.'.'.ini_get('default_charset');
+			$locales[]=$locale;
+			$locales[]=$locale.'.'.ini_get('default_charset');
 		}
+		setlocale(LC_ALL,str_replace('-','_',$locales));
 		return implode(',',$this->languages);
 	}
 
