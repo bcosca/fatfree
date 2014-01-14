@@ -1411,42 +1411,39 @@ class Base extends Prefab {
 	function config($file) {
 		preg_match_all(
 			'/(?<=^|\n)(?:'.
-			'(?:;[^\n]*)|(?:<\?php.+?\?>?)|'.
-			'(?:\[(.+?)\])|'.
-			'(.+?)\h*=\h*'.
-			'((?:\\\\\h*\r?\n|.+?)*)'.
+				'(?:\[(?<section>.+?)\])|'.
+				'(?<lval>.+?)\h*=\h*'.
+				'(?<rval>(?:\\\\\h*\r?\n|.+?)*)'.
 			')(?=\r?\n|$)/',
 			$this->read($file),$matches,PREG_SET_ORDER);
 		if ($matches) {
 			$sec='globals';
 			foreach ($matches as $match) {
-				if (count($match)<2)
-					continue;
-				if ($match[1])
-					$sec=$match[1];
+				if ($match['section'])
+					$sec=$match['section'];
 				elseif (in_array($sec,array('routes','maps'))) {
 					call_user_func_array(
 						array($this,rtrim($sec,'s')),
-						array_merge(array($match[2]),str_getcsv($match[3])));
+						array_merge(array($match['lval']),
+							str_getcsv($match['rval'])));
 				}
 				else {
 					$args=array_map(
 						function($val) {
-							$quote=(isset($val[0]) && $val[0]=="\x00");
-							$val=trim($val);
-							if (!$quote && is_numeric($val))
+							if (is_numeric($val))
 								return $val+0;
+							$val=ltrim($val);
 							if (preg_match('/^\w+$/i',$val) && defined($val))
 								return constant($val);
 							return preg_replace('/\\\\\h*(\r?\n)/','\1',$val);
 						},
 						// Mark quoted strings with 0x00 whitespace
-						str_getcsv(preg_replace(
-							'/(")(.*?)\1/',"\\1\x00\\2\\1",$match[3]))
+						str_getcsv(preg_replace('/(?<!\\\\)(")(.*?)\1/',
+							"\\1\x00\\2\\1",$match['rval']))
 					);
 					call_user_func_array(array($this,'set'),
 						array_merge(
-							array($match[2]),
+							array($match['lval']),
 							count($args)>1?array($args):$args));
 				}
 			}
