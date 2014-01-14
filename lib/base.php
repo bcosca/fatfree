@@ -864,7 +864,6 @@ class Base extends Prefab {
 			elseif (is_file($file=$base.'.ini')) {
 				preg_match_all(
 					'/(?<=^|\n)(?:'.
-					'(?:;[^\n]*)|(?:<\?php.+?\?>?)|'.
 					'(.+?)\h*=\h*'.
 					'((?:\\\\\h*\r?\n|.+?)*)'.
 					')(?=\r?\n|$)/',
@@ -985,13 +984,12 @@ class Base extends Prefab {
 		// Analyze stack trace
 		foreach ($trace as $frame) {
 			$line='';
-			if ($debug>1) {
-				if (isset($frame['class']))
-					$line.=$frame['class'].$frame['type'];
-				if (isset($frame['function']))
-					$line.=$frame['function'].'('.(isset($frame['args'])?
+			if (isset($frame['class']))
+				$line.=$frame['class'].$frame['type'];
+			if (isset($frame['function']))
+				$line.=$frame['function'].'('.
+					($debug>2 && isset($frame['args'])?
 						$this->csv($frame['args']):'').')';
-			}
 			$src=$this->fixslashes(str_replace($_SERVER['DOCUMENT_ROOT'].
 				'/','',$frame['file'])).':'.$frame['line'].' ';
 			error_log('- '.$src.$line);
@@ -1136,8 +1134,7 @@ class Base extends Prefab {
 			else
 				$url=$this->hive['BASE'].$url;
 			header('Location: '.$url);
-			$this->status($permanent?
-				301:($_SERVER['SERVER_PROTOCOL']<'HTTP/1.1'?302:303));
+			$this->status($permanent?301:302);
 			die;
 		}
 		$this->mock('GET '.$url);
@@ -1306,7 +1303,7 @@ class Base extends Prefab {
 		}
 		if (!$allowed)
 			// URL doesn't match any route
-			$this->error(404);
+			$this->error(501);
 		elseif (PHP_SAPI!='cli') {
 			// Unhandled HTTP method
 			header('Allow: '.implode(',',$allowed));
@@ -1330,7 +1327,7 @@ class Base extends Prefab {
 			preg_match('/(.+)\h*(->|::)\h*(.+)/s',$func,$parts)) {
 			// Convert string to executable PHP callback
 			if (!class_exists($parts[1]))
-				$this->error(500,sprintf(self::E_Class,
+				user_error(sprintf(self::E_Class,
 					is_string($func)?$parts[1]:$this->stringify()));
 			if ($parts[2]=='->')
 				$parts[1]=is_subclass_of($parts[1],'Prefab')?
@@ -1338,10 +1335,10 @@ class Base extends Prefab {
 					new $parts[1]($this);
 			$func=array($parts[1],$parts[3]);
 		}
-		if (!is_callable($func) && $hooks=='beforeroute,afterroute')
+		if (!is_callable($func))
 			// No route handler
-			$this->error(500,sprintf(self::E_Method,
-				is_string($func)?$parts[0]:$this->stringify($func)));
+			user_error(sprintf(self::E_Method,
+				is_string($func)?$func:$this->stringify($func)));
 		$obj=FALSE;
 		if (is_array($func)) {
 			$hooks=$this->split($hooks);
@@ -1560,7 +1557,7 @@ class Base extends Prefab {
 			$error && in_array($error['type'],
 			array(E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR)))
 			// Fatal error detected
-			$this->error(500,sprintf(self::E_Fatal,$error['message']),
+			$this->error(sprintf(self::E_Fatal,$error['message']),
 				array($error));
 	}
 
