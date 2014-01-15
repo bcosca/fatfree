@@ -1303,7 +1303,7 @@ class Base extends Prefab {
 		}
 		if (!$allowed)
 			// URL doesn't match any route
-			$this->error(501);
+			$this->error(404);
 		elseif (PHP_SAPI!='cli') {
 			// Unhandled HTTP method
 			header('Allow: '.implode(',',$allowed));
