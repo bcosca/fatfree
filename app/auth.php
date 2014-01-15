@@ -14,7 +14,7 @@ class Auth extends Controller {
 			mkdir('tmp/',\Base::MODE,TRUE);
 		$db=new \DB\Jig('tmp/');
 		$db->drop();
-		$user=new Extend($db,'users');
+		$user=new \DB\Jig\Mapper($db,'users');
 		$user->set('user_id','admin');
 		$user->set('password','secret');
 		$user->save();
@@ -70,9 +70,5 @@ class Auth extends Controller {
 		}
 		$f3->set('results',$test->results());
 	}
-
-}
-
-class Extend extends \DB\Jig\Mapper {
 
 }
