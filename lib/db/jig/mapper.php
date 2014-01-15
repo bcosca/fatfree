@@ -29,6 +29,14 @@ class Mapper extends \DB\Cursor {
 		$document=array();
 
 	/**
+	*	Return database type
+	*	@return string
+	**/
+	function dbtype() {
+		return 'Jig';
+	}
+
+	/**
 	*	Return TRUE if field is defined
 	*	@return bool
 	*	@param $key string

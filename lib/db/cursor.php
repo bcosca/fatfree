@@ -32,6 +32,12 @@ abstract class Cursor extends \Magic {
 		$trigger=array();
 
 	/**
+	*	Return database type
+	*	@return string
+	**/
+	abstract function dbtype();
+
+	/**
 	*	Return fields of mapper object as an associative array
 	*	@return array
 	*	@param $obj object

@@ -1003,7 +1003,7 @@ class Base extends Prefab {
 			'text'=>$text,
 			'trace'=>$trace
 		);
-		if (!$debug && ob_get_level())
+		if (ob_get_level())
 			ob_end_clean();
 		$handler=isset($this->hive['ONERROR'])?$this->hive['ONERROR']:NULL;
 		$this->hive['ONERROR']=NULL;

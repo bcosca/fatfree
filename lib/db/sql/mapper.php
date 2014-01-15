@@ -40,6 +40,14 @@ class Mapper extends \DB\Cursor {
 		$adhoc=array();
 
 	/**
+	*	Return database type
+	*	@return string
+	**/
+	function dbtype() {
+		return 'SQL';
+	}
+
+	/**
 	*	Return TRUE if field is defined
 	*	@return bool
 	*	@param $key string

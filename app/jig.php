@@ -22,6 +22,10 @@ class Jig extends Controller {
 		);
 		$movie=new \DB\Jig\Mapper($db,'movies');
 		$test->expect(
+			$type=$movie->dbtype(),
+			'DB type: '.$type
+		);
+		$test->expect(
 			is_object($movie),
 			'Mapper instantiated'
 		);

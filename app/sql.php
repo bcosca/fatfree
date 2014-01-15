@@ -195,6 +195,10 @@ class SQL extends Controller {
 			);
 			$movie=new \DB\SQL\Mapper($db,'movies');
 			$test->expect(
+				$type=$movie->dbtype(),
+				'DB type: '.$type
+			);
+			$test->expect(
 				is_object($movie),
 				'Mapper instantiated'
 			);

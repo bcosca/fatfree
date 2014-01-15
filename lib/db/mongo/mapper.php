@@ -29,6 +29,14 @@ class Mapper extends \DB\Cursor {
 		$cursor;
 
 	/**
+	*	Return database type
+	*	@return string
+	**/
+	function dbtype() {
+		return 'Mongo';
+	}
+
+	/**
 	*	Return TRUE if field is defined
 	*	@return bool
 	*	@param $key string

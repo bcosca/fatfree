@@ -221,8 +221,7 @@ class Auth {
 	**/
 	function __construct($storage,array $args=NULL) {
 		if (is_object($storage) && is_a($storage,'DB\Cursor')) {
-			$ref=new ReflectionClass(get_class($storage));
-			$this->storage=basename(dirname($ref->getfilename()));
+			$this->storage=$storage->dbtype();
 			$this->mapper=$storage;
 			unset($ref);
 		}
