@@ -156,10 +156,15 @@ class Base extends Prefab {
 				unset($var);
 			}
 		elseif (preg_match_all('/@(\w+)/',$url,$matches,PREG_SET_ORDER))
-			foreach ($matches as $match)
+			foreach ($matches as $match) {
 				if (array_key_exists($match[1],$this->hive['PARAMS']))
 					$url=str_replace($match[0],
 						$this->hive['PARAMS'][$match[1]],$url);
+				while (strpos($url,'*')>0) {
+					$token=substr_count($url,'/',0,strpos($url,'*'));
+					$url=substr_replace($url,$this->get('PARAMS.'.($token-1)),strpos($url,'*'),1);					
+				}
+			}	
 		return $url;
 	}
 
