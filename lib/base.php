@@ -1232,7 +1232,7 @@ class Base extends Prefab {
 					foreach (array_keys($args) as $key)
 						if (is_numeric($key) && $key)
 							unset($args[$key]);
-				if (is_string($handler))
+				if (is_string($handler)) {
 					// Replace route pattern tokens in handler if any
 					$handler=preg_replace_callback('/@(\w+\b)/',
 						function($id) use($args) {
@@ -1240,6 +1240,10 @@ class Base extends Prefab {
 						},
 						$handler
 					);
+					if (preg_match('/(.+)\h*(?:->|::)/',$handler,$match) &&
+						!class_exists($match[1]))
+						$this->error(404);
+				}
 				// Capture values of route pattern tokens
 				$this->hive['PARAMS']=$args=array_map('urldecode',$args);
 				// Save matching route
