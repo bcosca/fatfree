@@ -168,7 +168,8 @@ class OpenID extends \Magic {
 			$_SERVER['QUERY_STRING'],$matches,PREG_SET_ORDER);
 		foreach ($matches as $match)
 			$this->args[$match[1]]=urldecode($match[2]);
-		if ($this->args['mode']!='error' &&
+		if (isset($this->args['mode']) &&
+			$this->args['mode']!='error' &&
 			$this->url=$this->discover($proxy)) {
 			$this->args['mode']='check_authentication';
 			$var=array();
