@@ -636,7 +636,7 @@ $f3->set('ONERROR',
         // custom error handler code goes here
         // use this if you want to display errors in a
         // format consistent with your site's theme
-        echo $f3->get('ERROR.title');
+        echo $f3->get('ERROR.status');
     }
 );
 ```
@@ -644,9 +644,9 @@ $f3->set('ONERROR',
 F3 maintains a global variable containing the details of the latest error that occurred in your application. The `ERROR` variable is an array structured as follows:-
 
 ```
-ERROR.code - displays the error code (404, 500, etc.)
-ERROR.title - header and page title
-ERROR.text - error context
+ERROR.code - the error code (404, 500, etc.)
+ERROR.status - header and page title
+ERROR.text - error contextual message
 ERROR.trace - stack trace
 ```
 
@@ -2134,7 +2134,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `array ERROR`
 
-* Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.title` contains a brief description of the error. `ERROR.text` provides greater detail. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
+* Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.status` contains a brief description of the error. `ERROR.text` provides more details. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
 
 `bool ESCAPE`
 
