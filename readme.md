@@ -644,9 +644,9 @@ $f3->set('ONERROR',
 F3 maintains a global variable containing the details of the latest error that occurred in your application. The `ERROR` variable is an array structured as follows:-
 
 ```
-ERROR.code - displays the error code (404, 500, etc.)
+ERROR.code - the error code (404, 500, etc.)
 ERROR.status - header and page title
-ERROR.text - error context
+ERROR.text - error contextual message
 ERROR.trace - stack trace
 ```
 
@@ -2134,7 +2134,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `array ERROR`
 
-* Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.status` contains a brief description of the error. `ERROR.text` provides more detail. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
+* Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.status` contains a brief description of the error. `ERROR.text` provides more details. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
 
 `bool ESCAPE`
 
@@ -2408,7 +2408,6 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Christian Knuth
 * Sascha Ohms
 * Jermaine Maree
-* Lars Brandi Jensen
 * Sergey Zaretsky
 * Daniel Kloke
 * Brian Nelson
@@ -2467,12 +2466,13 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Philipp Hirsch
 * Aurélien Botermans
 * Christian Treptow
-* Кубарев Дмитрий
+* ??????? ???????
 * Alexandru Catalin Trandafir
 * Leigh Harrison
-* Дмитриев Иван
+* ???????? ????
 * IT_GAP
 * Sergeev Andrey
+* Lars Brandi Jensen
 * Steven J Mixon
 * Roland Fath
 * Justin Parker
@@ -2488,6 +2488,6 @@ Special thanks to the selfless others who expressed their desire to remain anony
 [![Paypal](ui/images/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
 [![Bitcoin](ui/images/bitcoin.png)](https://coinbase.com/checkouts/7986a0da214006256d470f2f8e1a15cf)
 
-**Copyright (c) 2009-2014 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
+**Copyright (c) 2009-2013 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)
