@@ -311,10 +311,6 @@ class Base extends Prefab {
 		if (preg_match('/^JAR\b/',$key))
 			call_user_func_array(
 				'session_set_cookie_params',$this->hive['JAR']);
-		elseif (preg_match('/^SESSION\b/',$key)) {
-			session_commit();
-			session_start();
-		}
 		$cache=Cache::instance();
 		if ($cache->exists($hash=$this->hash($key).'.var') || $ttl)
 			// Persist the key-value pair
