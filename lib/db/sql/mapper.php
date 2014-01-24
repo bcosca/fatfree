@@ -200,10 +200,17 @@ class Mapper extends \DB\Cursor {
 			}
 			$sql.=' WHERE '.$filter;
 		}
-		if ($options['group'])
+		if ($options['group']) {
+			$db=$this->db;
 			$sql.=' GROUP BY '.implode(',',array_map(
-				array($this->db,'quotekey'),
+				function($str) use($db) {
+					return preg_match('/^(\w+)/i',
+						trim($str),$parts)
+						?$db->quotekey($parts[1])
+						:$str;
+				},
 				explode(',',$options['group'])));
+		}
 		if ($options['order']) {
 			$db=$this->db;
 			$sql.=' ORDER BY '.implode(',',array_map(
