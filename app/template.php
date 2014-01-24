@@ -33,6 +33,10 @@ class Template extends Controller {
 			$expr.': '.$eval
 		);
 		$test->expect(
+			$tpl->token($expr='@foo.0')==($eval='$foo[0]'),
+			$expr.': '.$eval
+		);
+		$test->expect(
 			$tpl->token($expr='@foo.@bar')==($eval='$foo.$bar'),
 			$expr.': '.$eval
 		);

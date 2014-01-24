@@ -188,8 +188,10 @@ class Base extends Prefab {
 				return '$'.preg_replace_callback(
 					'/\.(\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
 					function($expr) use($fw) {
-						return '['.var_export($expr[1]?:
-							$fw->compile($expr[2]),TRUE).']';
+						if (ctype_digit($expr[1]))
+							$expr[1] = (int) $expr[1];
+						return '['.var_export(($expr[1]||is_int($expr[1]))?
+							$expr[1]:$fw->compile($expr[2]),TRUE).']';
 					},
 					$var[1]
 				);
