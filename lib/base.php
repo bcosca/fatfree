@@ -18,7 +18,7 @@ abstract class Prefab {
 
 	/**
 	*	Return class instance
-	*	@return object
+	*	@return static
 	**/
 	static function instance() {
 		if (!Registry::exists($class=get_called_class())) {
