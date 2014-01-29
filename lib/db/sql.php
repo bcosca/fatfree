@@ -130,6 +130,7 @@ class SQL extends \PDO {
 		}
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
+		$result=FALSE;
 		foreach (array_combine($cmds,$args) as $cmd=>$arg) {
 			if (!preg_replace('/(^\s+|[\s;]+$)/','',$cmd))
 				continue;
