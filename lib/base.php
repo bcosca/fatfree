@@ -188,7 +188,7 @@ class Base extends Prefab {
 				return '$'.preg_replace_callback(
 					'/\.(\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
 					function($expr) use($fw) {
-						return '['.var_export($expr[1]?:
+						return '['.var_export(isset($expr[1])?$expr[1]:
 							$fw->compile($expr[2]),TRUE).']';
 					},
 					$var[1]
@@ -999,8 +999,6 @@ class Base extends Prefab {
 			'text'=>$text,
 			'trace'=>$trace
 		);
-		if (!array_diff(ob_list_handlers(),array('default output handler')))
-    		ob_end_clean();
 		$handler=isset($this->hive['ONERROR'])?$this->hive['ONERROR']:NULL;
 		$this->hive['ONERROR']=NULL;
 		if ((!$handler ||
