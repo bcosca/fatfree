@@ -191,13 +191,18 @@ class Mapper extends \DB\Cursor {
 		}
 		if ($options['group'])
 			$sql.=' GROUP BY '.implode(',',array_map(
-				array($this->db,'quotekey'),
+				function($str) use($db) {
+					return preg_match('/^(\w+)(?:\h+HAVING|\h*(?:,|$))/i',
+						$str,$parts)?
+						($db->quotekey($parts[1]).
+						(isset($parts[2])?(' '.$parts[2]):'')):$str;
+				},
 				explode(',',$options['group'])));
 		if ($options['order']) {
 			$db=$this->db;
 			$sql.=' ORDER BY '.implode(',',array_map(
 				function($str) use($db) {
-					return preg_match('/(\w+)(?:\h+(ASC|DESC))?/i',
+					return preg_match('/^(\w+)(?:\h+(ASC|DESC))?\h*(?:,|$)/i',
 						$str,$parts)?
 						($db->quotekey($parts[1]).
 						(isset($parts[2])?(' '.$parts[2]):'')):$str;
