@@ -1394,8 +1394,8 @@ class Base extends Prefab {
 	function config($file) {
 		preg_match_all(
 			'/(?<=^|\n)(?:'.
-				'(?:\[(?<section>.+?)\])|'.
-				'(?<lval>.+?)\h*=\h*'.
+				'\[(?<section>.+?)\]|'.
+				'(?<lval>[^\h\r\n;].+?)\h*=\h*'.
 				'(?<rval>(?:\\\\\h*\r?\n|.+?)*)'.
 			')(?=\r?\n|$)/',
 			$this->read($file),$matches,PREG_SET_ORDER);
