@@ -1555,8 +1555,7 @@ class Base extends Prefab {
 			$error && in_array($error['type'],
 			array(E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR)))
 			// Fatal error detected
-			$this->error(sprintf(self::E_Fatal,$error['message']),
-				array($error));
+			$this->error(sprintf(self::E_Fatal,$error['message']));
 	}
 
 	//! Prohibit cloning
