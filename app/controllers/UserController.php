@@ -6,7 +6,16 @@ class UserController extends Controller
     public function index()
     {
         $user = new User($this->db);
-        $this->framework->set('users', $user->all());
+
+        $page = \Pagination::findCurrentPage();
+        $subset = $user->paginate($page - 1, 1);
+        $pages = new Pagination($subset['total'], $subset['limit']);
+        $pages->setRouteKeyPrefix('page-');
+        $pages->setTemplate('views/elements/pagebrowser.html');
+        $pages->setRange(1);
+
+        $this->framework->set('users', $subset);
+        $this->framework->set('pagebrowser', $pages->serve());
         $this->framework->set('page_head', 'User List');
         $this->framework->set('view', 'views/user/list.html');
     }

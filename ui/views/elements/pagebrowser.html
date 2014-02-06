@@ -1,0 +1,17 @@
+<ul class="pagination">
+	<F3:check if="{{@pg.firstPage}}">
+        <li><a href="{{@BASE, @pg.route, @pg.prefix.@pg.firstPage}}">First</a></li>
+    </F3:check>
+	<F3:check if="{{@pg.prevPage}}">
+        <li><a href="{{@BASE, @pg.route, @pg.prefix.@pg.prevPage}}"><i class="glyphicon glyphicon-chevron-left"></i></a></li>
+    </F3:check>
+	<F3:repeat group="{{@pg.rangePages}}" value="{{@page}}">
+        <li {{@page == @pg.currentPage ? 'class="active"':'' }}><a href="{{@BASE, @pg.route, @pg.prefix.@page}}">{{@page}}</a></li>
+	</F3:repeat>
+	<F3:check if="{{@pg.nextPage}}">
+        <li><a href="{{@BASE, @pg.route, @pg.prefix.@pg.nextPage}}"><i class="glyphicon glyphicon-chevron-right"></i></a></li>
+    </F3:check>
+	<F3:check if="{{@pg.lastPage}}">
+        <li><a href="{{@BASE, @pg.route, @pg.prefix.@pg.lastPage}}">Last [{{ @pg.lastPage }}]</a></li>
+    </F3:check>
+</ul>

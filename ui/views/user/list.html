@@ -10,7 +10,7 @@
     </thead>
  
     <tbody>
-    <repeat group="{{ @users }}" value="{{ @user }}">
+    <repeat group="{{ @users.subset }}" value="{{ @user }}">
         <tr>
             <td>{{ trim(@user.name) }}</td>
             <td>{{ trim(@user.email) }}</td>
@@ -23,6 +23,7 @@
  
         </tr>
     </repeat>
+    {{ @pagebrowser | raw }}
     </tbody>
  
 </table>
