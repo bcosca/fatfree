@@ -927,7 +927,7 @@ class Base extends Prefab {
 	function expire($secs=0) {
 		if (PHP_SAPI!='cli') {
 			header('X-Content-Type-Options: nosniff');
-			header('X-Frame-Options: SAMEORIGIN');
+			header('X-Frame-Options: '.$this->hive['XFRAME']);
 			header('X-Powered-By: '.$this->hive['PACKAGE']);
 			header('X-XSS-Protection: 1; mode=block');
 			if ($secs) {
@@ -1586,9 +1586,9 @@ class Base extends Prefab {
 			}
 		);
 		set_error_handler(
-			function($code,$text) {
+			function($code,$text) use($fw) {
 				if (error_reporting())
-					throw new ErrorException($text,$code);
+					$fw->error(500,$text);
 			}
 		);
 		if (!isset($_SERVER['SERVER_NAME']))
@@ -1706,7 +1706,8 @@ class Base extends Prefab {
 			'UPLOADS'=>'./',
 			'URI'=>&$_SERVER['REQUEST_URI'],
 			'VERB'=>&$_SERVER['REQUEST_METHOD'],
-			'VERSION'=>self::VERSION
+			'VERSION'=>self::VERSION,
+			'XFRAME'=>'SAMEORIGIN'
 		);
 		if (PHP_SAPI=='cli-server' &&
 			preg_match('/^'.preg_quote($base,'/').'$/',$this->hive['URI']))
@@ -1976,7 +1977,6 @@ class View extends Prefab {
 		$fw=Base::instance();
 		return $fw->recursive($arg,
 			function($val) use($fw) {
-				$val=unserialize(serialize($val));
 				return is_string($val)?$fw->encode($val):$val;
 			}
 		);
