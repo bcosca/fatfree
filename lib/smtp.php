@@ -255,7 +255,7 @@ class SMTP extends Magic {
 			'MIME-Version'=>'1.0',
 			'Content-Type'=>'text/plain; '.
 				'charset='.Base::instance()->get('ENCODING'),
-			'Content-Transfer-Encoding'=>'8bit'
+			'Content-Transfer-Encoding'=>'quoted-printable'
 		);
 		$this->host=$host;
 		if (strtolower($this->scheme=strtolower($scheme))=='ssl')
