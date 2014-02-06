@@ -8,7 +8,7 @@ class UserController extends Controller
         $user = new User($this->db);
 
         $page = \Pagination::findCurrentPage();
-        $subset = $user->paginate($page - 1, 1);
+        $subset = $user->paginate($page - 1, 1, array(), array('order' => 'id DESC'));
         $pages = new Pagination($subset['total'], $subset['limit']);
         $pages->setRouteKeyPrefix('page-');
         $pages->setTemplate('views/elements/pagebrowser.html');
@@ -16,7 +16,7 @@ class UserController extends Controller
 
         $this->framework->set('users', $subset);
         $this->framework->set('pagebrowser', $pages->serve());
-        $this->framework->set('page_head', 'User List');
+        $this->framework->set('page_head', 'Users List');
         $this->framework->set('view', 'views/user/list.html');
     }
 
