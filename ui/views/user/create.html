@@ -1,0 +1,32 @@
+<form action="{{ @BASE.'/user/create' }}" method="post" class="form-horizontal">
+ 
+    <div class="input-group">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i> Name</span>
+        <input type="text" id="name" name="name" value="" class="form-control" />
+    </div>
+    <br/><br/>
+ 
+    <div class="input-group">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i> Email</span>
+        <input type="text" id="email" name="email" value="" class="form-control" />
+    </div>
+    <br/><br/>
+ 
+    <div class="input-group">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i> Mobile</span>
+        <input type="text" id="mobile" name="mobile" value="" class="form-control" />
+    </div><br/><br/>
+ 
+    <div class="input-group">
+        <span class="input-group-addon "><i class="glyphicon glyphicon-home"></i> Address</span>
+        <textarea rows="5" id="address" name="address" class="form-control"></textarea>
+    </div><br/><br/>
+ 
+    <div class="control-group">
+        <div class="">
+            <input type="hidden" name="create" value="create" />
+            <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> Add User</button>
+        </div>
+    </div>
+ 
+</form>

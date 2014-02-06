@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <base href="{{ @BASE.'/'.@UI }}" />
+        <title>{{ @SITE }}</title>
+        <!-- Bootstrap -->
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    </head>
+
+    <body>
+
+        <div class="container">
+            <div class="page-header">
+                <h1>{{ @page_head }}</h1>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2"></div>
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="navbar">
+                            <div class="navbar-inner">
+                                <ul class="nav nav-pills">
+
+                                    <li <check if="{{ @page_head == 'User List' }}">class="active"</check>><a href="{{ @BASE.'/' }}"><i class="icon-th icon-black"></i> Read</a></li>
+                                    <li <check if="{{ @page_head == 'Create User' }}">class="active"</check>><a href="{{ @BASE.'/user/create' }}"><i class="icon-plus-sign icon-black"></i> Create</a></li>
+
+                                    <check if="{{ @page_head == 'Update User' }}">
+                                        <li class="active"><a href="javascript:void(0);"><i class="icon-plus-sign icon-black"></i> Update</a></li>
+                                    </check>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <include href ="{{ @view }}" />
+                    </div>
+                </div>
+                <div class="col-lg-2"></div>
+            </div>
+        </div>
+
+        <script src="http://code.jquery.com/jquery.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+
+    </body>
+</html>
