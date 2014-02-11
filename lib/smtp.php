@@ -104,7 +104,7 @@ class SMTP extends Magic {
 
 	/**
 	*	Send SMTP command and record server response
-	*	@return NULL
+	*	@return string
 	*	@param $cmd string
 	*	@param $log bool
 	**/
@@ -123,6 +123,7 @@ class SMTP extends Magic {
 			$this->log.=$cmd."\n";
 			$this->log.=str_replace("\r",'',$reply);
 		}
+		return $reply;
 	}
 
 	/**
@@ -146,6 +147,8 @@ class SMTP extends Magic {
 		if ($this->scheme=='ssl' && !extension_loaded('openssl'))
 			return FALSE;
 		$fw=Base::instance();
+		// Retrieve headers
+		$headers=$this->headers;
 		// Connect to the server
 		$socket=&$this->socket;
 		$socket=@fsockopen($this->host,$this->port);
@@ -160,7 +163,9 @@ class SMTP extends Magic {
 			$this->dialog('STARTTLS');
 			stream_socket_enable_crypto(
 				$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
-			$this->dialog('EHLO '.$fw->get('HOST'));
+			$reply=$this->dialog('EHLO '.$fw->get('HOST'));
+			$headers['Content-Transfer-Encoding']=
+				preg_match('/8BITMIME/',$reply)?'8bit':'quoted-printable';
 		}
 		if ($this->user && $this->pw) {
 			// Authenticate
@@ -170,8 +175,6 @@ class SMTP extends Magic {
 		}
 		// Required headers
 		$reqd=array('From','To','Subject');
-		// Retrieve headers
-		$headers=$this->headers;
 		foreach ($reqd as $id)
 			if (empty($headers[$id]))
 				user_error(sprintf(self::E_Header,$id));
@@ -254,8 +257,7 @@ class SMTP extends Magic {
 		$this->headers=array(
 			'MIME-Version'=>'1.0',
 			'Content-Type'=>'text/plain; '.
-				'charset='.Base::instance()->get('ENCODING'),
-			'Content-Transfer-Encoding'=>'quoted-printable'
+				'charset='.Base::instance()->get('ENCODING')
 		);
 		$this->host=$host;
 		if (strtolower($this->scheme=strtolower($scheme))=='ssl')
