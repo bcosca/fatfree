@@ -189,6 +189,7 @@ class Mapper extends \DB\Cursor {
 			}
 			$sql.=' WHERE '.$filter;
 		}
+		$db=$this->db;
 		if ($options['group'])
 			$sql.=' GROUP BY '.implode(',',array_map(
 				function($str) use($db) {
@@ -199,7 +200,6 @@ class Mapper extends \DB\Cursor {
 				},
 				explode(',',$options['group'])));
 		if ($options['order']) {
-			$db=$this->db;
 			$sql.=' ORDER BY '.implode(',',array_map(
 				function($str) use($db) {
 					return preg_match('/^(\w+)(?:\h+(ASC|DESC))?\h*(?:,|$)/i',
