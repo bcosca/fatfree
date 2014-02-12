@@ -549,7 +549,8 @@ class Base extends Prefab {
 				foreach ($arg as $key=>$val)
 					$str.=($str?',':'').
 						($num?'':(var_export($key,TRUE).'=>')).
-						$this->stringify($val,array_merge($stack,$arg));
+						$this->stringify($val,
+							array_merge($stack,array($arg)));
 				return 'array('.$str.')';
 			default:
 				return var_export($arg,TRUE);
@@ -679,7 +680,7 @@ class Base extends Prefab {
 				$tmp=array();
 				foreach ($arg as $key=>$val)
 					$tmp[$key]=$this->recursive($val,$func,
-						array_merge($stack,$arg));
+						array_merge($stack,array($arg)));
 				return $tmp;
 		}
 		return $func($arg);
