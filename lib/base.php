@@ -549,8 +549,7 @@ class Base extends Prefab {
 				foreach ($arg as $key=>$val)
 					$str.=($str?',':'').
 						($num?'':(var_export($key,TRUE).'=>')).
-						$this->stringify($val,
-							array_merge($stack,array($arg)));
+						$this->stringify($val,array_merge($stack,$arg));
 				return 'array('.$str.')';
 			default:
 				return var_export($arg,TRUE);
@@ -659,18 +658,28 @@ class Base extends Prefab {
 	*	@return mixed
 	*	@param $arg mixed
 	*	@param $func callback
+	*	@param $stack array
 	**/
-	function recursive($arg,$func) {
+	function recursive($arg,$func,$stack=NULL) {
+		if ($stack) {
+			foreach ($stack as $node)
+				if ($arg===$node)
+					return $arg;
+		}
+		else
+			$stack=array();
 		switch (gettype($arg)) {
 			case 'object':
 				$arg=$this->dupe($arg);
 				foreach (get_object_vars($arg) as $key=>$val)
-					$arg->$key=$this->recursive($val,$func);
+					$arg->$key=$this->recursive($val,$func,
+						array_merge($stack,array($arg)));
 				return $arg;
 			case 'array':
 				$tmp=array();
 				foreach ($arg as $key=>$val)
-					$tmp[$key]=$this->recursive($val,$func);
+					$tmp[$key]=$this->recursive($val,$func,
+						array_merge($stack,$arg));
 				return $tmp;
 		}
 		return $func($arg);
@@ -1003,7 +1012,7 @@ class Base extends Prefab {
 			'text'=>$text,
 			'trace'=>$trace
 		);
-		$handler=isset($this->hive['ONERROR'])?$this->hive['ONERROR']:NULL;
+		$handler=$this->hive['ONERROR'];
 		$this->hive['ONERROR']=NULL;
 		if ((!$handler ||
 			$this->call($handler,$this,'beforeroute,afterroute')===FALSE) &&
