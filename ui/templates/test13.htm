@@ -1,0 +1,11 @@
+{{ @baz | esc }}<br/>
+{{ @baz | raw }}<br/>
+{{ @h1,@foo | format }}<br/>
+{{ @h1,@foo | format raw }}<br/>
+{{ @baz | wrap }}<br/>
+{{ @baz | wrap raw }}<br/>
+{{ @baz | wrap esc }}<br/>
+{{ @foo,@bar | prepend wrap }}<br/>
+{{ @h1,@foo | format wrap }}<br/>
+{{ @h1,@foo | format wrap raw }}<br/>
+{{ @lorem, 10 | crop }}

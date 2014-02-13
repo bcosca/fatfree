@@ -350,6 +350,60 @@ class Template extends Controller {
 			$tpl->resolve('{{ @ENV.content }}')=='<ok>',
 			'resolve() template strings'
 		);
+		$f3->set('foo','Headline');
+		$f3->set('bar','Awesome');
+		$f3->set('baz','<b>test</b>');
+		$f3->set('h1','<h1>{0}</h1>');
+		$f3->set('lorem','Lorem ipsum dolor sit amet');
+		$tpl->modify('wrap', '\App\Modifiers->wrap');
+		$tpl->modify('prepend', '\App\Modifiers->prepend');
+		$tpl->modify('crop', '\App\Modifiers->crop');
+		$result = $tpl->render('templates/test13.htm');
+		$lines = array_map('trim', explode("<br/>", $result));
+		$test->expect(
+			$lines[0] == '&lt;b&gt;test&lt;/b&gt;',
+			'Token esc modifier'
+		);
+		$test->expect(
+			$lines[1] == '<b>test</b>',
+			'Token raw modifier'
+		);
+		$test->expect(
+			$lines[2] == '&lt;h1&gt;Headline&lt;/h1&gt;',
+			'Token format modifier'
+		);
+		$test->expect(
+			$lines[3] == '<h1>Headline</h1>',
+			'Token format + raw modifier'
+		);
+		$test->expect(
+			$lines[4] == '<div>&lt;b&gt;test&lt;/b&gt;</div>',
+			'Token with custom modifier'
+		);
+		$test->expect(
+			$lines[5] == '<div><b>test</b></div>',
+			'Token with custom modifier + raw'
+		);
+		$test->expect(
+			$lines[6] == '&lt;div&gt;&lt;b&gt;test&lt;/b&gt;&lt;/div&gt;',
+			'Token with custom modifier + esc'
+		);
+		$test->expect(
+			$lines[7] == '<div>Awesome Headline</div>',
+			'Token with multiple custom modifier'
+		);
+		$test->expect(
+			$lines[8] == '<div>&lt;h1&gt;Headline&lt;/h1&gt;</div>',
+			'Token format + custom modifier'
+		);
+		$test->expect(
+			$lines[9] == '<div><h1>Headline</h1></div>',
+			'Token format + custom modifier + raw'
+		);
+		$test->expect(
+			$lines[10] == 'Lorem ipsu...',
+			'Token custom crop'
+		);
 		$f3->set('div',
 			array_fill(0,1000,array_combine(range('a','j'),range(0,9))));
 		$now=microtime(TRUE);
@@ -368,6 +422,22 @@ class Template extends Controller {
 			$f3->hash($f3->get('ROOT').$f3->get('BASE')).'.*.php') as $file)
 			unlink($file);
 		$f3->set('results',$test->results());
+	}
+
+}
+
+class Modifiers extends \Prefab {
+
+	function wrap($val) {
+		return '<div>'.$val.'</div>';
+	}
+
+	function prepend($val, $data) {
+		return $data.' '.$val;
+	}
+
+	function crop($val, $length = null) {
+		return substr($val, 0, $length).'...';
 	}
 
 }
