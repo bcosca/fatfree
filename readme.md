@@ -343,6 +343,30 @@ $HTTP["host"] =~ "www\.example\.com$" {
 }
 ```
 
+### Sample IIS Configuration
+
+Install the [URL rewrite module](http://www.iis.net/downloads/microsoft/url-rewrite) and the appropriate .NET framework corresponding to your Windows version. Then create a file named `web.config` in your application root with the following contents:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <system.webServer>
+    <rewrite>
+      <rules>
+        <rule name="Application" stopProcessing="true">
+          <match url=".*" ignoreCase="false" />
+          <conditions logicalGrouping="MatchAll">
+            <add input="{REQUEST_FILENAME}" matchType="IsFile" ignoreCase="false" negate="true" />
+            <add input="{REQUEST_FILENAME}" matchType="IsDirectory" ignoreCase="false" negate="true" />
+          </conditions>
+          <action type="Rewrite" url="index.php" appendQueryString="true" />
+        </rule>
+      </rules>
+    </rewrite>
+  </system.webServer>
+</configuration>
+```
+
 ### Rerouting
 
 So let's get back to coding. You can declare a page obsolete and redirect your visitors to another site/page:-
@@ -2483,6 +2507,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Ngan Ting On
 * Eli Argon
 * Seregin Andrew
+* Marek Toman
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
