@@ -2061,9 +2061,22 @@ class View extends Prefab {
 //! Lightweight template engine
 class Preview extends View {
 
+	//@{ Error messages
+	const
+		E_Modifier = 'Token modifier does not exist: %s';
+	//@}
+
 	protected
 		//! MIME type
-		$mime;
+		$mime,
+		//! Token modifiers
+		$modifiers='esc|raw|format',
+		//! Token modifier handlers
+		$mod_handlers=array(
+			'esc'=>'View->esc',
+			'raw'=>'View->raw',
+			'format'=>'Base->format'
+		);
 
 	/**
 	*	Convert token to variable
@@ -2082,15 +2095,24 @@ class Preview extends View {
 	**/
 	protected function build($node) {
 		$self=$this;
+		$modifiers=$this->modifiers;
+		$mod_handlers=$this->mod_handlers;
 		return preg_replace_callback(
 			'/\{\{(.+?)\}\}/s',
-			function($expr) use($self) {
+			function($expr) use($self,$modifiers,$mod_handlers) {
 				$str=trim($self->token($expr[1]));
-				if (preg_match('/^(.+?)\h*\|\h*(raw|esc|format)$/',
-					$str,$parts))
-					$str=(($parts[2]=='format')?
-						'\Base::instance()':'$this').'->'.$parts[2].
-						'('.$parts[1].')';
+				if (preg_match('/^(.+?)\h*\|\h*(.*)$/',$str,$parts)) {
+					preg_match_all('/\b'.$modifiers.'\b/',
+						$parts[2],$mods);
+					$stack=array();
+					foreach ($mods[0] as $mod)
+						if (isset($mod_handlers[$mod]))
+							$stack[]=$mod_handlers[$mod];
+						else
+							user_error(sprintf($self::E_Modifier, $mod));
+					$str='\Base::instance()->relay(\''
+						.implode(';',$stack).'\',array('.$parts[1].'))';
+				}
 				return '<?php echo '.$str.'; ?>';
 			},
 			preg_replace_callback(
@@ -2101,6 +2123,17 @@ class Preview extends View {
 				$node
 			)
 		);
+	}
+
+	/**
+	 *	Extend token rendering with custom modifier
+	 *	@return NULL
+	 *	@param $modifier string
+	 *	@param $func string
+	 **/
+	function modify($modifier,$func) {
+		$this->modifiers.='|'.$modifier;
+		$this->mod_handlers[$modifier]=$func;
 	}
 
 	/**
