@@ -2086,8 +2086,7 @@ class Preview extends View {
 			'/\{\{(.+?)\}\}/s',
 			function($expr) use($self) {
 				$str=trim($self->token($expr[1]));
-				if (preg_match('/^(.+?)\h*\|\h*(raw|esc|format)$/',
-					$str,$parts))
+				if (preg_match('/^(.+?)\h*\|\h*(\w+)/',$str,$parts))
 					$str=(($parts[2]=='format')?
 						'\Base::instance()':'$this').'->'.$parts[2].
 						'('.$parts[1].')';
