@@ -146,6 +146,9 @@ class SMTP extends Magic {
 	function send($message,$log=TRUE) {
 		if ($this->scheme=='ssl' && !extension_loaded('openssl'))
 			return FALSE;
+		// Message should not be blank
+		if (!$message)
+			user_error(self::E_Blank);
 		$fw=Base::instance();
 		// Retrieve headers
 		$headers=$this->headers;
@@ -164,8 +167,12 @@ class SMTP extends Magic {
 			stream_socket_enable_crypto(
 				$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
 			$reply=$this->dialog('EHLO '.$fw->get('HOST'));
-			$headers['Content-Transfer-Encoding']=
-				preg_match('/8BITMIME/',$reply)?'8bit':'quoted-printable';
+			if (preg_match('/8BITMIME/',$reply))
+				$headers['Content-Transfer-Encoding']='8bit';
+			else {
+				$headers['Content-Transfer-Encoding']='quoted-printable';
+				$message=quoted_printable_encode($message);
+			}
 		}
 		if ($this->user && $this->pw) {
 			// Authenticate
@@ -178,9 +185,6 @@ class SMTP extends Magic {
 		foreach ($reqd as $id)
 			if (empty($headers[$id]))
 				user_error(sprintf(self::E_Header,$id));
-		// Message should not be blank
-		if (!$message)
-			user_error(self::E_Blank);
 		$eol="\r\n";
 		$str='';
 		// Stringify headers

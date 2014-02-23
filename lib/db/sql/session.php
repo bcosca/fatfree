@@ -137,25 +137,27 @@ class Session extends Mapper {
 	*	Instantiate class
 	*	@param $db object
 	*	@param $table string
+	*	@param $force bool
 	**/
-	function __construct(\DB\SQL $db,$table='sessions') {
-		$db->exec(
-			(preg_match('/mssql|sqlsrv|sybase/',$db->driver())?
-				('IF NOT EXISTS (SELECT * FROM sysobjects WHERE '.
-					'name='.$db->quote($table).' AND xtype=\'U\') '.
-					'CREATE TABLE dbo.'):
-				('CREATE TABLE IF NOT EXISTS '.
-					(($name=$db->name())?($name.'.'):''))).
-			$table.' ('.
-				'session_id VARCHAR(40),'.
-				'data TEXT,'.
-				'csrf TEXT,'.
-				'ip VARCHAR(40),'.
-				'agent VARCHAR(255),'.
-				'stamp INTEGER,'.
-				'PRIMARY KEY(session_id)'.
-			');'
-		);
+	function __construct(\DB\SQL $db,$table='sessions',$force=TRUE) {
+		if ($force)
+			$db->exec(
+				(preg_match('/mssql|sqlsrv|sybase/',$db->driver())?
+					('IF NOT EXISTS (SELECT * FROM sysobjects WHERE '.
+						'name='.$db->quote($table).' AND xtype=\'U\') '.
+						'CREATE TABLE dbo.'):
+					('CREATE TABLE IF NOT EXISTS '.
+						(($name=$db->name())?($name.'.'):''))).
+				$table.' ('.
+					'session_id VARCHAR(40),'.
+					'data TEXT,'.
+					'csrf TEXT,'.
+					'ip VARCHAR(40),'.
+					'agent VARCHAR(255),'.
+					'stamp INTEGER,'.
+					'PRIMARY KEY(session_id)'.
+				');'
+			);
 		parent::__construct($db,$table);
 		session_set_save_handler(
 			array($this,'open'),
