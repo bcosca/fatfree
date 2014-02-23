@@ -161,7 +161,7 @@ class SMTP extends Magic {
 		// Get server's initial response
 		$this->dialog(NULL,FALSE);
 		// Announce presence
-		$this->dialog('EHLO '.$fw->get('HOST'));
+		$reply=$this->dialog('EHLO '.$fw->get('HOST'));
 		if (strtolower($this->scheme)=='tls') {
 			$this->dialog('STARTTLS');
 			stream_socket_enable_crypto(
@@ -174,7 +174,7 @@ class SMTP extends Magic {
 				$message=quoted_printable_encode($message);
 			}
 		}
-		if ($this->user && $this->pw) {
+		if ($this->user && $this->pw && preg_match('/AUTH/',$reply)) {
 			// Authenticate
 			$this->dialog('AUTH LOGIN');
 			$this->dialog(base64_encode($this->user));
