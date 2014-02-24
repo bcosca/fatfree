@@ -110,9 +110,10 @@ abstract class Cursor extends \Magic {
 	*	@param $size int
 	*	@param $filter string|array
 	*	@param $options array
+	* 	@param $ttl int
 	**/
-	function paginate($pos=0,$size=10,$filter=NULL,array $options=NULL) {
-		$total=$this->count($filter);
+	function paginate($pos=0,$size=10,$filter=NULL,array $options=NULL,$ttl=0) {
+		$total=$this->count($filter,$ttl);
 		$count=ceil($total/$size);
 		$pos=max(0,min($pos,$count-1));
 		return array(
@@ -120,7 +121,7 @@ abstract class Cursor extends \Magic {
 				array_merge(
 					$options?:array(),
 					array('limit'=>$size,'offset'=>$pos*$size)
-				)
+				),$ttl
 			),
 			'total'=>$total,
 			'limit'=>$size,
