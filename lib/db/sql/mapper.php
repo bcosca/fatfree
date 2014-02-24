@@ -333,11 +333,15 @@ class Mapper extends \DB\Cursor {
 			$field['changed']=FALSE;
 			unset($field);
 		}
-		if ($fields)
+		if (isset($this->trigger['beforeinsert']))
+			\Base::instance()->call($this->trigger['beforeinsert'],
+				array($this,$pkeys));
+		if ($fields) {
 			$this->db->exec(
 				'INSERT INTO '.$this->table.' ('.$fields.') '.
 				'VALUES ('.$values.')',$args
 			);
+		}
 		$seq=NULL;
 		if ($this->engine=='pgsql') {
 			$names=array_keys($pkeys);
@@ -350,8 +354,8 @@ class Mapper extends \DB\Cursor {
 			$this->load(array($inc.'=?',
 				$this->db->value($this->fields[$inc]['pdo_type'],
 					$this->_id)));
-		if (isset($this->trigger['insert']))
-			\Base::instance()->call($this->trigger['insert'],
+		if (isset($this->trigger['afterinsert']))
+			\Base::instance()->call($this->trigger['afterinsert'],
 				array($this,$pkeys));
 		return $this;
 	}
@@ -379,15 +383,18 @@ class Mapper extends \DB\Cursor {
 				$pkeys[$key]=$field['previous'];
 				$ctr++;
 			}
+		if (isset($this->trigger['beforeupdate']))
+			\Base::instance()->call($this->trigger['beforeupdate'],
+				array($this,$pkeys));
 		if ($pairs) {
 			$sql='UPDATE '.$this->table.' SET '.$pairs;
 			if ($filter)
 				$sql.=' WHERE '.$filter;
 			$this->db->exec($sql,$args);
-			if (isset($this->trigger['update']))
-				\Base::instance()->call($this->trigger['update'],
-					array($this,$pkeys));
 		}
+		if (isset($this->trigger['afterupdate']))
+			\Base::instance()->call($this->trigger['afterupdate'],
+				array($this,$pkeys));
 		return $this;
 	}
 
@@ -432,10 +439,13 @@ class Mapper extends \DB\Cursor {
 		}
 		parent::erase();
 		$this->skip(0);
+		if (isset($this->trigger['beforeerase']))
+			\Base::instance()->call($this->trigger['beforeerase'],
+				array($this,$pkeys));
 		$out=$this->db->
 			exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
-		if (isset($this->trigger['erase']))
-			\Base::instance()->call($this->trigger['erase'],
+		if (isset($this->trigger['aftererase']))
+			\Base::instance()->call($this->trigger['aftererase'],
 				array($this,$pkeys));
 		return $out;
 	}

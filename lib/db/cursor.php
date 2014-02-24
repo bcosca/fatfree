@@ -213,34 +213,92 @@ abstract class Cursor extends \Magic {
 
 	/**
 	*	Define onload trigger
-	*	@return closure
+	*	@return callback
+	*	@param $func callback
 	**/
 	function onload($func) {
 		return $this->trigger['load']=$func;
 	}
 
 	/**
+	*	Define beforeinsert trigger
+	*	@return callback
+	*	@param $func callback
+	**/
+	function beforeinsert($func) {
+		return $this->trigger['beforeinsert']=$func;
+	}
+
+	/**
+	*	Define afterinsert trigger
+	*	@return callback
+	*	@param $func callback
+	**/
+	function afterinsert($func) {
+		return $this->trigger['afterinsert']=$func;
+	}
+
+	/**
 	*	Define oninsert trigger
-	*	@return closure
+	*	@return callback
+	*	@param $func callback
 	**/
 	function oninsert($func) {
-		return $this->trigger['insert']=$func;
+		return $this->afterinsert($func);
+	}
+
+	/**
+	*	Define beforeupdate trigger
+	*	@return callback
+	*	@param $func callback
+	**/
+	function beforeupdate($func) {
+		return $this->trigger['beforeupdate']=$func;
+	}
+
+	/**
+	*	Define afterupdate trigger
+	*	@return callback
+	*	@param $func callback
+	**/
+	function afterupdate($func) {
+		return $this->trigger['afterupdate']=$func;
 	}
 
 	/**
 	*	Define onupdate trigger
-	*	@return closure
+	*	@return callback
+	*	@param $func callback
 	**/
 	function onupdate($func) {
-		return $this->trigger['update']=$func;
+		return $this->afterupdate($func);
+	}
+
+	/**
+	*	Define beforeerase trigger
+	*	@return callback
+	*	@param $func callback
+	**/
+	function beforeerase($func) {
+		return $this->trigger['beforeerase']=$func;
+	}
+
+	/**
+	*	Define aftererase trigger
+	*	@return callback
+	*	@param $func callback
+	**/
+	function aftererase($func) {
+		return $this->trigger['aftererase']=$func;
 	}
 
 	/**
 	*	Define onerase trigger
-	*	@return closure
+	*	@return callback
+	*	@param $func callback
 	**/
 	function onerase($func) {
-		return $this->trigger['erase']=$func;
+		return $this->aftererase($func);
 	}
 
 	/**

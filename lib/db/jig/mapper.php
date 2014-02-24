@@ -320,12 +320,15 @@ class Mapper extends \DB\Cursor {
 		$this->id=$id;
 		$data[$id]=$this->document;
 		$pkey=array('_id'=>$this->id);
+		if (isset($this->trigger['beforeinsert']))
+			\Base::instance()->call($this->trigger['beforeinsert'],
+				array($this,$pkey));
 		$db->write($this->file,$data);
 		parent::reset();
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [insert] '.json_encode($this->document));
-		if (isset($this->trigger['insert']))
-			\Base::instance()->call($this->trigger['insert'],
+		if (isset($this->trigger['afterinsert']))
+			\Base::instance()->call($this->trigger['afterinsert'],
 				array($this,$pkey));
 		return $this->document;
 	}
@@ -339,11 +342,14 @@ class Mapper extends \DB\Cursor {
 		$now=microtime(TRUE);
 		$data=$db->read($this->file);
 		$data[$this->id]=$this->document;
+		if (isset($this->trigger['beforeupdate']))
+			\Base::instance()->call($this->trigger['beforeupdate'],
+				array($this,array('_id'=>$this->id)));
 		$db->write($this->file,$data);
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [update] '.json_encode($this->document));
-		if (isset($this->trigger['update']))
-			\Base::instance()->call($this->trigger['update'],
+		if (isset($this->trigger['afterupdate']))
+			\Base::instance()->call($this->trigger['afterupdate'],
 				array($this,array('_id'=>$this->id)));
 		return $this->document;
 	}
@@ -371,6 +377,9 @@ class Mapper extends \DB\Cursor {
 		}
 		else
 			return FALSE;
+		if (isset($this->trigger['beforeerase']))
+			\Base::instance()->call($this->trigger['beforeerase'],
+				array($this,$pkey));
 		$db->write($this->file,$data);
 		if ($filter) {
 			$args=isset($filter[1]) && is_array($filter[1])?
@@ -386,8 +395,8 @@ class Mapper extends \DB\Cursor {
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [erase] '.
 			($filter?preg_replace($keys,$vals,$filter[0],1):''));
-		if (isset($this->trigger['erase']))
-			\Base::instance()->call($this->trigger['erase'],
+		if (isset($this->trigger['aftererase']))
+			\Base::instance()->call($this->trigger['aftererase'],
 				array($this,$pkey));
 		return TRUE;
 	}
