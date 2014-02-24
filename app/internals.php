@@ -111,7 +111,8 @@ class Internals extends Controller {
 		);
 		$test->expect(
 			$f3->encode('I\'ll "walk" the <b>dog</b> now™')==
-				($out='I\'ll &quot;walk&quot; the &lt;b&gt;dog&lt;/b&gt; now&trade;'),
+				($out='I\'ll &quot;walk&quot; the &lt;b&gt;dog&lt;'.
+				(defined('ENT_HTML5')?'&sol;':'/').'b&gt; now&trade;'),
 			'Encode HTML entities'
 		);
 		$test->expect(

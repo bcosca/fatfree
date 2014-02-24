@@ -627,8 +627,9 @@ class Base extends Prefab {
 	*	@param $str string
 	**/
 	function encode($str) {
-		return @htmlentities($str,ENT_COMPAT,$this->hive['ENCODING'],FALSE)?:
-			$this->scrub($str);
+		return @htmlentities($str,
+			ENT_COMPAT|(defined('ENT_HTML5')?ENT_HTML5:0),
+			$this->hive['ENCODING'],FALSE)?:$this->scrub($str);
 	}
 
 	/**
@@ -637,7 +638,9 @@ class Base extends Prefab {
 	*	@param $str string
 	**/
 	function decode($str) {
-		return html_entity_decode($str,ENT_COMPAT,$this->hive['ENCODING']);
+		return html_entity_decode($str,
+			ENT_COMPAT|(defined('ENT_HTML5')?ENT_HTML5:0),
+			$this->hive['ENCODING']);
 	}
 
 	/**
