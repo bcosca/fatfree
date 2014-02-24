@@ -810,9 +810,11 @@ class Base extends Prefab {
 								}
 							break;
 						case 'date':
-							return strftime(empty($mod) ||
-								$mod=='short'?'%x':'%A, %d %B %Y',
-								$args[$pos]);
+							if (empty($mod) || $mod=='short')
+								$prop='%x';
+							elseif ($mod=='long')
+								$prop='%A, %d %B %Y';
+							return strftime($prop,$args[$pos]);
 						case 'time':
 							return strftime('%X',$args[$pos]);
 						default:
