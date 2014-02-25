@@ -816,7 +816,9 @@ class Base extends Prefab {
 								$prop='%A, %d %B %Y';
 							return strftime($prop,$args[$pos]);
 						case 'time':
-							return strftime('%X',$args[$pos]);
+							if (empty($mod) || $mod=='short')
+								$prop='%X';
+							return strftime($prop,$args[$pos]);
 						default:
 							return $expr[0];
 					}
