@@ -67,7 +67,7 @@ class Mapper extends \DB\Cursor {
 			$val=is_null($val) && $this->fields[$key]['nullable']?
 				NULL:$this->db->value($this->fields[$key]['pdo_type'],$val);
 			if ($this->fields[$key]['value']!==$val ||
-				$this->fields[$key]['default']!==$val)
+				$this->fields[$key]['default']!==$val && is_null($val))
 				$this->fields[$key]['changed']=TRUE;
 			return $this->fields[$key]['value']=$val;
 		}
@@ -456,7 +456,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function reset() {
 		foreach ($this->fields as &$field) {
-			$field['value']=NULL;
+			$field['value']=$field['default']?:NULL;
 			$field['changed']=FALSE;
 			if ($field['pkey'])
 				$field['previous']=NULL;
