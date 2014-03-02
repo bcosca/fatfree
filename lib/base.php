@@ -627,8 +627,7 @@ class Base extends Prefab {
 	*	@param $str string
 	**/
 	function encode($str) {
-		return @htmlentities($str,
-			ENT_COMPAT|(defined('ENT_HTML5')?ENT_HTML5:0),
+		return @htmlentities($str,$this->hive['BITMASK'],
 			$this->hive['ENCODING'],FALSE)?:$this->scrub($str);
 	}
 
@@ -638,8 +637,7 @@ class Base extends Prefab {
 	*	@param $str string
 	**/
 	function decode($str) {
-		return html_entity_decode($str,
-			ENT_COMPAT|(defined('ENT_HTML5')?ENT_HTML5:0),
+		return html_entity_decode($str,$this->hive['BITMASK'],
 			$this->hive['ENCODING']);
 	}
 
@@ -1669,6 +1667,7 @@ class Base extends Prefab {
 			'ALIASES'=>array(),
 			'AUTOLOAD'=>'./',
 			'BASE'=>$base,
+			'BITMASK'=>ENT_COMPAT,
 			'BODY'=>NULL,
 			'CACHE'=>FALSE,
 			'CASELESS'=>TRUE,
