@@ -239,16 +239,15 @@ class SQL extends \PDO {
 			'sqlite2?'=>array(
 				'PRAGMA table_info("'.$table.'");',
 				'name','type','dflt_value','notnull',0,'pk',TRUE),
-			'mysql'=>array(
-				'SHOW columns FROM `'.$this->dbname.'`.`'.$table.'`;',
-				'Field','Type','Default','Null','YES','Key','PRI'),
-			'mssql|sqlsrv|sybase|dblib|pgsql|odbc'=>array(
+			'mysql|mssql|sqlsrv|sybase|dblib|pgsql|odbc'=>array(
 				'SELECT '.
 					'c.column_name AS field,'.
 					'c.data_type AS type,'.
 					'c.column_default AS defval,'.
 					'c.is_nullable AS nullable,'.
-					't.constraint_type AS pkey '.
+					't.constraint_type AS pkey,'.
+					'k.referenced_table_name AS r_table,'.
+					'k.referenced_column_name AS r_name '.
 				'FROM information_schema.columns AS c '.
 				'LEFT OUTER JOIN '.
 					'information_schema.key_column_usage AS k '.
@@ -277,7 +276,7 @@ class SQL extends \PDO {
 							'c.table_catalog':'c.table_schema').
 							'='.$this->quote($this->dbname)):'').
 				';',
-				'field','type','defval','nullable','YES','pkey','PRIMARY KEY'),
+				'field','type','defval','nullable','YES','pkey','PRIMARY KEY','r_table','r_name'),
 			'oci'=>array(
 				'SELECT c.column_name AS field, '.
 					'c.data_type AS type, '.
@@ -314,7 +313,9 @@ class SQL extends \PDO {
 								\PDO::PARAM_STR,
 							'default'=>$row[$val[3]],
 							'nullable'=>$row[$val[4]]==$val[5],
-							'pkey'=>$row[$val[6]]==$val[7]
+							'pkey'=>$row[$val[6]]==$val[7],
+							'r_table'=>isset($val[8])?$row[$val[8]]:null,
+							'r_ref'=>isset($val[9])?$row[$val[9]]:null
 						);
 				}
 				return $rows;

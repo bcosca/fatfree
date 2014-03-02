@@ -81,10 +81,18 @@ class Mapper extends \DB\Cursor {
 	*	@return scalar
 	*	@param $key string
 	**/
-	function get($key) {
+	function get($key,$deref=false) {
 		if ($key=='_id')
 			return $this->_id;
-		elseif (array_key_exists($key,$this->fields))
+		elseif ($deref) {
+            		if(array_key_exists($key,$this->fields)) $f = $this->fields[$key];
+            		elseif(array_key_exists($key,$this->adhoc)) $f = $this->adhoc[$key];
+            		else $f = null;
+            		if($f && ($ref = $f['r_ref']) && ($table = $f['r_table'])) {
+                		$map = new Mapper($this->db,$table);
+                		return $map->find(array($ref.'=?',$f['value']));
+            		}
+        	} elseif (array_key_exists($key,$this->fields))
 			return $this->fields[$key]['value'];
 		elseif (array_key_exists($key,$this->adhoc))
 			return $this->adhoc[$key]['value'];
