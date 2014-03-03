@@ -18,6 +18,10 @@ namespace DB\Mongo;
 //! MongoDB-managed session handler
 class Session extends Mapper {
 
+	protected
+		//! Session ID
+		$sid;
+
 	/**
 	*	Open session
 	*	@return TRUE
@@ -42,7 +46,8 @@ class Session extends Mapper {
 	*	@param $id string
 	**/
 	function read($id) {
-		$this->load(array('session_id'=>$id));
+		if ($id!=$this->sid)
+			$this->load(array('session_id'=>$this->sid=$id));
 		return $this->dry()?FALSE:$this->get('data');
 	}
 
@@ -56,7 +61,8 @@ class Session extends Mapper {
 		$fw=\Base::instance();
 		$sent=headers_sent();
 		$headers=$fw->get('HEADERS');
-		$this->load(array('session_id'=>$id));
+		if ($id!=$this->sid)
+			$this->load(array('session_id'=>$this->sid=$id));
 		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash(mt_rand());
 		$this->set('session_id',$id);
@@ -100,42 +106,34 @@ class Session extends Mapper {
 	}
 
 	/**
-	*	Return anti-CSRF tokan associated with specified session ID
+	*	Return anti-CSRF tokan
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function csrf($id=NULL) {
-		$this->load(array('session_id'=>$id?:session_id()));
+	function csrf() {
 		return $this->dry()?FALSE:$this->get('csrf');
 	}
 
 	/**
-	*	Return IP address associated with specified session ID
+	*	Return IP address
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function ip($id=NULL) {
-		$this->load(array('session_id'=>$id?:session_id()));
+	function ip() {
 		return $this->dry()?FALSE:$this->get('ip');
 	}
 
 	/**
-	*	Return Unix timestamp associated with specified session ID
+	*	Return Unix timestamp
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function stamp($id=NULL) {
-		$this->load(array('session_id'=>$id?:session_id()));
+	function stamp() {
 		return $this->dry()?FALSE:$this->get('stamp');
 	}
 
 	/**
-	*	Return HTTP user agent associated with specified session ID
+	*	Return HTTP user agent
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function agent($id=NULL) {
-		$this->load(array('session_id'=>$id?:session_id()));
+	function agent() {
 		return $this->dry()?FALSE:$this->get('agent');
 	}
 
@@ -167,7 +165,7 @@ class Session extends Mapper {
 		}
 		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash(mt_rand());
-		if ($this->load(array('session_id'=>session_id()))) {
+		if ($this->load(array('session_id'=>$this->sid=session_id()))) {
 			$this->set('csrf',$csrf);
 			$this->save();
 		}
