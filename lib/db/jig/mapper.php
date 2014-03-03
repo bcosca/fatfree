@@ -324,12 +324,12 @@ class Mapper extends \DB\Cursor {
 			\Base::instance()->call($this->trigger['beforeinsert'],
 				array($this,$pkey));
 		$db->write($this->file,$data);
-		parent::reset();
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [insert] '.json_encode($this->document));
 		if (isset($this->trigger['afterinsert']))
 			\Base::instance()->call($this->trigger['afterinsert'],
 				array($this,$pkey));
+		$this->load(array('@_id=?',$this->id));
 		return $this->document;
 	}
 

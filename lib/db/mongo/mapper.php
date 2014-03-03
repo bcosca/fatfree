@@ -236,6 +236,7 @@ class Mapper extends \DB\Cursor {
 		if (isset($this->trigger['afterinsert']))
 			\Base::instance()->call($this->trigger['afterinsert'],
 				array($this,$pkey));
+		$this->load(array('_id'=>$this->document['_id']));
 		return $this->document;
 	}
 

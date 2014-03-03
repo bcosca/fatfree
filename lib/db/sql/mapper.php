@@ -314,7 +314,9 @@ class Mapper extends \DB\Cursor {
 		$ctr=0;
 		$fields='';
 		$values='';
+		$filter='';
 		$pkeys=array();
+		$nkeys=array();
 		$inc=NULL;
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
@@ -323,6 +325,8 @@ class Mapper extends \DB\Cursor {
 				if (!$inc && $field['pdo_type']==\PDO::PARAM_INT &&
 					empty($field['value']) && !$field['nullable'])
 					$inc=$key;
+				$filter.=($filter?' AND ':'').$this->db->quotekey($key).'=?';
+				$nkeys[$ctr+1]=array($field['value'],$field['pdo_type']);
 			}
 			if ($field['changed'] && $key!=$inc) {
 				$fields.=($ctr?',':'').$this->db->quotekey($key);
@@ -349,11 +353,11 @@ class Mapper extends \DB\Cursor {
 		}
 		if ($this->engine!='oci')
 			$this->_id=$this->db->lastinsertid($seq);
-		if ($inc)
-			// Reload to obtain default and auto-increment field values
-			$this->load(array($inc.'=?',
-				$this->db->value($this->fields[$inc]['pdo_type'],
-					$this->_id)));
+		// Reload to obtain default and auto-increment field values
+		$this->load($inc?
+			array($inc.'=?',
+				$this->db->value($this->fields[$inc]['pdo_type'],$this->_id)):
+			array($filter,$nkeys));
 		if (isset($this->trigger['afterinsert']))
 			\Base::instance()->call($this->trigger['afterinsert'],
 				array($this,$pkeys));
