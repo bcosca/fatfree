@@ -2092,10 +2092,12 @@ class Preview extends View {
 			'/\{\{(.+?)\}\}/s',
 			function($expr) use($self) {
 				$str=trim($self->token($expr[1]));
-				if (preg_match('/^(.+?)\h*\|\h*(\w+)/',$str,$parts))
-					$str=(($parts[2]=='format')?
-						'\Base::instance()':'$this').'->'.$parts[2].
-						'('.$parts[1].')';
+				if (preg_match('/^(.+?)\h*\|(.+)/',$str,$parts)) {
+					$str=$parts[1];
+					foreach (Base::instance()->split($parts[2]) as $func)
+						$str=(($func=='format')?'\Base::instance()':'$this').
+							'->'.$func.'('.$str.')';
+				}
 				return '<?php echo '.$str.'; ?>';
 			},
 			preg_replace_callback(
