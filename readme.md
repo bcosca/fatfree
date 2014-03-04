@@ -2432,13 +2432,13 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Christian Knuth
 * Sascha Ohms
 * Jermaine Maree
+* Eyðun Lamhauge
 * Lars Brandi Jensen
 * Sergey Zaretsky
 * Daniel Kloke
 * Brian Nelson
 * Roberts Lapins
 * Boris Gurevich
-* Eyðun Lamhauge
 * Jose Maria Garrido Diaz
 * Dawn Comfort
 * Johan Viberg
@@ -2477,6 +2477,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * FocusHeart
 * Philip Lawrence
 * Peter Beverwyk
+* Judith Grass
 * Randal Hintz
 * Franz Josef
 * Biswajit Nayak
@@ -2508,6 +2509,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Eli Argon
 * Seregin Andrew
 * Marek Toman
+* Diji Enterprises
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
