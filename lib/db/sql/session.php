@@ -100,7 +100,7 @@ class Session extends Mapper {
 	}
 
 	/**
-	*	Return anti-CSRF tokan
+	*	Return anti-CSRF token
 	*	@return string|FALSE
 	**/
 	function csrf() {
