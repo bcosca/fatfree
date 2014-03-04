@@ -169,7 +169,7 @@ class SQL extends \PDO {
 					user_error('PDOStatement: '.$error[2]);
 				}
 				if (preg_match('/^\s*'.
-					'(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING)\b/is',
+					'(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING|EXEC)\b/is',
 					$cmd)) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);
 					// Work around SQLite quote bug
