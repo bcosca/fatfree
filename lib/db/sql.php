@@ -254,28 +254,22 @@ class SQL extends \PDO {
 					'information_schema.key_column_usage AS k '.
 					'ON '.
 						'c.table_name=k.table_name AND '.
-						'c.column_name=k.column_name '.
+						'c.column_name=k.column_name AND '.
+						'c.table_schema=k.table_schema '.
 						($this->dbname?
-							('AND '.
-							($this->engine=='pgsql'?
-								'c.table_catalog=k.table_catalog':
-								'c.table_schema=k.table_schema').' '):'').
+							('AND c.table_catalog=k.table_catalog '):'').
 				'LEFT OUTER JOIN '.
 					'information_schema.table_constraints AS t ON '.
 						'k.table_name=t.table_name AND '.
 						'k.constraint_name=t.constraint_name '.
+						'k.table_schema=t.table_schema '.
 						($this->dbname?
-							('AND '.
-							($this->engine=='pgsql'?
-								'k.table_catalog=t.table_catalog':
-								'k.table_schema=t.table_schema').' '):'').
+							('AND k.table_catalog=t.table_catalog '):'').
 				'WHERE '.
 					'c.table_name='.$this->quote($table).' '.
 					($this->dbname?
-						('AND '.
-							($this->engine=='pgsql'?
-							'c.table_catalog':'c.table_schema').
-							'='.$this->quote($this->dbname)):'').
+						('AND c.table_catalog='.
+							$this->quote($this->dbname)):'').
 				';',
 				'field','type','defval','nullable','YES','pkey','PRIMARY KEY'),
 			'oci'=>array(
