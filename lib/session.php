@@ -94,41 +94,37 @@ class Session {
 	}
 
 	/**
-	*	Return anti-CSRF tokan associated with specified session ID
+	*	Return anti-CSRF token
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function csrf($id=NULL) {
+	function csrf() {
 		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
 			$data['csrf']:FALSE;
 	}
 
 	/**
-	*	Return IP address associated with specified session ID
+	*	Return IP address
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function ip($id=NULL) {
+	function ip() {
 		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
 			$data['ip']:FALSE;
 	}
 
 	/**
-	*	Return Unix timestamp associated with specified session ID
+	*	Return Unix timestamp
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function stamp($id=NULL) {
+	function stamp() {
 		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
 			$data['stamp']:FALSE;
 	}
 
 	/**
-	*	Return HTTP user agent associated with specified session ID
+	*	Return HTTP user agent
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function agent($id=NULL) {
+	function agent() {
 		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
 			$data['agent']:FALSE;
 	}
@@ -160,7 +156,7 @@ class Session {
 		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash(mt_rand());
 		$jar=$fw->get('JAR');
-		if (Cache::instance()->exists($id=session_id().'.@',$data)) {
+		if (Cache::instance()->exists(($id=session_id()).'.@',$data)) {
 			$data['csrf']=$csrf;
 			Cache::instance()->set($id.'.@',
 				$data,
