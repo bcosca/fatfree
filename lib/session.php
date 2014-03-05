@@ -16,6 +16,10 @@
 //! Cache-based session handler
 class Session {
 
+	protected
+		//! Session ID
+		$sid;
+
 	/**
 	*	Open session
 	*	@return TRUE
@@ -40,6 +44,8 @@ class Session {
 	*	@param $id string
 	**/
 	function read($id) {
+		if ($id!=$this->sid)
+			$this->sid=$id;
 		return Cache::instance()->exists($id.'.@',$data)?$data['data']:FALSE;
 	}
 
@@ -56,6 +62,8 @@ class Session {
 		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash(mt_rand());
 		$jar=$fw->get('JAR');
+		if ($id!=$this->sid)
+			$this->sid=$id;
 		Cache::instance()->set($id.'.@',
 			array(
 				'data'=>$data,
@@ -98,8 +106,9 @@ class Session {
 	*	@return string|FALSE
 	**/
 	function csrf() {
-		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
-			$data['csrf']:FALSE;
+		return Cache::instance()->
+			exists(($this->sid?:session_id()).'.@',$data)?
+				$data['csrf']:FALSE;
 	}
 
 	/**
@@ -107,8 +116,9 @@ class Session {
 	*	@return string|FALSE
 	**/
 	function ip() {
-		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
-			$data['ip']:FALSE;
+		return Cache::instance()->
+			exists(($this->sid?:session_id()).'.@',$data)?
+				$data['ip']:FALSE;
 	}
 
 	/**
@@ -116,8 +126,9 @@ class Session {
 	*	@return string|FALSE
 	**/
 	function stamp() {
-		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
-			$data['stamp']:FALSE;
+		return Cache::instance()->
+			exists(($this->sid?:session_id()).'.@',$data)?
+				$data['stamp']:FALSE;
 	}
 
 	/**
@@ -125,8 +136,9 @@ class Session {
 	*	@return string|FALSE
 	**/
 	function agent() {
-		return Cache::instance()->exists(($id?:session_id()).'.@',$data)?
-			$data['agent']:FALSE;
+		return Cache::instance()->
+			exists(($this->sid?:session_id()).'.@',$data)?
+				$data['agent']:FALSE;
 	}
 
 	/**
@@ -156,9 +168,9 @@ class Session {
 		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash(mt_rand());
 		$jar=$fw->get('JAR');
-		if (Cache::instance()->exists(($id=session_id()).'.@',$data)) {
+		if (Cache::instance()->exists(($this->sid=session_id()).'.@',$data)) {
 			$data['csrf']=$csrf;
-			Cache::instance()->set($id.'.@',
+			Cache::instance()->set($this->sid.'.@',
 				$data,
 				$jar['expire']?($jar['expire']-time()):0
 			);
