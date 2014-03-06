@@ -1960,11 +1960,11 @@ class Cache extends Prefab {
 					list($host,$port)=$parts;
 				else
 					$host=$parts[0];
-				$this->ref=new Redis();
+				$this->ref=new Redis;
 				if(!$this->ref->connect($host,$port,2))
 					$this->ref=NULL;
 			}
-			if (preg_match('/^memcache=(.+)/',$dsn,$parts) &&
+			elseif (preg_match('/^memcache=(.+)/',$dsn,$parts) &&
 				extension_loaded('memcache'))
 				foreach ($fw->split($parts[1]) as $server) {
 					$port=11211;
