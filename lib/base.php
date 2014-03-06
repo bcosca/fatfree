@@ -1760,7 +1760,7 @@ class Cache extends Prefab {
 		$dsn,
 		//! Prefix for cache entries
 		$prefix,
-		//! MemCache object
+		//! MemCache or Redis object
 		$ref;
 
 	/**
@@ -1779,6 +1779,9 @@ class Cache extends Prefab {
 			case 'apc':
 			case 'apcu':
 				$raw=apc_fetch($ndx);
+				break;
+			case 'redis':
+				$raw=$this->ref->get($ndx);
 				break;
 			case 'memcache':
 				$raw=memcache_get($this->ref,$ndx);
@@ -1824,6 +1827,8 @@ class Cache extends Prefab {
 			case 'apc':
 			case 'apcu':
 				return apc_store($ndx,$data,$ttl);
+			case 'redis':
+				return $this->ref->set($ndx,$data,array('ex'=>$ttl));
 			case 'memcache':
 				return memcache_set($this->ref,$ndx,$data,0,$ttl);
 			case 'wincache':
@@ -1859,6 +1864,8 @@ class Cache extends Prefab {
 			case 'apc':
 			case 'apcu':
 				return apc_delete($ndx);
+			case 'redis':
+				return $this->ref->del($ndx);
 			case 'memcache':
 				return memcache_delete($this->ref,$ndx);
 			case 'wincache':
@@ -1894,6 +1901,15 @@ class Cache extends Prefab {
 					if (preg_match($regex,$item[$key]) &&
 						$item['mtime']+$lifetime<time())
 						apc_delete($item[$key]);
+				return TRUE;
+			case 'redis':
+				$fw=Base::instance();
+				$keys=$this->ref->keys($this->prefix.'.*'.$suffix);
+				foreach($keys as $key) {
+					$val=$fw->unserialize($this->ref->get($key));
+					if ($val[1]+$lifetime<time())
+						$this->ref->del($key);
+				}
 				return TRUE;
 			case 'memcache':
 				foreach (memcache_get_extended_stats(
@@ -1936,6 +1952,18 @@ class Cache extends Prefab {
 	function load($dsn) {
 		$fw=Base::instance();
 		if ($dsn=trim($dsn)) {
+			if (preg_match('/^redis=(.+)/',$dsn,$parts) &&
+				extension_loaded('redis')) {
+				$port=6379;
+				$parts=explode(':',$parts[1],2);
+				if (count($parts)>1)
+					list($host,$port)=$parts;
+				else
+					$host=$parts[0];
+				$this->ref=new Redis();
+				if(!$this->ref->connect($host,$port,2))
+					$this->ref=NULL;
+			}
 			if (preg_match('/^memcache=(.+)/',$dsn,$parts) &&
 				extension_loaded('memcache'))
 				foreach ($fw->split($parts[1]) as $server) {
