@@ -334,7 +334,7 @@ class Mapper extends \DB\Cursor {
 				$values.=($ctr?',':'').'?';
 				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
-                $ckeys[]=$key;
+				$ckeys[]=$key;
 			}
 			$field['changed']=FALSE;
 			unset($field);
@@ -343,9 +343,9 @@ class Mapper extends \DB\Cursor {
 			\Base::instance()->call($this->trigger['beforeinsert'],
 				array($this,$pkeys));
 		if ($fields) {
-            $precmd=(preg_match('/mssql|dblib|sqlsrv/',$this->engine)
-                && array_intersect(array_keys($pkeys),$ckeys))?
-                'SET IDENTITY_INSERT '.$this->table.' ON;' : '';
+			$precmd=(preg_match('/mssql|dblib|sqlsrv/',$this->engine)
+				&& array_intersect(array_keys($pkeys),$ckeys))?
+				'SET IDENTITY_INSERT '.$this->table.' ON;' : '';
 			$this->db->exec($precmd.
 				'INSERT INTO '.$this->table.' ('.$fields.') '.
 				'VALUES ('.$values.')',$args
