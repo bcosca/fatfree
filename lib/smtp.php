@@ -161,12 +161,12 @@ class SMTP extends Magic {
 		// Get server's initial response
 		$this->dialog(NULL,FALSE);
 		// Announce presence
-		$reply=$this->dialog('EHLO '.$fw->get('HOST'));
+		$reply=$this->dialog('EHLO '.$fw->get('HOST'),$log);
 		if (strtolower($this->scheme)=='tls') {
-			$this->dialog('STARTTLS');
+			$this->dialog('STARTTLS',$log);
 			stream_socket_enable_crypto(
 				$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
-			$reply=$this->dialog('EHLO '.$fw->get('HOST'));
+			$reply=$this->dialog('EHLO '.$fw->get('HOST'),$log);
 			if (preg_match('/8BITMIME/',$reply))
 				$headers['Content-Transfer-Encoding']='8bit';
 			else {
@@ -176,9 +176,9 @@ class SMTP extends Magic {
 		}
 		if ($this->user && $this->pw && preg_match('/AUTH/',$reply)) {
 			// Authenticate
-			$this->dialog('AUTH LOGIN');
-			$this->dialog(base64_encode($this->user));
-			$this->dialog(base64_encode($this->pw));
+			$this->dialog('AUTH LOGIN',$log);
+			$this->dialog(base64_encode($this->user),$log);
+			$this->dialog(base64_encode($this->pw),$log);
 		}
 		// Required headers
 		$reqd=array('From','To','Subject');
@@ -192,12 +192,12 @@ class SMTP extends Magic {
 			if (!in_array($key,$reqd))
 				$str.=$key.': '.$val.$eol;
 		// Start message dialog
-		$this->dialog('MAIL FROM: '.strstr($headers['From'],'<'));
+		$this->dialog('MAIL FROM: '.strstr($headers['From'],'<'),$log);
 		foreach ($fw->split($headers['To'].
 			(isset($headers['Cc'])?(';'.$headers['Cc']):'').
 			(isset($headers['Bcc'])?(';'.$headers['Bcc']):'')) as $dst)
-			$this->dialog('RCPT TO: '.strstr($dst,'<'));
-		$this->dialog('DATA');
+			$this->dialog('RCPT TO: '.strstr($dst,'<'),$log);
+		$this->dialog('DATA',$log);
 		if ($this->attachments) {
 			// Replace Content-Type
 			$hash=uniqid(NULL,TRUE);
@@ -229,7 +229,7 @@ class SMTP extends Magic {
 			$out.=$eol;
 			$out.='--'.$hash.'--'.$eol;
 			$out.='.';
-			$this->dialog($out);
+			$this->dialog($out,FALSE);
 		}
 		else {
 			// Send mail headers
@@ -243,7 +243,7 @@ class SMTP extends Magic {
 			// Send message
 			$this->dialog($out);
 		}
-		$this->dialog('QUIT');
+		$this->dialog('QUIT',$log);
 		if ($socket)
 			fclose($socket);
 		return TRUE;
