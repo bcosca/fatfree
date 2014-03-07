@@ -342,17 +342,14 @@ class Mapper extends \DB\Cursor {
 		if (isset($this->trigger['beforeinsert']))
 			\Base::instance()->call($this->trigger['beforeinsert'],
 				array($this,$pkeys));
-		if ($fields) {
-			$this->db->begin();
-			if (preg_match('/mssql|dblib|sqlsrv/',$this->engine) &&
-				array_intersect(array_keys($pkeys),$ckeys))
-				$this->db->exec('SET IDENTITY_INSERT '.$this->table.' ON;');
+		if ($fields)
 			$this->db->exec(
+				(preg_match('/mssql|dblib|sqlsrv/',$this->engine) &&
+				array_intersect(array_keys($pkeys),$ckeys)?
+					'SET IDENTITY_INSERT '.$this->table.' ON;':'').
 				'INSERT INTO '.$this->table.' ('.$fields.') '.
 				'VALUES ('.$values.')',$args
 			);
-			$this->db->commit();
-		}
 		$seq=NULL;
 		if ($this->engine=='pgsql') {
 			$names=array_keys($pkeys);
