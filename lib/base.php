@@ -493,11 +493,11 @@ class Base extends Prefab {
 	*	Merge array with hive array variable
 	*	@return array
 	*	@param $key string
-	*	@param $src array
+	*	@param $src string|array
 	**/
 	function merge($key,$src) {
 		$ref=&$this->ref($key);
-		return array_merge($ref,$src);
+		return array_merge($ref,is_string($src)?$this->hive[$src]:$src;
 	}
 
 	/**
