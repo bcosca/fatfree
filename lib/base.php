@@ -497,7 +497,7 @@ class Base extends Prefab {
 	**/
 	function merge($key,$src) {
 		$ref=&$this->ref($key);
-		return array_merge($ref,is_string($src)?$this->hive[$src]:$src;
+		return array_merge($ref,is_string($src)?$this->hive[$src]:$src);
 	}
 
 	/**
