@@ -1,3 +1,9 @@
+# Prevent direct access to *.ini
+<FilesMatch ".(ini)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
 # Enable rewrite engine and route requests to framework
 RewriteEngine On
 
