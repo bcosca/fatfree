@@ -505,7 +505,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function copyto($key) {
 		$var=&\Base::instance()->ref($key);
-		foreach ($this->fields as $key=>$field)
+		foreach ($this->fields+$this->adhoc as $key=>$field)
 			$var[$key]=$field['value'];
 	}
 
