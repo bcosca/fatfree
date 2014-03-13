@@ -2120,7 +2120,8 @@ class Preview extends View {
 			'/\{\{(.+?)\}\}/s',
 			function($expr) use($self) {
 				$str=trim($self->token($expr[1]));
-				if (preg_match('/^(.+?)\h*\|(.+)/',$str,$parts)) {
+				if (preg_match('/^(.+?)\h*\|(\h*\w+(?:\h*[,;]\h*\w+)*)/',
+					$str,$parts)) {
 					$str=$parts[1];
 					foreach (Base::instance()->split($parts[2]) as $func)
 						$str=(($func=='format')?'\Base::instance()':'$this').
