@@ -319,6 +319,9 @@ class Mapper extends \DB\Cursor {
 		$nkeys=array();
 		$ckeys=array();
 		$inc=NULL;
+		if (isset($this->trigger['beforeinsert']))
+			\Base::instance()->call($this->trigger['beforeinsert'],
+				array($this));
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
 				$pkeys[$key]=$field['previous'];
@@ -339,10 +342,7 @@ class Mapper extends \DB\Cursor {
 			$field['changed']=FALSE;
 			unset($field);
 		}
-		if (isset($this->trigger['beforeinsert']))
-			\Base::instance()->call($this->trigger['beforeinsert'],
-				array($this,$pkeys));
-		if ($fields)
+		if ($fields) {
 			$this->db->exec(
 				(preg_match('/mssql|dblib|sqlsrv/',$this->engine) &&
 				array_intersect(array_keys($pkeys),$ckeys)?
@@ -350,21 +350,22 @@ class Mapper extends \DB\Cursor {
 				'INSERT INTO '.$this->table.' ('.$fields.') '.
 				'VALUES ('.$values.')',$args
 			);
-		$seq=NULL;
-		if ($this->engine=='pgsql') {
-			$names=array_keys($pkeys);
-			$seq=$this->source.'_'.end($names).'_seq';
+			$seq=NULL;
+			if ($this->engine=='pgsql') {
+				$names=array_keys($pkeys);
+				$seq=$this->source.'_'.end($names).'_seq';
+			}
+			if ($this->engine!='oci')
+				$this->_id=$this->db->lastinsertid($seq);
+			// Reload to obtain default and auto-increment field values
+			$this->load($inc?
+				array($inc.'=?',
+					$this->db->value($this->fields[$inc]['pdo_type'],$this->_id)):
+				array($filter,$nkeys));
+			if (isset($this->trigger['afterinsert']))
+				\Base::instance()->call($this->trigger['afterinsert'],
+					array($this,$pkeys));
 		}
-		if ($this->engine!='oci')
-			$this->_id=$this->db->lastinsertid($seq);
-		// Reload to obtain default and auto-increment field values
-		$this->load($inc?
-			array($inc.'=?',
-				$this->db->value($this->fields[$inc]['pdo_type'],$this->_id)):
-			array($filter,$nkeys));
-		if (isset($this->trigger['afterinsert']))
-			\Base::instance()->call($this->trigger['afterinsert'],
-				array($this,$pkeys));
 		return $this;
 	}
 
@@ -377,6 +378,9 @@ class Mapper extends \DB\Cursor {
 		$ctr=0;
 		$pairs='';
 		$filter='';
+		if (isset($this->trigger['beforeupdate']))
+			\Base::instance()->call($this->trigger['beforeupdate'],
+				array($this));
 		foreach ($this->fields as $key=>$field)
 			if ($field['changed']) {
 				$pairs.=($pairs?',':'').$this->db->quotekey($key).'=?';
@@ -391,18 +395,15 @@ class Mapper extends \DB\Cursor {
 				$pkeys[$key]=$field['previous'];
 				$ctr++;
 			}
-		if (isset($this->trigger['beforeupdate']))
-			\Base::instance()->call($this->trigger['beforeupdate'],
-				array($this,$pkeys));
 		if ($pairs) {
 			$sql='UPDATE '.$this->table.' SET '.$pairs;
 			if ($filter)
 				$sql.=' WHERE '.$filter;
 			$this->db->exec($sql,$args);
+			if (isset($this->trigger['afterupdate']))
+				\Base::instance()->call($this->trigger['afterupdate'],
+					array($this,$pkeys));
 		}
-		if (isset($this->trigger['afterupdate']))
-			\Base::instance()->call($this->trigger['afterupdate'],
-				array($this,$pkeys));
 		return $this;
 	}
 
