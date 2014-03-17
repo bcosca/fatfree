@@ -319,9 +319,6 @@ class Mapper extends \DB\Cursor {
 		$nkeys=array();
 		$ckeys=array();
 		$inc=NULL;
-		if (isset($this->trigger['beforeinsert']))
-			\Base::instance()->call($this->trigger['beforeinsert'],
-				array($this));
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
 				$pkeys[$key]=$field['previous'];
@@ -342,6 +339,9 @@ class Mapper extends \DB\Cursor {
 			$field['changed']=FALSE;
 			unset($field);
 		}
+		if (isset($this->trigger['beforeinsert']))
+			\Base::instance()->call($this->trigger['beforeinsert'],
+				array($this,$pkeys));
 		if ($fields) {
 			$this->db->exec(
 				(preg_match('/mssql|dblib|sqlsrv/',$this->engine) &&
@@ -359,8 +359,8 @@ class Mapper extends \DB\Cursor {
 				$this->_id=$this->db->lastinsertid($seq);
 			// Reload to obtain default and auto-increment field values
 			$this->load($inc?
-				array($inc.'=?',
-					$this->db->value($this->fields[$inc]['pdo_type'],$this->_id)):
+				array($inc.'=?',$this->db->value(
+					$this->fields[$inc]['pdo_type'],$this->_id)):
 				array($filter,$nkeys));
 			if (isset($this->trigger['afterinsert']))
 				\Base::instance()->call($this->trigger['afterinsert'],
@@ -378,9 +378,6 @@ class Mapper extends \DB\Cursor {
 		$ctr=0;
 		$pairs='';
 		$filter='';
-		if (isset($this->trigger['beforeupdate']))
-			\Base::instance()->call($this->trigger['beforeupdate'],
-				array($this));
 		foreach ($this->fields as $key=>$field)
 			if ($field['changed']) {
 				$pairs.=($pairs?',':'').$this->db->quotekey($key).'=?';
@@ -395,6 +392,9 @@ class Mapper extends \DB\Cursor {
 				$pkeys[$key]=$field['previous'];
 				$ctr++;
 			}
+		if (isset($this->trigger['beforeupdate']))
+			\Base::instance()->call($this->trigger['beforeupdate'],
+				array($this,$pkeys));
 		if ($pairs) {
 			$sql='UPDATE '.$this->table.' SET '.$pairs;
 			if ($filter)
