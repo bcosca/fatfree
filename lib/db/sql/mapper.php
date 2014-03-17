@@ -319,9 +319,14 @@ class Mapper extends \DB\Cursor {
 		$nkeys=array();
 		$ckeys=array();
 		$inc=NULL;
+		foreach ($this->fields as $key=>$field)
+			if ($field['pkey'])
+				$pkeys[$key]=$field['previous'];
+		if (isset($this->trigger['beforeinsert']))
+			\Base::instance()->call($this->trigger['beforeinsert'],
+				array($this,$pkeys));
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
-				$pkeys[$key]=$field['previous'];
 				$field['previous']=$field['value'];
 				if (!$inc && $field['pdo_type']==\PDO::PARAM_INT &&
 					empty($field['value']) && !$field['nullable'])
@@ -339,9 +344,6 @@ class Mapper extends \DB\Cursor {
 			$field['changed']=FALSE;
 			unset($field);
 		}
-		if (isset($this->trigger['beforeinsert']))
-			\Base::instance()->call($this->trigger['beforeinsert'],
-				array($this,$pkeys));
 		if ($fields) {
 			$this->db->exec(
 				(preg_match('/mssql|dblib|sqlsrv/',$this->engine) &&
