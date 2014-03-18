@@ -2051,7 +2051,8 @@ class View extends Prefab {
 			$hive=$fw->hive();
 		if ($fw->get('ESCAPE'))
 			$hive=$this->esc($hive);
-		$hive['ALIASES']=$fw->build($hive['ALIASES']);
+		if (isset($hive['ALIASES']))
+			$hive['ALIASES']=$fw->build($hive['ALIASES']);
 		extract($hive);
 		unset($fw);
 		unset($hive);
