@@ -38,7 +38,7 @@ class Base extends Prefab {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.2.2-Dev';
+		VERSION='3.3.0-Dev';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)

@@ -2421,8 +2421,8 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 
 * GitHub
 * Square Lines, LLC
-* Talis Group, Ltd.
 * Mirosystems
+* Talis Group, Ltd.
 * Tecnilógica
 * Stehlik & Company
 * G Holdings, LLC

@@ -1,5 +1,45 @@
 CHANGELOG
 
+3.2.2 (19 March 2014)
+*	NEW: Locales set automatically (Feature request #522)
+*	NEW: Mapper dbtype()
+*	NEW: before- and after- triggers for all mappers
+*	NEW: Decode HTML5 entities if PHP>5.3 detected (Feature request #552)
+*	NEW: Send credentials only if AUTH is present in the SMTP extension
+	response (Feature request #545)
+*	NEW: BITMASK variable to allow ENT_COMPAT override
+*	NEW: Redis support for caching
+*	Enable SMTP feature detection
+*	Enable extended ICU custom date format (Feature request #555)
+*	Enable custom time ICU format
+*	Add option to turn off session table creation (Feature request #557)
+*	Enhanced template token rendering and custom filters (Feature request
+	#550)
+*	Avert multiple loads in DB-managed sessions (Feature request #558)
+*	Add EXEC to associative fetch
+*	Bug fix: Building template tokens breaks on inline OR condition (Issue
+	#573)
+*	Bug fix: SMTP->send does not use the $log parameter (Issue #571)
+*	Bug fix: Allow setting sqlsrv primary keys on insert (Issue #570)
+*	Bug fix: Generated query for obtaining table schema in sqlsrv incorrect
+	(Bug #565)
+*	Bug fix: SQL mapper flag set even when value has not changed (Bug #562)
+*	Bug fix: Add XFRAME config option (Feature request #546)
+*	Bug fix: Incorrect parsing of comments (Issue #541)
+*	Bug fix: Multiple Set-Cookie headers (Issue #533)
+*	Bug fix: Mapper is dry after save()
+*	Bug fix: Prevent infinite loop when error handler is triggered
+	(Issue #361)
+*	Bug fix: Mapper tweaks not passing primary keys as arguments
+*	Bug fix: Zero indexes in dot-notated arrays fail to compile
+*	Bug fix: Prevent GROUP clause double-escaping
+*	Bug fix: Regression of zlib compression bug
+*	Bug fix: Method copyto() does not include ad hoc fields
+*	Check existence of OpenID mode (Issue #529)
+*	Generate a 404 when a tokenized class doesn't exist
+*	Fix SQLite quotes (Issue #521)
+*	Bug fix: BASE is incorrect on Windows
+
 3.2.1 (7 January 2014)
 *	NEW: EMOJI variable, UTF->translate(), UTF->emojify(), and UTF->strrev()
 *	Allow empty strings in config()
