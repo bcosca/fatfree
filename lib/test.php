@@ -23,7 +23,7 @@ class Test {
 		FLAG_Both=2;
 	//@}
 
-	private
+	protected
 		//! Test results
 		$data=array();
 

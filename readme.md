@@ -343,6 +343,30 @@ $HTTP["host"] =~ "www\.example\.com$" {
 }
 ```
 
+### Sample IIS Configuration
+
+Install the [URL rewrite module](http://www.iis.net/downloads/microsoft/url-rewrite) and the appropriate .NET framework corresponding to your Windows version. Then create a file named `web.config` in your application root with the following contents:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <system.webServer>
+    <rewrite>
+      <rules>
+        <rule name="Application" stopProcessing="true">
+          <match url=".*" ignoreCase="false" />
+          <conditions logicalGrouping="MatchAll">
+            <add input="{REQUEST_FILENAME}" matchType="IsFile" ignoreCase="false" negate="true" />
+            <add input="{REQUEST_FILENAME}" matchType="IsDirectory" ignoreCase="false" negate="true" />
+          </conditions>
+          <action type="Rewrite" url="index.php" appendQueryString="true" />
+        </rule>
+      </rules>
+    </rewrite>
+  </system.webServer>
+</configuration>
+```
+
 ### Rerouting
 
 So let's get back to coding. You can declare a page obsolete and redirect your visitors to another site/page:-
@@ -636,7 +660,7 @@ $f3->set('ONERROR',
         // custom error handler code goes here
         // use this if you want to display errors in a
         // format consistent with your site's theme
-        echo $f3->get('ERROR.title');
+        echo $f3->get('ERROR.status');
     }
 );
 ```
@@ -645,7 +669,7 @@ F3 maintains a global variable containing the details of the latest error that o
 
 ```
 ERROR.code - displays the error code (404, 500, etc.)
-ERROR.title - header and page title
+ERROR.status - header and page title
 ERROR.text - error context
 ERROR.trace - stack trace
 ```
@@ -2134,7 +2158,7 @@ Once you get the hang of testing the smallest units of your application, you can
 
 `array ERROR`
 
-* Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.title` contains a brief description of the error. `ERROR.text` provides greater detail. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
+* Information about the last HTTP error that occurred. `ERROR.code` is the HTTP status code. `ERROR.status` contains a brief description of the error. `ERROR.text` provides more detail. For HTTP 500 errors, use `ERROR.trace` to retrieve the stack trace.
 
 `bool ESCAPE`
 
@@ -2397,8 +2421,8 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 
 * GitHub
 * Square Lines, LLC
-* Talis Group, Ltd.
 * Mirosystems
+* Talis Group, Ltd.
 * Tecnilógica
 * Stehlik & Company
 * G Holdings, LLC
@@ -2408,12 +2432,13 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Christian Knuth
 * Sascha Ohms
 * Jermaine Maree
+* Eyðun Lamhauge
+* Lars Brandi Jensen
 * Sergey Zaretsky
 * Daniel Kloke
 * Brian Nelson
 * Roberts Lapins
 * Boris Gurevich
-* Eyðun Lamhauge
 * Jose Maria Garrido Diaz
 * Dawn Comfort
 * Johan Viberg
@@ -2452,6 +2477,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * FocusHeart
 * Philip Lawrence
 * Peter Beverwyk
+* Judith Grass
 * Randal Hintz
 * Franz Josef
 * Biswajit Nayak
@@ -2466,13 +2492,12 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Philipp Hirsch
 * Aurélien Botermans
 * Christian Treptow
-* Кубарев Дмитрий
+* Кубарев Дмитрий (Dmitry Kubarev)
 * Alexandru Catalin Trandafir
 * Leigh Harrison
-* Дмитриев Иван
+* Дмитриев Иван (Ivan Dmitriev)
 * IT_GAP
 * Sergeev Andrey
-* Lars Brandi Jensen
 * Steven J Mixon
 * Roland Fath
 * Justin Parker
@@ -2482,12 +2507,15 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Chris Clarke
 * Ngan Ting On
 * Eli Argon
+* Seregin Andrew
+* Marek Toman
+* Diji Enterprises
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
 [![Paypal](ui/images/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
 [![Bitcoin](ui/images/bitcoin.png)](https://coinbase.com/checkouts/7986a0da214006256d470f2f8e1a15cf)
 
-**Copyright (c) 2009-2013 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
+**Copyright (c) 2009-2014 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a0b5e3f40092429070b6647a2e5ca6ab "githalytics.com")](http://githalytics.com/bcosca/fatfree)

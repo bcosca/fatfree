@@ -1,4 +1,4 @@
-body{font-family:Ubuntu,sans-serif;color:#666;background:#fff;width:640px;padding:0 20px;margin:2em auto}
+body{font-family:Ubuntu,sans-serif;font-size:1.1em;color:#666;background:#fff}
 h1{color:#aaf;border-bottom:5px solid #aaf}
 h2{color:#88d;border-bottom:3px dotted #88d}
 h3{color:#66b}
@@ -9,6 +9,7 @@ p:first-child{margin-top:0}
 small{font-size:0.75em}
 a{text-decoration:none;color:#66f}
 a:hover{color:#333}
+img{max-width:100%}
 table{width:100%}
 table code{background:transparent;padding:0}
 tr{border-bottom:1px solid #999}
@@ -22,8 +23,6 @@ blockquote pre,blockquote code{color:#666;background:#fff}
 code{background:#eee}
 .center{text-align:center}
 .right{text-align:right}
-.header{border-bottom:5px solid #ccc}
-.header p{font-size:0.75em;text-transform:uppercase;letter-spacing:0.2em;margin:0}
-.footer{font-size:0.9em;border-top:1px solid #ccc}
+.content{width:768px;padding:0 20px;margin:2em auto}
+.footer{font-size:0.9em}
 .footer p{margin-top:1em}
-

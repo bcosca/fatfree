@@ -23,7 +23,7 @@ class Mongo extends \MongoDB {
 		E_Profiler='MongoDB profiler is disabled';
 	//@}
 
-	private
+	protected
 		//! UUID
 		$uuid,
 		//! Data source name

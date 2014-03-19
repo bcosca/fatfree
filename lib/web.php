@@ -21,7 +21,7 @@ class Web extends Prefab {
 		E_Request='No suitable HTTP request engine found';
 	//@}
 
-	private
+	protected
 		//! HTTP request engine
 		$wrapper;
 

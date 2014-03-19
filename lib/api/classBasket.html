@@ -19,7 +19,7 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">Fat-Free Framework
-   &#160;<span id="projectnumber">3.2.1</span>
+   &#160;<span id="projectnumber">3.2.2</span>
    &#160;<span class="menu"><a href="index.html">Overview</a> <a href="annotated.html">Class List</a> <a href="hierarchy.html">Hierarchy</a></span>
    </div>
   </td>
@@ -54,8 +54,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aec19632fe0f12d26bcf791459e89bfa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e784b838ebd612900ca9835cfb7ba31"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBasket.html#a9e784b838ebd612900ca9835cfb7ba31">clear</a> ($key)</td></tr>
 <tr class="separator:a9e784b838ebd612900ca9835cfb7ba31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e7a44154aecadb5aaf505b1d4597487"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBasket.html#a8e7a44154aecadb5aaf505b1d4597487">find</a> ($key, $val)</td></tr>
-<tr class="separator:a8e7a44154aecadb5aaf505b1d4597487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3180d66fbdf396a3549c339c1fd5a46e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBasket.html#a3180d66fbdf396a3549c339c1fd5a46e">find</a> ($key=NULL, $val=NULL)</td></tr>
+<tr class="separator:a3180d66fbdf396a3549c339c1fd5a46e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab55d4e6a68addf6c5ef9b064031e2681"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBasket.html#ab55d4e6a68addf6c5ef9b064031e2681">findone</a> ($key, $val)</td></tr>
 <tr class="separator:ab55d4e6a68addf6c5ef9b064031e2681"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a986fbb61889a671b23cae562e1528880"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBasket.html#a986fbb61889a671b23cae562e1528880">load</a> ($key, $val)</td></tr>
@@ -330,7 +330,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a8e7a44154aecadb5aaf505b1d4597487"></a>
+<a class="anchor" id="a3180d66fbdf396a3549c339c1fd5a46e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -338,13 +338,13 @@ Protected Attributes</h2></td></tr>
           <td class="memname">Basket::find </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>$key</em>, </td>
+          <td class="paramname"><em>$key</em> = <code>NULL</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>$val</em>&#160;</td>
+          <td class="paramname"><em>$val</em> = <code>NULL</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -353,7 +353,7 @@ Protected Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return items that match key/value pair </p>
+<p>Return items that match key/value pair; If no key/value pair specified, return all items </p>
 <dl class="section return"><dt>Returns</dt><dd>array|FALSE </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

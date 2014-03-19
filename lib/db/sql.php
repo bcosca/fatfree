@@ -18,7 +18,7 @@ namespace DB;
 //! PDO wrapper
 class SQL extends \PDO {
 
-	private
+	protected
 		//! UUID
 		$uuid,
 		//! Data source name
@@ -82,6 +82,24 @@ class SQL extends \PDO {
 		}
 	}
 
+	/**
+	*	Cast value to PHP type
+	*	@return scalar
+	*	@param $type string
+	*	@param $val scalar
+	**/
+	function value($type,$val) {
+		switch ($type) {
+			case \PDO::PARAM_NULL:
+				return (unset)$val;
+			case \PDO::PARAM_INT:
+				return (int)$val;
+			case \PDO::PARAM_BOOL:
+				return (bool)$val;
+			case \PDO::PARAM_STR:
+				return (string)$val;
+		}
+	}
 
 	/**
 	*	Execute SQL statement(s)
@@ -112,6 +130,7 @@ class SQL extends \PDO {
 		}
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
+		$result=FALSE;
 		foreach (array_combine($cmds,$args) as $cmd=>$arg) {
 			if (!preg_replace('/(^\s+|[\s;]+$)/','',$cmd))
 				continue;
@@ -131,12 +150,13 @@ class SQL extends \PDO {
 					if (is_array($val)) {
 						// User-specified data type
 						$query->bindvalue($key,$val[0],$val[1]);
-						$vals[]=$fw->stringify($val[0]);
+						$vals[]=$fw->stringify($this->value($val[1],$val[0]));
 					}
 					else {
 						// Convert to PDO data type
-						$query->bindvalue($key,$val,$this->type($val));
-						$vals[]=$fw->stringify($val);
+						$query->bindvalue($key,$val,
+							$type=$this->type($val));
+						$vals[]=$fw->stringify($this->value($type,$val));
 					}
 					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
 				}
@@ -149,9 +169,17 @@ class SQL extends \PDO {
 					user_error('PDOStatement: '.$error[2]);
 				}
 				if (preg_match('/^\s*'.
-					'(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING)\b/is',
+					'(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING|EXEC)\b/is',
 					$cmd)) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);
+					// Work around SQLite quote bug
+					if (preg_match('/sqlite2?/',$this->engine))
+						foreach ($result as $pos=>$rec) {
+							unset($result[$pos]);
+							$result[$pos]=array();
+							foreach ($rec as $key=>$val)
+								$result[$pos][trim($key,'\'"[]`')]=$val;
+						}
 					$this->rows=count($result);
 					if ($fw->get('CACHE') && $ttl)
 						// Save to cache backend
@@ -226,28 +254,22 @@ class SQL extends \PDO {
 					'information_schema.key_column_usage AS k '.
 					'ON '.
 						'c.table_name=k.table_name AND '.
-						'c.column_name=k.column_name '.
+						'c.column_name=k.column_name AND '.
+						'c.table_schema=k.table_schema '.
 						($this->dbname?
-							('AND '.
-							($this->engine=='pgsql'?
-								'c.table_catalog=k.table_catalog':
-								'c.table_schema=k.table_schema').' '):'').
+							('AND c.table_catalog=k.table_catalog '):'').
 				'LEFT OUTER JOIN '.
 					'information_schema.table_constraints AS t ON '.
 						'k.table_name=t.table_name AND '.
 						'k.constraint_name=t.constraint_name '.
+						'k.table_schema=t.table_schema '.
 						($this->dbname?
-							('AND '.
-							($this->engine=='pgsql'?
-								'k.table_catalog=t.table_catalog':
-								'k.table_schema=t.table_schema').' '):'').
+							('AND k.table_catalog=t.table_catalog '):'').
 				'WHERE '.
 					'c.table_name='.$this->quote($table).' '.
 					($this->dbname?
-						('AND '.
-							($this->engine=='pgsql'?
-							'c.table_catalog':'c.table_schema').
-							'='.$this->quote($this->dbname)):'').
+						('AND c.table_catalog='.
+							$this->quote($this->dbname)):'').
 				';',
 				'field','type','defval','nullable','YES','pkey','PRIMARY KEY'),
 			'oci'=>array(
@@ -274,7 +296,7 @@ class SQL extends \PDO {
 				// SET GLOBAL innodb_stats_on_metadata=0;
 				// This requires SUPER privilege!
 				$rows=array();
-				foreach ($this->exec($val[0],NULL,$ttl) as $row)
+				foreach ($this->exec($val[0],NULL,$ttl) as $row) {
 					if (!$fields || in_array($row[$val[1]],$fields))
 						$rows[$row[$val[1]]]=array(
 							'type'=>$row[$val[2]],
@@ -288,6 +310,7 @@ class SQL extends \PDO {
 							'nullable'=>$row[$val[4]]==$val[5],
 							'pkey'=>$row[$val[6]]==$val[7]
 						);
+				}
 				return $rows;
 			}
 		return FALSE;

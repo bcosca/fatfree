@@ -18,7 +18,7 @@ namespace Web;
 //! Pingback 1.0 protocol (client and server) implementation
 class Pingback extends \Prefab {
 
-	private
+	protected
 		//! Transaction history
 		$log;
 
