@@ -934,7 +934,7 @@ That's like the `<!-- comment -->` HTML comment tag, but the `<exclude>` directi
 Here's another way of excluding template content or adding comments:-
 
 ``` html
-{{* <p>A chunk of HTML we don't want displayed at the moment</p> *}}
+{* <p>A chunk of HTML we don't want displayed at the moment</p> *}
 ```
 
 ### Conditional Segments
@@ -2383,7 +2383,7 @@ Once you get the hang of testing the smallest units of your application, you can
 * Equivalent of the PHP switch-case jump table structure.
 
 ```
-{{* text-block *}}
+{* text-block *}
 ```
 * Alias for `<exclude>`.
 
