@@ -49,6 +49,15 @@ class Router extends Controller {
 			'Mixed request routing pattern'
 		);
 		$f3->clear('ROUTES');
+		$f3->route('GET /wild/*',
+			function($f3) {
+			}
+		);
+		$f3->mock('GET /wild/beast?at=large');
+		$test->expect(
+			$f3->get('PARAMS.1')=='beast',
+			'Wildcard routing pattern'
+		);
 		$f3->set('type','none');
 		$f3->route('GET|POST / [ajax]',
 			function($f3) {
