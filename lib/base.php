@@ -121,9 +121,7 @@ class Base extends Prefab {
 		//! Language lookup sequence
 		$languages,
 		//! Default fallback language
-		$fallback='en',
-		//! NULL reference
-		$null=NULL;
+		$fallback='en';
 
 	/**
 	*	Sync PHP global with corresponding hive key
@@ -229,12 +227,22 @@ class Base extends Prefab {
 				$obj=FALSE;
 				if (!is_object($var))
 					$var=new stdclass;
-				$var=&$var->$part;
+				if ($add || property_exists($var,$part))
+					$var=&$var->$part;
+				else {
+					$var=&$this->null;
+					break;
+				}
 			}
 			else {
 				if (!is_array($var))
 					$var=array();
-				$var=&$var[$part];
+				if ($add || array_key_exists($part,$var))
+					$var=&$var[$part];
+				else {
+					$var=&$this->null;
+					break;
+				}
 			}
 		if ($parts[0]=='ALIASES')
 			$var=$this->build($var);
