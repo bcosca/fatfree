@@ -339,7 +339,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function __construct(\DB\Mongo $db,$collection) {
 		$this->db=$db;
-		$this->collection=$db->{$collection};
+		$this->collection=$db->selectcollection($collection);
 		$this->reset();
 	}
 
