@@ -1285,7 +1285,7 @@ class Base extends Prefab {
 				else
 					$this->expire(0);
 				if (!strlen($body)) {
-					if (!$this->hive['RAW'])
+					if (!$this->hive['RAW'] && !$this->hive['BODY'])
 						$this->hive['BODY']=file_get_contents('php://input');
 					ob_start();
 					// Call route handler
