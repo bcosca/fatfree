@@ -650,20 +650,6 @@ class Base extends Prefab {
 	}
 
 	/**
-	*	Attempt to clone object
-	*	@return object
-	*	@return $arg object
-	**/
-	function dupe($arg) {
-		if (method_exists('ReflectionClass','iscloneable')) {
-			$ref=new ReflectionClass($arg);
-			if ($ref->iscloneable())
-				return clone($arg);
-		}
-		return FALSE;
-	}
-
-	/**
 	*	Invoke callback recursively for all data types
 	*	@return mixed
 	*	@param $arg mixed
@@ -680,10 +666,15 @@ class Base extends Prefab {
 			$stack=array();
 		switch (gettype($arg)) {
 			case 'object':
-				if ($this->dupe($arg))
-					foreach (get_object_vars($arg) as $key=>$val)
-						$arg->$key=$this->recursive($val,$func,
-							array_merge($stack,array($arg)));
+				if (method_exists('ReflectionClass','iscloneable')) {
+					$ref=new ReflectionClass($arg);
+					if ($ref->iscloneable()) {
+						$arg=clone($arg);
+						foreach (get_object_vars($arg) as $key=>$val)
+							$arg->$key=$this->recursive($val,$func,
+								array_merge($stack,array($arg)));
+					}
+				}
 				return $arg;
 			case 'array':
 				$tmp=array();
