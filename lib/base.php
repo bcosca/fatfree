@@ -1024,7 +1024,7 @@ class Base extends Prefab {
 			'status'=>$header,
 			'code'=>$code,
 			'text'=>$text,
-			'trace'=>$trace
+			'trace'=>unserialize(serialize($trace))
 		);
 		$handler=$this->hive['ONERROR'];
 		$this->hive['ONERROR']=NULL;
