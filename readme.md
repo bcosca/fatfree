@@ -2240,6 +2240,10 @@ Once you get the hang of testing the smallest units of your application, you can
 
 * Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
 
+`bool RAW`
+
+* Disable automatic storage of HTTP request body into `BODY`. Should be TRUE when processing large data coming from `php://input` which will not fit in memory. Default value: `FALSE`
+
 `string REALM`
 
 * Full canonical URL.
