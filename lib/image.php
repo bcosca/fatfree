@@ -265,6 +265,56 @@ class Image {
 		imagesavealpha($this->data,TRUE);
 		return $this->save();
 	}
+	/**
+	*	Apply a text overlay
+	*	@return object
+	*	@param $string string
+	*	@param $font string
+	* 	@param $fontSize int
+	*	@param $align int
+	*	@param $colour string
+	*	@param $shadow string
+	**/
+	function overlayText($string,$font='arial', $fontSize = 13, $align=NULL, $colour="255,255,255", $shadow="") {
+		if (is_null($align))
+			$align=self::POS_Right|self::POS_Bottom;
+		
+		$imgw=$this->width();
+		$imgh=$this->height();
+		
+		$pos_string = imagettfbbox($fontSize, 0, $font, $string);
+		$width = abs($pos_string[4] - $pos_string[0]); $height = abs($pos_string[5] - $pos_string[1]);
+		
+		if ($align & self::POS_Left)
+			$posx=0;
+		if ($align & self::POS_Center)
+			$posx=($imgw-$width)/2;
+		if ($align & self::POS_Right)
+			$posx=$imgw-$width;
+		if ($align & self::POS_Top)
+			$posy=0;
+		if ($align & self::POS_Middle)
+			$posy=($imgh-$height)/2;
+		if ($align & self::POS_Bottom)
+			$posy=$imgh-$height;
+		if (empty($posx))
+			$posx=0;
+		if (empty($posy))
+			$posy=0;
+
+
+		$fw=Base::instance();
+		$colour = $fw->split($colour);
+		if ($shadow){
+			$shadow = $fw->split($shadow);
+			imagettftext($this->data, $fontSize, 0, $posx+1, $posy+1, imagecolorallocate($this->data,$shadow[0],$shadow[1],$shadow[2]), $font, $string);
+		}
+		imagettftext($this->data, $fontSize, 0, $posx, $posy, imagecolorallocate($this->data,$colour[0],$colour[1],$colour[2]), $font, $string);
+		
+			
+		
+		return $this->save();
+	}
 
 	/**
 	*	Apply an image overlay
@@ -272,7 +322,7 @@ class Image {
 	*	@param $img object
 	*	@param $align int
 	**/
-	function overlay(Image $img,$align=NULL) {
+	function overlayImage(Image $img,$align=NULL) {
 		if (is_null($align))
 			$align=self::POS_Right|self::POS_Bottom;
 		$ovr=imagecreatefromstring($img->dump());
