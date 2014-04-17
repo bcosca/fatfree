@@ -109,7 +109,6 @@ class Base extends Prefab {
 		E_Open='Unable to open %s',
 		E_Routes='No routes specified',
 		E_Class='Invalid class %s',
-		E_Method='Invalid method %s',
 		E_Hive='Invalid hive key %s';
 	//@}
 
@@ -1166,13 +1165,9 @@ class Base extends Prefab {
 				$this->map($item,$class,$ttl,$kbps);
 			return;
 		}
-		$fluid=preg_match('/@\w+/',$class);
 		foreach (explode('|',self::VERBS) as $method)
-			if ($fluid ||
-				method_exists($class,$method) ||
-				method_exists($class,'__call'))
-				$this->route($method.' '.
-					$url,$class.'->'.strtolower($method),$ttl,$kbps);
+			$this->route($method.' '.$url,
+				$class.'->'.strtolower($method),$ttl,$kbps);
 	}
 
 	/**
@@ -1353,8 +1348,7 @@ class Base extends Prefab {
 		}
 		if (!is_callable($func))
 			// No route handler
-			user_error(sprintf(self::E_Method,
-				is_string($func)?$func:$this->stringify($func)));
+			$this->error(405);
 		$obj=FALSE;
 		if (is_array($func)) {
 			$hooks=$this->split($hooks);
