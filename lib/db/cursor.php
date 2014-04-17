@@ -151,6 +151,14 @@ abstract class Cursor extends \Magic {
 	}
 
 	/**
+	*	Return the count of records loaded
+	*	@return int
+	**/
+	function loaded() {
+		return count($this->query);
+	}
+
+	/**
 	*	Map to first record in cursor
 	*	@return mixed
 	**/
