@@ -109,6 +109,7 @@ class Base extends Prefab {
 		E_Open='Unable to open %s',
 		E_Routes='No routes specified',
 		E_Class='Invalid class %s',
+		E_Method='Invalid method %s',
 		E_Hive='Invalid hive key %s';
 	//@}
 
@@ -1348,7 +1349,11 @@ class Base extends Prefab {
 		}
 		if (!is_callable($func))
 			// No route handler
-			$this->error(405);
+			if ($hooks=='beforeroute,afterroute')
+				$this->error(405);
+			else
+				user_error(sprintf(self::E_Method,
+					is_string($func)?$func:$this->stringify($func)));
 		$obj=FALSE;
 		if (is_array($func)) {
 			$hooks=$this->split($hooks);
