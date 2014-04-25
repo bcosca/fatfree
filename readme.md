@@ -1234,7 +1234,7 @@ This may have undesirable effects. You might not want all variables to pass thro
 In the case of PHP templates:-
 
 ``` php
-<?php echo Base::instance()->raw($html_content); ?>
+<?php echo View::instance()->raw($html_content); ?>
 ```
 
 As an addition to auto-escaping of F3 variables, the framework also gives you a free hand at sanitizing user input from HTML forms:-
