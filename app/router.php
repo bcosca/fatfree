@@ -53,9 +53,9 @@ class Router extends Controller {
 			function($f3) {
 			}
 		);
-		$f3->mock('GET /wild/beast?at=large');
+		$f3->mock('GET /wild/dangerous/beast?at=large');
 		$test->expect(
-			$f3->get('PARAMS.1')=='beast',
+			$f3->get('PARAMS.1')=='dangerous/beast',
 			'Wildcard routing pattern'
 		);
 		$f3->set('type','none');

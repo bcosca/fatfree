@@ -1219,7 +1219,7 @@ class Base extends Prefab {
 			if (!preg_match('/^'.
 				preg_replace('/@(\w+\b)/','(?P<\1>[^\/\?]+)',
 				str_replace('\*','([^\?]*)',preg_quote($url,'/'))).
-				'\/?(?:\?.*)?$/'.$case.'um',$req,$args))
+				'(?:[\?\/].*)?$/'.$case.'um',$req,$args))
 				continue;
 			$route=NULL;
 			if (isset($routes[$this->hive['AJAX']+1]))
