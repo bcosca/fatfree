@@ -229,8 +229,7 @@ class Mapper extends \DB\Cursor {
 		if (isset($this->document['_id']))
 			return $this->update();
 		if (isset($this->trigger['beforeinsert']))
-			\Base::instance()->call($this->trigger['beforeinsert'],
-				array($this,$pkey));
+			\Base::instance()->call($this->trigger['beforeinsert'], array());
 		$this->collection->insert($this->document);
 		$pkey=array('_id'=>$this->document['_id']);
 		if (isset($this->trigger['afterinsert']))
