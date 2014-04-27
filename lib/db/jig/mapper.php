@@ -363,6 +363,7 @@ class Mapper extends \DB\Cursor {
 		$db=$this->db;
 		$now=microtime(TRUE);
 		$data=$db->read($this->file);
+		$pkey=array('_id'=>$this->id);
 		if ($filter) {
 			foreach ($this->find($filter,NULL,FALSE) as $mapper)
 				if (!$mapper->erase())
@@ -370,7 +371,6 @@ class Mapper extends \DB\Cursor {
 			return TRUE;
 		}
 		elseif (isset($this->id)) {
-			$pkey=array('_id'=>$this->id);
 			unset($data[$this->id]);
 			parent::erase();
 			$this->skip(0);
