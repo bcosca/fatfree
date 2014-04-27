@@ -1482,7 +1482,7 @@ class Base extends Prefab {
 	*	@param $lf bool
 	**/
 	function read($file,$lf=FALSE) {
-		$out=file_get_contents($file);
+		$out=@file_get_contents($file);
 		return $lf?preg_replace('/\r\n|\r/',"\n",$out):$out;
 	}
 
@@ -1791,8 +1791,7 @@ class Cache extends Prefab {
 				$raw=xcache_get($ndx);
 				break;
 			case 'folder':
-				if (is_file($file=$parts[1].$ndx))
-					$raw=$fw->read($file);
+				$raw=$fw->read($parts[1].$ndx);
 				break;
 		}
 		if (!empty($raw)) {
@@ -1871,7 +1870,7 @@ class Cache extends Prefab {
 			case 'xcache':
 				return xcache_unset($ndx);
 			case 'folder':
-				return is_file($file=$parts[1].$ndx) && @unlink($file);
+				return @unlink($parts[1].$ndx);
 		}
 		return FALSE;
 	}
