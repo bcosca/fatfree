@@ -329,6 +329,12 @@ class Template extends Controller {
 				array('@attrib'=>array('bar'=>'test15','baz'=>'abc'),'multi-line start tag')),
 			'Custom tag spanning multiple lines'
 		);
+                $f3->set('foo','bar');
+                $f3->set('file','templates/test14.htm');
+                $test->expect(
+                        $tpl->render('templates/test13.htm')=='bar=123',
+                        '<include> with local hive'
+                );
 		$f3->set('string','<test>');
 		$obj=new \stdclass;
 		$obj->content='<ok>';
