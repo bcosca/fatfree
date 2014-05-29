@@ -1015,7 +1015,7 @@ class Base extends Prefab {
 			'status'=>$header,
 			'code'=>$code,
 			'text'=>$text,
-			'trace'=>unserialize(serialize($trace))
+			'trace'=>$trace
 		);
 		$handler=$this->hive['ONERROR'];
 		$this->hive['ONERROR']=NULL;
@@ -1637,8 +1637,9 @@ class Base extends Prefab {
 		$_SERVER['DOCUMENT_ROOT']=realpath($_SERVER['DOCUMENT_ROOT']);
 		$base='';
 		if (PHP_SAPI!='cli')
-			$base=rtrim($this->fixslashes(
-				dirname($_SERVER['SCRIPT_NAME'])),'/');
+			$base=implode('/',array_map('urlencode',
+				explode('/',rtrim($this->fixslashes(
+					dirname($_SERVER['SCRIPT_NAME'])),'/'))));
 		$path=preg_replace('/^'.preg_quote($base,'/').'/','',
 			parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH));
 		call_user_func_array('session_set_cookie_params',
