@@ -270,11 +270,16 @@ class Image {
 	*	Apply an image overlay
 	*	@return object
 	*	@param $img object
-	*	@param $align int
+	*	@param $align int|array
+	*	@param $alpha int
 	**/
-	function overlay(Image $img,$align=NULL) {
+	function overlay(Image $img,$align=NULL,$alpha=100) {
 		if (is_null($align))
 			$align=self::POS_Right|self::POS_Bottom;
+		if (is_array($align)) {
+			list($posx,$posy)=$align;
+			$align = 0;
+		}
 		$ovr=imagecreatefromstring($img->dump());
 		imagesavealpha($ovr,TRUE);
 		$imgw=$this->width();
@@ -297,7 +302,14 @@ class Image {
 			$posx=0;
 		if (empty($posy))
 			$posy=0;
-		imagecopy($this->data,$ovr,$posx,$posy,0,0,$ovrw,$ovrh);
+		if ($alpha==100)
+			imagecopy($this->data,$ovr,$posx,$posy,0,0,$ovrw,$ovrh);
+		else {
+			$cut=imagecreatetruecolor($ovrw,$ovrh);
+			imagecopy($cut,$this->data,0,0,$posx,$posy,$ovrw,$ovrh);
+			imagecopy($cut,$ovr,0,0,0,0,$ovrw,$ovrh);
+			imagecopymerge($this->data,$cut,$posx,$posy,0,0,$ovrw,$ovrh,$alpha);
+		}
 		return $this->save();
 	}
 

@@ -176,6 +176,16 @@ class Image extends Controller {
 				'<img src="'.$src.'" '.
 					'title="'.$img->width().'x'.$img->height().'" />'
 			);
+			$ovr=new \Image('images/watermark.png');
+			$ovr->resize(100,38)->rotate(45);
+			$test->expect(
+				$src=$f3->base64($img->restore()->
+					overlay($ovr,array(65,25),50)->
+					dump(),'image/png'),
+				'Overlay, 50% transparency, manually aligned<br />'.
+				'<img src="'.$src.'" '.
+					'title="'.$img->width().'x'.$img->height().'" />'
+			);
 			$test->expect(
 				$src=$f3->base64($img->restore()->dump('gif'),'image/gif'),
 				'Convert to GIF format<br />'.
