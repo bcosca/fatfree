@@ -147,6 +147,10 @@ class Mapper extends \DB\Cursor {
 				$filter=$filter?:array();
 				$collection=$this->collection;
 			}
+            if(!empty($filter['_id']))
+            $filter['_id']= new \MongoId($filter['_id']);
+            
+            
 			$this->cursor=$collection->find($filter,$fields?:array());
 			if ($options['order'])
 				$this->cursor=$this->cursor->sort($options['order']);
@@ -163,6 +167,10 @@ class Mapper extends \DB\Cursor {
 				// Save to cache backend
 				$cache->set($hash,$result,$ttl);
 		}
+        
+        if(!empty($options['output'])&&$options['output']=='array' )
+        return $result;
+        
 		$out=array();
 		foreach ($result as $doc)
 			$out[]=$this->factory($doc);
@@ -215,7 +223,11 @@ class Mapper extends \DB\Cursor {
 	*	@param $ofs int
 	**/
 	function skip($ofs=1) {
-		$this->document=($out=parent::skip($ofs))?$out->document:array();
+		$this->document=($out=parent::skip($ofs))?
+        (is_object($out)?
+        $out->document:
+        $out)
+        :array();
 		if ($this->document && isset($this->trigger['load']))
 			\Base::instance()->call($this->trigger['load'],$this);
 		return $out;
@@ -303,7 +315,10 @@ class Mapper extends \DB\Cursor {
 		foreach ($var as $key=>$val)
 			$this->document[$key]=$val;
 	}
-
+      function copyfromA(array $var) {
+        foreach ($var as $key=>$val)
+            $this->document[$key]=$val;
+    }
 	/**
 	*	Populate hive array variable with mapper fields
 	*	@return NULL
@@ -323,6 +338,15 @@ class Mapper extends \DB\Cursor {
 		return array_keys($this->document);
 	}
 
+  
+    /**
+    *    Return field names
+    *    @return array
+    **/
+    function toJSON() {
+        return json_encode($this->document);
+    }
+  
 	/**
 	*	Return the cursor from last query
 	*	@return object|NULL
