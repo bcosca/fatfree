@@ -177,6 +177,8 @@ class Mapper extends \DB\Cursor {
 			'limit'=>0,
 			'offset'=>0
 		);
+        if(empty($fields))$fields="*";
+        
 		$sql='SELECT '.$fields.' FROM '.$this->table;
 		$args=array();
 		if ($filter) {
@@ -249,6 +251,7 @@ class Mapper extends \DB\Cursor {
 			'offset'=>0
 		);
 		$adhoc='';
+        if(!empty($this->adhoc))
 		foreach ($this->adhoc as $key=>$field)
 			$adhoc.=','.$field['expr'].' AS '.$this->db->quotekey($key);
 		return $this->select(implode(',',
@@ -502,7 +505,11 @@ class Mapper extends \DB\Cursor {
 				unset($field);
 			}
 	}
-
+    
+    function copyfromA(array $var) {
+        foreach ($var as $key=>$val)
+            if($this->exists($key))$this->set($key,$val);
+    }
 	/**
 	*	Populate hive array variable with mapper fields
 	*	@return NULL
@@ -512,7 +519,10 @@ class Mapper extends \DB\Cursor {
 		$var=&\Base::instance()->ref($key);
 		foreach ($this->fields+$this->adhoc as $key=>$field)
 			$var[$key]=$field['value'];
-	}
+	    
+        return $var;
+    }    
+    
 
 	/**
 	*	Return schema

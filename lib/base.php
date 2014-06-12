@@ -33,7 +33,7 @@ abstract class Prefab {
 }
 
 //! Base structure
-class Base extends Prefab {
+class Base extends Prefab implements arrayaccess {
 
 	//@{ Framework details
 	const
@@ -175,6 +175,12 @@ class Base extends Prefab {
 			$this->hive['PARAMS'][$pair[1]]=trim($pair[2]);
 	}
 
+    static function session_start() {
+        //avoid the errors "A session had already been started - ignoring session_start()"
+             if(session_id() == '')
+            @session_start();
+    }
+   
 	/**
 	*	Convert JS-style token to PHP expression
 	*	@return string
@@ -212,7 +218,7 @@ class Base extends Prefab {
 	function &ref($key,$add=TRUE) {
 		$parts=$this->cut($key);
 		if ($parts[0]=='SESSION') {
-			@session_start();
+			$this->session_start();
 			$this->sync('SESSION');
 		}
 		elseif (!preg_match('/^\w+$/',$parts[0]))
@@ -322,6 +328,33 @@ class Base extends Prefab {
 		return $ref;
 	}
 
+    //------------------------------------------------------------------------                                                      
+     //implements arrayaccess : allow faster property access
+      public function offsetSet($offset, $value) {
+        if (is_null($offset)) {
+          //  $this->container[] = $value;
+          throw new Exception("missing key");
+        } else {
+           //$this->container[$offset] = $value;
+            return $this->set($offset, $value);
+        }
+    }
+    public function offsetExists($offset) {
+        //return isset($this->container[$offset]);
+        return $this->exists($offset);
+
+    }
+    public function offsetUnset($offset) {
+        //unset($this->container[$offset]);
+          return $this->clear($offset, $value);
+    }
+    public function offsetGet($offset) {
+        return $this->get($offset);
+        //return isset($this->container[$offset]) ? $this->container[$offset] : null;
+    }
+      //------------------------------------------------------------------------                                                      
+  
+
 	/**
 	*	Retrieve contents of hive key
 	*	@return mixed
@@ -366,7 +399,7 @@ class Base extends Prefab {
 			}
 		}
 		elseif ($parts[0]=='SESSION') {
-			@session_start();
+			$this->session_start();
 			if (empty($parts[1])) {
 				// End session
 				session_unset();
@@ -383,7 +416,7 @@ class Base extends Prefab {
 			eval('unset('.$this->compile('@this->hive.'.$key).');');
 			if ($parts[0]=='SESSION') {
 				session_commit();
-				session_start();
+				$this->session_start();
 			}
 			if ($cache->exists($hash=$this->hash($key).'.var'))
 				// Remove from cache
@@ -1008,8 +1041,11 @@ class Base extends Prefab {
 			$src=$this->fixslashes(str_replace($_SERVER['DOCUMENT_ROOT'].
 				'/','',$frame['file'])).':'.$frame['line'].' ';
 			error_log('- '.$src.$line);
+                                    
+		//hide the real path from potentially displayed strings		                                                                 
+            $src_cleaned=str_replace($this->hive['BASE'],"[BASE]",str_replace($this->fixslashes($this->hive['ROOT']),"[ROOT]",$src));
 			$out.='• '.($highlight?
-				($this->highlight($src).' '.$this->highlight($line)):
+				($this->highlight($src_cleaned).' '.$this->highlight($line)):
 				($src.$line)).$eol;
 		}
 		$this->hive['ERROR']=array(
@@ -1361,6 +1397,10 @@ class Base extends Prefab {
 			$hooks=$this->split($hooks);
 			$obj=TRUE;
 		}
+	
+	//sets a hive variable containing the current called action (method)
+        $this->set('ACTION',$func);
+	
 		// Execute pre-route hook if any
 		if ($obj && $hooks && in_array($hook='beforeroute',$hooks) &&
 			method_exists($func[0],$hook) &&
@@ -1601,9 +1641,33 @@ class Base extends Prefab {
 			}
 		);
 		set_error_handler(
-			function($code,$text) use($fw) {
+			function($code,$text,$file, $line) use($fw) {
+                //to handle errors happening within error handler
+                set_error_handler(
+                    function($code,$text,$file, $line) use($fw) {
+                           die("*Error in error handler: $text\n<br> code=$code in $file:$line)");
+                    });
+
+                $detail=FriendlyErrorType($code);    
+                Log::dev("Error: $text -- code=$code($detail) in $file:$line))");
+ //call to use_error should not stop the program
+if($code != E_USER_NOTICE)  //avoid "light" errors
 				if (error_reporting())
-					$fw->error(500,$text);
+                {
+                    $trace=debug_backtrace();
+                    //$header=$fw->status($code);
+                    $header='Internal Server Error';
+                  //sets a HIVE variable with these details
+                    $fw['ERROR']=array(
+                        'status'=>$header,
+                        'code'=>$code,
+                        'text'=>$text,
+                        'trace'=>$trace
+                    );
+                     $fw->error(500,$text,$trace); 
+    
+					throw new ErrorException($text,$code);
+                }
 			}
 		);
 		if (!isset($_SERVER['SERVER_NAME']))
@@ -1641,6 +1705,7 @@ class Base extends Prefab {
 		if (PHP_SAPI!='cli')
 			$base=rtrim($this->fixslashes(
 				dirname($_SERVER['SCRIPT_NAME'])),'/');
+if($base=='/') $base='';
 		$path=preg_replace('/^'.preg_quote($base,'/').'/','',
 			parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH));
 		call_user_func_array('session_set_cookie_params',
@@ -1667,6 +1732,7 @@ class Base extends Prefab {
 			'ALIASES'=>array(),
 			'AUTOLOAD'=>'./',
 			'BASE'=>$base,
+            		'ABS_BASE'=>$scheme.'://'.$_SERVER['SERVER_NAME'].$base,            		
 			'BITMASK'=>ENT_COMPAT,
 			'BODY'=>NULL,
 			'CACHE'=>FALSE,
@@ -1717,7 +1783,8 @@ class Base extends Prefab {
 			'TEMP'=>'tmp/',
 			'TIME'=>microtime(TRUE),
 			'TZ'=>(@ini_get('date.timezone'))?:'UTC',
-			'UI'=>'./',
+            		'UI'=>'',  //why not empty?
+			//'UI'=>'./',
 			'UNLOAD'=>NULL,
 			'UPLOADS'=>'./',
 			'URI'=>&$_SERVER['REQUEST_URI'],
@@ -2077,7 +2144,7 @@ class View extends Prefab {
 		foreach ($fw->split($fw->get('UI').';./') as $dir)
 			if (is_file($this->view=$fw->fixslashes($dir.$file))) {
 				if (isset($_COOKIE[session_name()]))
-					@session_start();
+					$this->session_start();
 				$fw->sync('SESSION');
 				if (PHP_SAPI!='cli')
 					header('Content-Type: '.$mime.'; '.
@@ -2186,7 +2253,7 @@ class Preview extends View {
 					$fw->write($this->view,$this->build($text));
 				}
 				if (isset($_COOKIE[session_name()]))
-					@session_start();
+                $fw->session_start();
 				$fw->sync('SESSION');
 				if (PHP_SAPI!='cli')
 					header('Content-Type: '.($this->mime=$mime).'; '.
@@ -2635,3 +2702,41 @@ final class Registry {
 }
 
 return Base::instance();
+
+
+/* display error in string format in error handler */
+function FriendlyErrorType($type) 
+{ 
+    $return =""; 
+    if($type & E_ERROR) // 1 // 
+        $return.='& E_ERROR '; 
+    if($type & E_WARNING) // 2 // 
+        $return.='& E_WARNING '; 
+    if($type & E_PARSE) // 4 // 
+        $return.='& E_PARSE '; 
+    if($type & E_NOTICE) // 8 // 
+        $return.='& E_NOTICE '; 
+    if($type & E_CORE_ERROR) // 16 // 
+        $return.='& E_CORE_ERROR '; 
+    if($type & E_CORE_WARNING) // 32 // 
+        $return.='& E_CORE_WARNING '; 
+    if($type & E_COMPILE_ERROR) // 64 // 
+        $return.='& E_COMPILE_ERROR '; 
+    if($type & E_COMPILE_WARNING) // 128 // 
+        $return.='& E_COMPILE_WARNING '; 
+    if($type & E_USER_ERROR) // 256 // 
+        $return.='& E_USER_ERROR '; 
+    if($type & E_USER_WARNING) // 512 // 
+        $return.='& E_USER_WARNING '; 
+    if($type & E_USER_NOTICE) // 1024 // 
+        $return.='& E_USER_NOTICE '; 
+    if($type & E_STRICT) // 2048 // 
+        $return.='& E_STRICT '; 
+    if($type & E_RECOVERABLE_ERROR) // 4096 // 
+        $return.='& E_RECOVERABLE_ERROR '; 
+    if($type & E_DEPRECATED) // 8192 // 
+        $return.='& E_DEPRECATED '; 
+    if($type & E_USER_DEPRECATED) // 16384 // 
+        $return.='& E_USER_DEPRECATED '; 
+    return substr($return,2); 
+} 
