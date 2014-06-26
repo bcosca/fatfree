@@ -1172,6 +1172,21 @@ class Base extends Prefab {
 	}
 
 	/**
+	*	Function to redirect a route to another url or route
+	*	@return NULL
+	*	@param $pattern string|array
+	*	@param $url string
+	*/
+	function redirect($pattern,$url) {
+		if (is_array($pattern)) {
+			foreach ($pattern as $item)
+				$this->redirect($item,$url);
+			return;
+		}
+		$this->route($pattern, function($this) use ($url) { $this->reroute($url); });
+	}
+
+	/**
 	*	Return TRUE if IPv4 address exists in DNSBL
 	*	@return bool
 	*	@param $ip string
@@ -1421,7 +1436,7 @@ class Base extends Prefab {
 			foreach ($matches as $match) {
 				if ($match['section'])
 					$sec=$match['section'];
-				elseif (in_array($sec,array('routes','maps'))) {
+				elseif (in_array($sec,array('routes','maps','redirects'))) {
 					call_user_func_array(
 						array($this,rtrim($sec,'s')),
 						array_merge(array($match['lval']),
