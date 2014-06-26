@@ -1642,6 +1642,7 @@ class Base extends Prefab {
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
 			isset($headers['X-Forwarded-Proto']) &&
 			$headers['X-Forwarded-Proto']=='https'?'https':'http';
+		$port_suffix = isset($_SERVER["SERVER_PORT"]) && $_SERVER["SERVER_PORT"] != ($scheme == "https" ? "443" : "80") ? ":{$_SERVER["SERVER_PORT"]}" : "";
 		if (function_exists('apache_setenv')) {
 			// Work around Apache pre-2.4 VirtualDocumentRoot bug
 			$_SERVER['DOCUMENT_ROOT']=str_replace($_SERVER['SCRIPT_NAME'],'',
@@ -1721,7 +1722,7 @@ class Base extends Prefab {
 			'QUIET'=>FALSE,
 			'RAW'=>FALSE,
 			'REALM'=>$scheme.'://'.
-				$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'],
+				$_SERVER['SERVER_NAME'].$port_suffix.$_SERVER['REQUEST_URI'],
 			'RESPONSE'=>'',
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>array(),
