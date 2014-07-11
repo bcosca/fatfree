@@ -381,18 +381,18 @@ class Mapper extends \DB\Cursor {
 		$pairs='';
 		$filter='';
 		$pkeys=array();
-		foreach ($this->fields as $key=>$field) {
+		foreach ($this->fields as $key=>$field)
 			if ($field['pkey'])
 				$pkeys[$key]=$field['previous'];
+		if (isset($this->trigger['beforeupdate']))
+			\Base::instance()->call($this->trigger['beforeupdate'],
+				array($this,$pkeys));
+		foreach ($this->fields as $key=>$field)
 			if ($field['changed']) {
 				$pairs.=($pairs?',':'').$this->db->quotekey($key).'=?';
 				$args[$ctr+1]=array($field['value'],$field['pdo_type']);
 				$ctr++;
 			}
-		}
-		if (isset($this->trigger['beforeupdate']))
-			\Base::instance()->call($this->trigger['beforeupdate'],
-				array($this,$pkeys));
 		foreach ($this->fields as $key=>$field)
 			if ($field['pkey']) {
 				$filter.=($filter?' AND ':'').$this->db->quotekey($key).'=?';
