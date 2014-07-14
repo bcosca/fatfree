@@ -31,10 +31,18 @@ class Cache extends Controller {
 				$cache===\Cache::instance(),
 				'Same cache engine instance returned'
 			);
-			$cache->set($f3->hash('foo').'.var','bar');
+			$cache->set($f3->hash('foo').'.var','bar',0.05);
 			$test->expect(
 				$f3->get('foo')=='bar',
 				'Retrieve previously cached entry'
+			);
+			$test->expect(
+				is_array($inf=$f3->exists('foo',$val)) &&
+				is_float($inf[0]) &&
+				$inf[1]===0.05 &&
+				$val=='bar'
+				,
+				'Retrieve cache entry details'
 			);
 			$ttl=1;
 			$mark=microtime(TRUE);
@@ -138,6 +146,11 @@ class Cache extends Controller {
 			$test->expect(
 				$cache->exists($hash),
 				'Cache refreshed: '.
+					sprintf('%.1f',(microtime(TRUE)-$mark)*1e3).'ms'
+			);
+			$test->expect(
+				!$f3->exists('foo',$val) && !$val,
+				'Hive key expired: '.
 					sprintf('%.1f',(microtime(TRUE)-$mark)*1e3).'ms'
 			);
 			$cache->clear($hash);

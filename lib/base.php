@@ -250,7 +250,7 @@ class Base extends Prefab {
 	}
 
 	/**
-	*	Return TRUE if hive key is not set
+	*	Return TRUE if hive key is set
 	*	(or return timestamp and TTL if cached)
 	*	@return bool
 	*	@param $key string
@@ -260,8 +260,7 @@ class Base extends Prefab {
 		$val=$this->ref($key,FALSE);
 		return isset($val)?
 			TRUE:
-			(Cache::instance()->exists($this->hash($key).'.var',$val)?
-				$val:FALSE);
+			(Cache::instance()->exists($this->hash($key).'.var',$val)?:FALSE);
 	}
 
 	/**
@@ -1814,6 +1813,8 @@ class Cache extends Prefab {
 			list($val,$time,$ttl)=(array)$fw->unserialize($raw);
 			if ($ttl===0 || $time+$ttl>microtime(TRUE))
 				return array($time,$ttl);
+			else
+				$val=null;
 			$this->clear($key);
 		}
 		return FALSE;
