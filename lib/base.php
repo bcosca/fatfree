@@ -1813,8 +1813,7 @@ class Cache extends Prefab {
 			list($val,$time,$ttl)=(array)$fw->unserialize($raw);
 			if ($ttl===0 || $time+$ttl>microtime(TRUE))
 				return array($time,$ttl);
-			else
-				$val=null;
+			$val=null;
 			$this->clear($key);
 		}
 		return FALSE;
