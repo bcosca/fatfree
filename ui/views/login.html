@@ -1,0 +1,18 @@
+<form action="{{ @BASE.'/login' }}" method="post">
+
+    <div class="form-group">
+        <label for="email1">Email address</label>
+        <input type="email" class="form-control" id="email1" placeholder="Enter email" name="email">
+    </div>
+    
+    <div class="form-group">
+        <label for="password1">Password</label>
+        <input type="password" class="form-control" id="password1" placeholder="Password" name="password">
+    </div>
+    
+    <div class="form-group">
+        <input type="hidden" name="login" value="true" />
+        <button type="submit" class="btn btn-default">Submit</button>
+    </div>
+
+</form>

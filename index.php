@@ -6,6 +6,7 @@ $f3=require('lib/base.php');
 
 $f3->config('config.ini');
 
+$f3->route('GET|POST /login', 'AuthController->login');
 $f3->route('GET /',  'UserController->index');
 $f3->route('GET /@page',  'UserController->index');
 $f3->route('GET|POST /user/create',  'UserController->create');

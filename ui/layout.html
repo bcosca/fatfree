@@ -15,6 +15,13 @@
             </div>
 
             <div class="row">
+                
+                <check if="{{ isset(@SESSION.messages) && !empty(@SESSION.messages) }}">
+                    <repeat group="{{ @SESSION.messages }}" value="{{ @message }}">
+                        <div id="message" class="notification {{ @message.type }}">{{ @message.text }}</div>
+                    </repeat>
+                </check>
+                
                 <div class="col-lg-2"></div>
                 <div class="col-lg-8">
                     <div class="row">

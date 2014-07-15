@@ -13,6 +13,15 @@ class Controller
     {
         $f3 = $this->framework;
         $db = $this->db;
+        
+        /*
+         * set an empty flash messages session variable, only if it
+         * doesnot exists
+         */
+        if(FALSE === $this->framework->exists('SESSION.messages'))
+        {
+            $this->framework->set('SESSION.messages', array());
+        }
     }
 
     //! HTTP route post-processor
@@ -20,6 +29,15 @@ class Controller
     {
         // Render HTML layout
         echo Template::instance()->render('layout.html');
+        
+        /*
+         * clear out the session flash message, shown only once and then cleared
+         * from session
+         */
+        if($this->framework->exists('SESSION.messages'))
+        {
+            $this->framework->clear('SESSION.messages');
+        }
     }
 
     //! Instantiate class

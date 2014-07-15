@@ -19,13 +19,18 @@ class UserController extends Controller
         $this->framework->set('page_head', 'Users List');
         $this->framework->set('view', 'views/user/list.html');
     }
-
+    
     public function create()
     {
         if($this->framework->exists('POST.create'))
         {
             $user = new User($this->db);
             $user->add();
+            
+            $this->framework->push('SESSION.messages', array(
+                'text' => 'User created successfully',
+                'type' => 'error'
+            ));
 
             $this->framework->reroute('/');
         }
@@ -43,6 +48,12 @@ class UserController extends Controller
         if($this->framework->exists('POST.update'))
         {
             $user->edit($this->framework->get('POST.id'));
+            
+            $this->framework->push('SESSION.messages', array(
+                'text' => 'User edited successfully',
+                'type' => 'error'
+            ));
+            
             $this->framework->reroute('/');
         }
         else
