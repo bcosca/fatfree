@@ -913,12 +913,16 @@ class Base extends Prefab {
 	*	@param $arg mixed
 	**/
 	function unserialize($arg) {
+		$old = error_reporting(~E_NOTICE);
+		$res = FALSE;
 		switch (strtolower($this->hive['SERIALIZER'])) {
 			case 'igbinary':
-				return igbinary_unserialize($arg);
+				$res = igbinary_unserialize($arg);
 			default:
-				return unserialize($arg);
+				$res = unserialize($arg);
 		}
+		error_reporting($old);
+		return $res;
 	}
 
 	/**
@@ -1615,7 +1619,7 @@ class Base extends Prefab {
 		);
 		set_error_handler(
 			function($code,$text) use($fw) {
-				if (error_reporting())
+				if (($code & error_reporting()) == $code)
 					$fw->error(500,$text);
 			}
 		);
@@ -1811,9 +1815,11 @@ class Cache extends Prefab {
 				break;
 		}
 		if (!empty($raw)) {
-			list($val,$time,$ttl)=(array)$fw->unserialize($raw);
-			if ($ttl===0 || $time+$ttl>microtime(TRUE))
-				return array($time,$ttl);
+			if ($record = $fw->unserialize($raw)) {
+				list($val,$time,$ttl)=(array)$record;
+				if ($ttl===0 || $time+$ttl>microtime(TRUE))
+					return array($time,$ttl);
+			}
 			$this->clear($key);
 		}
 		return FALSE;
@@ -1920,7 +1926,7 @@ class Cache extends Prefab {
 				$keys=$this->ref->keys($this->prefix.'.*'.$suffix);
 				foreach($keys as $key) {
 					$val=$fw->unserialize($this->ref->get($key));
-					if ($val[1]+$lifetime<time())
+					if ($val && $val[1]+$lifetime<time())
 						$this->ref->del($key);
 				}
 				return TRUE;
