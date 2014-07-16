@@ -1600,7 +1600,7 @@ class Base extends Prefab {
 		);
 		set_error_handler(
 			function($code,$text) use($fw) {
-				if (error_reporting())
+				if (($code & error_reporting()) == $code)
 					$fw->error(500,$text);
 			}
 		);
