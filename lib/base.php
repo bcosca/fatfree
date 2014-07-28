@@ -2141,7 +2141,8 @@ class Preview extends View {
 						$str=(($func=='format')?'\Base::instance()':'$this').
 							'->'.$func.'('.$str.')';
 				}
-				return '<?php echo '.$str.'; ?>'.(isset($expr[2]) ? "\n\n" : '');
+				return '<?php echo '.$str.'; ?>'.
+					(isset($expr[2])?$expr[2]:'');
 			},
 			preg_replace_callback(
 				'/\{~(.+?)~\}/s',
