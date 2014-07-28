@@ -2131,7 +2131,7 @@ class Preview extends View {
 	protected function build($node) {
 		$self=$this;
 		return preg_replace_callback(
-			'/\{\{(.+?)\}\}/s',
+			'/\{\{(.+?)\}\}(\n)?/s',
 			function($expr) use($self) {
 				$str=trim($self->token($expr[1]));
 				if (preg_match('/^(.+?)\h*\|(\h*\w+(?:\h*[,;]\h*\w+)*)/',
@@ -2141,7 +2141,7 @@ class Preview extends View {
 						$str=(($func=='format')?'\Base::instance()':'$this').
 							'->'.$func.'('.$str.')';
 				}
-				return '<?php echo '.$str.'; ?>';
+				return '<?php echo '.$str.'; ?>'.(isset($expr[2]) ? "\n\n" : '');
 			},
 			preg_replace_callback(
 				'/\{~(.+?)~\}/s',
