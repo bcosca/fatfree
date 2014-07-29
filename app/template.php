@@ -370,9 +370,11 @@ class Template extends Controller {
 			'Use template engine: '.
 				round(1e3*(microtime(TRUE)-$now),2).' msecs'
 		);
+		/*
 		foreach (glob($f3->get('TEMP').
 			$f3->hash($f3->get('ROOT').$f3->get('BASE')).'.*.php') as $file)
 			unlink($file);
+		*/
 		$f3->set('results',$test->results());
 	}
 
