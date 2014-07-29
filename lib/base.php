@@ -2142,7 +2142,7 @@ class Preview extends View {
 							'->'.$func.'('.$str.')';
 				}
 				return '<?php echo '.$str.'; ?>'.
-					(isset($expr[2])?$expr[2]:'');
+					(isset($expr[2])?"\n\n":'');
 			},
 			preg_replace_callback(
 				'/\{~(.+?)~\}/s',
