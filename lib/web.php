@@ -215,7 +215,7 @@ class Web extends Prefab {
 				$file['name']=$dir.
 					($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
 						(is_callable($slug)?
-							$slug($base):
+							$slug($base,$name):
 							($this->slug($parts[1]).
 								(isset($parts[2])?$parts[2]:''))):
 						$base);
