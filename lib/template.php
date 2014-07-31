@@ -297,7 +297,7 @@ class Template extends Preview {
 						// Process attributes
 						preg_match_all(
 							'/(?:\b([\w-]+)\h*'.
-							'(?:=\h*(?:"(.+?)"|\'(.+?)\'))?|'.
+							'(?:=\h*(?:"(.*?)"|\'(.*?)\'))?|'.
 							'(\{\{.+?\}\}))/s',
 							$match[3],$attr,PREG_SET_ORDER);
 						foreach ($attr as $kv)
@@ -305,8 +305,8 @@ class Template extends Preview {
 								$node['@attrib'][]=$kv[4];
 							else
 								$node['@attrib'][$kv[1]]=
-									(empty($kv[2])?
-										(empty($kv[3])?NULL:$kv[3]):$kv[2]);
+									((isset($kv[2]) && $kv[2]!=='')?$kv[2]:
+										((isset($kv[3]) && $kv[3]!=='')?$kv[3]:NULL));
 					}
 					if ($match[4])
 						// Empty tag
