@@ -2062,15 +2062,19 @@ class View extends Prefab {
 		$fw=Base::instance();
 		if (!$hive)
 			$hive=$fw->hive();
-		if ($fw->get('ESCAPE'))
-			$hive=$this->esc($hive);
-		if (isset($hive['ALIASES']))
-			$hive['ALIASES']=$fw->build($hive['ALIASES']);
+		if (!$fw->exists('RENDERING',$rendering)) {
+			$fw->set('RENDERING', true);
+			if ($fw->get('ESCAPE'))
+				$hive=$this->esc($hive);
+			if (isset($hive['ALIASES']))
+				$hive['ALIASES']=$fw->build($hive['ALIASES']);
+		}
 		extract($hive);
 		unset($fw);
 		unset($hive);
 		ob_start();
 		require($this->view);
+		Base::instance()->clear('RENDERING');
 		return ob_get_clean();
 	}
 
