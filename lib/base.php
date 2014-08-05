@@ -291,7 +291,7 @@ class Base extends Prefab {
 				if ($ttl)
 					$jar['expire']=time()+$ttl;
 				call_user_func_array('setcookie',array($parts[1],$val)+$jar);
-				return $this->ref($key);
+				return $val;
 			}
 		}
 		else switch ($key) {
