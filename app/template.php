@@ -329,6 +329,16 @@ class Template extends Controller {
 				array('@attrib'=>array('bar'=>'test15','baz'=>'abc'),'multi-line start tag')),
 			'Custom tag spanning multiple lines'
 		);
+		$test->expect(
+			isset($lines[15]) && $lines[15]==$f3->stringify(
+				array('@attrib'=>array('value'=>'0'))),
+			'Node attribute with 0 value'
+		);
+		$test->expect(
+			isset($lines[16]) && $lines[16]==$f3->stringify(
+				array('@attrib'=>array('bar'=>NULL,'baz'=>'1'))),
+			'Node attribute with empty value'
+		);
 		$f3->set('foo','bar');
 		$f3->set('file','templates/test14.htm');
 		$test->expect(
