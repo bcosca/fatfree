@@ -1049,7 +1049,7 @@ class Base extends Prefab {
 	*	@param $headers array
 	*	@param $body string
 	**/
-	function mock($pattern,array $args=NULL,array $headers=NULL,$body=NULL) {
+	function mock($pattern,array $args=array(),array $headers=NULL,$body=NULL) {
 		$types=array('sync','ajax');
 		preg_match('/([\|\w]+)\h+(?:@(\w+)(?:(\(.+?)\))*|([^\h]+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
@@ -1065,24 +1065,22 @@ class Base extends Prefab {
 		if (empty($parts[4]))
 			user_error(sprintf(self::E_Pattern,$pattern));
 		$url=parse_url($parts[4]);
-		$query='';
-		if ($args)
-			$query.=http_build_query($args);
-		$query.=isset($url['query'])?(($query?'&':'').$url['query']):'';
-		if ($query && preg_match('/GET|POST/',$verb)) {
-			parse_str($query,$GLOBALS['_'.$verb]);
-			parse_str($query,$GLOBALS['_REQUEST']);
-		}
+		parse_str(@$url['query'],$GLOBALS['_GET']);
+		if (preg_match('/GET|HEAD/',$verb))
+			$GLOBALS['_GET']=array_merge($GLOBALS['_GET'],$args);
+		$GLOBALS['_POST']=$verb=='POST'?$args:array();
+		$GLOBALS['_REQUEST']=array_merge($GLOBALS['_GET'],$GLOBALS['_POST']);
 		foreach ($headers?:array() as $key=>$val)
 			$_SERVER['HTTP_'.strtr(strtoupper($key),'-','_')]=$val;
 		$this->hive['VERB']=$verb;
 		$this->hive['URI']=$this->hive['BASE'].$url['path'];
+		if ($GLOBALS['_GET'])
+			$this->hive['URI'].='?'.http_build_query($GLOBALS['_GET']);
+		$this->hive['BODY']='';
+		if (!preg_match('/GET|HEAD/',$verb))
+			$this->hive['BODY']=$body?:http_build_query($args);
 		$this->hive['AJAX']=isset($parts[5]) &&
 			preg_match('/ajax/i',$parts[5]);
-		if (preg_match('/GET|HEAD/',$verb) && $query)
-			$this->hive['URI'].='?'.$query;
-		else
-			$this->hive['BODY']=$body?:$query;
 		$this->run();
 	}
 
