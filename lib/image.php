@@ -308,7 +308,8 @@ class Image {
 			$cut=imagecreatetruecolor($ovrw,$ovrh);
 			imagecopy($cut,$this->data,0,0,$posx,$posy,$ovrw,$ovrh);
 			imagecopy($cut,$ovr,0,0,0,0,$ovrw,$ovrh);
-			imagecopymerge($this->data,$cut,$posx,$posy,0,0,$ovrw,$ovrh,$alpha);
+			imagecopymerge($this->data,
+				$cut,$posx,$posy,0,0,$ovrw,$ovrh,$alpha);
 		}
 		return $this->save();
 	}
@@ -412,7 +413,8 @@ class Image {
 					$tmp[$i]=imagecreatetruecolor(
 						($w=imagesx($char))/2,($h=imagesy($char))/2);
 					imagefill($tmp[$i],0,0,IMG_COLOR_TRANSPARENT);
-					imagecopyresampled($tmp[$i],$char,0,0,0,0,$w/2,$h/2,$w,$h);
+					imagecopyresampled($tmp[$i],
+						$char,0,0,0,0,$w/2,$h/2,$w,$h);
 					imagedestroy($char);
 					$width+=$i+1<$len?$block/2:$w/2;
 					$height=max($height,$h/2);

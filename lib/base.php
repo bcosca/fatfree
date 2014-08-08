@@ -38,7 +38,7 @@ class Base extends Prefab {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.3.0-Dev';
+		VERSION='3.3.1-Dev';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -1171,7 +1171,7 @@ class Base extends Prefab {
 	}
 
 	/**
-	*	Function to redirect a route to another url or route
+	*	Redirect a route to another URL
 	*	@return NULL
 	*	@param $pattern string|array
 	*	@param $url string
@@ -1182,7 +1182,9 @@ class Base extends Prefab {
 				$this->redirect($item,$url);
 			return;
 		}
-		$this->route($pattern, function($this) use ($url) { $this->reroute($url); });
+		$this->route($pattern,function($this) use ($url) {
+			$this->reroute($url);
+		});
 	}
 
 	/**
