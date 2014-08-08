@@ -1128,6 +1128,8 @@ class Base extends Prefab {
 	*	@param $permanent bool
 	**/
 	function reroute($url,$permanent=FALSE) {
+		if (($handler=$this->hive['ONREROUTE']) && $this->call($handler,array($url,$permanent))!==FALSE)
+			return;
 		if (PHP_SAPI!='cli') {
 			if (preg_match('/^(?:@(\w+)(?:(\(.+?)\))*|https?:\/\/)/',
 				$url,$parts)) {
@@ -1709,6 +1711,7 @@ class Base extends Prefab {
 			'LOCALES'=>'./',
 			'LOGS'=>'./',
 			'ONERROR'=>NULL,
+			'ONREROUTE'=>NULL,
 			'PACKAGE'=>self::PACKAGE,
 			'PARAMS'=>array(),
 			'PATH'=>$path,

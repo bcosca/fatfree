@@ -22,6 +22,16 @@ class Router extends Controller {
 		);
 		if (is_file($file))
 			@unlink($file);
+		$f3->set('ONREROUTE',function($url,$permanent){
+			$f3=\Base::instance();
+			$f3->set('reroute',$url);
+		});
+		$f3->reroute('/foo?bar=baz');
+		$test->expect(
+			$f3->get('reroute')=='/foo?bar=baz',
+			'Custom rerouting'
+		);
+		$f3->set('ONREROUTE',NULL);
 		$f3->clear('ROUTES');
 		$f3->route('GET|POST @hello:/',
 			function($f3) {
