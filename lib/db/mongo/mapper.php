@@ -230,13 +230,13 @@ class Mapper extends \DB\Cursor {
 			return $this->update();
 		if (isset($this->trigger['beforeinsert']))
 			\Base::instance()->call($this->trigger['beforeinsert'],
-				array($this,$pkey));
+				array($this,array('_id'=>$this->document['_id'])));
 		$this->collection->insert($this->document);
 		$pkey=array('_id'=>$this->document['_id']);
 		if (isset($this->trigger['afterinsert']))
 			\Base::instance()->call($this->trigger['afterinsert'],
 				array($this,$pkey));
-		$this->load(array('_id'=>$this->document['_id']));
+		$this->load($pkey);
 		return $this->document;
 	}
 
@@ -245,14 +245,12 @@ class Mapper extends \DB\Cursor {
 	*	@return array
 	**/
 	function update() {
+		$pkey=array('_id'=>$this->document['_id']);
 		if (isset($this->trigger['beforeupdate']))
 			\Base::instance()->call($this->trigger['beforeupdate'],
 				array($this,$pkey));
 		$this->collection->update(
-			$pkey=array('_id'=>$this->document['_id']),
-			$this->document,
-			array('upsert'=>TRUE)
-		);
+			$pkey,$this->document,array('upsert'=>TRUE));
 		if (isset($this->trigger['afterupdate']))
 			\Base::instance()->call($this->trigger['afterupdate'],
 				array($this,$pkey));
@@ -299,7 +297,7 @@ class Mapper extends \DB\Cursor {
 	function copyfrom($key,$func=NULL) {
 		$var=\Base::instance()->get($key);
 		if ($func)
-			$var=$func($var);
+			$var=call_user_func($func,$var);
 		foreach ($var as $key=>$val)
 			$this->document[$key]=$val;
 	}
@@ -339,7 +337,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function __construct(\DB\Mongo $db,$collection) {
 		$this->db=$db;
-		$this->collection=$db->{$collection};
+		$this->collection=$db->selectcollection($collection);
 		$this->reset();
 	}
 

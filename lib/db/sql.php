@@ -261,14 +261,14 @@ class SQL extends \PDO {
 				'LEFT OUTER JOIN '.
 					'information_schema.table_constraints AS t ON '.
 						'k.table_name=t.table_name AND '.
-						'k.constraint_name=t.constraint_name '.
+						'k.constraint_name=t.constraint_name AND '.
 						'k.table_schema=t.table_schema '.
 						($this->dbname?
 							('AND k.table_catalog=t.table_catalog '):'').
 				'WHERE '.
-					'c.table_name='.$this->quote($table).' '.
+					'c.table_name='.$this->quote($table).
 					($this->dbname?
-						('AND c.table_catalog='.
+						(' AND c.table_catalog='.
 							$this->quote($this->dbname)):'').
 				';',
 				'field','type','defval','nullable','YES','pkey','PRIMARY KEY'),

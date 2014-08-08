@@ -197,7 +197,7 @@ class Web extends Prefab {
 				rename($tmp,$file['name']);
 		}
 		$out=array();
-		foreach ($_FILES as $item) {
+		foreach ($_FILES as $name=>$item) {
 			if (is_array($item['name'])) {
 				// Transpose array
 				$tmp=array();
@@ -215,14 +215,14 @@ class Web extends Prefab {
 				$file['name']=$dir.
 					($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
 						(is_callable($slug)?
-							$slug($base):
+							$slug($base,$name):
 							($this->slug($parts[1]).
 								(isset($parts[2])?$parts[2]:''))):
 						$base);
 				$out[$file['name']]=!$file['error'] &&
 					is_uploaded_file($file['tmp_name']) &&
 					(!file_exists($file['name']) || $overwrite) &&
-					(!$func || $fw->call($func,array($file))!==FALSE) &&
+					(!$func || $fw->call($func,array($file,$name))!==FALSE) &&
 					move_uploaded_file($file['tmp_name'],$file['name']);
 			}
 		}

@@ -251,8 +251,8 @@ class Mapper extends \DB\Cursor {
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
 			$adhoc.=','.$field['expr'].' AS '.$this->db->quotekey($key);
-		return $this->select(implode(',',
-			array_map(array($this->db,'quotekey'),array_keys($this->fields))).
+		return $this->select(($options['group']?:implode(',',
+			array_map(array($this->db,'quotekey'),array_keys($this->fields)))).
 			$adhoc,$filter,$options,$ttl);
 	}
 
@@ -491,7 +491,7 @@ class Mapper extends \DB\Cursor {
 	function copyfrom($key,$func=NULL) {
 		$var=\Base::instance()->get($key);
 		if ($func)
-			$var=$func($var);
+			$var=call_user_func($func,$var);
 		foreach ($var as $key=>$val)
 			if (in_array($key,array_keys($this->fields))) {
 				$field=&$this->fields[$key];
