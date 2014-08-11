@@ -474,7 +474,7 @@ class Web extends Prefab {
 				'Connection: close'
 			)
 		);
-		if (isset($options['content'])) {
+		if (isset($options['content']) && is_string($options['content'])) {
 			if ($options['method']=='POST')
 				$this->subst($options['header'],
 					'Content-Type: application/x-www-form-urlencoded');

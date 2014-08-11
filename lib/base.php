@@ -291,6 +291,7 @@ class Base extends Prefab {
 				if ($ttl)
 					$jar['expire']=time()+$ttl;
 				call_user_func_array('setcookie',array($parts[1],$val)+$jar);
+				return $val;
 			}
 		}
 		else switch ($key) {
@@ -635,7 +636,7 @@ class Base extends Prefab {
 	**/
 	function encode($str) {
 		return @htmlentities($str,$this->hive['BITMASK'],
-			$this->hive['ENCODING'],FALSE)?:$this->scrub($str);
+			$this->hive['ENCODING'])?:$this->scrub($str);
 	}
 
 	/**
@@ -1048,7 +1049,7 @@ class Base extends Prefab {
 	*	@param $headers array
 	*	@param $body string
 	**/
-	function mock($pattern,array $args=NULL,array $headers=NULL,$body=NULL) {
+	function mock($pattern,array $args=array(),array $headers=NULL,$body=NULL) {
 		$types=array('sync','ajax');
 		preg_match('/([\|\w]+)\h+(?:@(\w+)(?:(\(.+?)\))*|([^\h]+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
@@ -1064,24 +1065,22 @@ class Base extends Prefab {
 		if (empty($parts[4]))
 			user_error(sprintf(self::E_Pattern,$pattern));
 		$url=parse_url($parts[4]);
-		$query='';
-		if ($args)
-			$query.=http_build_query($args);
-		$query.=isset($url['query'])?(($query?'&':'').$url['query']):'';
-		if ($query && preg_match('/GET|POST/',$verb)) {
-			parse_str($query,$GLOBALS['_'.$verb]);
-			parse_str($query,$GLOBALS['_REQUEST']);
-		}
+		parse_str(@$url['query'],$GLOBALS['_GET']);
+		if (preg_match('/GET|HEAD/',$verb))
+			$GLOBALS['_GET']=array_merge($GLOBALS['_GET'],$args);
+		$GLOBALS['_POST']=$verb=='POST'?$args:array();
+		$GLOBALS['_REQUEST']=array_merge($GLOBALS['_GET'],$GLOBALS['_POST']);
 		foreach ($headers?:array() as $key=>$val)
 			$_SERVER['HTTP_'.strtr(strtoupper($key),'-','_')]=$val;
 		$this->hive['VERB']=$verb;
 		$this->hive['URI']=$this->hive['BASE'].$url['path'];
+		if ($GLOBALS['_GET'])
+			$this->hive['URI'].='?'.http_build_query($GLOBALS['_GET']);
+		$this->hive['BODY']='';
+		if (!preg_match('/GET|HEAD/',$verb))
+			$this->hive['BODY']=$body?:http_build_query($args);
 		$this->hive['AJAX']=isset($parts[5]) &&
 			preg_match('/ajax/i',$parts[5]);
-		if (preg_match('/GET|HEAD/',$verb) && $query)
-			$this->hive['URI'].='?'.$query;
-		else
-			$this->hive['BODY']=$body?:$query;
 		$this->run();
 	}
 
@@ -1129,6 +1128,8 @@ class Base extends Prefab {
 	*	@param $permanent bool
 	**/
 	function reroute($url,$permanent=FALSE) {
+		if (($handler=$this->hive['ONREROUTE']) && $this->call($handler,array($url,$permanent))!==FALSE)
+			return;
 		if (PHP_SAPI!='cli') {
 			if (preg_match('/^(?:@(\w+)(?:(\(.+?)\))*|https?:\/\/)/',
 				$url,$parts)) {
@@ -1713,6 +1714,7 @@ class Base extends Prefab {
 			'LOCALES'=>'./',
 			'LOGS'=>'./',
 			'ONERROR'=>NULL,
+			'ONREROUTE'=>NULL,
 			'PACKAGE'=>self::PACKAGE,
 			'PARAMS'=>array(),
 			'PATH'=>$path,
@@ -2065,15 +2067,19 @@ class View extends Prefab {
 		$fw=Base::instance();
 		if (!$hive)
 			$hive=$fw->hive();
-		if ($fw->get('ESCAPE'))
-			$hive=$this->esc($hive);
-		if (isset($hive['ALIASES']))
-			$hive['ALIASES']=$fw->build($hive['ALIASES']);
+		if (!$fw->exists('RENDERING',$rendering)) {
+			$fw->set('RENDERING', true);
+			if ($fw->get('ESCAPE'))
+				$hive=$this->esc($hive);
+			if (isset($hive['ALIASES']))
+				$hive['ALIASES']=$fw->build($hive['ALIASES']);
+		}
 		extract($hive);
 		unset($fw);
 		unset($hive);
 		ob_start();
 		require($this->view);
+		Base::instance()->clear('RENDERING');
 		return ob_get_clean();
 	}
 

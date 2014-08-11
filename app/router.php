@@ -22,6 +22,16 @@ class Router extends Controller {
 		);
 		if (is_file($file))
 			@unlink($file);
+		$f3->set('ONREROUTE',function($url,$permanent){
+			$f3=\Base::instance();
+			$f3->set('reroute',$url);
+		});
+		$f3->reroute('/foo?bar=baz');
+		$test->expect(
+			$f3->get('reroute')=='/foo?bar=baz',
+			'Custom rerouting'
+		);
+		$f3->set('ONREROUTE',NULL);
 		$f3->clear('ROUTES');
 		$f3->route('GET|POST @hello:/',
 			function($f3) {
@@ -137,7 +147,7 @@ class Router extends Controller {
 			$f3->get('id')=='bread',
 			'Different parameter in route'
 		);
-		$f3->route('GET @grub:/food/@id/@quantity',
+		$f3->route('GET|POST|PUT @grub:/food/@id/@quantity',
 			function($f3,$args) {
 				$f3->set('id',$args['id']);
 				$f3->set('quantity',$args['quantity']);
@@ -171,6 +181,21 @@ class Router extends Controller {
 		$test->expect(
 			$f3->get('id')=='chicken' && $f3->get('quantity')==999,
 			'Route parameters captured along with query'
+		);
+		$f3->mock('POST /food/sushki/134?a=1',array('b'=>2));
+		$test->expect(
+			$_GET==array('a'=>1) && $_POST==array('b'=>2) && $_REQUEST==array('a'=>1,'b'=>2) && $f3->get('BODY')=='b=2',
+			'Request body and superglobals $_GET, $_POST, $_REQUEST correctly set on mocked POST'
+		);
+		$f3->mock('PUT /food/sushki/134?a=1',array('b'=>2));
+		$test->expect(
+			$_GET==array('a'=>1) && $_POST==array() && $_REQUEST==array('a'=>1) && $f3->get('BODY')=='b=2',
+			'Request body and superglobals $_GET, $_POST, $_REQUEST correctly set on mocked PUT'
+		);
+		$f3->mock('POST /food/sushki/134?a=1',array('b'=>2),NULL,'c=3');
+		$test->expect(
+			$_GET==array('a'=>1) && $_POST==array('b'=>2) && $_REQUEST==array('a'=>1,'b'=>2) && $f3->get('BODY')=='c=3',
+			'Mocked request body precedence over arguments'
 		);
 		$f3->mock('GET @grub(@id=%C3%B6%C3%A4%C3%BC,@quantity=123)');
 		$test->expect(

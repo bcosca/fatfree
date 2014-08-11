@@ -145,7 +145,8 @@ class Session extends Mapper {
 						'name='.$db->quote($table).' AND xtype=\'U\') '.
 						'CREATE TABLE dbo.'):
 					('CREATE TABLE IF NOT EXISTS '.
-						(($name=$db->name())?($name.'.'):''))).
+						((($name=$db->name())&&$db->driver()!='pgsql')?
+							($name.'.'):''))).
 				$table.' ('.
 					'session_id VARCHAR(40),'.
 					'data TEXT,'.
