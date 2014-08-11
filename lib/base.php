@@ -1428,10 +1428,11 @@ class Base extends Prefab {
 		preg_match_all(
 			'/(?<=^|\n)(?:'.
 				'\[(?<section>.+?)\]|'.
-				'(?<lval>[^\h\r\n;].+?)\h*=\h*'.
+				'(?<lval>[^\h\r\n=;]+)\h*=\h*'.
 				'(?<rval>(?:\\\\\h*\r?\n|.+?)*)'.
 			')(?=\r?\n|$)/',
 			$this->read($file),$matches,PREG_SET_ORDER);
+		var_dump($matches);
 		if ($matches) {
 			$sec='globals';
 			foreach ($matches as $match) {
