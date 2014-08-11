@@ -1433,7 +1433,6 @@ class Base extends Prefab {
 				'(?<rval>(?:\\\\\h*\r?\n|.+?)*)'.
 			')(?=\r?\n|$)/',
 			$this->read($file),$matches,PREG_SET_ORDER);
-		var_dump($matches);
 		if ($matches) {
 			$sec='globals';
 			foreach ($matches as $match) {
