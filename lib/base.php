@@ -1101,7 +1101,7 @@ class Base extends Prefab {
 		}
 		preg_match('/([\|\w]+)\h+(?:(?:@(\w+)\h*:\h*)?([^\h]+)|@(\w+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
-		if ($parts[2])
+		if (isset($parts[2]) && $parts[2])
 			$this->hive['ALIASES'][$parts[2]]=$parts[3];
 		elseif (!empty($parts[4])) {
 			if (empty($this->hive['ALIASES'][$parts[4]]))
@@ -1183,7 +1183,7 @@ class Base extends Prefab {
 				$this->redirect($item,$url);
 			return;
 		}
-		$this->route($pattern,function($this) use ($url) {
+		$this->route($pattern,function($this) use($url) {
 			$this->reroute($url);
 		});
 	}
@@ -1429,7 +1429,7 @@ class Base extends Prefab {
 		preg_match_all(
 			'/(?<=^|\n)(?:'.
 				'\[(?<section>.+?)\]|'.
-				'(?<lval>[^\h\r\n=;]+)\h*=\h*'.
+				'(?<lval>[^\h\r\n;].*?)\h*=\h*'.
 				'(?<rval>(?:\\\\\h*\r?\n|.+?)*)'.
 			')(?=\r?\n|$)/',
 			$this->read($file),$matches,PREG_SET_ORDER);
