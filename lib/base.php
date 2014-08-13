@@ -2027,7 +2027,9 @@ class View extends Prefab {
 
 	protected
 		//! Template file
-		$view;
+		$view,
+		//! post-rendering handler
+		$trigger;
 
 	/**
 	*	Encode characters to equivalent HTML entities
@@ -2105,11 +2107,22 @@ class View extends Prefab {
 					header('Content-Type: '.$mime.'; '.
 						'charset='.$fw->get('ENCODING'));
 				$data=$this->sandbox($hive);
+				if(isset($this->trigger['afterrender']))
+					foreach($this->trigger['afterrender'] as $func)
+						$data=$fw->call($func,$data);
 				if ($ttl)
 					$cache->set($hash,$data);
 				return $data;
 			}
 		user_error(sprintf(Base::E_Open,$file));
+	}
+
+	/**
+	*	post rendering handler
+	*	@param $func callback
+	*/
+	function afterrender($func) {
+		$this->trigger['afterrender'][]=$func;
 	}
 
 }
@@ -2215,6 +2228,9 @@ class Preview extends View {
 					header('Content-Type: '.($this->mime=$mime).'; '.
 						'charset='.$fw->get('ENCODING'));
 				$data=$this->sandbox($hive);
+				if(isset($this->trigger['afterrender']))
+					foreach ($this->trigger['afterrender'] as $func)
+						$data = $fw->call($func, $data);
 				if ($ttl)
 					$cache->set($hash,$data);
 				return $data;
