@@ -2106,7 +2106,8 @@ class View extends Prefab {
 						'charset='.$fw->get('ENCODING'));
 				$data=$this->sandbox($hive);
 				if(isset($this->trigger['afterrender']))
-					$data=$fw->call($this->trigger['afterrender'],$data);
+					foreach($this->trigger['afterrender'] as $func)
+						$data=$fw->call($func,$data);
 				if ($ttl)
 					$cache->set($hash,$data);
 				return $data;
@@ -2119,7 +2120,7 @@ class View extends Prefab {
 	*	@param $func callback
 	*/
 	function afterrender($func) {
-		$this->trigger['afterrender']=$func;
+		$this->trigger['afterrender'][]=$func;
 	}
 
 }
@@ -2226,7 +2227,8 @@ class Preview extends View {
 						'charset='.$fw->get('ENCODING'));
 				$data=$this->sandbox($hive);
 				if(isset($this->trigger['afterrender']))
-					$data=$fw->call($this->trigger['afterrender'],$data);
+					foreach ($this->trigger['afterrender'] as $func)
+						$data = $fw->call($func, $data);
 				if ($ttl)
 					$cache->set($hash,$data);
 				return $data;
