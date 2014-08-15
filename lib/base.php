@@ -319,9 +319,25 @@ class Base extends Prefab {
 		}
 		$ref=&$this->ref($key);
 		$ref=$val;
-		if (preg_match('/^JAR\b/',$key))
+		if (preg_match('/^JAR\b/',$key)){
+			$cookie_params = $this->hive['JAR'];
+			//if our expiration time is > 0 convert the unix timestamp to the number of seconds the cookie should exist
+			if($cookie_params['expire'] != 0){
+				//clone the params so we don't alter the JAR, we're doing this b/c
+				//setcookie uses a unix timestamp and session_set_cookie_params uses seconds (not a timestamp)
+				//we need a deep copy b/c the jar expire is &$referenced
+				//the JAR.expire is always in a timestamp format
+				$tmp = array();
+				foreach($cookie_params as $k => $v){
+					$tmp[$k] = $v;
+				}
+				$cookie_params = $tmp;
+				$cookie_params['expire'] = intval($cookie_params['expire']) - time();
+			}
+
 			call_user_func_array(
-				'session_set_cookie_params',$this->hive['JAR']);
+				'session_set_cookie_params',$cookie_params);
+		}
 		$cache=Cache::instance();
 		if ($cache->exists($hash=$this->hash($key).'.var') || $ttl)
 			// Persist the key-value pair
