@@ -1238,6 +1238,7 @@ class Base extends Prefab {
 				str_replace('\*','([^\?]*)',preg_quote($url,'/'))).
 				'\/?(?:\?.*)?$/'.$case.'um',$req,$args))
 				continue;
+			ksort($args);
 			$route=NULL;
 			if (isset($routes[$this->hive['AJAX']+1]))
 				$route=$routes[$this->hive['AJAX']+1];
@@ -1366,8 +1367,16 @@ class Base extends Prefab {
 		}
 		if (!is_callable($func))
 			// No route handler
-			if ($hooks=='beforeroute,afterroute')
+			if ($hooks=='beforeroute,afterroute') {
+				$allowed='';
+				if (isset($parts[1]))
+					$allowed=array_intersect(
+						array_map('strtoupper',get_class_methods($parts[1])),
+						explode('|',self::VERBS)
+					);
+				header('Allow: '.implode(',',$allowed));
 				$this->error(405);
+			}
 			else
 				user_error(sprintf(self::E_Method,
 					is_string($func)?$func:$this->stringify($func)));
