@@ -142,6 +142,11 @@ class Template extends Controller {
 			$tpl->render('templates/test2.htm')=='bar',
 			'<include>'
 		);
+		$f3->set('foo','barré');
+		$test->expect(
+			$tpl->render('templates/test2b.htm')=='barr&eacute;barr&eacute;',
+			'double <include> doesn\'t double encode'
+		);
 		$f3->clear('cond');
 		$f3->set('foo','baz');
 		$test->expect(

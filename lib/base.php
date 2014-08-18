@@ -2042,7 +2042,9 @@ class View extends Prefab {
 		//! Template file
 		$view,
 		//! post-rendering handler
-		$trigger;
+		$trigger,
+		//! Nesting level
+		$level=0;
 
 	/**
 	*	Encode characters to equivalent HTML entities
@@ -2078,11 +2080,11 @@ class View extends Prefab {
 	*	@param $hive array
 	**/
 	protected function sandbox(array $hive=NULL) {
+		$this->level++;
 		$fw=Base::instance();
 		if (!$hive)
 			$hive=$fw->hive();
-		if (!$fw->exists('RENDERING',$rendering)) {
-			$fw->set('RENDERING', true);
+		if ($this->level<2) {
 			if ($fw->get('ESCAPE'))
 				$hive=$this->esc($hive);
 			if (isset($hive['ALIASES']))
@@ -2093,7 +2095,7 @@ class View extends Prefab {
 		unset($hive);
 		ob_start();
 		require($this->view);
-		Base::instance()->clear('RENDERING');
+		$this->level--;
 		return ob_get_clean();
 	}
 
