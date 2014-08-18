@@ -324,8 +324,7 @@ class Base extends Prefab {
 		if (preg_match('/^JAR\b/',$key)) {
 			$jar=$this->unserialize($this->serialize($this->hive['JAR']));
 			$jar['expire']-=$time;
-			call_user_func_array('session_set_cookie_params',
-				$this->hive['JAR']);
+			call_user_func_array('session_set_cookie_params',$jar);
 		}
 		$cache=Cache::instance();
 		if ($cache->exists($hash=$this->hash($key).'.var') || $ttl)
