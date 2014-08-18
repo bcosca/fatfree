@@ -283,13 +283,14 @@ class Base extends Prefab {
 	*	@param $ttl int
 	**/
 	function set($key,$val,$ttl=0) {
+		$time=time();
 		if (preg_match('/^(GET|POST|COOKIE)\b(.+)/',$key,$expr)) {
 			$this->set('REQUEST'.$expr[2],$val);
 			if ($expr[1]=='COOKIE') {
 				$parts=$this->cut($key);
 				$jar=$this->hive['JAR'];
 				if ($ttl)
-					$jar['expire']=time()+$ttl;
+					$jar['expire']=$time+$ttl;
 				call_user_func_array('setcookie',array($parts[1],$val)+$jar);
 				return $val;
 			}
@@ -320,9 +321,12 @@ class Base extends Prefab {
 		}
 		$ref=&$this->ref($key);
 		$ref=$val;
-		if (preg_match('/^JAR\b/',$key))
-			call_user_func_array(
-				'session_set_cookie_params',$this->hive['JAR']);
+		if (preg_match('/^JAR\b/',$key)) {
+			$jar=$this->unserialize($this->serialize($this->hive['JAR']));
+			if ($jar['expire'])
+				$jar['expire']-=$time;
+			call_user_func_array('session_set_cookie_params',$jar);
+		}
 		$cache=Cache::instance();
 		if ($cache->exists($hash=$this->hash($key).'.var') || $ttl)
 			// Persist the key-value pair
@@ -2161,7 +2165,7 @@ class Preview extends View {
 	protected function build($node) {
 		$self=$this;
 		return preg_replace_callback(
-			'/\{\{(.+?)\}\}(\n)?/s',
+			'/\{\{(.+?)\}\}(\n+)?/s',
 			function($expr) use($self) {
 				$str=trim($self->token($expr[1]));
 				if (preg_match('/^([^|]+?)\h*\|(\h*\w+(?:\h*[,;]\h*\w+)*)/',
@@ -2172,7 +2176,7 @@ class Preview extends View {
 							'->'.$func.'('.$str.')';
 				}
 				return '<?php echo '.$str.'; ?>'.
-					(isset($expr[2])?"\n\n":'');
+					(isset($expr[2])?$expr[2]:'');
 			},
 			preg_replace_callback(
 				'/\{~(.+?)~\}/s',
