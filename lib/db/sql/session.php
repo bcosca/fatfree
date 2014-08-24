@@ -138,7 +138,9 @@ class Session extends Mapper {
 	*	@param $force bool
 	**/
 	function __construct(\DB\SQL $db,$table='sessions',$force=TRUE) {
-		if ($force)
+		if ($force) {
+			$eol="\n";
+			$tab="\t";
 			$db->exec(
 				(preg_match('/mssql|sqlsrv|sybase/',$db->driver())?
 					('IF NOT EXISTS (SELECT * FROM sysobjects WHERE '.
@@ -147,16 +149,17 @@ class Session extends Mapper {
 					('CREATE TABLE IF NOT EXISTS '.
 						((($name=$db->name())&&$db->driver()!='pgsql')?
 							($name.'.'):''))).
-				$table.' ('.
-					'session_id VARCHAR(40),'.
-					'data TEXT,'.
-					'csrf TEXT,'.
-					'ip VARCHAR(40),'.
-					'agent VARCHAR(255),'.
-					'stamp INTEGER,'.
-					'PRIMARY KEY(session_id)'.
+				$table.' ('.$eol.
+					$tab.$db->quotekey('session_id').' VARCHAR(40),'.$eol.
+					$tab.$db->quotekey('data').' TEXT,'.$eol.
+					$tab.$db->quotekey('csrf').' TEXT,'.$eol.
+					$tab.$db->quotekey('ip').' VARCHAR(40),'.$eol.
+					$tab.$db->quotekey('agent').' VARCHAR(255),'.$eol.
+					$tab.$db->quotekey('stamp').' INTEGER,'.$eol.
+					$tab.'PRIMARY KEY ('.$db->quotekey('session_id').')'.$eol.
 				');'
 			);
+		}
 		parent::__construct($db,$table);
 		session_set_save_handler(
 			array($this,'open'),
