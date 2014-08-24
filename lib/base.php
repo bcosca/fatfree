@@ -867,7 +867,7 @@ class Base extends Prefab {
 	}
 
 	/**
-	*	Transfer lexicon entries to hive
+	*	Return lexicon entries
 	*	@return array
 	*	@param $path string
 	**/
@@ -981,8 +981,12 @@ class Base extends Prefab {
 		if (!$text)
 			$text='HTTP '.$code.' ('.$req.')';
 		error_log($text);
-		if (!$trace)
-			$trace=array_slice(debug_backtrace(FALSE),1);
+		if (!$trace) {
+			$trace=debug_backtrace(FALSE);
+			$frame=$trace[0];
+			if (isset($frame['file']) && $frame['file']==__FILE__)
+				array_shift($trace);
+		}
 		$debug=$this->hive['DEBUG'];
 		$trace=array_filter(
 			$trace,
