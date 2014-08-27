@@ -175,9 +175,15 @@ class Mapper extends \DB\Cursor {
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
-			'offset'=>0
+			'offset'=>0,
+			'top'=>0
 		);
-		$sql='SELECT '.$fields.' FROM '.$this->table;
+		
+		if($options['top'] && in_array($this->engine, array('mssql','sqlsrv','odbc')))
+			$sql='SELECT TOP '.$options['top'].' '.$fields.' FROM '.$this->table;
+		else
+			$sql='SELECT '.$fields.' FROM '.$this->table;
+			
 		$args=array();
 		if ($filter) {
 			if (is_array($filter)) {
