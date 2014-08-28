@@ -175,52 +175,99 @@ class Mapper extends \DB\Cursor {
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
-			'offset'=>0
+			'offset'=>0,
+			'top'=>0
 		);
 		
-		if($options['limit'] > 0 && in_array($this->engine, array('mssql','sqlsrv','odbc')))
+		if(in_array($this->engine, array('mssql','sqlsrv','odbc')))
 		{
-			$sql='SELECT TOP '.$options['limit'].' '.$fields.' FROM '.$this->table;
-			$options['limit'] = 0;
+			$sql='SELECT ';
+			
+			if($option['top'])
+				$sql .= 'TOP '.$options['top'];
+			
+			$sql .= ' '.$fields.' FROM '.$this->table;
+			
+			$args=array();
+			if ($filter) {
+				if (is_array($filter)) {
+					$args=isset($filter[1]) && is_array($filter[1])?
+						$filter[1]:
+						array_slice($filter,1,NULL,TRUE);
+					$args=is_array($args)?$args:array(1=>$args);
+					list($filter)=$filter;
+				}
+				$sql.=' WHERE '.$filter;
+			}
+			$db=$this->db;
+			if ($options['group'])
+				$sql.=' GROUP BY '.implode(',',array_map(
+					function($str) use($db) {
+						return preg_match('/^(\w+)(?:\h+HAVING|\h*(?:,|$))/i',
+							$str,$parts)?
+							($db->quotekey($parts[1]).
+							(isset($parts[2])?(' '.$parts[2]):'')):$str;
+					},
+					explode(',',$options['group'])));
+			if ($options['order']) {
+				$sql.=' ORDER BY '.implode(',',array_map(
+					function($str) use($db) {
+						return preg_match('/^(\w+)(?:\h+(ASC|DESC))?\h*(?:,|$)/i',
+							$str,$parts)?
+							($db->quotekey($parts[1]).
+							(isset($parts[2])?(' '.$parts[2]):'')):$str;
+					},
+					explode(',',$options['order'])));
+			}
+			
+			if($option['offset'])
+				$sql .= ' OFFSET '.$option['offset'].' ROWS';
+			
+			if($option['limit'])
+				$sql .= ' FETCH NEXT '.$option['limit'].' ROWS ONLY';
+			
 		}
 		else
+		{
 			$sql='SELECT '.$fields.' FROM '.$this->table;
 			
-		$args=array();
-		if ($filter) {
-			if (is_array($filter)) {
-				$args=isset($filter[1]) && is_array($filter[1])?
-					$filter[1]:
-					array_slice($filter,1,NULL,TRUE);
-				$args=is_array($args)?$args:array(1=>$args);
-				list($filter)=$filter;
+			$args=array();
+			if ($filter) {
+				if (is_array($filter)) {
+					$args=isset($filter[1]) && is_array($filter[1])?
+						$filter[1]:
+						array_slice($filter,1,NULL,TRUE);
+					$args=is_array($args)?$args:array(1=>$args);
+					list($filter)=$filter;
+				}
+				$sql.=' WHERE '.$filter;
 			}
-			$sql.=' WHERE '.$filter;
+			$db=$this->db;
+			if ($options['group'])
+				$sql.=' GROUP BY '.implode(',',array_map(
+					function($str) use($db) {
+						return preg_match('/^(\w+)(?:\h+HAVING|\h*(?:,|$))/i',
+							$str,$parts)?
+							($db->quotekey($parts[1]).
+							(isset($parts[2])?(' '.$parts[2]):'')):$str;
+					},
+					explode(',',$options['group'])));
+			if ($options['order']) {
+				$sql.=' ORDER BY '.implode(',',array_map(
+					function($str) use($db) {
+						return preg_match('/^(\w+)(?:\h+(ASC|DESC))?\h*(?:,|$)/i',
+							$str,$parts)?
+							($db->quotekey($parts[1]).
+							(isset($parts[2])?(' '.$parts[2]):'')):$str;
+					},
+					explode(',',$options['order'])));
+			}
+			if ($options['limit'])
+				$sql.=' LIMIT '.(int)$options['limit'];
+			if ($options['offset'])
+				$sql.=' OFFSET '.(int)$options['offset'];
 		}
-		$db=$this->db;
-		if ($options['group'])
-			$sql.=' GROUP BY '.implode(',',array_map(
-				function($str) use($db) {
-					return preg_match('/^(\w+)(?:\h+HAVING|\h*(?:,|$))/i',
-						$str,$parts)?
-						($db->quotekey($parts[1]).
-						(isset($parts[2])?(' '.$parts[2]):'')):$str;
-				},
-				explode(',',$options['group'])));
-		if ($options['order']) {
-			$sql.=' ORDER BY '.implode(',',array_map(
-				function($str) use($db) {
-					return preg_match('/^(\w+)(?:\h+(ASC|DESC))?\h*(?:,|$)/i',
-						$str,$parts)?
-						($db->quotekey($parts[1]).
-						(isset($parts[2])?(' '.$parts[2]):'')):$str;
-				},
-				explode(',',$options['order'])));
-		}
-		if ($options['limit'])
-			$sql.=' LIMIT '.(int)$options['limit'];
-		if ($options['offset'])
-			$sql.=' OFFSET '.(int)$options['offset'];
+		
 		$result=$this->db->exec($sql,$args,$ttl);
 		$out=array();
 		foreach ($result as &$row) {
@@ -254,7 +301,8 @@ class Mapper extends \DB\Cursor {
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
-			'offset'=>0
+			'offset'=>0,
+			'top'=>0
 		);
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
