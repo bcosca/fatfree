@@ -175,12 +175,14 @@ class Mapper extends \DB\Cursor {
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
-			'offset'=>0,
-			'top'=>0
+			'offset'=>0
 		);
 		
-		if($options['top'] && in_array($this->engine, array('mssql','sqlsrv','odbc')))
-			$sql='SELECT TOP '.$options['top'].' '.$fields.' FROM '.$this->table;
+		if($options['limit'] > 0 && in_array($this->engine, array('mssql','sqlsrv','odbc')))
+		{
+			$sql='SELECT TOP '.$options['limit'].' '.$fields.' FROM '.$this->table;
+			$options['limit'] = 0;
+		}
 		else
 			$sql='SELECT '.$fields.' FROM '.$this->table;
 			
@@ -252,8 +254,7 @@ class Mapper extends \DB\Cursor {
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
-			'offset'=>0,
-			'top'=>0
+			'offset'=>0
 		);
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
