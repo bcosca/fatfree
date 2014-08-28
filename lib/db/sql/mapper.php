@@ -183,7 +183,7 @@ class Mapper extends \DB\Cursor {
 		{
 			$sql='SELECT ';
 			
-			if($option['top'])
+			if($options['top'])
 				$sql .= 'TOP '.$options['top'];
 			
 			$sql .= ' '.$fields.' FROM '.$this->table;
