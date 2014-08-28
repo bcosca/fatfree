@@ -260,7 +260,7 @@ class Base extends Prefab {
 		$val=$this->ref($key,FALSE);
 		return isset($val)?
 			TRUE:
-			(Cache::instance()->exists($this->hash($key).'.var',$val)?:FALSE);
+			(Cache::instance()->exists(!empty($this->hive['READABLE_CACHE_KEYS'])?$key.'.var':$this->hash($key).'.var',$val)?:FALSE);
 	}
 
 	/**
@@ -271,7 +271,7 @@ class Base extends Prefab {
 	function devoid($key) {
 		$val=$this->ref($key,FALSE);
 		return empty($val) &&
-			(!Cache::instance()->exists($this->hash($key).'.var',$val) ||
+			(!Cache::instance()->exists(!empty($this->hive['READABLE_CACHE_KEYS'])?$key.'.var':$this->hash($key).'.var',$val) ||
 				!$val);
 	}
 
@@ -327,7 +327,7 @@ class Base extends Prefab {
 			call_user_func_array('session_set_cookie_params',$jar);
 		}
 		$cache=Cache::instance();
-		if ($cache->exists($hash=$this->hash($key).'.var') || $ttl)
+		if ($cache->exists($hash=!empty($this->hive['READABLE_CACHE_KEYS'])?$key.'.var':$this->hash($key).'.var') || $ttl)
 			// Persist the key-value pair
 			$cache->set($hash,$val,$ttl);
 		return $ref;
@@ -347,7 +347,7 @@ class Base extends Prefab {
 			);
 		if (is_null($val)) {
 			// Attempt to retrieve from cache
-			if (Cache::instance()->exists($this->hash($key).'.var',$data))
+			if (Cache::instance()->exists(!empty($this->hive['READABLE_CACHE_KEYS'])?$key.'.var':$this->hash($key).'.var',$data))
 				return $data;
 		}
 		return $val;
@@ -396,7 +396,7 @@ class Base extends Prefab {
 				session_commit();
 				session_start();
 			}
-			if ($cache->exists($hash=$this->hash($key).'.var'))
+			if ($cache->exists($hash=!empty($this->hive['READABLE_CACHE_KEYS'])?$key.'.var':$this->hash($key).'.var'))
 				// Remove from cache
 				$cache->clear($hash);
 		}
