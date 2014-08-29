@@ -220,11 +220,11 @@ class Mapper extends \DB\Cursor {
 					explode(',',$options['order'])));
 			}
 			
-			if($option['offset'])
-				$sql .= ' OFFSET '.$option['offset'].' ROWS';
+			if($options['offset'])
+				$sql .= ' OFFSET '.$options['offset'].' ROWS';
 			
-			if($option['limit'])
-				$sql .= ' FETCH NEXT '.$option['limit'].' ROWS ONLY';
+			if($options['limit'])
+				$sql .= ' FETCH NEXT '.$options['limit'].' ROWS ONLY';
 			
 		}
 		else
