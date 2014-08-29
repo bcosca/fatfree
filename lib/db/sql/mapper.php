@@ -181,12 +181,7 @@ class Mapper extends \DB\Cursor {
 		
 		if(in_array($this->engine, array('mssql','sqlsrv','odbc')))
 		{
-			$sql='SELECT ';
-			
-			if($options['top'])
-				$sql .= 'TOP '.$options['top'];
-			
-			$sql .= ' '.$fields.' FROM '.$this->table;
+			$sql='SELECT '.$fields.' FROM '.$this->table;
 			
 			$args=array();
 			if ($filter) {
@@ -221,7 +216,17 @@ class Mapper extends \DB\Cursor {
 			}
 			else
 			{
-				$sql.=' ORDER BY '.array_keys($this->fields)[0];
+				$pk = 0; $idx = 0;
+				
+				foreach($this->fields as $field)
+				{
+					if($field['pkey'])
+						$pk = $idx;
+					
+					$idx++;
+				}
+				
+				$sql.=' ORDER BY '.array_keys($this->fields)[$pk];
 			}
 			
 			if($options['offset'])
@@ -305,8 +310,7 @@ class Mapper extends \DB\Cursor {
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
-			'offset'=>0,
-			'top'=>0
+			'offset'=>0
 		);
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
