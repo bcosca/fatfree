@@ -175,8 +175,7 @@ class Mapper extends \DB\Cursor {
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
-			'offset'=>0,
-			'top'=>0
+			'offset'=>0
 		);
 		
 		if(in_array($this->engine, array('mssql','sqlsrv','odbc')))
