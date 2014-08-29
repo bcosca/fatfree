@@ -219,6 +219,10 @@ class Mapper extends \DB\Cursor {
 					},
 					explode(',',$options['order'])));
 			}
+			else
+			{
+				$sql.=' ORDER BY '.array_keys($this->fields)[0];
+			}
 			
 			if($options['offset'])
 				$sql .= ' OFFSET '.$options['offset'].' ROWS';
