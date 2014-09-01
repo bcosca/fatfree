@@ -1,1 +1,4 @@
-{{ @foo }}#<include href="{{ @file }}" with="bar={{ strtoupper(@foo) }},baz=123" />#{{ @foo }}
+{{ @foo }}#
+<include href="{{ @file }}" with="bar={{ strtoupper(@foo) }},baz=123" />#
+<include href="{{ @file }}" with="bar='quoted $tring',baz=unquoted string" />#
+{{ @foo }}
