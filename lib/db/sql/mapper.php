@@ -209,28 +209,26 @@ class Mapper extends \DB\Cursor {
 				},
 				explode(',',$options['order'])));
 		}
-		if (preg_match('/mssql|sqlsrv|odbc/', $this->engine)) {
+		if (preg_match('/mssql|sqlsrv|odbc/', $this->engine) &&
+			($options['limit'] || $options['offset'])) {
+			$pkeys = array();
+			foreach ($this->fields as $key => $field)
+				if ($field['pkey'])
+					$pkeys[] = $key;
+			$ofs=$options['offset']?(int)$options['offset']:0;
+			$lmt=$options['limit']?(int)$options['limit']:0;
 			if (strncmp($db->version(), '11', 2) >= 0) {
 				// SQL Server 2012
-				if (!$options['order']) {
-					$pkeys=array();
-					foreach ($this->fields as $key => $field)
-						if ($field['pkey'])
-							$pkeys[] = $key;
+				if (!$options['order'])
 					$sql.=' ORDER BY '.$db->quotekey($pkeys[0]);
-				}
-				if (!$options['offset'])
-					$options['offset'] = 0;
-				$sql.=' OFFSET '.(int)$options['offset'].' ROWS';
-				if ($options['limit'])
-					$sql.=' FETCH NEXT '.(int)$options['limit'].' ROWS ONLY';
-			} elseif ($options['limit'] || $options['offset']) {
-					// SQL Server 2008
-					$ofs=$options['offset']?(int)$options['offset']:0;
-					$lmt=$options['limit']?(int)$options['limit']:0;
-					$sql=str_replace('SELECT','SELECT '.($lmt>0?'TOP '.($ofs+$lmt):'').
-						' ROW_NUMBER() OVER (ORDER BY [id]) AS rnum,',$sql);
-					$sql='SELECT * FROM ('.$sql.') x WHERE rnum > '.($ofs);
+				$sql.=' OFFSET '.$ofs.' ROWS';
+				if ($lmt)
+					$sql.=' FETCH NEXT '.$lmt.' ROWS ONLY';
+			} else {
+				// SQL Server 2008
+				$sql=str_replace('SELECT','SELECT '.($lmt>0?'TOP '.($ofs+$lmt):'').
+					' ROW_NUMBER() OVER (ORDER BY '.$db->quotekey($pkeys[0]).') AS rnum,',$sql);
+				$sql='SELECT * FROM ('.$sql.') x WHERE rnum > '.($ofs);
 			}
 		} else {
 			if ($options['limit'])
