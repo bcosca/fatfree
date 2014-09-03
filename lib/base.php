@@ -300,7 +300,7 @@ class Base extends Prefab {
 				$val=Cache::instance()->load($val,TRUE);
 				break;
 			case 'ENCODING':
-				$val=ini_set('default_charset',$val);
+				ini_set('default_charset',$val);
 				if (extension_loaded('mbstring'))
 					mb_internal_encoding($val);
 				break;

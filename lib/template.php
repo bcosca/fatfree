@@ -50,15 +50,15 @@ class Template extends Preview {
 	protected function _include(array $node) {
 		$attrib=$node['@attrib'];
 		$hive=isset($attrib['with']) &&
-			($attrib['with']=preg_match('/\{\{(.+?)\}\}/',
-				$attrib['with'])?
-					$this->token($attrib['with']):
-					Base::instance()->stringify($attrib['with'])) &&
+			($attrib['with']=$this->token($attrib['with'])) &&
 			preg_match_all('/(\w+)\h*=\h*(.+?)(?=,|$)/',
 				$attrib['with'],$pairs,PREG_SET_ORDER)?
 					'array('.implode(',',
 						array_map(function($pair){
-							return '\''.$pair[1].'\'=>'.$pair[2];
+							return '\''.$pair[1].'\'=>'.
+								(preg_match('/^\'.*\'$/',$pair[2])||preg_match('/\$/',$pair[2])?
+									$pair[2]:
+									\Base::instance()->stringify($pair[2]));
 						},$pairs)).')+get_defined_vars()':
 					'get_defined_vars()';
 		return
