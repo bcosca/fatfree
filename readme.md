@@ -165,6 +165,23 @@ HTTP requests can also be routed to static class methods:-
 $f3->route('GET /login','Auth::login');
 ```
 
+Passed arguments are always provided as the second parameter:
+
+``` php
+$f3->route('GET /hello/@name','User::greet');
+
+class User {
+	public static function greet($f3, $args) { //$args is type of Array
+		echo "Hello " . $args['name'];
+	}
+}
+```
+If the provided name argument would be **foo** (/hello/foo), the following output would be shown:
+
+```
+Hello foo
+```
+
 ### Routes and Tokens
 
 As a demonstration of Fat-Free's powerful domain-specific language (DSL), you can specify a single route to handle different possibilities:-
