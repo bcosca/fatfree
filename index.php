@@ -2,7 +2,7 @@
 
 $f3=require('lib/base.php');
 
-$f3->set('DEBUG',1);
+$f3->set('DEBUG',2);
 $f3->set('UI','ui/');
 
 $f3->set('menu',
