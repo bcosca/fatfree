@@ -177,42 +177,105 @@ class Mapper extends \DB\Cursor {
 			'limit'=>0,
 			'offset'=>0
 		);
-		$sql='SELECT '.$fields.' FROM '.$this->table;
-		$args=array();
-		if ($filter) {
-			if (is_array($filter)) {
-				$args=isset($filter[1]) && is_array($filter[1])?
-					$filter[1]:
-					array_slice($filter,1,NULL,TRUE);
-				$args=is_array($args)?$args:array(1=>$args);
-				list($filter)=$filter;
+		
+		if(in_array($this->engine, array('mssql','sqlsrv','odbc')))
+		{
+			$sql='SELECT '.$fields.' FROM '.$this->table;
+			
+			$args=array();
+			if ($filter) {
+				if (is_array($filter)) {
+					$args=isset($filter[1]) && is_array($filter[1])?
+						$filter[1]:
+						array_slice($filter,1,NULL,TRUE);
+					$args=is_array($args)?$args:array(1=>$args);
+					list($filter)=$filter;
+				}
+				$sql.=' WHERE '.$filter;
 			}
-			$sql.=' WHERE '.$filter;
+			$db=$this->db;
+			if ($options['group'])
+				$sql.=' GROUP BY '.implode(',',array_map(
+					function($str) use($db) {
+						return preg_match('/^(\w+)(?:\h+HAVING|\h*(?:,|$))/i',
+							$str,$parts)?
+							($db->quotekey($parts[1]).
+							(isset($parts[2])?(' '.$parts[2]):'')):$str;
+					},
+					explode(',',$options['group'])));
+			if ($options['order']) {
+				$sql.=' ORDER BY '.implode(',',array_map(
+					function($str) use($db) {
+						return preg_match('/^(\w+)(?:\h+(ASC|DESC))?\h*(?:,|$)/i',
+							$str,$parts)?
+							($db->quotekey($parts[1]).
+							(isset($parts[2])?(' '.$parts[2]):'')):$str;
+					},
+					explode(',',$options['order'])));
+			}
+			else
+			{
+				$pk = 0; $idx = 0;
+				
+				foreach($this->fields as $field)
+				{
+					if($field['pkey'])
+						$pk = $idx;
+					
+					$idx++;
+				}
+				
+				$sql.=' ORDER BY '.array_keys($this->fields)[$pk];
+			}
+			
+			if($options['offset'])
+				$sql .= ' OFFSET '.$options['offset'].' ROWS';
+			
+			if($options['limit'])
+				$sql .= ' FETCH NEXT '.$options['limit'].' ROWS ONLY';
+			
 		}
-		$db=$this->db;
-		if ($options['group'])
-			$sql.=' GROUP BY '.implode(',',array_map(
-				function($str) use($db) {
-					return preg_match('/^(\w+)(?:\h+HAVING|\h*(?:,|$))/i',
-						$str,$parts)?
-						($db->quotekey($parts[1]).
-						(isset($parts[2])?(' '.$parts[2]):'')):$str;
-				},
-				explode(',',$options['group'])));
-		if ($options['order']) {
-			$sql.=' ORDER BY '.implode(',',array_map(
-				function($str) use($db) {
-					return preg_match('/^(\w+)(?:\h+(ASC|DESC))?\h*(?:,|$)/i',
-						$str,$parts)?
-						($db->quotekey($parts[1]).
-						(isset($parts[2])?(' '.$parts[2]):'')):$str;
-				},
-				explode(',',$options['order'])));
+		else
+		{
+			$sql='SELECT '.$fields.' FROM '.$this->table;
+			
+			$args=array();
+			if ($filter) {
+				if (is_array($filter)) {
+					$args=isset($filter[1]) && is_array($filter[1])?
+						$filter[1]:
+						array_slice($filter,1,NULL,TRUE);
+					$args=is_array($args)?$args:array(1=>$args);
+					list($filter)=$filter;
+				}
+				$sql.=' WHERE '.$filter;
+			}
+			$db=$this->db;
+			if ($options['group'])
+				$sql.=' GROUP BY '.implode(',',array_map(
+					function($str) use($db) {
+						return preg_match('/^(\w+)(?:\h+HAVING|\h*(?:,|$))/i',
+							$str,$parts)?
+							($db->quotekey($parts[1]).
+							(isset($parts[2])?(' '.$parts[2]):'')):$str;
+					},
+					explode(',',$options['group'])));
+			if ($options['order']) {
+				$sql.=' ORDER BY '.implode(',',array_map(
+					function($str) use($db) {
+						return preg_match('/^(\w+)(?:\h+(ASC|DESC))?\h*(?:,|$)/i',
+							$str,$parts)?
+							($db->quotekey($parts[1]).
+							(isset($parts[2])?(' '.$parts[2]):'')):$str;
+					},
+					explode(',',$options['order'])));
+			}
+			if ($options['limit'])
+				$sql.=' LIMIT '.(int)$options['limit'];
+			if ($options['offset'])
+				$sql.=' OFFSET '.(int)$options['offset'];
 		}
-		if ($options['limit'])
-			$sql.=' LIMIT '.(int)$options['limit'];
-		if ($options['offset'])
-			$sql.=' OFFSET '.(int)$options['offset'];
+		
 		$result=$this->db->exec($sql,$args,$ttl);
 		$out=array();
 		foreach ($result as &$row) {
