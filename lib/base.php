@@ -1738,6 +1738,7 @@ class Base extends Prefab {
 			'PORT'=>isset($_SERVER['SERVER_PORT'])?
 				$_SERVER['SERVER_PORT']:NULL,
 			'PREFIX'=>NULL,
+			'QUERY'=>parse_url($_SERVER['REQUEST_URI'],PHP_URL_QUERY),
 			'QUIET'=>FALSE,
 			'RAW'=>FALSE,
 			'REALM'=>$scheme.'://'.
