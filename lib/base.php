@@ -33,7 +33,7 @@ abstract class Prefab {
 }
 
 //! Base structure
-class Base extends Prefab {
+class Base extends Prefab implements ArrayAccess {
 
 	//@{ Framework details
 	const
@@ -400,6 +400,22 @@ class Base extends Prefab {
 				// Remove from cache
 				$cache->clear($hash);
 		}
+	}
+
+	/**
+	*	Return TRUE if property has public/protected visibility
+	*	@return bool
+	*	@param $obj object
+	*	@param $key string
+	**/
+	function visible($obj,$key) {
+		if (property_exists($obj,$key)) {
+			$ref=new ReflectionProperty(get_class($obj),$key);
+			$out=!$ref->isprivate();
+			unset($ref);
+			return $out;
+		}
+		return FALSE;
 	}
 
 	/**
@@ -1056,7 +1072,10 @@ class Base extends Prefab {
 	*	@param $headers array
 	*	@param $body string
 	**/
-	function mock($pattern,array $args=array(),array $headers=NULL,$body=NULL) {
+	function mock($pattern,
+		array $args=NULL,array $headers=NULL,$body=NULL) {
+		if (!$args)
+			$args=array();
 		$types=array('sync','ajax');
 		preg_match('/([\|\w]+)\h+(?:@(\w+)(?:(\(.+?)\))*|([^\h]+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
@@ -1606,6 +1625,90 @@ class Base extends Prefab {
 			array(E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR)))
 			// Fatal error detected
 			$this->error(500,sprintf(self::E_Fatal,$error['message']));
+	}
+
+	/**
+	*	Convenience method for checking hive key
+	*	@return mixed
+	*	@param $key string
+	**/
+	function offsetexists($key) {
+		return $this->exists($key);
+	}
+
+	/**
+	*	Convenience method for assigning hive value
+	*	@return mixed
+	*	@param $key string
+	*	@param $val scalar
+	**/
+	function offsetset($key,$val) {
+		return $this->set($key,$val);
+	}
+
+	/**
+	*	Convenience method for retrieving hive value
+	*	@return mixed
+	*	@param $key string
+	**/
+	function &offsetget($key) {
+		$val=&$this->ref($key);
+		return $val;
+	}
+
+	/**
+	*	Convenience method for removing hive key
+	*	@return NULL
+	*	@param $key string
+	**/
+	function offsetunset($key) {
+		$this->clear($key);
+	}
+
+	/**
+	*	Alias for offsetexists()
+	*	@return mixed
+	*	@param $key string
+	**/
+	function __isset($key) {
+		return $this->offsetexists($key);
+	}
+
+	/**
+	*	Alias for offsetset()
+	*	@return mixed
+	*	@param $key string
+	**/
+	function __set($key,$val) {
+		return $this->offsetset($key,$val);
+	}
+
+	/**
+	*	Alias for offsetget()
+	*	@return mixed
+	*	@param $key string
+	**/
+	function &__get($key) {
+		$val=&$this->offsetget($key);
+		return $val;
+	}
+
+	/**
+	*	Alias for offsetunset()
+	*	@return mixed
+	*	@param $key string
+	**/
+	function __unset($key) {
+		$this->offsetunset($key);
+	}
+
+	/**
+	*	Call function identified by hive key
+	*	@return mixed
+	*	@param $key string
+	**/
+	function __call($key,$args) {
+		return call_user_func_array($this->get($key),$args);
 	}
 
 	//! Prohibit cloning

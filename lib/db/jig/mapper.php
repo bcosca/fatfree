@@ -60,13 +60,12 @@ class Mapper extends \DB\Cursor {
 	*	@return scalar|FALSE
 	*	@param $key string
 	**/
-	function get($key) {
+	function &get($key) {
 		if ($key=='_id')
 			return $this->id;
 		if (array_key_exists($key,$this->document))
 			return $this->document[$key];
 		user_error(sprintf(self::E_Field,$key));
-		return FALSE;
 	}
 
 	/**

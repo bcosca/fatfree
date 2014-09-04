@@ -79,9 +79,13 @@ class SMTP extends Magic {
 	*	@return string|NULL
 	*	@param $key string
 	**/
-	function get($key) {
+	function &get($key) {
 		$key=$this->fixheader($key);
-		return isset($this->headers[$key])?$this->headers[$key]:NULL;
+		if (isset($this->headers[$key]))
+			$val=&$this->headers[$key];
+		else
+			$val=NULL;
+		return $val;
 	}
 
 	/**

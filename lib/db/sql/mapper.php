@@ -81,7 +81,7 @@ class Mapper extends \DB\Cursor {
 	*	@return scalar
 	*	@param $key string
 	**/
-	function get($key) {
+	function &get($key) {
 		if ($key=='_id')
 			return $this->_id;
 		elseif (array_key_exists($key,$this->fields))

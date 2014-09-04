@@ -220,8 +220,12 @@ class OpenID extends \Magic {
 	*	@return mixed
 	*	@param $key string
 	**/
-	function get($key) {
-		return isset($this->args[$key])?$this->args[$key]:NULL;
+	function &get($key) {
+		if (isset($this->args[$key]))
+			$val=&$this->args[$key];
+		else
+			$val=NULL;
+		return $val;
 	}
 
 	/**
