@@ -139,7 +139,7 @@ class Mapper extends \DB\Cursor {
 					$fw->get('HOST').'.'.$fw->get('BASE').'.'.
 					uniqid(NULL,TRUE).'.tmp'
 				);
-				$tmp->batchinsert($grp['retval'],array('safe'=>TRUE));
+				$tmp->batchinsert($grp['retval'],array('w'=>1));
 				$filter=array();
 				$collection=$tmp;
 			}
