@@ -1624,7 +1624,7 @@ class Base extends Prefab {
 		@ini_set('register_globals',0);
 		// Abort on startup error
 		// Intercept errors/exceptions; PHP5.3-compatible
-		error_reporting(E_ALL|E_STRICT);
+		error_reporting((E_ALL|E_STRICT)&~E_NOTICE);
 		$fw=$this;
 		set_exception_handler(
 			function($obj) use($fw) {
