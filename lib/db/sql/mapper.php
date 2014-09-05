@@ -217,7 +217,7 @@ class Mapper extends \DB\Cursor {
 					$pkeys[] = $key;
 			$ofs=$options['offset']?(int)$options['offset']:0;
 			$lmt=$options['limit']?(int)$options['limit']:0;
-			if (strncmp($db->version(), '11', 2) >= 0) {
+			if (strncmp($db->version(),'11',2)>=0) {
 				// SQL Server 2012
 				if (!$options['order'])
 					$sql.=' ORDER BY '.$db->quotekey($pkeys[0]);
@@ -226,8 +226,11 @@ class Mapper extends \DB\Cursor {
 					$sql.=' FETCH NEXT '.$lmt.' ROWS ONLY';
 			} else {
 				// SQL Server 2008
-				$sql=str_replace('SELECT','SELECT '.($lmt>0?'TOP '.($ofs+$lmt):'').
-					' ROW_NUMBER() OVER (ORDER BY '.$db->quotekey($pkeys[0]).') AS rnum,',$sql);
+				$sql=str_replace('SELECT',
+					'SELECT '.
+					($lmt>0?'TOP '.($ofs+$lmt):'').' ROW_NUMBER() '.
+					'OVER (ORDER BY '.
+						$db->quotekey($pkeys[0]).') AS rnum,',$sql);
 				$sql='SELECT * FROM ('.$sql.') x WHERE rnum > '.($ofs);
 			}
 		} else {
