@@ -142,7 +142,7 @@ class SQL extends \PDO {
 				$cached[0]+$ttl>microtime(TRUE)) {
 				foreach ($arg as $key=>$val) {
 					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
-					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
+					$keys[]='/'.preg_quote(is_numeric($key)?chr(0).'?':$key).'/';
 				}
 			}
 			elseif (is_object($query=$this->prepare($cmd))) {
@@ -158,7 +158,7 @@ class SQL extends \PDO {
 							$type=$this->type($val));
 						$vals[]=$fw->stringify($this->value($type,$val));
 					}
-					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
+					$keys[]='/'.preg_quote(is_numeric($key)?chr(0).'?':$key).'/';
 				}
 				$query->execute();
 				$error=$query->errorinfo();
@@ -203,7 +203,8 @@ class SQL extends \PDO {
 				$this->log.=date('r').' ('.
 					sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 					(empty($cached)?'':'[CACHED] ').
-					preg_replace($keys,$vals,$cmd,1).PHP_EOL;
+					preg_replace($keys,$vals,
+						str_replace('?',chr(0).'?',$cmd),1).PHP_EOL;
 		}
 		if ($this->trans && $auto)
 			$this->commit();
