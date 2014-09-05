@@ -1725,7 +1725,6 @@ class Base extends Prefab implements ArrayAccess {
 		// Deprecated directives
 		@ini_set('magic_quotes_gpc',0);
 		@ini_set('register_globals',0);
-		// Abort on startup error
 		// Intercept errors/exceptions; PHP5.3-compatible
 		error_reporting((E_ALL|E_STRICT)&~E_NOTICE);
 		$fw=$this;
@@ -1776,8 +1775,8 @@ class Base extends Prefab implements ArrayAccess {
 			$base=implode('/',array_map('urlencode',
 				explode('/',rtrim($this->fixslashes(
 					dirname($_SERVER['SCRIPT_NAME'])),'/'))));
-		$path=preg_replace('/^'.preg_quote($base,'/').'/','',
-			parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH));
+		$uri=parse_url($_SERVER['REQUEST_URI']);
+		$path=preg_replace('/^'.preg_quote($base,'/').'/','',$uri['path']);
 		call_user_func_array('session_set_cookie_params',
 			$jar=array(
 				'expire'=>0,
@@ -1815,6 +1814,7 @@ class Base extends Prefab implements ArrayAccess {
 			'ESCAPE'=>TRUE,
 			'EXEMPT'=>NULL,
 			'FALLBACK'=>$this->fallback,
+			'FRAGMENT'=>isset($uri['fragment'])?$uri['fragment']:'',
 			'HEADERS'=>$headers,
 			'HALT'=>TRUE,
 			'HIGHLIGHT'=>TRUE,
@@ -1841,7 +1841,7 @@ class Base extends Prefab implements ArrayAccess {
 			'PORT'=>isset($_SERVER['SERVER_PORT'])?
 				$_SERVER['SERVER_PORT']:NULL,
 			'PREFIX'=>NULL,
-			'QUERY'=>parse_url($_SERVER['REQUEST_URI'],PHP_URL_QUERY),
+			'QUERY'=>isset($uri['query'])?$uri['query']:'',
 			'QUIET'=>FALSE,
 			'RAW'=>FALSE,
 			'REALM'=>$scheme.'://'.
