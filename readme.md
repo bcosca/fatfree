@@ -4,7 +4,7 @@
 
 [![Flattr this project](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=phpfatfree&url=https://github.com/bcosca/fatfree)
 
-Condensed in a single ~60KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
+Condensed in a single ~65KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
 
 Whether you're a novice or an expert PHP programmer, F3 will get you up and running in no time. No unnecessary and painstaking installation procedures. No complex configuration required. No convoluted directory structures. There's no better time to start developing Web applications the easy way than right now!
 
@@ -54,9 +54,9 @@ The philosophy behind the framework and its approach to software architecture is
 
 [![Twitter](ui/images/twitter.png)](https://twitter.com/phpfatfree)
 
-### Version 3.2 Is Finally Here!
+### Version 3.3 Is Finally Released!
 
-The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.2 is finally available for download. This edition is packed with a bunch of new usability and security features.
+The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.3 is now available for download. This edition is packed with a bunch of new usability and security features.
 
 F3 has a stable enterprise-class architecture. Unbeatable performance, user-friendly features and a lightweight footprint. What more can you ask for?
 
@@ -163,6 +163,23 @@ HTTP requests can also be routed to static class methods:-
 
 ``` php
 $f3->route('GET /login','Auth::login');
+```
+
+Passed arguments are always provided as the second parameter:
+
+``` php
+$f3->route('GET /hello/@name','User::greet');
+
+class User {
+	public static function greet($f3, $args) { //$args is type of Array
+		echo "Hello " . $args['name'];
+	}
+}
+```
+If the provided name argument would be **foo** (/hello/foo), the following output would be shown:
+
+```
+Hello foo
 ```
 
 ### Routes and Tokens
