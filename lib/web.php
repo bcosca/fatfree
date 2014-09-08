@@ -475,9 +475,18 @@ class Web extends Prefab {
 			)
 		);
 		if (isset($options['content'])) {
-			if ($options['method']=='POST')
+			if ($options['method']=='POST'){
+                            $contentTypeHeaderSet = false;
+                            foreach ($options['header'] as &$header){
+				if (preg_match('/^Content-Type:/',$header)) {
+                                    $contentTypeHeaderSet = true;
+				}
+                            }
+                            if(!$contentTypeHeaderSet){
 				$this->subst($options['header'],
 					'Content-Type: application/x-www-form-urlencoded');
+                            }
+                        }
 			$this->subst($options['header'],
 				'Content-Length: '.strlen($options['content']));
 		}
