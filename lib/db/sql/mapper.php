@@ -211,10 +211,10 @@ class Mapper extends \DB\Cursor {
 		}
 		if (preg_match('/mssql|sqlsrv|odbc/', $this->engine) &&
 			($options['limit'] || $options['offset'])) {
-			$pkeys = array();
-			foreach ($this->fields as $key => $field)
+			$pkeys=array();
+			foreach ($this->fields as $key=>$field)
 				if ($field['pkey'])
-					$pkeys[] = $key;
+					$pkeys[]=$key;
 			$ofs=$options['offset']?(int)$options['offset']:0;
 			$lmt=$options['limit']?(int)$options['limit']:0;
 			if (strncmp($db->version(),'11',2)>=0) {
@@ -224,7 +224,8 @@ class Mapper extends \DB\Cursor {
 				$sql.=' OFFSET '.$ofs.' ROWS';
 				if ($lmt)
 					$sql.=' FETCH NEXT '.$lmt.' ROWS ONLY';
-			} else {
+			}
+			else {
 				// SQL Server 2008
 				$sql=str_replace('SELECT',
 					'SELECT '.
@@ -233,7 +234,8 @@ class Mapper extends \DB\Cursor {
 						$db->quotekey($pkeys[0]).') AS rnum,',$sql);
 				$sql='SELECT * FROM ('.$sql.') x WHERE rnum > '.($ofs);
 			}
-		} else {
+		}
+		else {
 			if ($options['limit'])
 				$sql.=' LIMIT '.(int)$options['limit'];
 			if ($options['offset'])
