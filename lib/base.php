@@ -1566,11 +1566,16 @@ class Base extends Prefab {
 	**/
 	protected function autoload($class) {
 		$class=$this->fixslashes(ltrim($class,'\\'));
+		$class_ar = explode('/',$class);
+		array_walk($class_ar, create_function('&$cls', '$cls = ucwords(strtolower($cls));'));
+		$uc_class = implode('/',$class_ar);
+
 		foreach ($this->split($this->hive['PLUGINS'].';'.
 			$this->hive['AUTOLOAD']) as $auto)
 			if (is_file($file=$auto.$class.'.php') ||
 				is_file($file=$auto.strtolower($class).'.php') ||
-				is_file($file=strtolower($auto.$class).'.php'))
+				is_file($file=strtolower($auto.$class).'.php') ||
+				is_file($file=$auto.$uc_class.'.php'))
 				return require($file);
 	}
 
