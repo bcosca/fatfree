@@ -475,7 +475,8 @@ class Web extends Prefab {
 			)
 		);
 		if (isset($options['content']) && is_string($options['content'])) {
-			if ($options['method']=='POST')
+			if ($options['method']=='POST' &&
+				!preg_grep('/^Content-Type:/',$options['header']))
 				$this->subst($options['header'],
 					'Content-Type: application/x-www-form-urlencoded');
 			$this->subst($options['header'],
