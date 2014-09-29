@@ -1241,7 +1241,7 @@ class Base extends Prefab implements ArrayAccess {
 
 	/**
 	*	Match routes against incoming URI
-	*	@return NULL
+	*	@return mixed
 	**/
 	function run() {
 		if ($this->blacklisted($this->hive['IP']))
@@ -1303,6 +1303,7 @@ class Base extends Prefab implements ArrayAccess {
 				// Save matching route
 				$this->hive['PATTERN']=$url;
 				// Process request
+				$result=NULL;
 				$body='';
 				$now=microtime(TRUE);
 				if (preg_match('/GET|HEAD/',$this->hive['VERB']) &&
@@ -1315,7 +1316,7 @@ class Base extends Prefab implements ArrayAccess {
 							$this->hive['URI']).'.url',$data);
 					if ($cached && $cached[0]+$ttl>$now) {
 						// Retrieve from cache backend
-						list($headers,$body)=$data;
+						list($headers,$body,$result)=$data;
 						if (PHP_SAPI!='cli')
 							array_walk($headers,'header');
 						$this->expire($cached[0]+$ttl-$now);
@@ -1331,12 +1332,13 @@ class Base extends Prefab implements ArrayAccess {
 						$this->hive['BODY']=file_get_contents('php://input');
 					ob_start();
 					// Call route handler
-					$this->call($handler,array($this,$args),
+					$result=$this->call($handler,array($this,$args),
 						'beforeroute,afterroute');
 					$body=ob_get_clean();
 					if ($ttl && !error_get_last())
 						// Save to cache backend
-						$cache->set($hash,array(headers_list(),$body),$ttl);
+						$cache->set($hash,
+							array(headers_list(),$body,$result),$ttl);
 				}
 				$this->hive['RESPONSE']=$body;
 				if (!$this->hive['QUIET']) {
@@ -1354,7 +1356,7 @@ class Base extends Prefab implements ArrayAccess {
 					else
 						echo $body;
 				}
-				return;
+				return $result;
 			}
 			$allowed=array_keys($route);
 			break;
@@ -1368,6 +1370,7 @@ class Base extends Prefab implements ArrayAccess {
 			if ($this->hive['VERB']!='OPTIONS')
 				$this->error(405);
 		}
+		return FALSE;
 	}
 
 	/**
