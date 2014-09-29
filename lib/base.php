@@ -181,19 +181,19 @@ class Base extends Prefab implements ArrayAccess {
 	function compile($str) {
 		$fw=$this;
 		return preg_replace_callback(
-			'/(?<!\w)@(\w(?:[\w\.\[\]]|\->|::)*)/',
+			'/(?<!\w)@(\w(?:[\w\.\[\]\(]|\->|::)*)/',
 			function($var) use($fw) {
 				return '$'.preg_replace_callback(
-					'/\.(\w+)(?!\(|\))|\[((?:[^\[\]]*|(?R))*)\]/',
+					'/\.(\w+)\(|\.(\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
 					function($expr) use($fw) {
-						return function_exists($expr[1])?
-							('.'.$expr[1]):
+						return $expr[1] && function_exists($expr[1])?
+							('.'.$expr[1].'('):
 							('['.var_export(
-								isset($expr[2])?
-									$fw->compile($expr[2]):
-									(ctype_digit($expr[1])?
+								isset($expr[3])?
+									$fw->compile($expr[3]):
+									(ctype_digit($expr[2])?
 										(int)$expr[1]:
-										$expr[1]),TRUE).']');
+										$expr[2]),TRUE).']');
 					},
 					$var[1]
 				);
