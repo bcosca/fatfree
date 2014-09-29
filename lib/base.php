@@ -1606,13 +1606,9 @@ class Base extends Prefab implements ArrayAccess {
 	**/
 	protected function autoload($class) {
 		$class=$this->fixslashes(ltrim($class,'\\'));
-		$path=$this->hive['AUTOLOAD'];
-		$func=NULL;
-		if (is_array($path))
-			list($path,$func)=$path;
-		foreach ($this->split($this->hive['PLUGINS'].';'.$path) as $auto)
-			if ($func && $auto.$func($class) ||
-				is_file($file=$auto.$class.'.php') ||
+		foreach ($this->split($this->hive['PLUGINS'].';'.
+			$this->hive['AUTOLOAD']) as $auto)
+			if (is_file($file=$auto.$class.'.php') ||
 				is_file($file=$auto.strtolower($class).'.php') ||
 				is_file($file=strtolower($auto.$class).'.php'))
 				return require($file);
