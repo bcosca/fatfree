@@ -497,7 +497,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function reset() {
 		foreach ($this->fields as &$field) {
-			$field['value']=NULL;
+			$field['value']=$field['default'];
 			$field['changed']=FALSE;
 			if ($field['pkey'])
 				$field['previous']=NULL;

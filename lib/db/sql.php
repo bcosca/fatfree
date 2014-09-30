@@ -307,7 +307,8 @@ class SQL extends \PDO {
 								constant('\PDO::PARAM_'.
 									strtoupper($parts[0])):
 								\PDO::PARAM_STR,
-							'default'=>$row[$val[3]],
+							'default'=>preg_replace(
+								'/^\s*([\'"])(.*)\1\s*/','\2',$row[$val[3]]),
 							'nullable'=>$row[$val[4]]==$val[5],
 							'pkey'=>$row[$val[6]]==$val[7]
 						);
