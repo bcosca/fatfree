@@ -1068,7 +1068,7 @@ class Base extends Prefab implements ArrayAccess {
 
 	/**
 	*	Mock HTTP request
-	*	@return NULL
+	*	@return mixed
 	*	@param $pattern string
 	*	@param $args array
 	*	@param $headers array
@@ -1109,7 +1109,7 @@ class Base extends Prefab implements ArrayAccess {
 			$this->hive['BODY']=$body?:http_build_query($args);
 		$this->hive['AJAX']=isset($parts[5]) &&
 			preg_match('/ajax/i',$parts[5]);
-		$this->run();
+		return $this->run();
 	}
 
 	/**
