@@ -1784,7 +1784,7 @@ class Base extends Prefab implements ArrayAccess {
 		$_SERVER['DOCUMENT_ROOT']=realpath($_SERVER['DOCUMENT_ROOT']);
 		$base='';
 		if (PHP_SAPI!='cli')
-			$base=implode('/',array_map('urlencode',
+			$base=implode('/',array_map('rawurlencode',
 				explode('/',rtrim($this->fixslashes(
 					dirname($_SERVER['SCRIPT_NAME'])),'/'))));
 		$uri=parse_url($_SERVER['REQUEST_URI']);
