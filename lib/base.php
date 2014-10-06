@@ -405,7 +405,7 @@ class Base extends Prefab implements ArrayAccess {
 	}
 
 	/**
-	*	Return TRUE if property has public/protected visibility
+	*	Return TRUE if property has public visibility
 	*	@return bool
 	*	@param $obj object
 	*	@param $key string
@@ -413,7 +413,7 @@ class Base extends Prefab implements ArrayAccess {
 	function visible($obj,$key) {
 		if (property_exists($obj,$key)) {
 			$ref=new ReflectionProperty(get_class($obj),$key);
-			$out=!$ref->isprivate();
+			$out=$ref->isPublic();
 			unset($ref);
 			return $out;
 		}
