@@ -195,9 +195,15 @@ class SMTP extends Magic {
 		$eol="\r\n";
 		$str='';
 		// Stringify headers
-		foreach ($headers as $key=>$val)
-			if (!in_array($key,$reqd))
+		foreach ($headers as $key=>&$val) {
+			if (!in_array($key,$reqd)) {
 				$str.=$key.': '.$val.$eol;
+			}
+			if (in_array($key,array('From','To','Cc','Bcc')) &&
+				!preg_match('/[<>]/',$val))
+				$val='<'.$val.'>';
+			unset($val);
+		}
 		// Start message dialog
 		$this->dialog('MAIL FROM: '.strstr($headers['From'],'<'),$log);
 		foreach ($fw->split($headers['To'].
