@@ -698,11 +698,10 @@ class Base extends Prefab implements ArrayAccess {
 				}
 				return $arg;
 			case 'array':
-				$tmp=array();
 				foreach ($arg as $key=>$val)
-					$tmp[$key]=$this->recursive($val,$func,
+					$arg[$key]=$this->recursive($val,$func,
 						array_merge($stack,array($arg)));
-				return $tmp;
+				return $arg;
 		}
 		return $func($arg);
 	}
@@ -2210,8 +2209,8 @@ class View extends Prefab {
 				$hive['ALIASES']=$fw->build($hive['ALIASES']);
 		}
 		extract($hive);
-		unset($fw);
 		unset($hive);
+		unset($fw);
 		ob_start();
 		require($this->view);
 		$this->level--;
