@@ -476,8 +476,13 @@ class Web extends Prefab {
 		);
 		if (isset($options['content'])) {
 			if ($options['method']=='POST')
-				$this->subst($options['header'],
-					'Content-Type: application/x-www-form-urlencoded');
+				//Is content type explicitly declared?  leave if so
+			 	$contentTypeExists = (bool) array_filter($options['header'], function($v) {
+					return strpos($v, 'Content-Type:') === 0;
+				});
+			 	if (!$contentTypeExists) {
+					$this->subst($options['header'], 'Content-Type: application/x-www-form-urlencoded');
+				}
 			$this->subst($options['header'],
 				'Content-Length: '.strlen($options['content']));
 		}
