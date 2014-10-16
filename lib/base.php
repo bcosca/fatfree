@@ -2334,12 +2334,12 @@ class Preview extends View {
 	function render($file,$mime='text/html',array $hive=NULL,$ttl=0) {
 		$fw=Base::instance();
 		$cache=Cache::instance();
-		$cached=$cache->exists($hash=$fw->hash($file),$data);
-		if ($cached && $cached[0]+$ttl>microtime(TRUE))
-			return $data;
 		if (!is_dir($tmp=$fw->get('TEMP')))
 			mkdir($tmp,Base::MODE,TRUE);
-		foreach ($fw->split($fw->get('UI')) as $dir)
+		foreach ($fw->split($fw->get('UI')) as $dir) {
+			$cached=$cache->exists($hash=$fw->hash($dir.$file),$data);
+			if ($cached && $cached[0]+$ttl>microtime(TRUE))
+				return $data;
 			if (is_file($view=$fw->fixslashes($dir.$file))) {
 				if (!is_file($this->view=($tmp.
 					$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
@@ -2368,6 +2368,7 @@ class Preview extends View {
 					$cache->set($hash,$data);
 				return $data;
 			}
+		}
 		user_error(sprintf(Base::E_Open,$file));
 	}
 
