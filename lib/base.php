@@ -186,7 +186,8 @@ class Base extends Prefab implements ArrayAccess {
 				return '$'.preg_replace_callback(
 					'/\.(\w+)\(|\.(\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
 					function($expr) use($fw) {
-						return $expr[1] && function_exists($expr[1])?
+						$flag=FALSE;
+						return $expr[1] && ($flag=function_exists($expr[1]))?
 							('.'.$expr[1].'('):
 							('['.var_export(
 								isset($expr[3])?
@@ -1783,9 +1784,8 @@ class Base extends Prefab implements ArrayAccess {
 		$_SERVER['DOCUMENT_ROOT']=realpath($_SERVER['DOCUMENT_ROOT']);
 		$base='';
 		if (PHP_SAPI!='cli')
-			$base=implode('/',array_map('rawurlencode',
-				explode('/',rtrim($this->fixslashes(
-					dirname($_SERVER['SCRIPT_NAME'])),'/'))));
+			$base=rtrim($this->fixslashes(
+				dirname($_SERVER['SCRIPT_NAME'])),'/');
 		$uri=parse_url($_SERVER['REQUEST_URI']);
 		$path=preg_replace('/^'.preg_quote($base,'/').'/','',$uri['path']);
 		call_user_func_array('session_set_cookie_params',
