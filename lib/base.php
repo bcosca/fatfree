@@ -186,14 +186,15 @@ class Base extends Prefab implements ArrayAccess {
 				return '$'.preg_replace_callback(
 					'/\.(\w+)\(|\.(\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
 					function($expr) use($fw) {
-						$flag=FALSE;
-						return $expr[1] && ($flag=function_exists($expr[1]))?
-							('.'.$expr[1].'('):
+						return $expr[1]?
+							((function_exists($expr[1])?
+								('.'.$expr[1]):
+								('['.var_export($expr[1],TRUE).']')).'('):
 							('['.var_export(
 								isset($expr[3])?
 									$fw->compile($expr[3]):
 									(ctype_digit($expr[2])?
-										(int)$expr[1]:
+										(int)$expr[2]:
 										$expr[2]),TRUE).']');
 					},
 					$var[1]
@@ -699,10 +700,11 @@ class Base extends Prefab implements ArrayAccess {
 				}
 				return $arg;
 			case 'array':
+				$copy=array();
 				foreach ($arg as $key=>$val)
-					$arg[$key]=$this->recursive($val,$func,
+					$copy[$key]=$this->recursive($val,$func,
 						array_merge($stack,array($arg)));
-				return $arg;
+				return $copy;
 		}
 		return $func($arg);
 	}
