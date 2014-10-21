@@ -1390,8 +1390,7 @@ class Base extends Prefab implements ArrayAccess {
 			preg_match('/(.+)\h*(->|::)\h*(.+)/s',$func,$parts)) {
 			// Convert string to executable PHP callback
 			if (!class_exists($parts[1]))
-				user_error(sprintf(self::E_Class,
-					is_string($func)?$parts[1]:$this->stringify()));
+				user_error(sprintf(self::E_Class,$parts[1]));
 			if ($parts[2]=='->')
 				$parts[1]=is_subclass_of($parts[1],'Prefab')?
 					call_user_func($parts[1].'::instance'):
