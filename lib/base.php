@@ -2286,9 +2286,11 @@ class Preview extends View {
 	protected function build($node) {
 		$self=$this;
 		return preg_replace_callback(
-			'/\{\{(.+?)\}\}(\n+)?/s',
+			'/\{\-(.+?)\-\}|\{\{(.+?)\}\}(\n+)?/s',
 			function($expr) use($self) {
-				$str=trim($self->token($expr[1]));
+				if ($expr[1])
+					return $expr[1];
+				$str=trim($self->token($expr[2]));
 				if (preg_match('/^([^|]+?)\h*\|(\h*\w+(?:\h*[,;]\h*\w+)*)/',
 					$str,$parts)) {
 					$str=$parts[1];
@@ -2297,7 +2299,7 @@ class Preview extends View {
 							'->'.$func.'('.$str.')';
 				}
 				return '<?php echo '.$str.'; ?>'.
-					(isset($expr[2])?$expr[2]:'');
+					(isset($expr[3])?$expr[3]:'');
 			},
 			preg_replace_callback(
 				'/\{~(.+?)~\}/s',
@@ -2348,12 +2350,8 @@ class Preview extends View {
 					filemtime($this->view)<filemtime($view)) {
 					// Remove PHP code and comments
 					$text=preg_replace(
-						array(
-							'/(?<!["\'])\h*<\?(?:php|\s*=).+?\?>\h*'.
-							'(?!["\'])|\{\*.+?\*\}/is',
-							'/\{\-(.+?)\-\}/s'
-						),
-						array('','\1'),
+						'/(?<!["\'])\h*<\?(?:php|\s*=).+?\?>\h*'.
+						'(?!["\'])|\{\*.+?\*\}/is','',
 						$fw->read($view));
 					if (method_exists($this,'parse'))
 						$text=$this->parse($text);
