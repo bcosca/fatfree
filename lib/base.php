@@ -1308,11 +1308,9 @@ class Base extends Prefab implements ArrayAccess {
 				$result=NULL;
 				$body='';
 				$now=microtime(TRUE);
-				if (preg_match('/GET|HEAD/',$this->hive['VERB']) &&
-					isset($ttl)) {
+				if (preg_match('/GET|HEAD/',$this->hive['VERB']) && $ttl) {
 					// Only GET and HEAD requests are cacheable
 					$headers=$this->hive['HEADERS'];
-					$cache=Cache::instance();
 					$cached=$cache->exists(
 						$hash=$this->hash($this->hive['VERB'].' '.
 							$this->hive['URI']).'.url',$data);
@@ -1337,7 +1335,7 @@ class Base extends Prefab implements ArrayAccess {
 					$result=$this->call($handler,array($this,$args),
 						'beforeroute,afterroute');
 					$body=ob_get_clean();
-					if ($ttl && !error_get_last())
+					if (isset($cache) && !error_get_last())
 						// Save to cache backend
 						$cache->set($hash,
 							array(headers_list(),$body,$result),$ttl);
