@@ -1311,6 +1311,7 @@ class Base extends Prefab implements ArrayAccess {
 				if (preg_match('/GET|HEAD/',$this->hive['VERB']) && $ttl) {
 					// Only GET and HEAD requests are cacheable
 					$headers=$this->hive['HEADERS'];
+					$cache=Cache::instance();
 					$cached=$cache->exists(
 						$hash=$this->hash($this->hive['VERB'].' '.
 							$this->hive['URI']).'.url',$data);
@@ -2347,8 +2348,12 @@ class Preview extends View {
 					filemtime($this->view)<filemtime($view)) {
 					// Remove PHP code and comments
 					$text=preg_replace(
-						'/(?<!["\'])\h*<\?(?:php|\s*=).+?\?>\h*(?!["\'])|'.
-						'\{\*.+?\*\}/is','',
+						array(
+							'/(?<!["\'])\h*<\?(?:php|\s*=).+?\?>\h*'.
+							'(?!["\'])|\{\*.+?\*\}/is',
+							'/\{\-(.+?)\-\}/s'
+						),
+						array('','\1'),
 						$fw->read($view));
 					if (method_exists($this,'parse'))
 						$text=$this->parse($text);
