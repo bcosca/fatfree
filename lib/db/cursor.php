@@ -16,7 +16,7 @@
 namespace DB;
 
 //! Simple cursor implementation
-abstract class Cursor extends \Magic implements \Iterator, \Countable {
+abstract class Cursor extends \Magic implements \Iterator {
 
 	//@{ Error messages
 	const
