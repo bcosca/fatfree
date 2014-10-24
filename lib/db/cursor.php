@@ -16,7 +16,7 @@
 namespace DB;
 
 //! Simple cursor implementation
-abstract class Cursor extends \Magic {
+abstract class Cursor extends \Magic implements \Iterator, \Countable {
 
 	//@{ Error messages
 	const
@@ -199,6 +199,35 @@ abstract class Cursor extends \Magic {
 	**/
 	function prev() {
 		return $this->skip(-1);
+	}
+
+	/**
+	 * Get the current record.
+	 * Used in iteration.
+	 */
+	function current() {
+		return $this;
+	}
+
+	/**
+	 * Get a key for teh current record.
+	 */
+	function key() {
+		return $this->ptr;
+	}
+
+	/**
+	 * Rewind iteration.
+	 */
+	function rewind() {
+		return $this->first();
+	}
+
+	/**
+	 * Return whether current iterator position is valid.
+	 */
+	function valid() {
+		return !$this->dry();
 	}
 
 	/**
