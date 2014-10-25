@@ -38,6 +38,12 @@ abstract class Cursor extends \Magic implements \Iterator {
 	abstract function dbtype();
 
 	/**
+	*	Return field names
+	*	@return array
+	**/
+	abstract function fields();
+
+	/**
 	*	Return fields of mapper object as an associative array
 	*	@return array
 	*	@param $obj object
