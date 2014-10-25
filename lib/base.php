@@ -693,9 +693,11 @@ class Base extends Prefab implements ArrayAccess {
 					$ref=new ReflectionClass($arg);
 					if ($ref->iscloneable()) {
 						$arg=clone($arg);
-						foreach (get_object_vars($arg) as $key=>$val)
-							$arg->$key=$this->recursive($val,$func,
-								array_merge($stack,array($arg)));
+						$cast=method_exists($arg,'cast')?
+							$arg->cast():get_object_vars($arg);
+						foreach ($cast as $key=>$val)
+							$arg->$key=$this->recursive(
+								$val,$func,array_merge($stack,array($arg)));
 					}
 				}
 				return $arg;
