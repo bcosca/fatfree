@@ -54,9 +54,10 @@ class Template extends Preview {
 			preg_match_all('/(\w+)\h*=\h*(.+?)(?=,|$)/',
 				$attrib['with'],$pairs,PREG_SET_ORDER)?
 					'array('.implode(',',
-						array_map(function($pair){
+						array_map(function($pair) {
 							return '\''.$pair[1].'\'=>'.
-								(preg_match('/^\'.*\'$/',$pair[2])||preg_match('/\$/',$pair[2])?
+								(preg_match('/^\'.*\'$/',$pair[2]) ||
+									preg_match('/\$/',$pair[2])?
 									$pair[2]:
 									\Base::instance()->stringify($pair[2]));
 						},$pairs)).')+get_defined_vars()':
