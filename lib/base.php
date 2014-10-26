@@ -1692,6 +1692,7 @@ class Base extends Prefab implements ArrayAccess {
 	*	Alias for offsetset()
 	*	@return mixed
 	*	@param $key string
+	*	@param $val mixed
 	**/
 	function __set($key,$val) {
 		return $this->offsetset($key,$val);
@@ -1720,6 +1721,7 @@ class Base extends Prefab implements ArrayAccess {
 	*	Call function identified by hive key
 	*	@return mixed
 	*	@param $key string
+	*	@param $args array
 	**/
 	function __call($key,$args) {
 		return call_user_func_array($this->get($key),$args);
