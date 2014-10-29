@@ -1126,6 +1126,7 @@ class Base extends Prefab implements ArrayAccess {
 	**/
 	function route($pattern,$handler,$ttl=0,$kbps=0) {
 		$types=array('sync','ajax');
+		$uri=$alias=$type=0;
 		if (is_array($pattern)) {
 			foreach ($pattern as $item)
 				$this->route($item,$handler,$ttl,$kbps);
@@ -1133,8 +1134,10 @@ class Base extends Prefab implements ArrayAccess {
 		}
 		preg_match('/([\|\w]+)\h+(?:(?:@(\w+)\h*:\h*)?([^\h]+)|@(\w+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
-		if (isset($parts[2]) && $parts[2])
+		if (isset($parts[2]) && $parts[2]) {
+			$alias=$parts[2];
 			$this->hive['ALIASES'][$parts[2]]=$parts[3];
+		}
 		elseif (!empty($parts[4])) {
 			if (empty($this->hive['ALIASES'][$parts[4]]))
 				user_error(sprintf(self::E_Named,$parts[4]));
@@ -1148,8 +1151,10 @@ class Base extends Prefab implements ArrayAccess {
 		foreach ($this->split($parts[1]) as $verb) {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
-			$this->hive['ROUTES'][str_replace('@',"\x00".'@',$parts[3])]
-				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps);
+			$uri=str_replace('@',"\x00".'@',$parts[3]);
+			$verb=strtoupper($verb);
+			$this->hive['ROUTES'][$uri][$type][$verb]=
+				array($handler,$ttl,$kbps,$uri,$type,$verb,$alias);
 		}
 	}
 
@@ -1306,6 +1311,7 @@ class Base extends Prefab implements ArrayAccess {
 				$this->hive['PARAMS']=$args=array_map('urldecode',$args);
 				// Save matching route
 				$this->hive['PATTERN']=$url;
+				$this->hive['ROUTE']=$route[$this->hive['VERB']];
 				// Process request
 				$result=NULL;
 				$body='';
