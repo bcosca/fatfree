@@ -435,7 +435,9 @@ Fat-Free's `$f3->map()` method provides a ReST interface by mapping HTTP methods
 
 **Note:** Browsers do not implement the HTTP `PUT` and `DELETE` methods in regular HTML forms. These and other ReST methods (`HEAD`, and `CONNECT`) are accessible only via AJAX calls to the server.
 
-If the framework receives an HTTP method that's not implemented by a class, it generates an `HTTP 405 Method Not Allowed` error. F3 automatically responds with the appropriate headers to HTTP `OPTIONS` method requests. The framework will not map this request to a class.
+If the framework receives an HTTP request for a route that maps to a method that is not implemented by a class (perhaps you've made an error in the route mapping, or the method is not written yet), it generates an `HTTP 405 Method Not Allowed` error. 
+
+If a client requests HTTP `OPTIONS` for a URL resource, F3 responds with the appropriate HTTP headers that indicate which methods are allowed for the resource (HEAD, GET, PUT, etc). The framework will not map the `OPTIONS` request to a class.
 
 ### The F3 Autoloader
 
