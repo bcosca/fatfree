@@ -934,7 +934,7 @@ That's like the `<!-- comment -->` HTML comment tag, but the `<exclude>` directi
 Here's another way of excluding template content or adding comments:-
 
 ``` html
-{{* <p>A chunk of HTML we don't want displayed at the moment</p> *}}
+{* <p>A chunk of HTML we don't want displayed at the moment</p> *}
 ```
 
 ### Conditional Segments
@@ -1234,7 +1234,7 @@ This may have undesirable effects. You might not want all variables to pass thro
 In the case of PHP templates:-
 
 ``` php
-<?php echo Base::instance()->raw($html_content); ?>
+<?php echo View::instance()->raw($html_content); ?>
 ```
 
 As an addition to auto-escaping of F3 variables, the framework also gives you a free hand at sanitizing user input from HTML forms:-
@@ -2240,6 +2240,10 @@ Once you get the hang of testing the smallest units of your application, you can
 
 * Toggle switch for suppressing or enabling standard output and error messages. Particularly useful in unit testing.
 
+`bool RAW`
+
+* Disable automatic storage of HTTP request body into `BODY`. Should be TRUE when processing large data coming from `php://input` which will not fit in memory. Default value: `FALSE`
+
 `string REALM`
 
 * Full canonical URL.
@@ -2383,7 +2387,7 @@ Once you get the hang of testing the smallest units of your application, you can
 * Equivalent of the PHP switch-case jump table structure.
 
 ```
-{{* text-block *}}
+{* text-block *}
 ```
 * Alias for `<exclude>`.
 
@@ -2422,18 +2426,18 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * GitHub
 * Square Lines, LLC
 * Mirosystems
+* Stehlik & Company
 * Talis Group, Ltd.
 * Tecnilógica
-* Stehlik & Company
 * G Holdings, LLC
 * S2 Development, Ltd.
 * Store Machine
 * PHP Experts, Inc.
 * Christian Knuth
 * Sascha Ohms
+* Lars Brandi Jensen
 * Jermaine Maree
 * Eyðun Lamhauge
-* Lars Brandi Jensen
 * Sergey Zaretsky
 * Daniel Kloke
 * Brian Nelson
@@ -2510,6 +2514,16 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Seregin Andrew
 * Marek Toman
 * Diji Enterprises
+* uonick
+* Kamil Kiblis
+* Mars Yau
+* Martin Latinov
+* Malikov Evgene
+* Andres Espinoza Arce
+* Matthew Williamson
+* Andrew Brookes
+* Steve Cove
+* Steven Witten
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
