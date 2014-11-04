@@ -1502,8 +1502,10 @@ class Base extends Prefab implements ArrayAccess {
 						str_getcsv(preg_replace('/(?<!\\\\)(")(.*?)\1/',
 							"\\1\x00\\2\\1",$match['rval']))
 					);
-					call_user_func_array(array($this,'set'),
+					$custom=$this->hive['CONFIG'] && $sec!='globals';//custom section
+					call_user_func_array($custom?$this->hive['CONFIG']:array($this,'set'),
 						array_merge(
+							$custom?array($sec):array(),
 							array($match['lval']),
 							count($args)>1?array($args):$args));
 				}
@@ -1821,6 +1823,7 @@ class Base extends Prefab implements ArrayAccess {
 			'BODY'=>NULL,
 			'CACHE'=>FALSE,
 			'CASELESS'=>TRUE,
+			'CONFIG'=>NULL,
 			'DEBUG'=>0,
 			'DIACRITICS'=>array(),
 			'DNSBL'=>'',
