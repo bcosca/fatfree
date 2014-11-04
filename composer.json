@@ -11,5 +11,10 @@
 			"type": "vcs",
 			"url": "https://github.com/bcosca/fatfree"
 		}
-	]
+	],
+	"autoload": {
+		"psr-4": {
+			"": "lib/"
+		}
+	}
 }
