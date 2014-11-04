@@ -1126,6 +1126,7 @@ class Base extends Prefab implements ArrayAccess {
 	**/
 	function route($pattern,$handler,$ttl=0,$kbps=0) {
 		$types=array('sync','ajax');
+		$alias=null;
 		if (is_array($pattern)) {
 			foreach ($pattern as $item)
 				$this->route($item,$handler,$ttl,$kbps);
@@ -1134,11 +1135,11 @@ class Base extends Prefab implements ArrayAccess {
 		preg_match('/([\|\w]+)\h+(?:(?:@(\w+)\h*:\h*)?([^\h]+)|@(\w+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
 		if (isset($parts[2]) && $parts[2])
-			$this->hive['ALIASES'][$parts[2]]=$parts[3];
+			$this->hive['ALIASES'][$alias=$parts[2]]=$parts[3];
 		elseif (!empty($parts[4])) {
 			if (empty($this->hive['ALIASES'][$parts[4]]))
 				user_error(sprintf(self::E_Named,$parts[4]));
-			$parts[3]=$this->hive['ALIASES'][$parts[4]];
+			$parts[3]=$this->hive['ALIASES'][$alias=$parts[4]];
 		}
 		if (empty($parts[3]))
 			user_error(sprintf(self::E_Pattern,$pattern));
@@ -1149,7 +1150,7 @@ class Base extends Prefab implements ArrayAccess {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
 			$this->hive['ROUTES'][str_replace('@',"\x00".'@',$parts[3])]
-				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps);
+				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps,$alias);
 		}
 	}
 
@@ -1285,7 +1286,7 @@ class Base extends Prefab implements ArrayAccess {
 					preg_match('/.+\/$/',$parts['path']))
 					$this->reroute(substr($parts['path'],0,-1).
 						(isset($parts['query'])?('?'.$parts['query']):''));
-				list($handler,$ttl,$kbps)=$route[$this->hive['VERB']];
+				list($handler,$ttl,$kbps,$alias)=$route[$this->hive['VERB']];
 				if (is_bool(strpos($url,'/*')))
 					foreach (array_keys($args) as $key)
 						if (is_numeric($key) && $key)
@@ -1305,6 +1306,7 @@ class Base extends Prefab implements ArrayAccess {
 				// Capture values of route pattern tokens
 				$this->hive['PARAMS']=$args=array_map('urldecode',$args);
 				// Save matching route
+				$this->hive['ALIAS']=$alias;
 				$this->hive['PATTERN']=$url;
 				// Process request
 				$result=NULL;
