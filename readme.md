@@ -1273,7 +1273,7 @@ Fat-Free is designed to make the job of interfacing with SQL databases a breeze.
 Establishing communication with a SQL engine like MySQL, SQLite, SQL Server, Sybase, and Oracle is done using the familiar `$f3->set()` command. Connecting to a SQLite database would be:-
 
 ``` php
-$db=new DB\SQL('sqlite:/absolute/path/to/your/database.sqlite'));
+$db=new DB\SQL('sqlite:/absolute/path/to/your/database.sqlite');
 ```
 
 Another example, this time with MySQL:-

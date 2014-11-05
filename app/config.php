@@ -10,6 +10,9 @@ class Config extends Controller {
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
+		$f3->set('CONFIG',function($sec,$lval,$rval) use($f3){
+			$f3->set($sec.'.'.$lval,strtoupper($rval));
+		});
 		$f3->config('app.ini');
 		$test->expect(
 			$f3->get('test')=='',
@@ -68,6 +71,10 @@ class Config extends Controller {
 		$test->expect(
 			in_array('/map',$routes),
 			'ReST map declared'
+		);
+		$test->expect(
+			$f3->get('section1.myvar')=='MYVAL1' && $f3->get('section2.myvar')=='MYVAL2',
+			'Custom section'
 		);
 		$f3->set('results',$test->results());
 	}
