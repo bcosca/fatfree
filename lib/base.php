@@ -146,35 +146,35 @@ class Base extends Prefab implements ArrayAccess {
 	*	Replace tokenized URL with current route's token values
 	*	@return string
 	*	@param $url array|string
+	*	@param array $params
 	**/
-	function build($url) {
+	function build($url,$params=array()) {
+		$params=$params?:$this->hive['PARAMS'];
 		if (is_array($url))
 			foreach ($url as &$var) {
-				$var=$this->build($var);
+				$var=$this->build($var,$params);
 				unset($var);
 			}
 		elseif (preg_match_all('/@(\w+)/',$url,$matches,PREG_SET_ORDER))
 			foreach ($matches as $match)
-				if (array_key_exists($match[1],$this->hive['PARAMS']))
+				if (array_key_exists($match[1],$params))
 					$url=str_replace($match[0],
-						$this->hive['PARAMS'][$match[1]],$url);
+						$params[$match[1]],$url);
 		return $url;
 	}
 
 	/**
-	 *	assemble url from alias name
-	 *	@return NULL
-	 *	@param $name string
-	 *	@param $params string
-	 **/
+	*	assemble url from alias name
+	*	@return NULL
+	*	@param $name string
+	*	@param $params string
+	**/
 	function alias($name,$params=null) {
-		$bak=$this->hive['PARAMS'];
 		if ($params)
-			$this->parse($params);
+			$params=$this->parse($params,false);
 		if (empty($this->hive['ALIASES'][$name]))
 			user_error(sprintf(self::E_Named,$name));
-		$url=$this->build($this->hive['ALIASES'][$name]);
-		$this->hive['PARAMS']=$bak;
+		$url=$this->build($this->hive['ALIASES'][$name],$params);
 		return $url;
 	}
 
@@ -182,12 +182,17 @@ class Base extends Prefab implements ArrayAccess {
 	*	Parse string containing key-value pairs and use as routing tokens
 	*	@return NULL
 	*	@param $str string
+	*	@param bool $add populate PARAMS hive key with new tokens
 	**/
-	function parse($str) {
+	function parse($str,$add=true) {
 		preg_match_all('/(\w+)\h*=\h*(.+?)(?=,|$)/',
 			$str,$pairs,PREG_SET_ORDER);
+		$out=$this->hive['PARAMS'];
 		foreach ($pairs as $pair)
-			$this->hive['PARAMS'][$pair[1]]=trim($pair[2]);
+			$out[$pair[1]]=trim($pair[2]);
+		if ($add)
+			$this->hive['PARAMS']=$out;
+		return $out;
 	}
 
 	/**
