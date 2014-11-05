@@ -143,34 +143,52 @@ final class Base extends Prefab implements ArrayAccess {
 	}
 
 	/**
-	*	Replace tokenized URL with current route's token values
+	*	Replace tokenized URL with available token values
 	*	@return string
 	*	@param $url array|string
+	*	@param $params array
 	**/
-	function build($url) {
+	function build($url,$params=array()) {
+		$params+=$this->hive['PARAMS'];
 		if (is_array($url))
 			foreach ($url as &$var) {
-				$var=$this->build($var);
+				$var=$this->build($var,$params);
 				unset($var);
 			}
 		elseif (preg_match_all('/@(\w+)/',$url,$matches,PREG_SET_ORDER))
 			foreach ($matches as $match)
-				if (array_key_exists($match[1],$this->hive['PARAMS']))
+				if (array_key_exists($match[1],$params))
 					$url=str_replace($match[0],
-						$this->hive['PARAMS'][$match[1]],$url);
+						$params[$match[1]],$url);
 		return $url;
 	}
 
 	/**
-	*	Parse string containing key-value pairs and use as routing tokens
+	*	assemble url from alias name
 	*	@return NULL
+	*	@param $name string
+	*	@param $params string
+	**/
+	function alias($name,$params=null) {
+		$params=$params?$this->parse($params):array();
+		if (empty($this->hive['ALIASES'][$name]))
+			user_error(sprintf(self::E_Named,$name));
+		$url=$this->build($this->hive['ALIASES'][$name],$params);
+		return $url;
+	}
+
+	/**
+	*	Parse string containing key-value pairs
+	*	@return array
 	*	@param $str string
 	**/
 	function parse($str) {
 		preg_match_all('/(\w+)\h*=\h*(.+?)(?=,|$)/',
 			$str,$pairs,PREG_SET_ORDER);
+		$out=array();
 		foreach ($pairs as $pair)
-			$this->hive['PARAMS'][$pair[1]]=trim($pair[2]);
+			$out[$pair[1]]=trim($pair[2]);
+		return $out;
 	}
 
 	/**
@@ -1100,9 +1118,8 @@ final class Base extends Prefab implements ArrayAccess {
 			if (empty($this->hive['ALIASES'][$parts[2]]))
 				user_error(sprintf(self::E_Named,$parts[2]));
 			$parts[4]=$this->hive['ALIASES'][$parts[2]];
-			if (isset($parts[3]))
-				$this->parse($parts[3]);
-			$parts[4]=$this->build($parts[4]);
+			$parts[4]=$this->build($parts[4],
+				isset($parts[3])?$this->parse($parts[3]):array());
 		}
 		if (empty($parts[4]))
 			user_error(sprintf(self::E_Pattern,$pattern));
@@ -1136,6 +1153,7 @@ final class Base extends Prefab implements ArrayAccess {
 	**/
 	function route($pattern,$handler,$ttl=0,$kbps=0) {
 		$types=array('sync','ajax');
+		$alias=null;
 		if (is_array($pattern)) {
 			foreach ($pattern as $item)
 				$this->route($item,$handler,$ttl,$kbps);
@@ -1144,11 +1162,11 @@ final class Base extends Prefab implements ArrayAccess {
 		preg_match('/([\|\w]+)\h+(?:(?:@(\w+)\h*:\h*)?([^\h]+)|@(\w+))'.
 			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
 		if (isset($parts[2]) && $parts[2])
-			$this->hive['ALIASES'][$parts[2]]=$parts[3];
+			$this->hive['ALIASES'][$alias=$parts[2]]=$parts[3];
 		elseif (!empty($parts[4])) {
 			if (empty($this->hive['ALIASES'][$parts[4]]))
 				user_error(sprintf(self::E_Named,$parts[4]));
-			$parts[3]=$this->hive['ALIASES'][$parts[4]];
+			$parts[3]=$this->hive['ALIASES'][$alias=$parts[4]];
 		}
 		if (empty($parts[3]))
 			user_error(sprintf(self::E_Pattern,$pattern));
@@ -1159,7 +1177,7 @@ final class Base extends Prefab implements ArrayAccess {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
 			$this->hive['ROUTES'][str_replace('@',"\x00".'@',$parts[3])]
-				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps);
+				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps,$alias);
 		}
 	}
 
@@ -1181,9 +1199,8 @@ final class Base extends Prefab implements ArrayAccess {
 						user_error(sprintf(self::E_Named,$parts[1]));
 					$url=$this->hive['BASE'].
 						$this->hive['ALIASES'][$parts[1]];
-					if (isset($parts[2]))
-						$this->parse($parts[2]);
-					$url=$this->build($url);
+					$url=$this->build($url,
+						isset($parts[2])?$this->parse($parts[2]):array());
 				}
 			}
 			else
@@ -1296,7 +1313,7 @@ final class Base extends Prefab implements ArrayAccess {
 					preg_match('/.+\/$/',$parts['path']))
 					$this->reroute(substr($parts['path'],0,-1).
 						(isset($parts['query'])?('?'.$parts['query']):''));
-				list($handler,$ttl,$kbps)=$route[$this->hive['VERB']];
+				list($handler,$ttl,$kbps,$alias)=$route[$this->hive['VERB']];
 				if (is_bool(strpos($url,'/*')))
 					foreach (array_keys($args) as $key)
 						if (is_numeric($key) && $key)
@@ -1316,6 +1333,7 @@ final class Base extends Prefab implements ArrayAccess {
 				// Capture values of route pattern tokens
 				$this->hive['PARAMS']=$args=array_map('urldecode',$args);
 				// Save matching route
+				$this->hive['ALIAS']=$alias;
 				$this->hive['PATTERN']=$url;
 				// Process request
 				$result=NULL;
@@ -2209,6 +2227,16 @@ class View extends Prefab {
 				return is_string($val)?$fw->decode($val):$val;
 			}
 		);
+	}
+
+	/**
+	 *	build an url from alias name
+	 *	@return string
+	 *	@param $key string
+	 *	@param $arg string
+	 **/
+	function alias($key,$arg=null) {
+		return Base::instance()->alias($key,$arg);
 	}
 
 	/**
