@@ -13,8 +13,6 @@
 		}
 	],
 	"autoload": {
-		"psr-4": {
-			"": "lib/"
-		}
+		"files": ["lib/base.php"]
 	}
 }
