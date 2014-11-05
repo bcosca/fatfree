@@ -148,8 +148,9 @@ class Base extends Prefab implements ArrayAccess {
 	*	@param $url array|string
 	*	@param array $params
 	**/
-	function build($url,$params=array()) {
-		$params=$params?:$this->hive['PARAMS'];
+	function build($url,$params=null) {
+		if (!isset($params))
+			$params=$this->hive['PARAMS'];
 		if (is_array($url))
 			foreach ($url as &$var) {
 				$var=$this->build($var,$params);
@@ -2227,7 +2228,7 @@ class View extends Prefab {
 	 *	@param $key string
 	 *	@param $arg string
 	 **/
-	function alias($key,$arg) {
+	function alias($key,$arg=null) {
 		$fw=Base::instance();
 		return $fw->alias($key,$arg);
 	}
