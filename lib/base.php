@@ -162,6 +162,23 @@ class Base extends Prefab implements ArrayAccess {
 	}
 
 	/**
+	 *	assemble url from alias name
+	 *	@return NULL
+	 *	@param $name string
+	 *	@param $params string
+	 **/
+	function alias($name,$params=null) {
+		$bak=$this->hive['PARAMS'];
+		if ($params)
+			$this->parse($params);
+		if (empty($this->hive['ALIASES'][$name]))
+			user_error(sprintf(self::E_Named,$name));
+		$url=$this->build($this->hive['ALIASES'][$name]);
+		$this->hive['PARAMS']=$bak;
+		return $url;
+	}
+
+	/**
 	*	Parse string containing key-value pairs and use as routing tokens
 	*	@return NULL
 	*	@param $str string
@@ -2197,6 +2214,17 @@ class View extends Prefab {
 				return is_string($val)?$fw->decode($val):$val;
 			}
 		);
+	}
+
+	/**
+	 *	build an url from alias name
+	 *	@return string
+	 *	@param $key string
+	 *	@param $arg string
+	 **/
+	function alias($key,$arg) {
+		$fw=Base::instance();
+		return $fw->alias($key,$arg);
 	}
 
 	/**
