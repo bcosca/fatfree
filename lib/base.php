@@ -33,7 +33,7 @@ abstract class Prefab {
 }
 
 //! Base structure
-class Base extends Prefab implements ArrayAccess {
+final class Base extends Prefab implements ArrayAccess {
 
 	//@{ Framework details
 	const
@@ -300,28 +300,28 @@ class Base extends Prefab implements ArrayAccess {
 			}
 		}
 		else switch ($key) {
-			case 'CACHE':
-				$val=Cache::instance()->load($val,TRUE);
-				break;
-			case 'ENCODING':
-				ini_set('default_charset',$val);
-				if (extension_loaded('mbstring'))
-					mb_internal_encoding($val);
-				break;
-			case 'FALLBACK':
-				$this->fallback=$val;
-				$lang=$this->language($this->hive['LANGUAGE']);
-			case 'LANGUAGE':
-				if (isset($lang) || $lang=$this->language($val))
-					$val=$this->language($val);
-				$lex=$this->lexicon($this->hive['LOCALES']);
-			case 'LOCALES':
-				if (isset($lex) || $lex=$this->lexicon($val))
-					$this->mset($lex,$this->hive['PREFIX'],$ttl);
-				break;
-			case 'TZ':
-				date_default_timezone_set($val);
-				break;
+		case 'CACHE':
+			$val=Cache::instance()->load($val,TRUE);
+			break;
+		case 'ENCODING':
+			ini_set('default_charset',$val);
+			if (extension_loaded('mbstring'))
+				mb_internal_encoding($val);
+			break;
+		case 'FALLBACK':
+			$this->fallback=$val;
+			$lang=$this->language($this->hive['LANGUAGE']);
+		case 'LANGUAGE':
+			if (isset($lang) || $lang=$this->language($val))
+				$val=$this->language($val);
+			$lex=$this->lexicon($this->hive['LOCALES']);
+		case 'LOCALES':
+			if (isset($lex) || $lex=$this->lexicon($val))
+				$this->mset($lex,$this->hive['PREFIX'],$ttl);
+			break;
+		case 'TZ':
+			date_default_timezone_set($val);
+			break;
 		}
 		$ref=&$this->ref($key);
 		$ref=$val;
@@ -404,6 +404,16 @@ class Base extends Prefab implements ArrayAccess {
 				// Remove from cache
 				$cache->clear($hash);
 		}
+	}
+
+	/**
+	*	Return TRUE if hive variable is 'on'
+	*	@return bool
+	*	@param $key string
+	**/
+	function checked($key) {
+		$ref=&$this->ref($key);
+		return $ref=='on';
 	}
 
 	/**
@@ -1160,7 +1170,8 @@ class Base extends Prefab implements ArrayAccess {
 	*	@param $permanent bool
 	**/
 	function reroute($url,$permanent=FALSE) {
-		if (($handler=$this->hive['ONREROUTE']) && $this->call($handler,array($url,$permanent))!==FALSE)
+		if (($handler=$this->hive['ONREROUTE']) &&
+			$this->call($handler,array($url,$permanent))!==FALSE)
 			return;
 		if (PHP_SAPI!='cli') {
 			if (preg_match('/^(?:@(\w+)(?:(\(.+?)\))*|https?:\/\/)/',
