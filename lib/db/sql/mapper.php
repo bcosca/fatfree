@@ -351,8 +351,9 @@ class Mapper extends \DB\Cursor {
 			if ($field['pkey'])
 				$pkeys[$key]=$field['previous'];
 		if (isset($this->trigger['beforeinsert']))
-			\Base::instance()->call($this->trigger['beforeinsert'],
-				array($this,$pkeys));
+			if(\Base::instance()->call($this->trigger['beforeinsert'],
+				array($this,$pkeys))===false)
+				return false;
 		foreach ($this->fields as $key=>&$field) {
 			if ($field['pkey']) {
 				$field['previous']=$field['value'];
@@ -413,8 +414,9 @@ class Mapper extends \DB\Cursor {
 			if ($field['pkey'])
 				$pkeys[$key]=$field['previous'];
 		if (isset($this->trigger['beforeupdate']))
-			\Base::instance()->call($this->trigger['beforeupdate'],
-				array($this,$pkeys));
+			if(\Base::instance()->call($this->trigger['beforeupdate'],
+				array($this,$pkeys))===false)
+				return false;
 		foreach ($this->fields as $key=>$field)
 			if ($field['changed']) {
 				$pairs.=($pairs?',':'').$this->db->quotekey($key).'=?';
@@ -481,8 +483,9 @@ class Mapper extends \DB\Cursor {
 		parent::erase();
 		$this->skip(0);
 		if (isset($this->trigger['beforeerase']))
-			\Base::instance()->call($this->trigger['beforeerase'],
-				array($this,$pkeys));
+			if(\Base::instance()->call($this->trigger['beforeerase'],
+				array($this,$pkeys))===false)
+				return false;
 		$out=$this->db->
 			exec('DELETE FROM '.$this->table.' WHERE '.$filter.';',$args);
 		if (isset($this->trigger['aftererase']))
