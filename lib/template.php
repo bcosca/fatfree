@@ -306,8 +306,9 @@ class Template extends Preview {
 								$node['@attrib'][]=$kv[4];
 							else
 								$node['@attrib'][$kv[1]]=
-									((isset($kv[2]) && $kv[2]!=='')?$kv[2]:
-										((isset($kv[3]) && $kv[3]!=='')?$kv[3]:NULL));
+									empty($kv[2])?
+										(empty($kv[3])?NULL:$kv[3]):
+										$kv[2];
 					}
 					if ($match[4])
 						// Empty tag
