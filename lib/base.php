@@ -330,7 +330,7 @@ final class Base extends Prefab implements ArrayAccess {
 			$this->fallback=$val;
 			$lang=$this->language($this->hive['LANGUAGE']);
 		case 'LANGUAGE':
-			if (isset($lang) || $lang=$this->language($val))
+			if (!isset($lang))
 				$val=$this->language($val);
 			$lex=$this->lexicon($this->hive['LOCALES']);
 		case 'LOCALES':
@@ -923,7 +923,7 @@ final class Base extends Prefab implements ArrayAccess {
 	**/
 	function lexicon($path) {
 		$lex=array();
-		foreach ($this->languages?:array($this->fallback) as $lang) {
+		foreach ($this->languages?:explode(',',$this->fallback) as $lang) {
 			if ((is_file($file=($base=$path.$lang).'.php') ||
 				is_file($file=$base.'.php')) &&
 				is_array($dict=require($file)))
