@@ -1016,6 +1016,44 @@ final class Base extends Prefab implements ArrayAccess {
 	}
 
 	/**
+	*	Return HTTP user agent
+	*	@return string
+	**/
+	function agent() {
+		$headers=$this->hive['HEADERS'];
+		return isset($headers['X-Operamini-Phone-UA'])?
+			$headers['X-Operamini-Phone-UA']:
+			(isset($headers['X-Skyfire-Phone'])?
+				$headers['X-Skyfire-Phone']:
+				(isset($headers['User-Agent'])?
+					$headers['User-Agent']:''));
+	}
+
+	/**
+	*	Return TRUE if XMLHttpRequest detected
+	*	@return bool
+	**/
+	function ajax() {
+		$headers=$this->hive['HEADERS'];
+		return isset($headers['X-Requested-With']) &&
+			$headers['X-Requested-With']=='XMLHttpRequest';
+	}
+
+	/**
+	*	Sniff IP address
+	*	@return string
+	**/
+	function ip() {
+		$headers=$this->hive['HEADERS'];
+		return isset($headers['Client-IP'])?
+			$headers['Client-IP']:
+			(isset($headers['X-Forwarded-For'])?
+				$headers['X-Forwarded-For']:
+				(isset($_SERVER['REMOTE_ADDR'])?
+					$_SERVER['REMOTE_ADDR']:''));
+	}
+
+	/**
 	*	Log error; Execute ONERROR handler if defined, else display
 	*	default error page (HTML for synchronous requests, JSON string
 	*	for AJAX requests)
@@ -1077,7 +1115,8 @@ final class Base extends Prefab implements ArrayAccess {
 		$handler=$this->hive['ONERROR'];
 		$this->hive['ONERROR']=NULL;
 		if ((!$handler ||
-			$this->call($handler,$this,'beforeroute,afterroute')===FALSE) &&
+			$this->call($handler,array($this,$this->hive['PARAMS']),
+				'beforeroute,afterroute')===FALSE) &&
 			!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo $this->hive['AJAX']?
 				json_encode($this->hive['ERROR']):
@@ -1810,6 +1849,8 @@ final class Base extends Prefab implements ArrayAccess {
 		$scheme=isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ||
 			isset($headers['X-Forwarded-Proto']) &&
 			$headers['X-Forwarded-Proto']=='https'?'https':'http';
+		// Create hive early on to expose header methods
+		$this->hive=array('HEADERS'=>$headers);
 		$port_suffix = isset($_SERVER["SERVER_PORT"]) && $_SERVER["SERVER_PORT"] != ($scheme == "https" ? "443" : "80") ? ":{$_SERVER["SERVER_PORT"]}" : "";
 		if (function_exists('apache_setenv')) {
 			// Work around Apache pre-2.4 VirtualDocumentRoot bug
@@ -1836,15 +1877,9 @@ final class Base extends Prefab implements ArrayAccess {
 			)
 		);
 		// Default configuration
-		$this->hive=array(
-			'AGENT'=>isset($headers['X-Operamini-Phone-UA'])?
-				$headers['X-Operamini-Phone-UA']:
-				(isset($headers['X-Skyfire-Phone'])?
-					$headers['X-Skyfire-Phone']:
-					(isset($headers['User-Agent'])?
-						$headers['User-Agent']:'')),
-			'AJAX'=>isset($headers['X-Requested-With']) &&
-				$headers['X-Requested-With']=='XMLHttpRequest',
+		$this->hive+=array(
+			'AGENT'=>$this->agent(),
+			'AJAX'=>$this->ajax(),
 			'ALIASES'=>array(),
 			'AUTOLOAD'=>'./',
 			'BASE'=>$base,
@@ -1863,16 +1898,10 @@ final class Base extends Prefab implements ArrayAccess {
 			'EXEMPT'=>NULL,
 			'FALLBACK'=>$this->fallback,
 			'FRAGMENT'=>isset($uri['fragment'])?$uri['fragment']:'',
-			'HEADERS'=>$headers,
 			'HALT'=>TRUE,
 			'HIGHLIGHT'=>TRUE,
 			'HOST'=>$_SERVER['SERVER_NAME'],
-			'IP'=>isset($headers['Client-IP'])?
-				$headers['Client-IP']:
-				(isset($headers['X-Forwarded-For'])?
-					$headers['X-Forwarded-For']:
-					(isset($_SERVER['REMOTE_ADDR'])?
-						$_SERVER['REMOTE_ADDR']:'')),
+			'IP'=>$this->ip(),
 			'JAR'=>$jar,
 			'LANGUAGE'=>isset($headers['Accept-Language'])?
 				$this->language($headers['Accept-Language']):
