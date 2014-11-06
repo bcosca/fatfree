@@ -721,7 +721,7 @@ final class Base extends Prefab implements ArrayAccess {
 					$ref=new ReflectionClass($arg);
 					if ($ref->iscloneable()) {
 						$arg=clone($arg);
-						$cast=method_exists($arg,'cast')?
+						$cast=is_callable($arg,'cast')?
 							$arg->cast():get_object_vars($arg);
 						foreach ($cast as $key=>$val)
 							$arg->$key=$this->recursive(
