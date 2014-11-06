@@ -16,7 +16,7 @@
 namespace DB;
 
 //! Simple cursor implementation
-abstract class Cursor extends \Magic implements \Iterator {
+abstract class Cursor extends \Magic implements \IteratorAggregate {
 
 	//@{ Error messages
 	const
@@ -93,6 +93,9 @@ abstract class Cursor extends \Magic implements \Iterator {
 	*	@param $key string
 	**/
 	abstract function copyto($key);
+
+	abstract function getiterator();
+
 
 	/**
 	*	Return TRUE if current cursor position is not mapped to any record
@@ -205,28 +208,6 @@ abstract class Cursor extends \Magic implements \Iterator {
 	**/
 	function prev() {
 		return $this->skip(-1);
-	}
-
-	/**
-	 * Get the current record.
-	 * Used in iteration.
-	 */
-	function current() {
-		return $this;
-	}
-
-	/**
-	 * Get a key for teh current record.
-	 */
-	function key() {
-		return $this->ptr;
-	}
-
-	/**
-	 * Rewind iteration.
-	 */
-	function rewind() {
-		return $this->first();
 	}
 
 	/**

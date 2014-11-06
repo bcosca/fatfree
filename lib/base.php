@@ -721,8 +721,8 @@ final class Base extends Prefab implements ArrayAccess {
 					$ref=new ReflectionClass($arg);
 					if ($ref->iscloneable()) {
 						$arg=clone($arg);
-						$cast=method_exists($arg,'cast')?
-							$arg->cast():get_object_vars($arg);
+						$cast=is_a($arg,'IteratorAggregate')?
+							iterator_to_array($arg):get_object_vars($arg);
 						foreach ($cast as $key=>$val)
 							$arg->$key=$this->recursive(
 								$val,$func,array_merge($stack,array($arg)));
@@ -1115,7 +1115,7 @@ final class Base extends Prefab implements ArrayAccess {
 		$handler=$this->hive['ONERROR'];
 		$this->hive['ONERROR']=NULL;
 		if ((!$handler ||
-			$this->call($handler,array($this,$this->hive['PARAMS']),
+			$this->call($handler,array($this),
 				'beforeroute,afterroute')===FALSE) &&
 			!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo $this->hive['AJAX']?

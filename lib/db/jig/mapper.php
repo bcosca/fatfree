@@ -444,6 +444,14 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
+	*	Retrieve external iterator for fields
+	*	@return object
+	**/
+	function getiterator() {
+		return new \ArrayIterator($this->cast());
+	}
+
+	/**
 	*	Instantiate class
 	*	@return void
 	*	@param $db object
