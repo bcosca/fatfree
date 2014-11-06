@@ -26,7 +26,10 @@ class Mapper extends \DB\Cursor {
 		//! Document identifier
 		$id,
 		//! Document contents
-		$document=array();
+		$document=array(),
+		//! field reduce handlers
+		$rFields;
+
 
 	/**
 	*	Return database type
@@ -153,6 +156,7 @@ class Mapper extends \DB\Cursor {
 			$options=array();
 		$options+=array(
 			'order'=>NULL,
+			'group'=>NULL,
 			'limit'=>0,
 			'offset'=>0
 		);
@@ -226,30 +230,35 @@ class Mapper extends \DB\Cursor {
 					}
 				);
 			}
-			if (isset($options['order'])) {
-				$cols=$fw->split($options['order']);
-				uasort(
-					$data,
-					function($val1,$val2) use($cols) {
-						foreach ($cols as $col) {
-							$parts=explode(' ',$col,2);
-							$order=empty($parts[1])?
-								SORT_ASC:
-								constant($parts[1]);
-							$col=$parts[0];
-							if (!array_key_exists($col,$val1))
-								$val1[$col]=NULL;
-							if (!array_key_exists($col,$val2))
-								$val2[$col]=NULL;
-							list($v1,$v2)=array($val1[$col],$val2[$col]);
-							if ($out=strnatcmp($v1,$v2)*
-								(($order==SORT_ASC)*2-1))
-								return $out;
-						}
-						return 0;
+			if (isset($options['group'])) {
+				$cols=array_reverse($fw->split($options['group']));
+				// sort into groups
+				$data=$this->sort($data,$options['group']);
+				foreach($data as $index=>&$row) {
+					if(!isset($prev)) {
+						$prev=$row;
+						$pi=$index;
 					}
-				);
+					$drop=false;
+					foreach ($cols as $col)
+						if (array_key_exists($col,$row) &&
+							array_key_exists($col,$prev) &&
+							$row[$col] == $prev[$col] && $pi != $index) {
+							$drop=true;
+							if (isset($this->rFields[$col]))
+								$prev=call_user_func($this->rFields[$col],$prev,$row);
+						} elseif (isset($this->rFields[$col]))
+							$row=call_user_func($this->rFields[$col],$row,null);
+					if($drop)
+						unset($data[$index]);
+					else {
+						$prev=&$row;
+						$pi=$index;
+					}
+				}
 			}
+			if (isset($options['order']))
+				$data=$this->sort($data,$options['order']);
 			$data=array_slice($data,
 				$options['offset'],$options['limit']?:NULL,TRUE);
 			if ($fw->get('CACHE') && $ttl)
@@ -273,6 +282,47 @@ class Mapper extends \DB\Cursor {
 				($filter?preg_replace($keys,$vals,$filter[0],1):''));
 		}
 		return $out;
+	}
+
+	/**
+	*	Add reduce handler for grouped fields
+	*	@param $key
+	*	@param $callback
+	*/
+	function reduce($key,$callback){
+		$this->rFields[$key]=$callback;
+	}
+
+	/**
+	*	Sort a data collection
+	*	@param $data
+	*	@param $cond
+	*	@return mixed
+	*/
+	protected function sort($data,$cond) {
+		$cols=\Base::instance()->split($cond);
+		uasort(
+			$data,
+			function($val1,$val2) use($cols) {
+				foreach ($cols as $col) {
+					$parts=explode(' ',$col,2);
+					$order=empty($parts[1])?
+						SORT_ASC:
+						constant($parts[1]);
+					$col=$parts[0];
+					if (!array_key_exists($col,$val1))
+						$val1[$col]=NULL;
+					if (!array_key_exists($col,$val2))
+						$val2[$col]=NULL;
+					list($v1,$v2)=array($val1[$col],$val2[$col]);
+					if ($out=strnatcmp($v1,$v2)*
+						(($order==SORT_ASC)*2-1))
+						return $out;
+				}
+				return 0;
+			}
+		);
+		return $data;
 	}
 
 	/**
