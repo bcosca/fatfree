@@ -1115,7 +1115,7 @@ final class Base extends Prefab implements ArrayAccess {
 		$handler=$this->hive['ONERROR'];
 		$this->hive['ONERROR']=NULL;
 		if ((!$handler ||
-			$this->call($handler,array($this),
+			$this->call($handler,array($this,$this->get('PARAMS')),
 				'beforeroute,afterroute')===FALSE) &&
 			!$prior && PHP_SAPI!='cli' && !$this->hive['QUIET'])
 			echo $this->hive['AJAX']?
