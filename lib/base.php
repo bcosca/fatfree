@@ -1290,7 +1290,7 @@ class Base extends Prefab implements ArrayAccess {
 					preg_match('/.+\/$/',$parts['path']))
 					$this->reroute(substr($parts['path'],0,-1).
 						(isset($parts['query'])?('?'.$parts['query']):''));
-				list($handler,$ttl,$kbps)=$route[$this->hive['VERB']];
+				list($handler,$ttl,$kbps,$uri,$type,$verb,$alias)=$route[$this->hive['VERB']];
 				if (is_bool(strpos($url,'/*')))
 					foreach (array_keys($args) as $key)
 						if (is_numeric($key) && $key)
@@ -1311,6 +1311,7 @@ class Base extends Prefab implements ArrayAccess {
 				$this->hive['PARAMS']=$args=array_map('urldecode',$args);
 				// Save matching route
 				$this->hive['PATTERN']=$url;
+				$this->hive['ALIAS']=$alias;
 				$this->hive['ROUTE']=$route[$this->hive['VERB']];
 				// Process request
 				$result=NULL;
