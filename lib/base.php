@@ -1215,8 +1215,8 @@ final class Base extends Prefab implements ArrayAccess {
 		foreach ($this->split($parts[1]) as $verb) {
 			if (!preg_match('/'.self::VERBS.'/',$verb))
 				$this->error(501,$verb.' '.$this->hive['URI']);
-			$this->hive['ROUTES'][str_replace('@',"\x00".'@',$parts[3])]
-				[$type][strtoupper($verb)]=array($handler,$ttl,$kbps,$alias);
+			$this->hive['ROUTES'][$parts[3]][$type][strtoupper($verb)]=
+				array($handler,$ttl,$kbps,$alias);
 		}
 	}
 
@@ -1322,7 +1322,12 @@ final class Base extends Prefab implements ArrayAccess {
 			// No routes defined
 			user_error(self::E_Routes);
 		// Match specific routes first
-		krsort($this->hive['ROUTES']);
+		$paths=array();
+		foreach ($keys=array_keys($this->hive['ROUTES']) as $key)
+			$paths[]=str_replace('@',"\x00".'@',$key);
+		array_multisort($paths,SORT_DESC,$keys,
+			$vals=array_values($this->hive['ROUTES']));
+		$this->hive['ROUTES']=array_combine($keys,$vals);
 		// Convert to BASE-relative URL
 		$req=preg_replace(
 			'/^'.preg_quote($this->hive['BASE'],'/').'(\/.*|$)/','\1',
