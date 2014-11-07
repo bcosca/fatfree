@@ -457,7 +457,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $db object
 	*	@param $file string
 	**/
-	function __construct(\DB\Jig $db,$file) {
+	function __construct(\DB\AbstractJig $db,$file) {
 		$this->db=$db;
 		$this->file=$file;
 		$this->reset();
