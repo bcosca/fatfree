@@ -24,9 +24,8 @@ class MemoryJig extends AbstractJig {
 	/**
 	*	Instantiate class
 	*	@param $dir string
-	*	@param $format int
 	**/
-	function __construct($dir=null,$format=null) {
+	function __construct($dir=null) {
 		$dir=$dir?$dir:rand()."";
 		parent::__construct($dir,parent::FORMAT_Memory);
 	}
@@ -37,6 +36,7 @@ class MemoryJig extends AbstractJig {
 
 	function write($file,array $data) {
 		$this->data[$file]=$data;
+		return 1;
 	}
 
 	function drop() {
