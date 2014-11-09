@@ -60,7 +60,7 @@ class Config extends Controller {
 		$test->expect(
 			in_array('/go',$routes) &&
 			in_array('/404',$routes) &&
-			in_array('/inside/'.chr(0).'@series',$routes) &&
+			in_array('/inside/@series',$routes) &&
 			in_array('/cached',$routes),
 			'Routes declared'
 		);
