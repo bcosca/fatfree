@@ -10,6 +10,10 @@ class Config extends Controller {
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
+		$f3->set('CONFIG',function($sec,$lval,$rval) use($f3){
+			if (preg_match('/function:strtoupper/i',$sec))
+				$f3->set($lval,strtoupper($rval));
+		});
 		$f3->config('app.ini');
 		$test->expect(
 			$f3->get('test')=='',
@@ -70,7 +74,9 @@ class Config extends Controller {
 			'ReST map declared'
 		);
 		$test->expect(
-			$f3->get('section1.myvar')=='myval1' && $f3->get('section2.myvar')=='myval2',
+			$f3->get('section1.myvar')=='myval1' &&
+			$f3->get('section2.myvar')=='myval2' &&
+			$f3->get('section3.dummy')=='HAIL THE CONQUERING HERO',
 			'Custom section'
 		);
 		$f3->set('results',$test->results());
