@@ -70,6 +70,10 @@ class Config extends Controller {
 			'Named route defined'
 		);
 		$test->expect(
+			$f3->exists('ROUTES./404.3.POST'),
+			'Named route defined with an existing name'
+		);
+		$test->expect(
 			in_array('/map',$routes),
 			'ReST map declared'
 		);
