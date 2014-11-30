@@ -47,6 +47,11 @@ class Router extends Controller {
 			$f3->get('ALIASES.hello')=='/',
 			'Named route retrieved'
 		);
+		$f3->route('GET @complex:/resize/@format/*/sep/*','App->nowhere');
+		$test->expect(
+			$f3->alias('complex','format=20x20,1=foo/bar,2=baz.gif')=='/resize/20x20/foo/bar/sep/baz.gif',
+			'Alias() function'
+		);
 		$f3->mock('GET /');
 		$test->expect(
 			$f3->get('bar')=='foo',
