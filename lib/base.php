@@ -1428,7 +1428,7 @@ class Base extends Prefab {
 		preg_match_all(
 			'/(?<=^|\n)(?:'.
 				'\[(?<section>.+?)\]|'.
-				'(?<lval>[^\h\r\n;].+?)\h*=\h*'.
+				'(?<lval>[^\h\r\n;].*?)\h*=\h*'.
 				'(?<rval>(?:\\\\\h*\r?\n|.+?)*)'.
 			')(?=\r?\n|$)/',
 			$this->read($file),$matches,PREG_SET_ORDER);
@@ -1457,9 +1457,10 @@ class Base extends Prefab {
 						str_getcsv(preg_replace('/(?<!\\\\)(")(.*?)\1/',
 							"\\1\x00\\2\\1",$match['rval']))
 					);
+					$lval = $sec == 'globals' ? $match['lval'] : $sec .'.'. $match['lval'];
 					call_user_func_array(array($this,'set'),
 						array_merge(
-							array($match['lval']),
+							array($lval),
 							count($args)>1?array($args):$args));
 				}
 			}
