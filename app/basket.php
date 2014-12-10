@@ -108,6 +108,11 @@ class Basket extends Controller {
 			),
 			'Check out'
 		);
+		$basket->item='Chocolate cake';
+		$test->expect(
+			$basket->item=='Chocolate cake',
+			'Magic access'
+		);
 		$basket->drop();
 		$f3->set('results',$test->results());
 	}
