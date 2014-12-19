@@ -1567,6 +1567,8 @@ class Base extends Prefab {
 	protected function autoload($class) {
 		$class=$this->fixslashes(ltrim($class,'\\'));
 		foreach ($this->split($this->hive['PLUGINS'].';'.
+			is_array($this->hive['AUTOLOAD']) ?
+			join(';', $this->hive['AUTOLOAD']) :
 			$this->hive['AUTOLOAD']) as $auto)
 			if (is_file($file=$auto.$class.'.php') ||
 				is_file($file=$auto.strtolower($class).'.php') ||
