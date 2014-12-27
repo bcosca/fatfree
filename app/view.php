@@ -35,7 +35,6 @@ class View extends Controller {
 			$view->render('view/test0.php')==$escaped.'-'.$escaped,
 			'Included template'
 		);
-		// FAIL: &lt;&amp;&gt;&quot;'&auml;-<&>"'ä
 		$test->expect(
 			$view->render('view/test1.php')==$escaped.'-'.$escaped,
 			'Embedded view with implicit HIVE'
