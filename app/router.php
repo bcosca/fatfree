@@ -208,6 +208,25 @@ class Router extends Controller {
 			'Unicode characters in URL (PCRE version: '.PCRE_VERSION.')'
 		);
 		$f3->clear('ROUTES');
+		$f3->route('GET /*','NS\C->get');
+		$f3->route('GET /@a','NS\C->get');
+		$f3->route('GET /foo','NS\C->get');
+		$f3->route('GET /foo/*','NS\C->get');
+		$f3->route('GET /foo/@b','NS\C->get');
+		$f3->route('GET /foo/bar','NS\C->get');
+		$f3->mock('GET /dummy');
+		$test->expect(
+			array_keys($f3->get('ROUTES'))==array(
+				'/foo/bar',
+				'/foo/@b',
+				'/foo/*',
+				'/foo',
+				'/@a',
+				'/*',
+			),
+			'Route precedence order'
+		);
+		$f3->clear('ROUTES');
 		$mark=microtime(TRUE);
 		$f3->route('GET /nothrottle',
 			function($f3) {
