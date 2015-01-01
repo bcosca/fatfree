@@ -201,7 +201,7 @@ class Mapper extends \DB\Cursor {
 				$pkeys[]=$key;
 		if ($options['group']) {
 			$group=array_unique(array_merge($pkeys,
-				explode(',',$options['group'])));
+				$spec=explode(',',$options['group'])));
 			foreach ($group as &$field) {
 				$field=$db->quotekey($field);
 				unset($field);
@@ -214,7 +214,7 @@ class Mapper extends \DB\Cursor {
 						($db->quotekey($parts[1]).
 						(isset($parts[2])?(' '.$parts[2]):'')):$str;
 				},
-				$group)).') AS '.$db->quotekey('sub').' ON ';
+				$spec)).') AS '.$db->quotekey('sub').' ON ';
 				$flag='';
 				foreach ($pkeys as $pkey)
 					$sql.=($flag?' AND ':'').$this->table.'.'.

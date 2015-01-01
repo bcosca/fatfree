@@ -2307,9 +2307,12 @@ class View extends Prefab {
 	protected function sandbox(array $hive=NULL) {
 		$this->level++;
 		$fw=Base::instance();
-		if (!$hive)
+		$implicit=false;
+		if (!$hive) {
+			$implicit=true;
 			$hive=$fw->hive();
-		if ($this->level<2) {
+		}
+		if ($this->level<2 || $implicit) {
 			if ($fw->get('ESCAPE'))
 				$hive=$this->esc($hive);
 			if (isset($hive['ALIASES']))
