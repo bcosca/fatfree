@@ -54,9 +54,9 @@ The philosophy behind the framework and its approach to software architecture is
 
 [![Twitter](ui/images/twitter.png)](https://twitter.com/phpfatfree)
 
-### Version 3.3 Is Finally Released!
+### Version 3.4 Is Finally Released!
 
-The latest official release marks a major milestone in the development of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.3 is now available for download. This edition is packed with a bunch of new usability and security features.
+The latest official release welcomes the new year with a bang and marks the final milestone in this version of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.4 is now available for download. This edition is packed with a bunch of new usability and security features.
 
 F3 has a stable enterprise-class architecture. Unbeatable performance, user-friendly features and a lightweight footprint. What more can you ask for?
 
@@ -435,7 +435,7 @@ Fat-Free's `$f3->map()` method provides a ReST interface by mapping HTTP methods
 
 **Note:** Browsers do not implement the HTTP `PUT` and `DELETE` methods in regular HTML forms. These and other ReST methods (`HEAD`, and `CONNECT`) are accessible only via AJAX calls to the server.
 
-If the framework receives an HTTP request for a route that maps to a method that is not implemented by a class (perhaps you've made an error in the route mapping, or the method is not written yet), it generates an `HTTP 405 Method Not Allowed` error. 
+If the framework receives an HTTP request for a route that maps to a method that is not implemented by a class (perhaps you've made an error in the route mapping, or the method is not written yet), it generates an `HTTP 405 Method Not Allowed` error.
 
 If a client requests HTTP `OPTIONS` for a URL resource, F3 responds with the appropriate HTTP headers that indicate which methods are allowed for the resource (HEAD, GET, PUT, etc). The framework will not map the `OPTIONS` request to a class.
 
@@ -2452,6 +2452,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * S2 Development, Ltd.
 * Store Machine
 * PHP Experts, Inc.
+* Meins und Vogel GmbH
 * Christian Knuth
 * Sascha Ohms
 * Lars Brandi Jensen

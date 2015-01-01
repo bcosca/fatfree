@@ -7,7 +7,7 @@ RewriteEngine On
 #
 # RewriteBase /
 
-RewriteRule ^(app|dict|lib|ns|tmp)\/|\.ini$ - [R=404]
+RewriteRule ^(app|dict|ns|tmp)\/|\.ini$ - [R=404]
 
 RewriteCond %{REQUEST_FILENAME} !-l
 RewriteCond %{REQUEST_FILENAME} !-f
