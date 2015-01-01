@@ -1,16 +1,17 @@
 <?php
 
 /*
-	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 //! Wrapper for various HTTP utilities
@@ -87,7 +88,7 @@ class Web extends Prefab {
 	**/
 	function acceptable($list=NULL) {
 		$accept=array();
-		foreach (explode(',',str_replace(' ','',$_SERVER['HTTP_ACCEPT']))
+		foreach (explode(',',str_replace(' ','',@$_SERVER['HTTP_ACCEPT']))
 			as $mime)
 			if (preg_match('/(.+?)(?:;q=([\d\.]+)|$)/',$mime,$parts))
 				$accept[$parts[1]]=isset($parts[2])?$parts[2]:1;
@@ -121,13 +122,14 @@ class Web extends Prefab {
 	function send($file,$mime=NULL,$kbps=0,$force=TRUE) {
 		if (!is_file($file))
 			return FALSE;
+		$size=filesize($file);
 		if (PHP_SAPI!='cli') {
 			header('Content-Type: '.($mime?:$this->mime($file)));
 			if ($force)
 				header('Content-Disposition: attachment; '.
 					'filename='.basename($file));
 			header('Accept-Ranges: bytes');
-			header('Content-Length: '.$size=filesize($file));
+			header('Content-Length: '.$size);
 			header('X-Powered-By: '.Base::instance()->get('PACKAGE'));
 		}
 		$ctr=0;
@@ -474,8 +476,9 @@ class Web extends Prefab {
 				'Connection: close'
 			)
 		);
-		if (isset($options['content'])) {
-			if ($options['method']=='POST')
+		if (isset($options['content']) && is_string($options['content'])) {
+			if ($options['method']=='POST' &&
+				!preg_grep('/^Content-Type:/',$options['header']))
 				$this->subst($options['header'],
 					'Content-Type: application/x-www-form-urlencoded');
 			$this->subst($options['header'],

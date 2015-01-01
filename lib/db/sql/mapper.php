@@ -1,16 +1,17 @@
 <?php
 
 /*
-	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 namespace DB\SQL;
@@ -81,7 +82,7 @@ class Mapper extends \DB\Cursor {
 	*	@return scalar
 	*	@param $key string
 	**/
-	function get($key) {
+	function &get($key) {
 		if ($key=='_id')
 			return $this->_id;
 		elseif (array_key_exists($key,$this->fields))
@@ -177,7 +178,12 @@ class Mapper extends \DB\Cursor {
 			'limit'=>0,
 			'offset'=>0
 		);
-		$sql='SELECT '.$fields.' FROM '.$this->table;
+		$db=$this->db;
+		$remap='';
+		foreach (explode(',',$fields) as $field)
+			$remap.=($remap?',':'').
+				(preg_match('/[()]/',$field)?'':($this->table.'.')).$field;
+		$sql='SELECT '.$remap.' FROM '.$this->table;
 		$args=array();
 		if ($filter) {
 			if (is_array($filter)) {
@@ -189,16 +195,32 @@ class Mapper extends \DB\Cursor {
 			}
 			$sql.=' WHERE '.$filter;
 		}
-		$db=$this->db;
-		if ($options['group'])
-			$sql.=' GROUP BY '.implode(',',array_map(
+		$pkeys=array();
+		foreach ($this->fields as $key=>$field)
+			if ($field['pkey'])
+				$pkeys[]=$key;
+		if ($options['group']) {
+			$group=array_unique(array_merge($pkeys,
+				explode(',',$options['group'])));
+			foreach ($group as &$field) {
+				$field=$db->quotekey($field);
+				unset($field);
+			}
+			$sql.=' JOIN (SELECT '.implode(',',$group).' FROM '.
+				$this->table.' GROUP BY '.implode(',',array_map(
 				function($str) use($db) {
 					return preg_match('/^(\w+)(?:\h+HAVING|\h*(?:,|$))/i',
 						$str,$parts)?
 						($db->quotekey($parts[1]).
 						(isset($parts[2])?(' '.$parts[2]):'')):$str;
 				},
-				explode(',',$options['group'])));
+				$group)).') AS '.$db->quotekey('sub').' ON ';
+				$flag='';
+				foreach ($pkeys as $pkey)
+					$sql.=($flag?' AND ':'').$this->table.'.'.
+						$db->quotekey($pkey).'='.
+						$db->quotekey('sub').'.'.$db->quotekey($pkey);
+		}
 		if ($options['order']) {
 			$sql.=' ORDER BY '.implode(',',array_map(
 				function($str) use($db) {
@@ -209,10 +231,34 @@ class Mapper extends \DB\Cursor {
 				},
 				explode(',',$options['order'])));
 		}
-		if ($options['limit'])
-			$sql.=' LIMIT '.(int)$options['limit'];
-		if ($options['offset'])
-			$sql.=' OFFSET '.(int)$options['offset'];
+		if (preg_match('/mssql|sqlsrv|odbc/', $this->engine) &&
+			($options['limit'] || $options['offset'])) {
+			$ofs=$options['offset']?(int)$options['offset']:0;
+			$lmt=$options['limit']?(int)$options['limit']:0;
+			if (strncmp($db->version(),'11',2)>=0) {
+				// SQL Server 2012
+				if (!$options['order'])
+					$sql.=' ORDER BY '.$db->quotekey($pkeys[0]);
+				$sql.=' OFFSET '.$ofs.' ROWS';
+				if ($lmt)
+					$sql.=' FETCH NEXT '.$lmt.' ROWS ONLY';
+			}
+			else {
+				// SQL Server 2008
+				$sql=str_replace('SELECT',
+					'SELECT '.
+					($lmt>0?'TOP '.($ofs+$lmt):'').' ROW_NUMBER() '.
+					'OVER (ORDER BY '.
+						$db->quotekey($pkeys[0]).') AS rnum,',$sql);
+				$sql='SELECT * FROM ('.$sql.') x WHERE rnum > '.($ofs);
+			}
+		}
+		else {
+			if ($options['limit'])
+				$sql.=' LIMIT '.(int)$options['limit'];
+			if ($options['offset'])
+				$sql.=' OFFSET '.(int)$options['offset'];
+		}
 		$result=$this->db->exec($sql,$args,$ttl);
 		$out=array();
 		foreach ($result as &$row) {
@@ -251,8 +297,8 @@ class Mapper extends \DB\Cursor {
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
 			$adhoc.=','.$field['expr'].' AS '.$this->db->quotekey($key);
-		return $this->select(($options['group']?:implode(',',
-			array_map(array($this->db,'quotekey'),array_keys($this->fields)))).
+		return $this->select(implode(',',
+			array_map(array($this->db,'quotekey'),array_keys($this->fields))).
 			$adhoc,$filter,$options,$ttl);
 	}
 
@@ -529,6 +575,14 @@ class Mapper extends \DB\Cursor {
 	**/
 	function fields($adhoc=TRUE) {
 		return array_keys($this->fields+($adhoc?$this->adhoc:array()));
+	}
+
+	/**
+	*	Retrieve external iterator for fields
+	*	@return object
+	**/
+	function getiterator() {
+		return new \ArrayIterator($this->cast());
 	}
 
 	/**

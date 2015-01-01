@@ -4,7 +4,7 @@
 	"homepage": "http://fatfreeframework.com/",
 	"license": "GPL-3.0",
 	"require": {
-		"php": ">=5.3.0"
+		"php": ">=5.3.6"
 	},
 	"repositories": [
 		{

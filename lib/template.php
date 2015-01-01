@@ -1,16 +1,17 @@
 <?php
 
 /*
-	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 //! XML-style template engine
@@ -50,15 +51,16 @@ class Template extends Preview {
 	protected function _include(array $node) {
 		$attrib=$node['@attrib'];
 		$hive=isset($attrib['with']) &&
-			($attrib['with']=preg_match('/\{\{(.+?)\}\}/',
-				$attrib['with'])?
-					$this->token($attrib['with']):
-					Base::instance()->stringify($attrib['with'])) &&
+			($attrib['with']=$this->token($attrib['with'])) &&
 			preg_match_all('/(\w+)\h*=\h*(.+?)(?=,|$)/',
 				$attrib['with'],$pairs,PREG_SET_ORDER)?
 					'array('.implode(',',
-						array_map(function($pair){
-							return '\''.$pair[1].'\'=>'.$pair[2];
+						array_map(function($pair) {
+							return '\''.$pair[1].'\'=>'.
+								(preg_match('/^\'.*\'$/',$pair[2]) ||
+									preg_match('/\$/',$pair[2])?
+									$pair[2]:
+									\Base::instance()->stringify($pair[2]));
 						},$pairs)).')+get_defined_vars()':
 					'get_defined_vars()';
 		return
@@ -297,7 +299,7 @@ class Template extends Preview {
 						// Process attributes
 						preg_match_all(
 							'/(?:\b([\w-]+)\h*'.
-							'(?:=\h*(?:"(.+?)"|\'(.+?)\'))?|'.
+							'(?:=\h*(?:"(.*?)"|\'(.*?)\'))?|'.
 							'(\{\{.+?\}\}))/s',
 							$match[3],$attr,PREG_SET_ORDER);
 						foreach ($attr as $kv)
@@ -305,8 +307,10 @@ class Template extends Preview {
 								$node['@attrib'][]=$kv[4];
 							else
 								$node['@attrib'][$kv[1]]=
-									(empty($kv[2])?
-										(empty($kv[3])?NULL:$kv[3]):$kv[2]);
+									(isset($kv[2]) && $kv[2]!==''?
+										$kv[2]:
+										(isset($kv[3]) && $kv[3]!==''?
+											$kv[3]:NULL));
 					}
 					if ($match[4])
 						// Empty tag

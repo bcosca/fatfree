@@ -1,16 +1,17 @@
 <?php
 
 /*
-	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 namespace DB\Mongo;
@@ -60,11 +61,10 @@ class Mapper extends \DB\Cursor {
 	*	@return scalar|FALSE
 	*	@param $key string
 	**/
-	function get($key) {
+	function &get($key) {
 		if ($this->exists($key))
 			return $this->document[$key];
 		user_error(sprintf(self::E_Field,$key));
-		return FALSE;
 	}
 
 	/**
@@ -139,7 +139,7 @@ class Mapper extends \DB\Cursor {
 					$fw->get('HOST').'.'.$fw->get('BASE').'.'.
 					uniqid(NULL,TRUE).'.tmp'
 				);
-				$tmp->batchinsert($grp['retval'],array('safe'=>TRUE));
+				$tmp->batchinsert($grp['retval'],array('w'=>1));
 				$filter=array();
 				$collection=$tmp;
 			}
@@ -327,6 +327,14 @@ class Mapper extends \DB\Cursor {
 	**/
 	function cursor() {
 		return $this->cursor;
+	}
+
+	/**
+	*	Retrieve external iterator for fields
+	*	@return object
+	**/
+	function getiterator() {
+		return new \ArrayIterator($this->cast());
 	}
 
 	/**

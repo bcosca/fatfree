@@ -1,16 +1,17 @@
 <?php
 
 /*
-	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 namespace DB\SQL;
@@ -138,24 +139,28 @@ class Session extends Mapper {
 	*	@param $force bool
 	**/
 	function __construct(\DB\SQL $db,$table='sessions',$force=TRUE) {
-		if ($force)
+		if ($force) {
+			$eol="\n";
+			$tab="\t";
 			$db->exec(
 				(preg_match('/mssql|sqlsrv|sybase/',$db->driver())?
 					('IF NOT EXISTS (SELECT * FROM sysobjects WHERE '.
 						'name='.$db->quote($table).' AND xtype=\'U\') '.
 						'CREATE TABLE dbo.'):
 					('CREATE TABLE IF NOT EXISTS '.
-						(($name=$db->name())?($name.'.'):''))).
-				$table.' ('.
-					'session_id VARCHAR(40),'.
-					'data TEXT,'.
-					'csrf TEXT,'.
-					'ip VARCHAR(40),'.
-					'agent VARCHAR(255),'.
-					'stamp INTEGER,'.
-					'PRIMARY KEY(session_id)'.
+						((($name=$db->name())&&$db->driver()!='pgsql')?
+							($name.'.'):''))).
+				$table.' ('.$eol.
+					$tab.$db->quotekey('session_id').' VARCHAR(40),'.$eol.
+					$tab.$db->quotekey('data').' TEXT,'.$eol.
+					$tab.$db->quotekey('csrf').' TEXT,'.$eol.
+					$tab.$db->quotekey('ip').' VARCHAR(40),'.$eol.
+					$tab.$db->quotekey('agent').' VARCHAR(255),'.$eol.
+					$tab.$db->quotekey('stamp').' INTEGER,'.$eol.
+					$tab.'PRIMARY KEY ('.$db->quotekey('session_id').')'.$eol.
 				');'
 			);
+		}
 		parent::__construct($db,$table);
 		session_set_save_handler(
 			array($this,'open'),

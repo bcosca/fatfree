@@ -1,21 +1,22 @@
 <?php
 
 /*
-	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 namespace DB;
 
-//! Flat-file DB wrapper
+//! In-memory/flat-file DB wrapper
 class Jig {
 
 	//@{ Storage formats
@@ -32,14 +33,18 @@ class Jig {
 		//! Current storage format
 		$format,
 		//! Jig log
-		$log;
+		$log,
+		//! Memory-held data
+		$data;
 
 	/**
-	*	Read data from file
+	*	Read data from memory/file
 	*	@return array
 	*	@param $file string
 	**/
 	function read($file) {
+		if (!$this->dir)
+			return isset($this->data[$file])?$this->data[$file]:array();
 		$fw=\Base::instance();
 		if (!is_file($dst=$this->dir.$file))
 			return array();
@@ -56,12 +61,14 @@ class Jig {
 	}
 
 	/**
-	*	Write data to file
+	*	Write data to memory/file
 	*	@return int
 	*	@param $file string
 	*	@param $data array
 	**/
 	function write($file,array $data=NULL) {
+		if (!$this->dir)
+			return count($this->data[$file]=$data);
 		$fw=\Base::instance();
 		switch ($this->format) {
 			case self::FORMAT_JSON:
@@ -71,7 +78,7 @@ class Jig {
 				$out=$fw->serialize($data);
 				break;
 		}
-		return $fw->write($this->dir.$file,$out);
+		return $fw->write($this->dir.'/'.$file,$out);
 	}
 
 	/**
@@ -91,7 +98,7 @@ class Jig {
 	}
 
 	/**
-	*	Return SQL profiler results
+	*	Return profiler results
 	*	@return string
 	**/
 	function log() {
@@ -113,7 +120,9 @@ class Jig {
 	*	@return NULL
 	**/
 	function drop() {
-		if ($glob=@glob($this->dir.'/*',GLOB_NOSORT))
+		if (!$this->dir)
+			$this->data=array();
+		elseif ($glob=@glob($this->dir.'/*',GLOB_NOSORT))
 			foreach ($glob as $file)
 				@unlink($file);
 	}
@@ -123,8 +132,8 @@ class Jig {
 	*	@param $dir string
 	*	@param $format int
 	**/
-	function __construct($dir,$format=self::FORMAT_JSON) {
-		if (!is_dir($dir))
+	function __construct($dir=NULL,$format=self::FORMAT_JSON) {
+		if ($dir && !is_dir($dir))
 			mkdir($dir,\Base::MODE,TRUE);
 		$this->uuid=\Base::instance()->hash($this->dir=$dir);
 		$this->format=$format;

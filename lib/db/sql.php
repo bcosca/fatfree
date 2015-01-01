@@ -1,26 +1,29 @@
 <?php
 
 /*
-	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 namespace DB;
 
 //! PDO wrapper
-class SQL extends \PDO {
+class SQL {
 
 	protected
 		//! UUID
 		$uuid,
+		//! Raw PDO
+		$pdo,
 		//! Data source name
 		$dsn,
 		//! Database engine
@@ -39,7 +42,7 @@ class SQL extends \PDO {
 	*	@return bool
 	**/
 	function begin() {
-		$out=parent::begintransaction();
+		$out=$this->pdo->begintransaction();
 		$this->trans=TRUE;
 		return $out;
 	}
@@ -49,7 +52,7 @@ class SQL extends \PDO {
 	*	@return bool
 	**/
 	function rollback() {
-		$out=parent::rollback();
+		$out=$this->pdo->rollback();
 		$this->trans=FALSE;
 		return $out;
 	}
@@ -59,7 +62,7 @@ class SQL extends \PDO {
 	*	@return bool
 	**/
 	function commit() {
-		$out=parent::commit();
+		$out=$this->pdo->commit();
 		$this->trans=FALSE;
 		return $out;
 	}
@@ -125,13 +128,16 @@ class SQL extends \PDO {
 			}
 		}
 		else {
+			$count=1;
 			$cmds=array($cmds);
 			$args=array($args);
 		}
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
 		$result=FALSE;
-		foreach (array_combine($cmds,$args) as $cmd=>$arg) {
+		for ($i=0;$i<$count;$i++) {
+			$cmd=$cmds[$i];
+			$arg=$args[$i];
 			if (!preg_replace('/(^\s+|[\s;]+$)/','',$cmd))
 				continue;
 			$now=microtime(TRUE);
@@ -142,10 +148,11 @@ class SQL extends \PDO {
 				$cached[0]+$ttl>microtime(TRUE)) {
 				foreach ($arg as $key=>$val) {
 					$vals[]=$fw->stringify(is_array($val)?$val[0]:$val);
-					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
+					$keys[]='/'.preg_quote(is_numeric($key)?chr(0).'?':$key).
+						'/';
 				}
 			}
-			elseif (is_object($query=$this->prepare($cmd))) {
+			elseif (is_object($query=$this->pdo->prepare($cmd))) {
 				foreach ($arg as $key=>$val) {
 					if (is_array($val)) {
 						// User-specified data type
@@ -158,7 +165,8 @@ class SQL extends \PDO {
 							$type=$this->type($val));
 						$vals[]=$fw->stringify($this->value($type,$val));
 					}
-					$keys[]='/'.(is_numeric($key)?'\?':preg_quote($key)).'/';
+					$keys[]='/'.preg_quote(is_numeric($key)?chr(0).'?':$key).
+						'/';
 				}
 				$query->execute();
 				$error=$query->errorinfo();
@@ -203,7 +211,8 @@ class SQL extends \PDO {
 				$this->log.=date('r').' ('.
 					sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 					(empty($cached)?'':'[CACHED] ').
-					preg_replace($keys,$vals,$cmd,1).PHP_EOL;
+					preg_replace($keys,$vals,
+						str_replace('?',chr(0).'?',$cmd),1).PHP_EOL;
 		}
 		if ($this->trans && $auto)
 			$this->commit();
@@ -306,7 +315,9 @@ class SQL extends \PDO {
 								constant('\PDO::PARAM_'.
 									strtoupper($parts[0])):
 								\PDO::PARAM_STR,
-							'default'=>$row[$val[3]],
+							'default'=>is_string($row[$val[3]])?
+								preg_replace('/^\s*([\'"])(.*)\1\s*/','\2',
+								$row[$val[3]]):$row[$val[3]],
 							'nullable'=>$row[$val[4]]==$val[5],
 							'pkey'=>$row[$val[6]]==$val[7]
 						);
@@ -327,7 +338,7 @@ class SQL extends \PDO {
 			(is_string($val)?
 				\Base::instance()->stringify(str_replace('\'','\'\'',$val)):
 				$val):
-			parent::quote($val,$type);
+			$this->pdo->quote($val,$type);
 	}
 
 	/**
@@ -336,6 +347,14 @@ class SQL extends \PDO {
 	**/
 	function uuid() {
 		return $this->uuid;
+	}
+
+	/**
+	*	Return parent object
+	*	@return object
+	**/
+	function pdo() {
+		return $this->pdo;
 	}
 
 	/**
@@ -351,7 +370,7 @@ class SQL extends \PDO {
 	*	@return string
 	**/
 	function version() {
-		return parent::getattribute(parent::ATTR_SERVER_VERSION);
+		return $this->pdo->getattribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
 	/**
@@ -380,6 +399,16 @@ class SQL extends \PDO {
 	}
 
 	/**
+	*	Redirect call to MongoDB object
+	*	@return mixed
+	*	@param $func string
+	*	@param $args array
+	**/
+	function __call($func,array $args) {
+		return call_user_func_array(array($this->pdo,$func),$args);
+	}
+
+	/**
 	*	Instantiate class
 	*	@param $dsn string
 	*	@param $user string
@@ -396,8 +425,8 @@ class SQL extends \PDO {
 		if (isset($parts[0]) && strstr($parts[0],':',TRUE)=='mysql')
 			$options+=array(\PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES '.
 				strtolower(str_replace('-','',$fw->get('ENCODING'))).';');
-		parent::__construct($dsn,$user,$pw,$options);
-		$this->engine=parent::getattribute(parent::ATTR_DRIVER_NAME);
+		$this->pdo=new \PDO($dsn,$user,$pw,$options);
+		$this->engine=$this->pdo->getattribute(\PDO::ATTR_DRIVER_NAME);
 	}
 
 }

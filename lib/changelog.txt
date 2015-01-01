@@ -1,5 +1,8 @@
 CHANGELOG
 
+3.4.0 (1 January 2015)
+
+
 3.3.0 (8 August 2014)
 *	NEW: Attribute in <include> tag to extend hive
 *	NEW: Image overlay with transparency and alignment control
