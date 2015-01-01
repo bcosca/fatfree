@@ -347,7 +347,7 @@ class Template extends Controller {
 		$f3->set('foo','bar');
 		$f3->set('file','templates/test14.htm');
 		$test->expect(
-			preg_replace('/\s*#\s*/','#',$tpl->render('templates/test13.htm'))=='bar#BAR,123,bar#quoted $tring,unquoted string,bar#bar',
+			preg_replace('/\s*#\s*/','#',$tpl->render('templates/test13.htm'))=='bar#BAR,123,bar#quoted $string,unquoted string,bar#bar',
 			'<include> with extended hive'
 		);
 		$f3->set('string','<test>');
