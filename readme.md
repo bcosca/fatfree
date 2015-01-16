@@ -2453,6 +2453,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Store Machine
 * PHP Experts, Inc.
 * Meins und Vogel GmbH
+* Online Prepaid Services
 * Christian Knuth
 * Sascha Ohms
 * Lars Brandi Jensen
@@ -2544,6 +2545,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Andrew Brookes
 * Steve Cove
 * Steven Witten
+* Silvan Seeholzer
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
