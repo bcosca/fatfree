@@ -243,6 +243,14 @@ class Hive extends Controller {
 			$f3['y']=='foo bar' && $f3->y=='foo bar',
 			'String concatenation'
 		);
+		$f3->clear('z');
+		$f3->push('z',1);
+		$test->expect(
+			$f3->get('z')==array(1) &&
+			$f3->push('z',2)==2 &&
+			$f3->get('z')==array(1,2),
+			'Array push create'
+		);
 		$f3->set('z',array(1,2,3));
 		$f3->push('z',4);
 		$test->expect(
