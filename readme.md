@@ -36,7 +36,10 @@ Unlike other frameworks, F3 aims to be usable - not usual.
 
 The philosophy behind the framework and its approach to software architecture is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.
 
-[![Paypal](ui/images/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
+### Paypal has Unilaterally Restricted Donations to this Free and Open-Source Project!
+
+**Today, we are removing the Paypal logo. Please refrain from sending donations while this issue is being settled (if ever it will be settled). Spread the word. Our freedom is under attack!**
+
 [![Bitcoin](ui/images/bitcoin.png)](https://coinbase.com/checkouts/7986a0da214006256d470f2f8e1a15cf)
 
 ## Table of Contents
@@ -2453,6 +2456,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Store Machine
 * PHP Experts, Inc.
 * Meins und Vogel GmbH
+* Online Prepaid Services
 * Christian Knuth
 * Sascha Ohms
 * Lars Brandi Jensen
@@ -2544,10 +2548,10 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Andrew Brookes
 * Steve Cove
 * Steven Witten
+* Silvan Seeholzer
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
-[![Paypal](ui/images/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MJSQL8N5LPDAY)
 [![Bitcoin](ui/images/bitcoin.png)](https://coinbase.com/checkouts/7986a0da214006256d470f2f8e1a15cf)
 
 **Copyright (c) 2009-2014 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
