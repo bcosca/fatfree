@@ -40,7 +40,7 @@ The philosophy behind the framework and its approach to software architecture is
 
 **Today, we are removing the Paypal logo. Please refrain from sending donations while this issue is being settled (if ever it will be settled). Spread the word. Our freedom is under attack!**
 
-[![Bitcoin](ui/images/bitcoin.png)](https://coinbase.com/checkouts/7986a0da214006256d470f2f8e1a15cf)
+[![Bitcoin](ui/images/bitcoin.png)](bitcoin:18cJLaAYT5mmu72GeoMgajbKFcmCZEjK12)
 
 ## Table of Contents
 
@@ -2552,7 +2552,7 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
-[![Bitcoin](ui/images/bitcoin.png)](https://coinbase.com/checkouts/7986a0da214006256d470f2f8e1a15cf)
+[![Bitcoin](ui/images/bitcoin.png)](bitcoin:18cJLaAYT5mmu72GeoMgajbKFcmCZEjK12)
 
 **Copyright (c) 2009-2014 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
 
