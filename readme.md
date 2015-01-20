@@ -36,11 +36,11 @@ Unlike other frameworks, F3 aims to be usable - not usual.
 
 The philosophy behind the framework and its approach to software architecture is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.
 
-### Paypal has Unilaterally Restricted Donations to this Free and Open-Source Project!
+### PayPal has Unilaterally Restricted Donations to this Free and Open-Source Project!
 
-**Today, we are removing the Paypal logo. Please refrain from sending donations while this issue is being settled (if ever it will be settled). Spread the word. Our freedom is under attack!**
+Today, 19 January 2015, we are removing the Paypal logo. Please refrain from sending donations via PayPal while this issue is being settled (if it ever gets settled). Spread the word. Our freedom is under attack! In the meantime, you can help this project by sending your contributions thru the following alternatives:
 
-![Bitcoin](ui/images/bitcoin.png)
+[Bitcoin](ui/images/bitcoin.png)
 
 ## Table of Contents
 
