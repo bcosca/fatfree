@@ -40,7 +40,7 @@ The philosophy behind the framework and its approach to software architecture is
 
 Today, 19 January 2015, we are removing the Paypal logo. Please refrain from sending donations via PayPal while this issue is being settled (if it ever gets settled). Spread the word. Our freedom is under attack! In the meantime, you can help this project by sending your contributions thru the following alternatives:
 
-[Bitcoin](ui/images/bitcoin.png)
+![Bitcoin](ui/images/bitcoin.png)
 
 ## Table of Contents
 
