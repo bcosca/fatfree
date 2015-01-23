@@ -36,10 +36,6 @@ Unlike other frameworks, F3 aims to be usable - not usual.
 
 The philosophy behind the framework and its approach to software architecture is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.
 
-### PayPal has Unilaterally Restricted Donations to this Free and Open-Source Project!
-
-Today, 19 January 2015, we are removing the Paypal logo. Please refrain from sending donations via PayPal while this issue is being settled (if it ever gets settled). Spread the word. Our freedom is under attack! In the meantime, you can help this project by sending your contributions thru the following alternatives:
-
 ![Bitcoin](ui/images/bitcoin.png)
 
 ## Table of Contents
@@ -2553,6 +2549,10 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
 ![Bitcoin](ui/images/bitcoin.png)
+
+### Legal notice
+
+By making a donation to this project you signify that you acknowledged, understood, accepted, and agreed to the terms and conditions contained in this notice. Your donation to the Fat-Free Framework project is voluntary and is not a fee for any services, goods, or advantages, and making a donation to the project does not entitle you to any services, goods, or advantages. We have the right to use the money you donate to the Fat-Free Framework project in any lawful way and for any lawful purpose we see fit and we are not obligated to disclose the way and purpose to any party unless required by applicable law. Although Fat-Free Framework is free software, to our best knowledge this project does not have any tax-exempt status. The Fat-Free Framework project is neither a registered non-profit corporation nor a registered charity in any country. Your donation may or may not be tax-deductible; please consult this with your tax advisor. We will not publish/disclose your name and e-mail address without your consent, unless required by applicable law. Your donation is non-refundable.
 
 **Copyright (c) 2009-2014 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
 
