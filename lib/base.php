@@ -1139,9 +1139,11 @@ final class Base extends Prefab implements ArrayAccess {
 						('<style>'.$this->read($css).'</style>'):'').
 				'</head>'.$eol.
 				'<body>'.$eol.
-					'<h1>'.$header.'</h1>'.$eol.
-					'<p>'.$this->encode($text?:$req).'</p>'.$eol.
-					($debug?('<pre>'.$out.'</pre>'.$eol):'').
+					'<div class="header">
+						<h1>'.$code.' '.$header.'</h1>'.$eol.
+						'<p>'.$this->encode($text?:$req).'</p>'.$eol.
+					'</div>'.
+					($debug?('<div class="code-box"><h2>code:</h2><code>'.$out.'</code></div>'.$eol):'').
 				'</body>'.$eol.
 				'</html>');
 		if ($this->hive['HALT'])
