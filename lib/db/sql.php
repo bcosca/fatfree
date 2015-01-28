@@ -177,7 +177,7 @@ class SQL {
 					user_error('PDOStatement: '.$error[2]);
 				}
 				if (preg_match('/^\s*'.
-					'(?:EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING)\b/is',
+					'(?:EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING|EXEC)\b/is',
 					$cmd)) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);
 					// Work around SQLite quote bug
