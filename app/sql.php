@@ -344,7 +344,7 @@ class SQL extends Controller {
 			);
 			$movie->set('title','Zodiac');
 			$test->expect(
-				$movie->changed('title') && !$movie->changed('director'),
+				$movie->changed('title') && !$movie->changed('director') && $movie->changed(),
 				'Changed field'
 			);
 			$movie->set('director','David Fincher');
