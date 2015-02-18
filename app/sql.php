@@ -343,6 +343,10 @@ class SQL extends Controller {
 				'Forward navigation'
 			);
 			$movie->set('title','Zodiac');
+			$test->expect(
+				$movie->changed('title') && !$movie->changed('director'),
+				'Changed field'
+			);
 			$movie->set('director','David Fincher');
 			$movie->set('year',2007);
 			$movie->save();
