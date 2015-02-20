@@ -1007,7 +1007,13 @@ final class Base extends Prefab implements ArrayAccess {
 			header('X-Content-Type-Options: nosniff');
 			header('X-Frame-Options: '.$this->hive['XFRAME']);
 			header('X-Powered-By: '.$this->hive['PACKAGE']);
-			header('X-XSS-Protection: 1; mode=block');
+			if(isset($this->hive['HEADERS']['X-XSS-Protection'])) {
+				if($this->hive['HEADERS']['X-XSS-Protection'] === TRUE) {
+					header( 'X-XSS-Protection: 1; mode=block' );
+				} 
+			} else {
+				header('X-XSS-Protection: 1; mode=block');
+			}
 			if ($secs) {
 				$time=microtime(TRUE);
 				header_remove('Pragma');
