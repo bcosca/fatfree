@@ -222,6 +222,10 @@ $f3->route('GET /brew/*',
 An important point to consider: You will get Fat-Free (and yourself) confused if you have both `GET /brew/@count` and `GET /brew/*` together in the same application. Use one or the other. Another thing: Fat-Free sees `GET /brew` as separate and distinct from the route `GET /brew/@count`. Each can have different route handlers.
 
 
+### Dynamic Web Sites
+
+Wait a second - in all the previous examples, we never really created any directory in our hard drive to store these routes. The short answer: we don't have to. All F3 routes are virtual. They don't mirror our hard disk folder structure. If you have programs or static files (images, CSS, etc.) that do not use the framework - as long as the paths to these files do not conflict with any route defined in your application - your Web server software will deliver them to the user's browser, provided the server is configured properly.
+
 ### Named Routes
 
 When you define a route, you can assign it a name. Use the route name in your code and templates instead of a typed url. Then if you need to change your urls to please the marketing overlords, you only need to make the change where the route was defined. The route names must follow php variable naming rules (no dots, dashes nor hyphens).
@@ -261,10 +265,6 @@ $f3->reroute('@beer_list(@country=Germany,@village=Rhine)');
 ```
 
 Remember to `urlencode()` your arguments if you have characters that do not comply with RFC 1738 guidelines for well-formed URLs.
-
-### Dynamic Web Sites
-
-Wait a second - in all the previous examples, we never really created any directory in our hard drive to store these routes. The short answer: we don't have to. All F3 routes are virtual. They don't mirror our hard disk folder structure. If you have programs or static files (images, CSS, etc.) that do not use the framework - as long as the paths to these files do not conflict with any route defined in your application - your Web server software will deliver them to the user's browser, provided the server is configured properly.
 
 ### PHP 5.4's Built-In Web Server
 
