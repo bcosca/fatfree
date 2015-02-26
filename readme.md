@@ -111,7 +111,8 @@ Upgrade if necessary and come back here if you've made the jump to PHP 5.3 or a 
 Time to start writing our first application:-
 
 ``` php
-$f3 = require('path/to/base.php');
+require('path/to/base.php');
+$f3 = \Base::instance();
 $f3->route('GET /',
     function() {
         echo 'Hello, world!';
@@ -120,7 +121,14 @@ $f3->route('GET /',
 $f3->run();
 ```
 
-Prepend `base.php` on the first line with the appropriate path. Save the above code fragment as `index.php` in your Web root folder. We've written our first Web page.
+Prepend `base.php` on the first line with the appropriate path. Save the above code fragment as `index.php` in your Web root folder. We've just written our first Web page.
+
+If your installing via composer, replace the first two lines with the following two (the examples in the rest of this document assume your not using composer, but the only difference as far as loading F3 is concerned is these two lines):
+
+``` php
+require('vendor/autoload.php');
+$f3 = \Base::instance();
+```
 
 The first command tells the PHP interpreter that you want the framework's functions and features available to your application. The `$f3->route()` method informs Fat-Free that a Web page is available at the relative URL indicated by the slash (`/`). Anyone visiting your site located at `http://www.example.com/` will see the `'Hello, world!'` message because the URL `/` is equivalent to the root page. To create a route that branches out from the root page, like `http://www.example.com/inside/`, you can define another route with a simple `GET /inside` string.
 
