@@ -1,6 +1,7 @@
 <?php
 
-$f3=require('lib/base.php');
+require_once 'vendor/autoload.php';
+$f3 = \Base::instance();
 
 $f3->set('DEBUG',2);
 $f3->set('UI','ui/');
