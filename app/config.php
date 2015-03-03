@@ -32,7 +32,7 @@ class Config extends Controller {
 			'Quoted string literal'
 		);
 		$test->expect(
-			$f3->get('multi')=="this \nis a\n string that spans \nseveral lines",
+			$f3->get('multi')=="this \nis a \nstring that spans \nseveral lines",
 			'Multi-line string'
 		);
 		$test->expect(
