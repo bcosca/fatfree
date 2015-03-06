@@ -130,6 +130,14 @@ class Internals extends Controller {
 			\Registry::exists($class=get_class($obj)),
 			'instance() saves object to framework registry'
 		);
+		$test->expect(
+			$f3->constants($f3,'REQ_')==array('SYNC'=>\Base::REQ_SYNC,'AJAX'=>\Base::REQ_AJAX),
+			'Fetch constants from a class (object)'
+		);
+		$test->expect(
+			$f3->constants('ISO','CC_')==\ISO::instance()->countries(),
+			'Fetch constants from a class (string)'
+		);
 		$f3->set('results',$test->results());
 	}
 
