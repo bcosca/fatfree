@@ -29,11 +29,11 @@ class Geo extends Controller {
 		$test->expect(
 			is_array($w=$geo->weather($loc['latitude'],$loc['longitude'])),
 			'Weather: '.
-				(isset($w['stationName'])?$w['stationName']:'').
-				(isset($w['temperature'])?
-					(', temperature: '.$w['temperature'].'&deg;C'):'').
-				(isset($w['windSpeed'])?
-					(', wind speed: '.((float)$w['windSpeed']).' knots'):'')
+				(isset($w['name'])?$w['name']:'').
+				(isset($w['main']['temp'])?
+					(', temperature: '.$w['main']['temp'].'°C'):'').
+				(isset($w['wind']['speed'])?
+					(', wind speed: '.((float)$w['wind']['speed']).' knots'):'')
 		);
 		$f3->set('results',$test->results());
 	}
