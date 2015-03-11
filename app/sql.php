@@ -406,6 +406,11 @@ class SQL extends Controller {
 				$obj['year']==2007,
 				'Associative array access'
 			);
+			$test->expect(
+				$out=$movie->required('title') &&
+					!$movie->required('director'),
+				'Required: '.$out
+			);
 			switch ($engine) {
 				case 'mysql':
 					$inc='INT NOT NULL AUTO_INCREMENT';
