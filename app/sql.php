@@ -467,6 +467,7 @@ class SQL extends Controller {
 				($num=$ticket->get('adhoc'))==$first,
 				'First auto-increment ID: '.$num
 			);
+			$ticket->clear('adhoc');
 			$ticket->set('adhoc','MAX('.$db->quotekey('ticketno').')');
 			$ticket->load();
 			$test->expect(
