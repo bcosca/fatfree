@@ -12,8 +12,8 @@ class View extends Controller {
 		);
 		$view=\View::instance();
 		$raw='<&>"\'ä';
-		$escaped="&lt;&amp;&gt;&quot;'&auml;";
-		$escapedTwice="&amp;lt;&amp;amp;&amp;gt;&amp;quot;'&amp;auml;";
+		$escaped="&lt;&amp;&gt;&quot;'ä";
+		$escapedTwice="&amp;lt;&amp;amp;&amp;gt;&amp;quot;'ä";
 		$f3->set('test',$raw);
 		$test->expect(
 			$view->esc($raw)==$escaped,
