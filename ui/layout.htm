@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<base href="{{ @SCHEME.'://'.@HOST.@BASE.(!@PORT||@PORT==80||@PORT==443?'':':'.@PORT).'/'.@UI }}" />
+		<base href="{{ @SCHEME.'://'.@HOST.(!@PORT||@PORT==80||@PORT==443?'':':'.@PORT).@BASE.'/'.@UI }}" />
 
 		<meta charset="{{ @ENCODING}}" />
 		<title>{{ @VERSION }}: {{ @active }}</title>
