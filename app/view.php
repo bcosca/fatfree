@@ -52,7 +52,7 @@ class View extends Controller {
 			'Default HIVE is not empty'
 		);
 		$test->expect(
-			$view->render('view/hive_size.php', null, [])==='0',
+			$view->render('view/hive_size.php', null, array())==='0',
 			'Empty custom HIVE'
 		);
 		$f3->set('results',$test->results());
