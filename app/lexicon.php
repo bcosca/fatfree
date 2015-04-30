@@ -44,6 +44,25 @@ class Lexicon extends Controller {
 				$template->render('templates/lexicon.htm')),
 			'en (fallback)'
 		);
+		$tqbf='The quick brown fox jumps over the lazy dog.';
+		$f3->set('PREFIX',$prefix='prefix_');
+		$f3->set('LANGUAGE','en');
+		$test->expect(
+			$f3->get($prefix.'tqbf')==$tqbf,
+			"String PREFIX: \"$prefix\""
+		);
+		$f3->set('PREFIX',$prefix='prefix.');
+		$f3->set('LANGUAGE','en');
+		$test->expect(
+			$f3->get($prefix.'tqbf')==$tqbf,
+			"Array PREFIX: \"$prefix\""
+		);
+		$f3->set('PREFIX',$prefix='prefix.prefix_');
+		$f3->set('LANGUAGE','en');
+		$test->expect(
+			$f3->get($prefix.'tqbf')==$tqbf,
+			"Mixed PREFIX: \"$prefix\""
+		);
 		$f3->set('foo',
 			'{0, plural,'.
 				'zero {There\'s nothing on the table.},'.
