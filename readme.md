@@ -236,7 +236,7 @@ Let's name a route:-
 $f3->route('GET @beer_list: /beer', 'Beer->list');
 ```
 
-The name is inserted after the route VERB (`GET` in this example) preceeded by an `@` symbol, and separated from the URL portion by a colon `:` symbol. You can insert a space after the colon if that makes it easier to read your code (as shown here).
+The name is inserted after the route VERB (`GET` in this example) preceded by an `@` symbol, and separated from the URL portion by a colon `:` symbol. You can insert a space after the colon if that makes it easier to read your code (as shown here).
 
 To access the named route in a template, get the value of the named route as the key of the `ALIASES` hive array:-
 
@@ -1615,7 +1615,7 @@ In the above scenario, F3 will retrieve records that match the criteria `'visits
 
 ```
 [subset] array of mapper objects that match the criteria
-[count] number of of subsets available
+[count] number of subsets available
 [pos] actual subset position
 ```
 
@@ -2025,7 +2025,7 @@ Want to make your site run even faster? Fat-Free works best with either Alternat
 
 ### Bandwidth Throttling
 
-A fast application that processes all HTTP requests and responds to them at the shortest time possible is not always a good idea - specially if your bandwidth is limited or traffic on your Web site is particularly heavy. Serving pages ASAP also makes your application vulnerable to Denial-of-Service (DOS) attacks. F3 has a bandwidth throttling feature that allows you to control how fast your Web pages are served. Your can specifies how much time it should take to process a request:-
+A fast application that processes all HTTP requests and responds to them at the shortest time possible is not always a good idea - specially if your bandwidth is limited or traffic on your Web site is particularly heavy. Serving pages ASAP also makes your application vulnerable to Denial-of-Service (DOS) attacks. F3 has a bandwidth throttling feature that allows you to control how fast your Web pages are served. You can specifies how much time it should take to process a request:-
 
 ``` php
 $f3->route('/throttledpage','MyApp->handler',0,128);
