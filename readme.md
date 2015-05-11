@@ -2025,7 +2025,7 @@ Want to make your site run even faster? Fat-Free works best with either Alternat
 
 ### Bandwidth Throttling
 
-A fast application that processes all HTTP requests and responds to them at the shortest time possible is not always a good idea - specially if your bandwidth is limited or traffic on your Web site is particularly heavy. Serving pages ASAP also makes your application vulnerable to Denial-of-Service (DOS) attacks. F3 has a bandwidth throttling feature that allows you to control how fast your Web pages are served. You can specifies how much time it should take to process a request:-
+A fast application that processes all HTTP requests and responds to them at the shortest time possible is not always a good idea - specially if your bandwidth is limited or traffic on your Web site is particularly heavy. Serving pages ASAP also makes your application vulnerable to Denial-of-Service (DOS) attacks. F3 has a bandwidth throttling feature that allows you to control how fast your Web pages are served. You can specify how much time it should take to process a request:-
 
 ``` php
 $f3->route('/throttledpage','MyApp->handler',0,128);
