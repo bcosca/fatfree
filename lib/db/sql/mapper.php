@@ -512,7 +512,7 @@ class Mapper extends \DB\Cursor {
 	/**
 	*	Reset cursor
 	*	@return NULL
-	*	@param $adhoc string
+	*	@param $adhoc boolean
 	**/
 	function reset($adhoc=False) {
 		foreach ($this->fields as &$field) {
