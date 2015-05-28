@@ -1,1 +1,1 @@
-<?php echo $test . '-' . $this->render('view/test0_child.php', null, ['test'=>$test]); ?>
+<?php echo $test . '-' . $this->render('view/test0_child.php', null, array('test'=>$test)); ?>
