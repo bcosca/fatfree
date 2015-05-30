@@ -1,5 +1,138 @@
 CHANGELOG
 
+3.4.0 (1 January 2015)
+*	NEW: [redirects] section
+*	NEW: Custom config sections
+*	NEW: User-defined AUTOLOAD function
+*	NEW: ONREROUTE variable
+*	NEW: Provision for in-memory Jig database (#727)
+*	Return run() result (#687)
+*	Pass result of run() to mock() (#687)
+*	Add port suffix to REALM variable
+*	New attribute in <include> tag to extend hive
+*	Adjust unit tests and clean up templates
+*	Expose header-related methods
+*	Web->request: allow content array
+*	Preserve contents of ROUTES (#723)
+*	Smart detection of PHP functions in template expressions
+*	Add afterrender() hook to View class
+*	Implement ArrayAccess and magic properties on hive
+*	Improvement on mocking of superglobals and request body
+*	Fix table creation for pgsql handled sessions
+*	Add QUERY to hive
+*	Exempt E_NOTICE from default error_reporting()
+*	Add method to build alias routes from template, fixes #693
+*	Fix dangerous caching of cookie values
+*	Fix multiple encoding in nested templates
+*	Fix node attribute parsing for empty/zero values
+*	Apply URL encoding on BASE to emulate v2 behavior (#123)
+*	Improve Base->map performance (#595)
+*	Add simple backtrace for fatal errors
+*	Count Cursor->load() results (#581)
+*	Add form field name to Web->receive() callback arguments
+*	Fix missing newlines after template expansion
+*	Fix overwrite of ENCODING variable
+*	limit & offset workaround for SQL Server, fixes #671
+*	SQL Mapper->find: GROUP BY SQL compliant statement
+*	Bug fix: Missing abstract method fields()
+*	Bug fix: Auto escaping does not work with mapper objects (#710)
+*	Bug fix: 'with' attribute in <include> tag raise error when no token
+	inside
+*	View rendering: optional Content-Type header
+*	Bug fix: Undefined variable: cache (#705)
+*	Bug fix: Routing does not work if project base path includes valid
+	special URI character (#704)
+*	Bug fix: Template hash collision (#702)
+*	Bug fix: Property visibility is incorrect (#697)
+*	Bug fix: Missing Allow header on HTTP 405 response
+*	Bug fix: Double quotes in lexicon files (#681)
+*	Bug fix: Space should not be mandatory in ICU pluralization format string
+*	Bug fix: Incorrect log entry when SQL query contains a question mark
+*	Bug fix: Error stack trace
+*	Bug fix: Cookie expiration (#665)
+*	Bug fix: OR operator (||) parsed incorrectly
+*	Bug fix: Routing treatment of * wildcard character
+*	Bug fix:  Mapper copyfrom() method doesn't allow class/object callbacks
+	(#590)
+*	Bug fix: exists() creates elements/properties (#591)
+*	Bug fix: Wildcard in routing pattern consumes entire query string (#592)
+*	Bug fix: Workaround bug in latest MongoDB driver
+*	Bug fix: Default error handler silently fails for AJAX request with
+	DEBUG>0 (#599)
+*	Bug fix: Mocked BODY overwritten (#601)
+*	Bug fix: Undefined pkey (#607)
+
+3.3.0 (8 August 2014)
+*	NEW: Attribute in <include> tag to extend hive
+*	NEW: Image overlay with transparency and alignment control
+*	NEW: Allow redirection of specified route patterns to a URL
+*	Bug fix: Missing AND operator in SQL Server schema query (Issue #576)
+*	Count Cursor->load() results (Feature request #581)
+*	Mapper copyfrom() method doesn't allow class/object callbacks (Issue #590)
+*	Bug fix: exists() creates elements/properties (Issue #591)
+*	Bug fix: Wildcard in routing pattern consumes entire query string
+	(Issue #592)
+*	Tweak Base->map performance (Issue #595)
+*	Bug fix: Default error handler silently fails for AJAX request with
+	DEBUG>0 (Issue #599)
+*	Bug fix: Mocked BODY overwritten (Issue #601)
+*	Bug fix: Undefined pkey (Issue #607)
+*	Bug fix: beforeupdate() position (Issue #633)
+*	Bug fix: exists() return value for cached keys
+*	Bug fix: Missing error code in UNLOAD handler
+*	Bug fix: OR operator (||) parsed incorrectly
+*	Add input name parameter to custom slug function
+*	Apply URL encoding on BASE to emulate v2 behavior (Issue #123)
+*	Reduce mapper update() iterations
+*	Bug fix: Routing treatment of * wildcard character
+*	SQL Mapper->find: GROUP BY SQL compliant statement
+*	Work around bug in latest MongoDB driver
+*	Work around probable race condition and optimize cache access
+*	View rendering: Optional Content-Type header
+*	Fix missing newlines after template expansion
+*	Add form field name to Web->receive() callback arguments
+*	Quick reference: add RAW variable
+
+3.2.2 (19 March 2014)
+*	NEW: Locales set automatically (Feature request #522)
+*	NEW: Mapper dbtype()
+*	NEW: before- and after- triggers for all mappers
+*	NEW: Decode HTML5 entities if PHP>5.3 detected (Feature request #552)
+*	NEW: Send credentials only if AUTH is present in the SMTP extension
+	response (Feature request #545)
+*	NEW: BITMASK variable to allow ENT_COMPAT override
+*	NEW: Redis support for caching
+*	Enable SMTP feature detection
+*	Enable extended ICU custom date format (Feature request #555)
+*	Enable custom time ICU format
+*	Add option to turn off session table creation (Feature request #557)
+*	Enhanced template token rendering and custom filters (Feature request
+	#550)
+*	Avert multiple loads in DB-managed sessions (Feature request #558)
+*	Add EXEC to associative fetch
+*	Bug fix: Building template tokens breaks on inline OR condition (Issue
+	#573)
+*	Bug fix: SMTP->send does not use the $log parameter (Issue #571)
+*	Bug fix: Allow setting sqlsrv primary keys on insert (Issue #570)
+*	Bug fix: Generated query for obtaining table schema in sqlsrv incorrect
+	(Bug #565)
+*	Bug fix: SQL mapper flag set even when value has not changed (Bug #562)
+*	Bug fix: Add XFRAME config option (Feature request #546)
+*	Bug fix: Incorrect parsing of comments (Issue #541)
+*	Bug fix: Multiple Set-Cookie headers (Issue #533)
+*	Bug fix: Mapper is dry after save()
+*	Bug fix: Prevent infinite loop when error handler is triggered
+	(Issue #361)
+*	Bug fix: Mapper tweaks not passing primary keys as arguments
+*	Bug fix: Zero indexes in dot-notated arrays fail to compile
+*	Bug fix: Prevent GROUP clause double-escaping
+*	Bug fix: Regression of zlib compression bug
+*	Bug fix: Method copyto() does not include ad hoc fields
+*	Check existence of OpenID mode (Issue #529)
+*	Generate a 404 when a tokenized class doesn't exist
+*	Fix SQLite quotes (Issue #521)
+*	Bug fix: BASE is incorrect on Windows
+
 3.2.1 (7 January 2014)
 *	NEW: EMOJI variable, UTF->translate(), UTF->emojify(), and UTF->strrev()
 *	Allow empty strings in config()

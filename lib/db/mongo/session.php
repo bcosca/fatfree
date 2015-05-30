@@ -1,22 +1,27 @@
 <?php
 
 /*
-	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 namespace DB\Mongo;
 
 //! MongoDB-managed session handler
 class Session extends Mapper {
+
+	protected
+		//! Session ID
+		$sid;
 
 	/**
 	*	Open session
@@ -42,7 +47,8 @@ class Session extends Mapper {
 	*	@param $id string
 	**/
 	function read($id) {
-		$this->load(array('session_id'=>$id));
+		if ($id!=$this->sid)
+			$this->load(array('session_id'=>$this->sid=$id));
 		return $this->dry()?FALSE:$this->get('data');
 	}
 
@@ -56,7 +62,8 @@ class Session extends Mapper {
 		$fw=\Base::instance();
 		$sent=headers_sent();
 		$headers=$fw->get('HEADERS');
-		$this->load(array('session_id'=>$id));
+		if ($id!=$this->sid)
+			$this->load(array('session_id'=>$this->sid=$id));
 		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash(mt_rand());
 		$this->set('session_id',$id);
@@ -100,42 +107,34 @@ class Session extends Mapper {
 	}
 
 	/**
-	*	Return anti-CSRF tokan associated with specified session ID
+	*	Return anti-CSRF token
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function csrf($id=NULL) {
-		$this->load(array('session_id'=>$id?:session_id()));
+	function csrf() {
 		return $this->dry()?FALSE:$this->get('csrf');
 	}
 
 	/**
-	*	Return IP address associated with specified session ID
+	*	Return IP address
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function ip($id=NULL) {
-		$this->load(array('session_id'=>$id?:session_id()));
+	function ip() {
 		return $this->dry()?FALSE:$this->get('ip');
 	}
 
 	/**
-	*	Return Unix timestamp associated with specified session ID
+	*	Return Unix timestamp
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function stamp($id=NULL) {
-		$this->load(array('session_id'=>$id?:session_id()));
+	function stamp() {
 		return $this->dry()?FALSE:$this->get('stamp');
 	}
 
 	/**
-	*	Return HTTP user agent associated with specified session ID
+	*	Return HTTP user agent
 	*	@return string|FALSE
-	*	@param $id string
 	**/
-	function agent($id=NULL) {
-		$this->load(array('session_id'=>$id?:session_id()));
+	function agent() {
 		return $this->dry()?FALSE:$this->get('agent');
 	}
 
@@ -158,26 +157,18 @@ class Session extends Mapper {
 		@session_start();
 		$fw=\Base::instance();
 		$headers=$fw->get('HEADERS');
-		if (($csrf=$this->csrf()) &&
-			((!isset($_COOKIE['_']) || $_COOKIE['_']!=$csrf) ||
-			($ip=$this->ip()) && $ip!=$fw->get('IP') ||
-			($agent=$this->agent()) && !isset($headers['User-Agent']) ||
+		if (($ip=$this->ip()) && $ip!=$fw->get('IP') ||
+			($agent=$this->agent()) &&
+			(!isset($headers['User-Agent']) ||
 				$agent!=$headers['User-Agent'])) {
-			$jar=$fw->get('JAR');
-			$jar['expire']=strtotime('-1 year');
-			call_user_func_array('setcookie',
-				array_merge(array('_',''),$jar));
-			unset($_COOKIE['_']);
 			session_destroy();
-			\Base::instance()->error(403);
+			$fw->error(403);
 		}
 		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash(mt_rand());
-		if ($this->load(array('session_id'=>session_id()))) {
+		if ($this->load(array('session_id'=>$this->sid=session_id()))) {
 			$this->set('csrf',$csrf);
 			$this->save();
-			call_user_func_array('setcookie',
-				array('_',$csrf)+$fw->get('JAR'));
 		}
 	}
 
