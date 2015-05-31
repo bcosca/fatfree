@@ -24,9 +24,23 @@
 			</div>
 			<div class="main">
 				<h1>{{ @active }}</h1>
-				{~ foreach (@results as @i=>@result): ~}
-				<p>
-					<span class="status {{ @result.status?'pass':'fail' }}">{{ @i+1 }}</span>
+
+				<h2 id="errors">Errors</h2>
+				{~ if (@errors): ~}
+					{~ foreach (@errors as @result): ~}
+						<p>
+							<span class="status fail"><a href="{{ @PATH }}#test-{{ @result.id }}">{{ @result.id }}</a></span>
+							<span class="text">{{ @result.text }} {~ if (@result.source) echo '('.@result.source.')' ~}</span><br/>
+						</p>
+					{~ endforeach ~}
+				{~ else: ~}
+					<p>No errors.</p>
+				{~ endif ~}
+
+				<h2 id="tests">Tests</h2>
+				{~ foreach (@results as @result): ~}
+				<p id="test-{{ @result.id }}">
+					<span class="status {{ @result.status?'pass':'fail' }}">{{ @result.id }}</span>
 					<span class="text">{{ @result.text }} {~ if (!@result.status && @result.source) echo '('.@result.source.')' ~}</span><br/>
 				</p>
 				{~ endforeach ~}

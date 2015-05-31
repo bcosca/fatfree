@@ -14,7 +14,15 @@ class Controller {
 		$f3->set('active',$f3->get('menu["'.$uri.'"]'));
 	}
 
-	function afterroute() {
+	function afterroute($f3) {
+		// Collect errors.
+		if ($results=$f3->get('results')) {
+			$f3->set('errors', array_reduce($results, function($carry, $item){
+				if (!$item['status']) $carry[]=$item;
+				return $carry;
+			}, array()));
+		}
+
 		echo \Preview::instance()->render('layout.htm');
 	}
 
