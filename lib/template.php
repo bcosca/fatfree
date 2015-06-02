@@ -10,7 +10,13 @@
 	terms of the GNU General Public License as published by the Free Software
 	Foundation, either version 3 of the License, or later.
 
-	Please see the LICENSE file for more information.
+	Fat-Free Framework is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along
+	with Fat-Free Framework.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -67,7 +73,7 @@ class Template extends Preview {
 			'<?php '.(isset($attrib['if'])?
 				('if ('.$this->token($attrib['if']).') '):'').
 				('echo $this->render('.
-					(preg_match('/\{\{(.+?)\}\}/',$attrib['href'])?
+					(preg_match('/^\{\{(.+?)\}\}$/',$attrib['href'])?
 						$this->token($attrib['href']):
 						Base::instance()->stringify($attrib['href'])).','.
 					'$this->mime,'.$hive.'); ?>');
@@ -253,7 +259,7 @@ class Template extends Preview {
 			return call_user_func_array($this->custom[$func],$args);
 		if (method_exists($this,$func))
 			return call_user_func_array(array($this,$func),$args);
-		user_error(sprintf(self::E_Method,$func));
+		user_error(sprintf(self::E_Method,$func),E_USER_ERROR);
 	}
 
 	/**

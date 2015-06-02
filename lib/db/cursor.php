@@ -10,7 +10,13 @@
 	terms of the GNU General Public License as published by the Free Software
 	Foundation, either version 3 of the License, or later.
 
-	Please see the LICENSE file for more information.
+	Fat-Free Framework is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along
+	with Fat-Free Framework.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -83,10 +89,10 @@ abstract class Cursor extends \Magic implements \IteratorAggregate {
 	/**
 	*	Hydrate mapper object using hive array variable
 	*	@return NULL
-	*	@param $key string
+	*	@param $var array|string
 	*	@param $func callback
 	**/
-	abstract function copyfrom($key,$func=NULL);
+	abstract function copyfrom($var,$func=NULL);
 
 	/**
 	*	Populate hive array variable with mapper fields
@@ -100,7 +106,7 @@ abstract class Cursor extends \Magic implements \IteratorAggregate {
 	*	Causes a fatal error in PHP 5.3.5if uncommented
 	*	return ArrayIterator
 	**/
-	//abstract function getiterator();
+	abstract function getiterator();
 
 
 	/**
@@ -113,12 +119,16 @@ abstract class Cursor extends \Magic implements \IteratorAggregate {
 
 	/**
 	*	Return first record (mapper object) that matches criteria
-	*	@return object|FALSE
+	*	@return \DB\Cursor|FALSE
 	*	@param $filter string|array
 	*	@param $options array
 	*	@param $ttl int
 	**/
 	function findone($filter=NULL,array $options=NULL,$ttl=0) {
+		if (!$options)
+			$options=array();
+		// Override limit
+		$options['limit']=1;
 		return ($data=$this->find($filter,$options,$ttl))?$data[0]:FALSE;
 	}
 
@@ -238,7 +248,7 @@ abstract class Cursor extends \Magic implements \IteratorAggregate {
 	function erase() {
 		$this->query=array_slice($this->query,0,$this->ptr,TRUE)+
 			array_slice($this->query,$this->ptr,NULL,TRUE);
-		$this->ptr=0;
+		$this->skip(0);
 	}
 
 	/**

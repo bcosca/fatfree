@@ -10,7 +10,13 @@
 	terms of the GNU General Public License as published by the Free Software
 	Foundation, either version 3 of the License, or later.
 
-	Please see the LICENSE file for more information.
+	Fat-Free Framework is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along
+	with Fat-Free Framework.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -66,7 +72,7 @@ class Mapper extends \DB\Cursor {
 			return $this->id;
 		if (array_key_exists($key,$this->document))
 			return $this->document[$key];
-		user_error(sprintf(self::E_Field,$key));
+		user_error(sprintf(self::E_Field,$key),E_USER_ERROR);
 	}
 
 	/**
@@ -143,7 +149,7 @@ class Mapper extends \DB\Cursor {
 
 	/**
 	*	Return records that match criteria
-	*	@return array|FALSE
+	*	@return \DB\JIG\Mapper[]|FALSE
 	*	@param $filter array
 	*	@param $options array
 	*	@param $ttl int
@@ -314,15 +320,16 @@ class Mapper extends \DB\Cursor {
 		$db=$this->db;
 		$now=microtime(TRUE);
 		while (($id=uniqid(NULL,TRUE)) &&
-			($data=$db->read($this->file)) && isset($data[$id]) &&
+			($data=&$db->read($this->file)) && isset($data[$id]) &&
 			!connection_aborted())
 			usleep(mt_rand(0,100));
 		$this->id=$id;
-		$data[$id]=$this->document;
 		$pkey=array('_id'=>$this->id);
-		if (isset($this->trigger['beforeinsert']))
+		if (isset($this->trigger['beforeinsert']) &&
 			\Base::instance()->call($this->trigger['beforeinsert'],
-				array($this,$pkey));
+				array($this,$pkey))===FALSE)
+			return $this->document;
+		$data[$id]=$this->document;
 		$db->write($this->file,$data);
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [insert] '.json_encode($this->document));
@@ -340,11 +347,12 @@ class Mapper extends \DB\Cursor {
 	function update() {
 		$db=$this->db;
 		$now=microtime(TRUE);
-		$data=$db->read($this->file);
-		$data[$this->id]=$this->document;
-		if (isset($this->trigger['beforeupdate']))
+		$data=&$db->read($this->file);
+		if (isset($this->trigger['beforeupdate']) &&
 			\Base::instance()->call($this->trigger['beforeupdate'],
-				array($this,array('_id'=>$this->id)));
+				array($this,array('_id'=>$this->id)))===FALSE)
+			return $this->document;
+		$data[$this->id]=$this->document;
 		$db->write($this->file,$data);
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [update] '.json_encode($this->document));
@@ -362,7 +370,7 @@ class Mapper extends \DB\Cursor {
 	function erase($filter=NULL) {
 		$db=$this->db;
 		$now=microtime(TRUE);
-		$data=$db->read($this->file);
+		$data=&$db->read($this->file);
 		$pkey=array('_id'=>$this->id);
 		if ($filter) {
 			foreach ($this->find($filter,NULL,FALSE) as $mapper)
@@ -373,13 +381,13 @@ class Mapper extends \DB\Cursor {
 		elseif (isset($this->id)) {
 			unset($data[$this->id]);
 			parent::erase();
-			$this->skip(0);
 		}
 		else
 			return FALSE;
-		if (isset($this->trigger['beforeerase']))
+		if (isset($this->trigger['beforeerase']) &&
 			\Base::instance()->call($this->trigger['beforeerase'],
-				array($this,$pkey));
+				array($this,$pkey))===FALSE)
+			return FALSE;
 		$db->write($this->file,$data);
 		if ($filter) {
 			$args=isset($filter[1]) && is_array($filter[1])?
@@ -414,11 +422,12 @@ class Mapper extends \DB\Cursor {
 	/**
 	*	Hydrate mapper object using hive array variable
 	*	@return NULL
-	*	@param $key string
+	*	@param $var array|string
 	*	@param $func callback
 	**/
-	function copyfrom($key,$func=NULL) {
-		$var=\Base::instance()->get($key);
+	function copyfrom($var,$func=NULL) {
+		if (is_string($var))
+			$var=\Base::instance()->get($var);
 		if ($func)
 			$var=call_user_func($func,$var);
 		foreach ($var as $key=>$val)

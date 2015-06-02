@@ -10,7 +10,13 @@
 	terms of the GNU General Public License as published by the Free Software
 	Foundation, either version 3 of the License, or later.
 
-	Please see the LICENSE file for more information.
+	Fat-Free Framework is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along
+	with Fat-Free Framework.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -18,6 +24,11 @@ namespace DB;
 
 //! PDO wrapper
 class SQL {
+
+	//@{ Error messages
+	const
+		E_PKey='Table %s does not have a primary key';
+	//@}
 
 	protected
 		//! UUID
@@ -151,6 +162,12 @@ class SQL {
 					$keys[]='/'.preg_quote(is_numeric($key)?chr(0).'?':$key).
 						'/';
 				}
+				if ($log)
+					$this->log.=date('r').' ('.
+						sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+						'[CACHED] '.
+						preg_replace($keys,$vals,
+							str_replace('?',chr(0).'?',$cmd),1).PHP_EOL;
 			}
 			elseif (is_object($query=$this->pdo->prepare($cmd))) {
 				foreach ($arg as $key=>$val) {
@@ -168,17 +185,23 @@ class SQL {
 					$keys[]='/'.preg_quote(is_numeric($key)?chr(0).'?':$key).
 						'/';
 				}
+				if ($log)
+					$this->log.=date('r').' ('.
+						sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+						preg_replace($keys,$vals,
+							str_replace('?',chr(0).'?',$cmd),1).PHP_EOL;
 				$query->execute();
 				$error=$query->errorinfo();
 				if ($error[0]!=\PDO::ERR_NONE) {
 					// Statement-level error occurred
 					if ($this->trans)
 						$this->rollback();
-					user_error('PDOStatement: '.$error[2]);
+					user_error('PDOStatement: '.$error[2],E_USER_ERROR);
 				}
 				if (preg_match('/^\s*'.
-					'(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING|EXEC)\b/is',
-					$cmd)) {
+					'(?:EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING)\b/is',$cmd) ||
+					(preg_match('/^\s*(?:CALL|EXEC)\b/is',$cmd) &&
+						$query->columnCount())) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);
 					// Work around SQLite quote bug
 					if (preg_match('/sqlite2?/',$this->engine))
@@ -204,15 +227,9 @@ class SQL {
 					// PDO-level error occurred
 					if ($this->trans)
 						$this->rollback();
-					user_error('PDO: '.$error[2]);
+					user_error('PDO: '.$error[2],E_USER_ERROR);
 				}
 			}
-			if ($log)
-				$this->log.=date('r').' ('.
-					sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
-					(empty($cached)?'':'[CACHED] ').
-					preg_replace($keys,$vals,
-						str_replace('?',chr(0).'?',$cmd),1).PHP_EOL;
 		}
 		if ($this->trans && $auto)
 			$this->commit();
@@ -243,6 +260,8 @@ class SQL {
 	*	@param $ttl int
 	**/
 	function schema($table,$fields=NULL,$ttl=0) {
+		if (strpos($table,'.'))
+			list($schema,$table)=explode('.',$table);
 		// Supported engines
 		$cmd=array(
 			'sqlite2?'=>array(
@@ -310,11 +329,11 @@ class SQL {
 						$rows[$row[$val[1]]]=array(
 							'type'=>$row[$val[2]],
 							'pdo_type'=>
-								preg_match('/int\b|int(?=eger)|bool/i',
-									$row[$val[2]],$parts)?
-								constant('\PDO::PARAM_'.
-									strtoupper($parts[0])):
-								\PDO::PARAM_STR,
+								preg_match('/int\b|integer/i',$row[$val[2]])?
+									\PDO::PARAM_INT:
+									(preg_match('/bool/i',$row[$val[2]])?
+										\PDO::PARAM_BOOL:
+										\PDO::PARAM_STR),
 							'default'=>is_string($row[$val[3]])?
 								preg_replace('/^\s*([\'"])(.*)\1\s*/','\2',
 								$row[$val[3]]):$row[$val[3]],
@@ -324,6 +343,7 @@ class SQL {
 				}
 				return $rows;
 			}
+		user_error(sprintf(self::E_PKey,$table),E_USER_ERROR);
 		return FALSE;
 	}
 
@@ -351,7 +371,7 @@ class SQL {
 
 	/**
 	*	Return parent object
-	*	@return object
+	*	@return \PDO
 	**/
 	function pdo() {
 		return $this->pdo;
@@ -387,15 +407,18 @@ class SQL {
 	*	@param $key
 	**/
 	function quotekey($key) {
-		if ($this->engine=='mysql')
-			$key="`".implode('`.`',explode('.',$key))."`";
-		elseif (preg_match('/sybase|dblib/',$this->engine))
-			$key="'".implode("'.'",explode('.',$key))."'";
-		elseif (preg_match('/sqlite2?|pgsql|oci/',$this->engine))
-			$key='"'.implode('"."',explode('.',$key)).'"';
-		elseif (preg_match('/mssql|sqlsrv|odbc/',$this->engine))
-			$key="[".implode('].[',explode('.',$key))."]";
-		return $key;
+		$delims=array(
+			'mysql'=>'``',
+			'sqlite2?|pgsql|oci'=>'""',
+			'mssql|sqlsrv|odbc|sybase|dblib'=>'[]'
+		);
+		$use='';
+		foreach ($delims as $engine=>$delim)
+			if (preg_match('/'.$engine.'/',$this->engine)) {
+				$use=$delim;
+				break;
+			}
+		return $use[0].implode($use[1].'.'.$use[0],explode('.',$key)).$use[1];
 	}
 
 	/**
@@ -418,7 +441,7 @@ class SQL {
 	function __construct($dsn,$user=NULL,$pw=NULL,array $options=NULL) {
 		$fw=\Base::instance();
 		$this->uuid=$fw->hash($this->dsn=$dsn);
-		if (preg_match('/^.+?(?:dbname|database)=(.+?)(?=;|$)/i',$dsn,$parts))
+		if (preg_match('/^.+?(?:dbname|database)=(.+?)(?=;|$)/is',$dsn,$parts))
 			$this->dbname=$parts[1];
 		if (!$options)
 			$options=array();
