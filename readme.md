@@ -57,7 +57,7 @@ The philosophy behind the framework and its approach to software architecture is
 
 ### Version 3.5 Is Finally Released!
 
-The latest official release welcomes the new year with a bang and marks the final milestone in this version of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.4 is now available for download. This edition is packed with a bunch of new usability and security features.
+The latest official release welcomes the summer with a bang and marks the final milestone in this version of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.5 is now available for download. This edition is packed with a bunch of new usability and security features.
 
 F3 has a stable enterprise-class architecture. Unbeatable performance, user-friendly features and a lightweight footprint. What more can you ask for?
 
