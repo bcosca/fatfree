@@ -12,8 +12,8 @@ class View extends Controller {
 		);
 		$view=\View::instance();
 		$raw='<&>"\'ä';
-		$escaped="&lt;&amp;&gt;&quot;'&auml;";
-		$escapedTwice="&amp;lt;&amp;amp;&amp;gt;&amp;quot;'&amp;auml;";
+		$escaped="&lt;&amp;&gt;&quot;'ä";
+		$escapedTwice="&amp;lt;&amp;amp;&amp;gt;&amp;quot;'ä";
 		$f3->set('test',$raw);
 		$test->expect(
 			$view->esc($raw)==$escaped,
@@ -46,6 +46,14 @@ class View extends Controller {
 		$test->expect(
 			$view->render('view/test3.php')==$escaped.'-'.$raw,
 			'Embedded view with full custom HIVE'
+		);
+		$test->expect(
+			$view->render('view/hive_size.php', null, null)!=='0',
+			'Default HIVE is not empty'
+		);
+		$test->expect(
+			$view->render('view/hive_size.php', null, array())==='0',
+			'Empty custom HIVE'
 		);
 		$f3->set('results',$test->results());
 	}
