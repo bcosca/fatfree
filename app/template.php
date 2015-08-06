@@ -368,7 +368,8 @@ class Template extends Controller {
 		);
 		$test->expect(
 			$tpl->resolve('{{ @string }}')=='<test>' &&
-			$tpl->resolve('{{ @ENV.content }}')=='<ok>',
+			$tpl->resolve('{{ @ENV.content }}')=='<ok>' &&
+			$tpl->resolve('{* hello *}')=='',
 			'resolve() template strings'
 		);
 		$f3->set('div',
