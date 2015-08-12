@@ -258,11 +258,14 @@ class Web extends Prefab {
 	*	@param $options array
 	**/
 	protected function _curl($url,$options) {
-		$curl=curl_init($url);
-		curl_setopt($curl,CURLOPT_FOLLOWLOCATION,
-			$options['follow_location']);
+		$curl=curl_init();
+
+		if( !ini_get('open_basedir') )
+			curl_setopt($curl,CURLOPT_FOLLOWLOCATION, $options['follow_location']);
 		curl_setopt($curl,CURLOPT_MAXREDIRS,
 			$options['max_redirects']);
+		curl_setopt($curl,CURLOPT_PROTOCOLS,CURLPROTO_HTTP|CURLPROTO_HTTPS);
+		curl_setopt($curl,CURLOPT_REDIR_PROTOCOLS,CURLPROTO_HTTP|CURLPROTO_HTTPS);
 		curl_setopt($curl,CURLOPT_CUSTOMREQUEST,$options['method']);
 		if (isset($options['header']))
 			curl_setopt($curl,CURLOPT_HTTPHEADER,$options['header']);
@@ -284,10 +287,38 @@ class Web extends Prefab {
 			}
 		);
 		curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,FALSE);
-		ob_start();
-		curl_exec($curl);
+
+		// Redirects should be handled automatically by curl using
+		// CURLOPT_FOLLOWLOCATION, but this is not allowed on some constrained
+		// hosts with open_basedir enabled, so we manually handle the redirects
+		// here. If CURLOPT_FOLLOWLOCATION, the loop will only execute once.
+		$redirect_count = 0;
+		$requrl = $url;
+		$urlhost = $this->url_host($url);
+		$host_header_deleted = false;
+		while( $redirect_count < $options['max_redirects'] && $requrl ) {
+			curl_setopt($curl, CURLOPT_URL, $requrl);
+			ob_start();
+			curl_exec($curl);
+			$body=ob_get_clean();
+			$requrl = curl_getinfo($curl, CURLINFO_REDIRECT_URL);
+
+			// Remove host header if redirecting to another host
+			if( $requrl && isset($options['header']) && !$host_header_deleted &&
+				$this->url_host($requrl) != $urlhost ) {
+				$headers_nohost = array();
+				foreach ($options['header'] as &$header)
+					if (!preg_match('/^Host:/',$header)) {
+						$headers_nohost[] = $header;
+					}
+				curl_setopt($curl,CURLOPT_HTTPHEADER,$headers_nohost);
+				$host_header_deleted = true;
+			}
+
+			$redirect_count = $redirect_count + 1;
+		}
+
 		curl_close($curl);
-		$body=ob_get_clean();
 		return array(
 			'body'=>$body,
 			'headers'=>$headers,
@@ -400,6 +431,19 @@ class Web extends Prefab {
 			'engine'=>'socket',
 			'cached'=>FALSE
 		);
+	}
+
+	/**
+	*	Return the host including port for a given url.
+	*	@return string
+	*	@param $url string
+	**/
+	protected function url_host($url) {
+		$host = parse_url($url, PHP_URL_HOST);
+		$port = parse_url($url, PHP_URL_PORT);
+		if($port)
+			$host = "$host:$port";
+		return $host;
 	}
 
 	/**
