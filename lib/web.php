@@ -526,10 +526,11 @@ class Web extends Prefab {
 				'Accept-Encoding: gzip,deflate',
 				'User-Agent: '.(isset($options['user_agent'])?
 					$options['user_agent']:
-					'Mozilla/5.0 (compatible; '.php_uname('s').')'),
-				'Connection: close'
+					'Mozilla/5.0 (compatible; '.php_uname('s').')')
 			)
 		);
+		if ($this->wrapper!='curl')
+			$this->subst($options['header'], array('Connection: close'));
 		if (isset($options['content']) && is_string($options['content'])) {
 			if ($options['method']=='POST' &&
 				!preg_grep('/^Content-Type:/',$options['header']))
