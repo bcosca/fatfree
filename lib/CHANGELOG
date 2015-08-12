@@ -1,5 +1,166 @@
 CHANGELOG
 
+3.5.0 (2 June 2015)
+*	NEW: until() method for long polling
+*	NEW: abort() to disconnect HTTP client (and continue execution)
+*	NEW: SQL Mapper->required() returns TRUE if field is not nullable
+*	NEW: PREMAP variable for allowing prefixes to handlers named after HTTP verbs
+*	NEW: [configs] section to allow config includes
+*	NEW: Test->passed() returns TRUE if no test failed
+*	NEW: SQL mapper changed() function
+*	NEW: fatfree-core composer support
+*	NEW: constants() method to expose constants
+*	NEW: Preview->filter() for configurable token filters
+*	NEW: CORS variable for Cross-Origin Resource Sharing support, #731
+*	Change in behavior: Switch to htmlspecialchars for escaping
+*	Change in behavior: No movement in cursor position after erase(), #797
+*	Change in behavior: ERROR.trace is a multiline string now
+*	Change in behavior: Strict token recognition in <include> href attribute
+*	Router fix: loose method search
+*	Better route precedence order, #12
+*	Preserve contents of ROUTES, #723
+*	Alias: allow array of parameters
+*	Improvements on reroute method
+*	Fix for custom Jig session files
+*	Audit: better mobile detection
+*	Audit: add argument to test string as browser agent
+*	DB mappers: abort insert/update/erase from hooks, #684
+*	DB mappers: Allow array inputs in copyfrom()
+*	Cache,SQL,Jig,Mongo Session: custom callback for suspect sessions
+*	Fix for unexpected HIVE values when defining an empty HIVE array
+*	SQL mapper: check for results from CALL and EXEC queries, #771
+*	SQL mapper: consider SQL schema prefix, #820
+*	SQL mapper: write to log before execution to
+	enable tracking of PDOStatement error
+*	Add SQL Mapper->table() to return table name
+*	Allow override of the schema in SQL Mapper->schema()
+*	Improvement: Keep JIG table as reference, #758
+*	Expand regex to include whitespaces in SQL DB dsn, #817
+*	View: Removed reserved variables $fw and $implicit
+*	Add missing newlines after template expansion
+*	Web->receive: fix for complex field names, #806
+*	Web: Improvements in socket engine
+*	Web: customizable user_agent for all engines, #822
+*	SMTP: Provision for Content-ID in attachments
+*	Image + minify: allow absolute paths
+*	Promote framework error to E_USER_ERROR
+*	Geo->weather switch to OpenWeather
+*	Expose mask() and grab() methods for routing
+*	Expose trace() method to expose the debug backtrace
+*	Implement recursion strategy using IteratorAggregate, #714
+*	Exempt whitespace between % and succeeding operator from being minified, #773
+*	Optimized error detection and ONERROR handler, fatfree-core#18
+*	Tweak error log output
+*	Optimized If-Modified-Since cache header usage
+*	Improved APCu compatibility, #724
+*	Bug fix: Web::send fails on filename with spaces, #810
+*	Bug fix: overwrite limit in findone()
+*	Bug fix: locale-specific edge cases affecting SQL schema, #772
+*	Bug fix: Newline stripping in config()
+*	Bug fix: bracket delimited identifier for sybase and dblib driver
+*	Bug fix: Mongo mapper collection->count driver compatibility
+*	Bug fix: SQL Mapper->set() forces adhoc value if already defined
+*	Bug fix: Mapper ignores HAVING clause
+*	Bug fix: Constructor invocation in call()
+*	Bug fix: Wrong element returned by ajax/sync request
+*	Bug fix: handling of non-consecutive compound key members
+*	Bug fix: Virtual fields not retrieved when group option is present, #757
+*	Bug fix: group option generates incorrect SQL query, #757
+*	Bug fix: ONERROR does not receive PARAMS on fatal error
+
+3.4.0 (1 January 2015)
+*	NEW: [redirects] section
+*	NEW: Custom config sections
+*	NEW: User-defined AUTOLOAD function
+*	NEW: ONREROUTE variable
+*	NEW: Provision for in-memory Jig database (#727)
+*	Return run() result (#687)
+*	Pass result of run() to mock() (#687)
+*	Add port suffix to REALM variable
+*	New attribute in <include> tag to extend hive
+*	Adjust unit tests and clean up templates
+*	Expose header-related methods
+*	Web->request: allow content array
+*	Preserve contents of ROUTES (#723)
+*	Smart detection of PHP functions in template expressions
+*	Add afterrender() hook to View class
+*	Implement ArrayAccess and magic properties on hive
+*	Improvement on mocking of superglobals and request body
+*	Fix table creation for pgsql handled sessions
+*	Add QUERY to hive
+*	Exempt E_NOTICE from default error_reporting()
+*	Add method to build alias routes from template, fixes #693
+*	Fix dangerous caching of cookie values
+*	Fix multiple encoding in nested templates
+*	Fix node attribute parsing for empty/zero values
+*	Apply URL encoding on BASE to emulate v2 behavior (#123)
+*	Improve Base->map performance (#595)
+*	Add simple backtrace for fatal errors
+*	Count Cursor->load() results (#581)
+*	Add form field name to Web->receive() callback arguments
+*	Fix missing newlines after template expansion
+*	Fix overwrite of ENCODING variable
+*	limit & offset workaround for SQL Server, fixes #671
+*	SQL Mapper->find: GROUP BY SQL compliant statement
+*	Bug fix: Missing abstract method fields()
+*	Bug fix: Auto escaping does not work with mapper objects (#710)
+*	Bug fix: 'with' attribute in <include> tag raise error when no token
+	inside
+*	View rendering: optional Content-Type header
+*	Bug fix: Undefined variable: cache (#705)
+*	Bug fix: Routing does not work if project base path includes valid
+	special URI character (#704)
+*	Bug fix: Template hash collision (#702)
+*	Bug fix: Property visibility is incorrect (#697)
+*	Bug fix: Missing Allow header on HTTP 405 response
+*	Bug fix: Double quotes in lexicon files (#681)
+*	Bug fix: Space should not be mandatory in ICU pluralization format string
+*	Bug fix: Incorrect log entry when SQL query contains a question mark
+*	Bug fix: Error stack trace
+*	Bug fix: Cookie expiration (#665)
+*	Bug fix: OR operator (||) parsed incorrectly
+*	Bug fix: Routing treatment of * wildcard character
+*	Bug fix:  Mapper copyfrom() method doesn't allow class/object callbacks
+	(#590)
+*	Bug fix: exists() creates elements/properties (#591)
+*	Bug fix: Wildcard in routing pattern consumes entire query string (#592)
+*	Bug fix: Workaround bug in latest MongoDB driver
+*	Bug fix: Default error handler silently fails for AJAX request with
+	DEBUG>0 (#599)
+*	Bug fix: Mocked BODY overwritten (#601)
+*	Bug fix: Undefined pkey (#607)
+
+3.3.0 (8 August 2014)
+*	NEW: Attribute in <include> tag to extend hive
+*	NEW: Image overlay with transparency and alignment control
+*	NEW: Allow redirection of specified route patterns to a URL
+*	Bug fix: Missing AND operator in SQL Server schema query (Issue #576)
+*	Count Cursor->load() results (Feature request #581)
+*	Mapper copyfrom() method doesn't allow class/object callbacks (Issue #590)
+*	Bug fix: exists() creates elements/properties (Issue #591)
+*	Bug fix: Wildcard in routing pattern consumes entire query string
+	(Issue #592)
+*	Tweak Base->map performance (Issue #595)
+*	Bug fix: Default error handler silently fails for AJAX request with
+	DEBUG>0 (Issue #599)
+*	Bug fix: Mocked BODY overwritten (Issue #601)
+*	Bug fix: Undefined pkey (Issue #607)
+*	Bug fix: beforeupdate() position (Issue #633)
+*	Bug fix: exists() return value for cached keys
+*	Bug fix: Missing error code in UNLOAD handler
+*	Bug fix: OR operator (||) parsed incorrectly
+*	Add input name parameter to custom slug function
+*	Apply URL encoding on BASE to emulate v2 behavior (Issue #123)
+*	Reduce mapper update() iterations
+*	Bug fix: Routing treatment of * wildcard character
+*	SQL Mapper->find: GROUP BY SQL compliant statement
+*	Work around bug in latest MongoDB driver
+*	Work around probable race condition and optimize cache access
+*	View rendering: Optional Content-Type header
+*	Fix missing newlines after template expansion
+*	Add form field name to Web->receive() callback arguments
+*	Quick reference: add RAW variable
+
 3.2.2 (19 March 2014)
 *	NEW: Locales set automatically (Feature request #522)
 *	NEW: Mapper dbtype()

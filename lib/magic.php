@@ -1,16 +1,23 @@
 <?php
 
 /*
-	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Fat-Free Framework is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along
+	with Fat-Free Framework.  If not, see <http://www.gnu.org/licenses/>.
+
 */
 
 //! PHP magic wrapper
@@ -36,7 +43,7 @@ abstract class Magic implements ArrayAccess {
 	*	@return mixed
 	*	@param $key string
 	**/
-	abstract function get($key);
+	abstract function &get($key);
 
 	/**
 	*	Unset key
@@ -46,36 +53,13 @@ abstract class Magic implements ArrayAccess {
 	abstract function clear($key);
 
 	/**
-	*	Return TRUE if property has public/protected visibility
-	*	@return bool
-	*	@param $key string
-	**/
-	private function visible($key) {
-		if (property_exists($this,$key)) {
-			$ref=new ReflectionProperty(get_class($this),$key);
-			$out=!$ref->isprivate();
-			unset($ref);
-			return $out;
-		}
-		return FALSE;
-	}
-
-	/**
 	*	Convenience method for checking property value
 	*	@return mixed
 	*	@param $key string
 	**/
 	function offsetexists($key) {
-		return $this->visible($key)?isset($this->$key):$this->exists($key);
-	}
-
-	/**
-	*	Alias for offsetexists()
-	*	@return mixed
-	*	@param $key string
-	**/
-	function __isset($key) {
-		return $this->offsetexists($key);
+		return Base::instance()->visible($this,$key)?
+			isset($this->$key):$this->exists($key);
 	}
 
 	/**
@@ -85,7 +69,42 @@ abstract class Magic implements ArrayAccess {
 	*	@param $val scalar
 	**/
 	function offsetset($key,$val) {
-		return $this->visible($key)?($this->key=$val):$this->set($key,$val);
+		return Base::instance()->visible($this,$key)?
+			($this->key=$val):$this->set($key,$val);
+	}
+
+	/**
+	*	Convenience method for retrieving property value
+	*	@return mixed
+	*	@param $key string
+	**/
+	function &offsetget($key) {
+		if (Base::instance()->visible($this,$key))
+			$val=&$this->$key;
+		else
+			$val=&$this->get($key);
+		return $val;
+	}
+
+	/**
+	*	Convenience method for removing property value
+	*	@return NULL
+	*	@param $key string
+	**/
+	function offsetunset($key) {
+		if (Base::instance()->visible($this,$key))
+			unset($this->$key);
+		else
+			$this->clear($key);
+	}
+
+	/**
+	*	Alias for offsetexists()
+	*	@return mixed
+	*	@param $key string
+	**/
+	function __isset($key) {
+		return $this->offsetexists($key);
 	}
 
 	/**
@@ -99,33 +118,13 @@ abstract class Magic implements ArrayAccess {
 	}
 
 	/**
-	*	Convenience method for retrieving property value
-	*	@return mixed
-	*	@param $key string
-	**/
-	function offsetget($key) {
-		return $this->visible($key)?$this->$key:$this->get($key);
-	}
-
-	/**
 	*	Alias for offsetget()
 	*	@return mixed
 	*	@param $key string
 	**/
-	function __get($key) {
-		return $this->offsetget($key);
-	}
-
-	/**
-	*	Convenience method for checking property value
-	*	@return NULL
-	*	@param $key string
-	**/
-	function offsetunset($key) {
-		if ($this->visible($key))
-			unset($this->$key);
-		else
-			$this->clear($key);
+	function &__get($key) {
+		$val=&$this->offsetget($key);
+		return $val;
 	}
 
 	/**

@@ -1,22 +1,29 @@
 <?php
 
 /*
-	Copyright (c) 2009-2014 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Fat-Free Framework is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along
+	with Fat-Free Framework.  If not, see <http://www.gnu.org/licenses/>.
+
 */
 
 namespace DB;
 
 //! Simple cursor implementation
-abstract class Cursor extends \Magic {
+abstract class Cursor extends \Magic implements \IteratorAggregate {
 
 	//@{ Error messages
 	const
@@ -36,6 +43,12 @@ abstract class Cursor extends \Magic {
 	*	@return string
 	**/
 	abstract function dbtype();
+
+	/**
+	*	Return field names
+	*	@return array
+	**/
+	abstract function fields();
 
 	/**
 	*	Return fields of mapper object as an associative array
@@ -76,10 +89,10 @@ abstract class Cursor extends \Magic {
 	/**
 	*	Hydrate mapper object using hive array variable
 	*	@return NULL
-	*	@param $key string
+	*	@param $var array|string
 	*	@param $func callback
 	**/
-	abstract function copyfrom($key,$func=NULL);
+	abstract function copyfrom($var,$func=NULL);
 
 	/**
 	*	Populate hive array variable with mapper fields
@@ -87,6 +100,14 @@ abstract class Cursor extends \Magic {
 	*	@param $key string
 	**/
 	abstract function copyto($key);
+
+	/**
+	*	Get cursor's equivalent external iterator
+	*	Causes a fatal error in PHP 5.3.5if uncommented
+	*	return ArrayIterator
+	**/
+	abstract function getiterator();
+
 
 	/**
 	*	Return TRUE if current cursor position is not mapped to any record
@@ -98,12 +119,16 @@ abstract class Cursor extends \Magic {
 
 	/**
 	*	Return first record (mapper object) that matches criteria
-	*	@return object|FALSE
+	*	@return \DB\Cursor|FALSE
 	*	@param $filter string|array
 	*	@param $options array
 	*	@param $ttl int
 	**/
 	function findone($filter=NULL,array $options=NULL,$ttl=0) {
+		if (!$options)
+			$options=array();
+		// Override limit
+		$options['limit']=1;
 		return ($data=$this->find($filter,$options,$ttl))?$data[0]:FALSE;
 	}
 
@@ -151,6 +176,14 @@ abstract class Cursor extends \Magic {
 	}
 
 	/**
+	*	Return the count of records loaded
+	*	@return int
+	**/
+	function loaded() {
+		return count($this->query);
+	}
+
+	/**
 	*	Map to first record in cursor
 	*	@return mixed
 	**/
@@ -194,6 +227,13 @@ abstract class Cursor extends \Magic {
 	}
 
 	/**
+	 * Return whether current iterator position is valid.
+	 */
+	function valid() {
+		return !$this->dry();
+	}
+
+	/**
 	*	Save mapped record
 	*	@return mixed
 	**/
@@ -208,7 +248,7 @@ abstract class Cursor extends \Magic {
 	function erase() {
 		$this->query=array_slice($this->query,0,$this->ptr,TRUE)+
 			array_slice($this->query,$this->ptr,NULL,TRUE);
-		$this->ptr=0;
+		$this->skip(0);
 	}
 
 	/**
@@ -272,6 +312,37 @@ abstract class Cursor extends \Magic {
 	**/
 	function onupdate($func) {
 		return $this->afterupdate($func);
+	}
+
+	/**
+	*	Define beforesave trigger
+	*	@return callback
+	*	@param $func callback
+	**/
+	function beforesave($func) {
+		$this->trigger['beforeinsert']=$func;
+		$this->trigger['beforeupdate']=$func;
+		return $func;
+	}
+
+	/**
+	*	Define aftersave trigger
+	*	@return callback
+	*	@param $func callback
+	**/
+	function aftersave($func) {
+		$this->trigger['afterinsert']=$func;
+		$this->trigger['afterupdate']=$func;
+		return $func;
+	}
+
+	/**
+	*	Define onsave trigger
+	*	@return callback
+	*	@param $func callback
+	**/
+	function onsave($func) {
+		return $this->aftersave($func);
 	}
 
 	/**
