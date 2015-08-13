@@ -144,7 +144,7 @@ class Template extends Controller {
 		);
 		$f3->set('foo','barré');
 		$test->expect(
-			$tpl->render('templates/test2b.htm')=='barrébarré',
+			($str=$tpl->render('templates/test2b.htm'))=='barrébarré',
 			'double <include> doesn\'t double encode'
 		);
 		$f3->clear('cond');
@@ -252,6 +252,11 @@ class Template extends Controller {
 		);
 		$tpl->extend('foo',
 			function ($node) use ($f3) {
+				return $f3->stringify($node);
+			}
+		);
+		$tpl->extend('qux',
+			function ($node,$empty=TRUE) use ($f3) {
 				return $f3->stringify($node);
 			}
 		);
