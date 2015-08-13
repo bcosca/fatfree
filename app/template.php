@@ -258,7 +258,8 @@ class Template extends Controller {
 		$tpl->extend('qux',
 			function ($node,$empty=TRUE) use ($f3) {
 				return $f3->stringify($node);
-			}
+			},
+			TRUE
 		);
 		$result=$tpl->render('templates/test10.htm');
 		$lines=array_map('trim',explode("\n",$result));
