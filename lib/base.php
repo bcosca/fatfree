@@ -688,6 +688,7 @@ final class Base extends Prefab implements ArrayAccess {
 	function constants($class,$prefix='') {
 		$ref=new ReflectionClass($class);
 		$out=array();
+		$key="";
 		foreach (preg_grep('/^'.$prefix.'/',array_keys($ref->getconstants()))
 			as $val) {
 			$out[$key=substr($val,strlen($prefix))]=
@@ -819,6 +820,20 @@ final class Base extends Prefab implements ArrayAccess {
 			'(?:,\s*(?P<mod>(?:\w+(?:\s*\{.+?\}\s*,?)?)*)'.
 			'(?:,\s*(?P<prop>.+?))?)?)?\}/',
 			function($expr) use($args,$conv) {
+				/**
+				 * default variables that would be extracted from $conv and $args
+				 * @var string $pos
+				 * @var array $mod
+				 * @var string $tag
+				 * @var string $data
+				 * @var string $thousands_sep
+				 * @var string $negative_sign
+				 * @var string $positive_sign
+				 * @var string $frac_digits
+				 * @var string $decimal_point
+				 * @var string $currency_symbol
+				 * @var int $prop
+				 */
 				extract($expr);
 				extract($conv);
 				if (!array_key_exists($pos,$args))
@@ -1875,6 +1890,7 @@ final class Base extends Prefab implements ArrayAccess {
 			isset($path[1]) && is_callable($path[1]))
 			list($path,$func)=$path;
 		foreach ($this->split($this->hive['PLUGINS'].';'.$path) as $auto)
+			/** @var string $func */
 			if ($func && is_file($file=$func($auto.$class).'.php') ||
 				is_file($file=$auto.$class.'.php') ||
 				is_file($file=$auto.strtolower($class).'.php') ||
