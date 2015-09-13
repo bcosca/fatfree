@@ -134,6 +134,11 @@ class Template extends Controller {
 				($eval='$foo.\'hello, world\''),
 			$expr.': '.$eval
 		);
+		$test->expect(
+			$tpl->token($expr='@foo | esc')==
+				($eval='$this->esc($foo)'),
+			$expr.': '.$eval
+		);
 		$tpl=\Template::instance();
 		$f3->set('foo','bar');
 		$f3->set('cond',TRUE);
@@ -255,11 +260,6 @@ class Template extends Controller {
 				return $f3->stringify($node);
 			}
 		);
-		$tpl->extend('qux',
-			function ($node,$empty=TRUE) use ($f3) {
-				return $f3->stringify($node);
-			}
-		);
 		$result=$tpl->render('templates/test10.htm');
 		$lines=array_map('trim',explode("\n",$result));
 		$test->expect(
@@ -376,6 +376,34 @@ class Template extends Controller {
 			$tpl->resolve('{{ @ENV.content }}')=='<ok>' &&
 			$tpl->resolve('{* hello *}')=='',
 			'resolve() template strings'
+		);
+		$tpl->filter('pick','\App\Helper::instance()->pick');
+		$test->expect(
+			$tpl->filter('pick')=='\App\Helper::instance()->pick',
+			'Register new token filter'
+		);
+		$filters=$tpl->filter();
+		$test->expect(
+			in_array('esc',$filters) &&
+			in_array('raw',$filters) &&
+			in_array('alias',$filters) &&
+			in_array('format',$filters) &&
+			in_array('pick',$filters),
+			'Get list of available filters'
+		);
+		$test->expect(
+			$tpl->token($expr='@foo | pick')==
+			($eval='\App\Helper::instance()->pick($foo)'),
+			'Resolve custom filter: '.$expr.' - '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo, \'bar\' | pick')==
+			($eval='\App\Helper::instance()->pick($foo, \'bar\')'),
+			'Resolve filter with arguments: '.$expr.' - '.$eval
+		);
+		$test->expect(
+			$tpl->render('templates/test15.html')=='applecherry',
+			'Test custom filter'
 		);
 		$f3->set('div',
 			array_fill(0,1000,array_combine(range('a','j'),range(0,9))));

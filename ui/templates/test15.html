@@ -1,0 +1,4 @@
+<set fruits="{{ array('apple','banana','cherry','peach') }}" />
+<repeat group="{{ @fruits, '^[ac]+' | pick }}" value="{{ @name }}">
+{{ @name }}
+</repeat>
