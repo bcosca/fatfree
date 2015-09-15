@@ -402,6 +402,26 @@ class Template extends Controller {
 			'Resolve filter with arguments: '.$expr.' - '.$eval
 		);
 		$test->expect(
+			$tpl->token($expr='@foo, \'bar|baz\' | pick')==
+			($eval='\App\Helper::instance()->pick($foo, \'bar|baz\')'),
+			'Filter pipe test: '.$expr.' - '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo || @bar')==
+			($eval='$foo || $bar'),
+			'Double pipe OR condition: '.$expr.' - '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='(@foo&&@bar)?@baz:@qux | esc')==
+			($eval='$this->esc(($foo&&$bar)?$baz:$qux)'),
+			'Ternary condition with filter: '.$expr.' - '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='(@foo||@bar)?@baz:@qux | esc')==
+			($eval='$this->esc(($foo||$bar)?$baz:$qux)'),
+			'Double pipe OR condition with filter: '.$expr.' - '.$eval
+		);
+		$test->expect(
 			$tpl->render('templates/test15.html')=='applecherry',
 			'Test custom filter'
 		);
