@@ -422,6 +422,16 @@ class Template extends Controller {
 			'Double pipe OR condition with filter: '.$expr.' - '.$eval
 		);
 		$test->expect(
+			$tpl->token($expr='@foo | pick, esc')==
+			($eval='$this->esc(\App\Helper::instance()->pick($foo))'),
+			'Multiple filter: '.$expr.' - '.$eval
+		);
+		$test->expect(
+			$tpl->token($expr='@foo, @bar | pick, esc')==
+			($eval='$this->esc(\App\Helper::instance()->pick($foo, $bar))'),
+			'Multiple filter, multiple arguments: '.$expr.' - '.$eval
+		);
+		$test->expect(
 			$tpl->render('templates/test15.html')=='applecherry',
 			'Test custom filter'
 		);
