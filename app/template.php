@@ -242,6 +242,7 @@ class Template extends Controller {
 					'<span>3</span>'.
 					'<span>6</span>'.
 					'<span>xyz</span>'.
+					'<span>1</span>'.
 					'<span>array(1,3,5)</span>'.
 					'<span>a</span>'.
 					'<span>b</span>'.
