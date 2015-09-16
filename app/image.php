@@ -204,6 +204,10 @@ class Image extends Controller {
 				'<img src="'.$src.'" '.
 					'title="'.$img->width().'x'.$img->height().'" />'
 			);
+			$test->expect(
+				is_resource($img->data()) && imagesx($img->data())===$img->width(),
+				'Get image resource'
+			);
 			unset($img);
 			$f3->set('ESCAPE',FALSE);
 		}
