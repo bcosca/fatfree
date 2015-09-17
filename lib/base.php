@@ -1485,6 +1485,16 @@ final class Base extends Prefab implements ArrayAccess {
 					$result=$this->call($handler,array($this,$args),
 						'beforeroute,afterroute');
 					$body=ob_get_clean();
+					// Add template mechanism
+					// With defined TEMPLATE var we can automatically render
+					// the real view without manually render main layout with
+					// template class and set the main view
+					// real view will holded by RESPONSE var
+					// @added by eghojansu
+					if ($this->hive['TEMPLATE']) {
+						$this->hive['RESPONSE']=$body;
+						$body = $this->send($this->hive['TEMPLATE'],$this->hive['TEMPLATE_PARSER'],TRUE);
+					}
 					if (isset($cache) && !error_get_last()) {
 						// Save to cache backend
 						$cache->set($hash,array(
@@ -1532,6 +1542,36 @@ final class Base extends Prefab implements ArrayAccess {
 		}
 		return FALSE;
 	}
+
+    /**
+     * Send template/view or array (as json)
+     * @param  String|array  $object
+     * @param  String Parser
+     * @param  boolean $return wether to return the content or flush it
+     * @return string or nothing
+     */
+    function send($object,$parser='Template',$return=FALSE)
+    {
+    	if (is_array($object))
+    		$this->sendJson($object);
+
+        $content = $parser::instance()->render($object);
+        if ($return)
+            return $content;
+
+        echo $content;
+    }
+
+    /**
+     * Send Json
+     * @param  mixed $data data to send
+     */
+    function sendJson($data)
+    {
+        header('Content-Type: application/json');
+        echo is_array($data)?json_encode($data):$data;
+        exit(0);
+    }
 
 	/**
 	*	Loop until callback returns TRUE (for long polling)
@@ -2130,6 +2170,8 @@ final class Base extends Prefab implements ArrayAccess {
 			'SCHEME'=>$scheme,
 			'SERIALIZER'=>extension_loaded($ext='igbinary')?$ext:'php',
 			'TEMP'=>'tmp/',
+			'TEMPLATE'=>NULL,
+			'TEMPLATE_PARSER'=>'Template',
 			'TIME'=>microtime(TRUE),
 			'TZ'=>(@ini_get('date.timezone'))?:'UTC',
 			'UI'=>'./',

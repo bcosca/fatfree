@@ -9,6 +9,6 @@
 		<link rel="stylesheet" href="ui/css/theme.css" type="text/css" />
 	</head>
 	<body>
-		<?php echo $this->render(Base::instance()->get('content')); ?>
+		<?php echo $this->raw($RESPONSE); ?>
 	</body>
 </html>
