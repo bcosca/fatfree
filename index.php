@@ -3,9 +3,13 @@
 // Kickstart the framework
 $f3=require('lib/base.php');
 
-$f3->set('DEBUG',1);
+$f3->set('DEBUG',3);
 if ((float)PCRE_VERSION<7.9)
 	trigger_error('PCRE version is out of date');
+
+// set TEMPLATE file
+$f3->set('TEMPLATE', 'layout.htm');
+$f3->set('TEMPLATE_PARSER', 'View');
 
 // Load configuration
 $f3->config('config.ini');
@@ -67,15 +71,13 @@ $f3->route('GET /',
 				array('dom','xmlrpc')
 		);
 		$f3->set('classes',$classes);
-		$f3->set('content','welcome.htm');
-		echo View::instance()->render('layout.htm');
+		$f3->send('welcome.htm','View');
 	}
 );
 
 $f3->route('GET /userref',
 	function($f3) {
-		$f3->set('content','userref.htm');
-		echo View::instance()->render('layout.htm');
+		$f3->send('userref.htm','View');
 	}
 );
 
