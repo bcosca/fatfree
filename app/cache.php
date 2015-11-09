@@ -187,23 +187,23 @@ class Cache extends Controller {
 				$agent=$session->agent(),
 				'User agent: '.$agent
 			);
-            $test->expect(
-                $csrf=$session->csrf(),
-                'Anti-CSRF token: '.$csrf
-            );
-            $before=$after='';
-            if (preg_match('/^Set-Cookie: '.session_name().'=(\w+)/m',
-                implode(PHP_EOL,array_reverse(headers_list())),$m))
-                $before=$m[1];
-            $f3->clear('SESSION');
-            if (preg_match('/^Set-Cookie: '.session_name().'=(\w+)/m',
-                implode(PHP_EOL,array_reverse(headers_list())),$m))
-                $after=$m[1];
-            $test->expect(
-                empty($_SESSION) && !$cache->exists($sid.'@') &&
-                $before==$sid && $after=='deleted' && empty($_COOKIE[session_name()]),
-                'Session destroyed and cookie expired'
-            );
+			$test->expect(
+				$csrf=$session->csrf(),
+				'Anti-CSRF token: '.$csrf
+			);
+			$before=$after='';
+			if (preg_match('/^Set-Cookie: '.session_name().'=(\w+)/m',
+				implode(PHP_EOL,array_reverse(headers_list())),$m))
+				$before=$m[1];
+			$f3->clear('SESSION');
+			if (preg_match('/^Set-Cookie: '.session_name().'=(\w+)/m',
+				implode(PHP_EOL,array_reverse(headers_list())),$m))
+				$after=$m[1];
+			$test->expect(
+				empty($_SESSION) && !$cache->exists($sid.'@') &&
+				$before==$sid && $after=='deleted' && empty($_COOKIE[session_name()]),
+				'Session destroyed and cookie expired'
+			);
 			$backend=$f3->get('CACHE');
 			$f3->clear('CACHE');
 			if (extension_loaded('memcache') &&
