@@ -156,11 +156,25 @@ class Cache extends Controller {
 			$cache->clear($hash);
 			$session=new \Session;
 			$test->expect(
-				@session_start(),
-				'Cache-based session started'
+				$session->sid()===NULL,
+				'Cache-based session instantiated but not started'
 			);
-			$_SESSION['foo']='hello world';
-			session_commit();
+			session_start();
+			$test->expect(
+				$sid=$session->sid(),
+				'Cache-based session started: '.$sid
+			);
+			$f3->set('SESSION.foo','hello world');
+			session_write_close();
+			$test->expect(
+				$session->sid()===NULL,
+				'Cache-based session written and closed'
+			);
+			$_SESSION=array();
+			$test->expect(
+				$f3->get('SESSION.foo')=='hello world',
+				'Session variable retrieved from database'
+			);
 			$test->expect(
 				$ip=$session->ip(),
 				'IP address: '.$ip
@@ -173,26 +187,23 @@ class Cache extends Controller {
 				$agent=$session->agent(),
 				'User agent: '.$agent
 			);
-			session_unset();
-			$_SESSION=array();
-			$test->expect(
-				empty($_SESSION['foo']),
-				'Session cleared'
-			);
-			session_commit();
-			session_start();
-			$test->expect(
-				isset($_SESSION['foo']) && $_SESSION['foo']=='hello world',
-				'Session variable retrieved from cache'
-			);
-			session_unset();
-			session_destroy();
-			header_remove('Set-Cookie');
-			unset($_COOKIE[session_name()]);
-			$test->expect(
-				empty($_SESSION['foo']),
-				'Session destroyed'
-			);
+            $test->expect(
+                $csrf=$session->csrf(),
+                'Anti-CSRF token: '.$csrf
+            );
+            $before=$after='';
+            if (preg_match('/^Set-Cookie: '.session_name().'=(\w+)/m',
+                implode(PHP_EOL,array_reverse(headers_list())),$m))
+                $before=$m[1];
+            $f3->clear('SESSION');
+            if (preg_match('/^Set-Cookie: '.session_name().'=(\w+)/m',
+                implode(PHP_EOL,array_reverse(headers_list())),$m))
+                $after=$m[1];
+            $test->expect(
+                empty($_SESSION) && !$cache->exists($sid.'@') &&
+                $before==$sid && $after=='deleted' && empty($_COOKIE[session_name()]),
+                'Session destroyed and cookie expired'
+            );
 			$backend=$f3->get('CACHE');
 			$f3->clear('CACHE');
 			if (extension_loaded('memcache') &&
