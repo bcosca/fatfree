@@ -190,11 +190,25 @@ class Mongo extends Controller {
 				);
 				$session=new \DB\Mongo\Session($db);
 				$test->expect(
-					@session_start(),
-					'Database-managed session started'
+					$session->sid()===NULL,
+					'Database-managed session instantiated but not started'
+				);
+				session_start();
+				$test->expect(
+					$sid=$session->sid(),
+					'Database-managed session started: '.$sid
 				);
 				$f3->set('SESSION.foo','hello world');
-				session_commit();
+				session_write_close();
+				$test->expect(
+					$session->sid()===NULL,
+					'Database-managed session written and closed'
+				);
+				$_SESSION=array();
+				$test->expect(
+					$f3->get('SESSION.foo')=='hello world',
+					'Session variable retrieved from database'
+				);
 				$test->expect(
 					$ip=$session->ip(),
 					'IP address: '.$ip
@@ -207,22 +221,22 @@ class Mongo extends Controller {
 					$agent=$session->agent(),
 					'User agent: '.$agent
 				);
-				$_SESSION=array();
 				$test->expect(
-					$f3->get('SESSION.foo')=='hello world',
-					'Session variable retrieved from database'
+					$csrf=$session->csrf(),
+					'Anti-CSRF token: '.$csrf
 				);
-				session_unset();
+				$before=$after='';
+				if (preg_match('/^Set-Cookie: '.session_name().'=(\w+)/m',
+					implode(PHP_EOL,array_reverse(headers_list())),$m))
+					$before=$m[1];
+				$f3->clear('SESSION');
+				if (preg_match('/^Set-Cookie: '.session_name().'=(\w+)/m',
+					implode(PHP_EOL,array_reverse(headers_list())),$m))
+					$after=$m[1];
 				$test->expect(
-					empty($_SESSION['foo']),
-					'Session cleared'
-				);
-				session_destroy();
-				header_remove('Set-Cookie');
-				unset($_COOKIE[session_name()]);
-				$test->expect(
-					empty($_SESSION['foo']),
-					'Session destroyed'
+					empty($_SESSION) && $session->count(array('session_id=?',$sid))==0 &&
+					$before==$sid && $after=='deleted' && empty($_COOKIE[session_name()]),
+					'Session destroyed and cookie expired'
 				);
 				$db->drop();
 			}
