@@ -450,6 +450,33 @@ class Template extends Controller {
 			'Use template engine: '.
 				round(1e3*(microtime(TRUE)-$now),2).' msecs'
 		);
+		$test->expect(
+			$f3->CACHE===FALSE,
+			'Enable caching'
+		);
+		$cachedir=sprintf('tmp/cache/template_%s/',microtime(TRUE));
+		$f3->CACHE='folder='.$cachedir;
+		$file='templates/cache.htm';
+		$test->expect(
+			$tpl->render($file,null,['value'=>'nope'],0)==='nope',
+			'Don\'t cache'
+		);
+		$test->expect(
+			$tpl->render($file,null,['value'=>'cold'],2)==='cold',
+			'Cache for two seconds'
+		);
+		$test->expect(
+			$tpl->render($file,null,['value'=>'warm'],2)==='cold',
+			'Load two second cached view'
+		);
+		sleep(3);
+		$test->expect(
+			$tpl->render($file,null,['value'=>'cold_again'],2)==='cold_again',
+			'Replace outdated two second cached view'
+		);
+		$f3->CACHE=FALSE;
+		foreach (glob($cachedir.'*') as $file) unlink($file);
+		rmdir($cachedir);
 		foreach (glob($f3->get('TEMP').
 			$f3->hash($f3->get('ROOT').$f3->get('BASE')).'.*.php') as $file)
 			unlink($file);
