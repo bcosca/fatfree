@@ -55,6 +55,33 @@ class View extends Controller {
 			$view->render('view/hive_size.php', null, array())==='0',
 			'Empty custom HIVE'
 		);
+		$test->expect(
+			$f3->CACHE===false,
+			'Enable caching'
+		);
+		$cachedir=sprintf('tmp/cache/view_%s/',microtime(TRUE));
+		$f3->CACHE='folder='.$cachedir;
+		$file='view/cache.php';
+		$test->expect(
+			$view->render($file,null,['value'=>'nope'],0)==='nope',
+			'Don\'t cache'
+		);
+		$test->expect(
+			$view->render($file,null,['value'=>'cold'],2)==='cold',
+			'Cache for two seconds'
+		);
+		$test->expect(
+			$view->render($file,null,['value'=>'warm'],2)==='cold',
+			'Load two second cached view'
+		);
+		sleep(3);
+		$test->expect(
+			$view->render($file,null,['value'=>'cold_again'],2)==='cold_again',
+			'Replace outdated two second cached view'
+		);
+		$f3->CACHE=FALSE;
+		foreach (glob($cachedir.'*') as $file) unlink($file);
+		rmdir($cachedir);
 		$f3->set('results',$test->results());
 	}
 
