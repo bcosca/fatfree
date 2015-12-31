@@ -182,12 +182,13 @@ class SMTP extends Magic {
 			stream_socket_enable_crypto(
 				$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
 			$reply=$this->dialog('EHLO '.$fw->get('HOST'),$log);
-			if (preg_match('/8BITMIME/',$reply))
-				$headers['Content-Transfer-Encoding']='8bit';
-			else {
-				$headers['Content-Transfer-Encoding']='quoted-printable';
-				$message=quoted_printable_encode($message);
-			}
+		}
+		if (preg_match('/8BITMIME/',$reply))
+			$headers['Content-Transfer-Encoding']='8bit';
+		else {
+			$headers['Content-Transfer-Encoding']='quoted-printable';
+			$message=preg_replace('/^\.(.+)/m',
+				'..$1',quoted_printable_encode($message));
 		}
 		if ($this->user && $this->pw && preg_match('/AUTH/',$reply)) {
 			// Authenticate
@@ -204,9 +205,9 @@ class SMTP extends Magic {
 		$str='';
 		// Stringify headers
 		foreach ($headers as $key=>&$val) {
-			if (!in_array($key,$reqd)) {
+			if (!in_array($key,$reqd) && (!$this->attachments ||
+				$key!='Content-Type' && $key!='Content-Transfer-Encoding'))
 				$str.=$key.': '.$val.$eol;
-			}
 			if (in_array($key,array('From','To','Cc','Bcc')) &&
 				!preg_match('/[<>]/',$val))
 				$val='<'.$val.'>';
@@ -221,12 +222,13 @@ class SMTP extends Magic {
 		$this->dialog('DATA',$log);
 		if ($this->attachments) {
 			// Replace Content-Type
-			$hash=uniqid(NULL,TRUE);
 			$type=$headers['Content-Type'];
-			$headers['Content-Type']='multipart/mixed; '.
-				'boundary="'.$hash.'"';
+			unset($headers['Content-Type']);
+			$enc=$headers['Content-Transfer-Encoding'];
+			unset($headers['Content-Transfer-Encoding']);
+			$hash=uniqid(NULL,TRUE);
 			// Send mail headers
-			$out='';
+			$out='Content-Type: multipart/mixed; boundary="'.$hash.'"'.$eol;
 			foreach ($headers as $key=>$val)
 				if ($key!='Bcc')
 					$out.=$key.': '.$val.$eol;
@@ -235,16 +237,17 @@ class SMTP extends Magic {
 			$out.=$eol;
 			$out.='--'.$hash.$eol;
 			$out.='Content-Type: '.$type.$eol;
-			$out.=$eol;
+			$out.='Content-Transfer-Encoding: '.$enc.$eol;
+			$out.=$str.$eol;
 			$out.=$message.$eol;
 			foreach ($this->attachments as $attachment) {
 				if (is_array($attachment['filename'])) {
-					list($alias,$file)=each($attachment);
+					list($alias,$file)=each($attachment['filename']);
 					$filename=$alias;
 					$attachment['filename']=$file;
 				}
 				else
-					$filename=basename($attachment);
+					$filename=basename($attachment['filename']);
 				$out.='--'.$hash.$eol;
 				$out.='Content-Type: application/octet-stream'.$eol;
 				$out.='Content-Transfer-Encoding: base64'.$eol;
@@ -253,8 +256,8 @@ class SMTP extends Magic {
 				$out.='Content-Disposition: attachment; '.
 					'filename="'.$filename.'"'.$eol;
 				$out.=$eol;
-				$out.=chunk_split(
-					base64_encode(file_get_contents($attachment))).$eol;
+				$out.=chunk_split(base64_encode(
+					file_get_contents($attachment['filename']))).$eol;
 			}
 			$out.=$eol;
 			$out.='--'.$hash.'--'.$eol;
@@ -287,7 +290,7 @@ class SMTP extends Magic {
 	*	@param $user string
 	*	@param $pw string
 	**/
-	function __construct($host,$port,$scheme,$user,$pw) {
+	function __construct($host='localhost',$port=25,$scheme=null,$user=null,$pw=null) {
 		$this->headers=array(
 			'MIME-Version'=>'1.0',
 			'Content-Type'=>'text/plain; '.

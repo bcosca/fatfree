@@ -91,6 +91,8 @@ class SQL {
 				return \PDO::PARAM_BOOL;
 			case 'integer':
 				return \PDO::PARAM_INT;
+			case 'resource':
+				return \PDO::PARAM_LOB;
 			default:
 				return \PDO::PARAM_STR;
 		}
@@ -112,6 +114,8 @@ class SQL {
 				return (bool)$val;
 			case \PDO::PARAM_STR:
 				return (string)$val;
+			case \PDO::PARAM_LOB:
+				return (binary)$val;
 		}
 	}
 
@@ -149,6 +153,11 @@ class SQL {
 		for ($i=0;$i<$count;$i++) {
 			$cmd=$cmds[$i];
 			$arg=$args[$i];
+			// ensure 1-based arguments
+			if (array_key_exists(0,$arg)) {
+				array_unshift($arg,'');
+				unset($arg[0]);
+			}
 			if (!preg_replace('/(^\s+|[\s;]+$)/','',$cmd))
 				continue;
 			$now=microtime(TRUE);
@@ -198,8 +207,8 @@ class SQL {
 						$this->rollback();
 					user_error('PDOStatement: '.$error[2],E_USER_ERROR);
 				}
-				if (preg_match('/^\s*'.
-					'(?:EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING)\b/is',$cmd) ||
+				if (preg_match('/(?:^[\s\(]*'.
+					'(?:EXPLAIN|SELECT|PRAGMA|SHOW)|RETURNING)\b/is',$cmd) ||
 					(preg_match('/^\s*(?:CALL|EXEC)\b/is',$cmd) &&
 						$query->columnCount())) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);
@@ -245,11 +254,14 @@ class SQL {
 	}
 
 	/**
-	*	Return SQL profiler results
+	*	Return SQL profiler results (or disable logging)
+	*	@param $flag bool
 	*	@return string
 	**/
-	function log() {
-		return $this->log;
+	function log($flag=TRUE) {
+		if ($flag)
+			return $this->log;
+		$this->log=FALSE;
 	}
 
 	/**
@@ -333,7 +345,10 @@ class SQL {
 									\PDO::PARAM_INT:
 									(preg_match('/bool/i',$row[$val[2]])?
 										\PDO::PARAM_BOOL:
-										\PDO::PARAM_STR),
+										(preg_match('/blob|bytea|image|binary/i',
+											$row[$val[2]])?
+											\PDO::PARAM_LOB:
+											\PDO::PARAM_STR)),
 							'default'=>is_string($row[$val[3]])?
 								preg_replace('/^\s*([\'"])(.*)\1\s*/','\2',
 								$row[$val[3]]):$row[$val[3]],
@@ -422,7 +437,7 @@ class SQL {
 	}
 
 	/**
-	*	Redirect call to MongoDB object
+	*	Redirect call to PDO object
 	*	@return mixed
 	*	@param $func string
 	*	@param $args array

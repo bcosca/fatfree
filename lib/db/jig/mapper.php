@@ -149,7 +149,7 @@ class Mapper extends \DB\Cursor {
 
 	/**
 	*	Return records that match criteria
-	*	@return \DB\JIG\Mapper[]|FALSE
+	*	@return static[]|FALSE
 	*	@param $filter array
 	*	@param $options array
 	*	@param $ttl int
@@ -431,7 +431,7 @@ class Mapper extends \DB\Cursor {
 		if ($func)
 			$var=call_user_func($func,$var);
 		foreach ($var as $key=>$val)
-			$this->document[$key]=$val;
+			$this->set($key,$val);
 	}
 
 	/**

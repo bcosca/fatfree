@@ -1,5 +1,52 @@
 CHANGELOG
 
+3.5.1 (31 December 2015)
+*	NEW: ttl attribute in <include> template tag
+*	NEW: allow anonymous function for template filter
+*	NEW: format modifier for international and custom currency symbol
+*	NEW: Image->data() returns image resource
+*	NEW: extract() get prefixed array keys from an assoc array
+*	NEW: Optimized and faster Template parser with full support for HTML5 empty tags
+*	NEW: Added support for {@token} encapsulation syntax in routes definition
+*	NEW: DB\SQL->exec(), automatically shift to 1-based query arguments
+*	NEW: abort() flush output
+*	Added referenced value to devoid()
+*	Template token filters are now resolved within Preview->token()
+*	Web->_curl: restrict redirections to HTTP
+*	Web->minify(), skip importing of external files
+*	Improved session and error handling in until()
+*	Get the error trace array with the new $format parameter
+*	Better support for unicode URLs
+*	Optimized TZ detection with date_default_timezone_get()
+*	format() Provide default decimal places
+*	Optimize code: remove redundant TTL checks
+*	Optimized timeout handling in Web->request()
+*	Improved PHPDoc hints
+*	Added missing russian DIACRITICS letters
+*	DB\Cursor: allow child implementation of reset()
+*	DB\Cursor: Copyfrom now does an internal call to set()
+*	DB\SQL: Provide the ability to disable SQL logging
+*	DB\SQL: improved query analysis to trigger fetchAll
+*	DB\SQL\Mapper: added support for binary table columns
+*	SQL,JIG,MONGO,CACHE Session handlers refactored and optimized
+*	SMTP Refactoring and optimization
+*	Bug fix: SMTP, Align quoted_printable_encode() with SMTP specs (dot-stuffing)
+*	Bug fix: SMTP, Send buffered optional headers to output
+*	Bug fix: SMTP, Content-Transfer-Encoding for non-TLS connections
+*	Bug fix: SMTP, Single attachment error
+*	Bug fix: Cursor->load not always mapping to first record
+*	Bug fix: dry SQL mapper should not trigger 'load'
+*	Bug fix: Code highlighting on empty text
+*	Bug fix: Image->resize, round dimensions instead of cast
+*	Bug fix: whitespace handling in $f3->compile()
+*	Bug fix: TTL of `View` and `Preview` (`Template`)
+*	Bug fix: token filter regex
+*	Bug fix: Template, empty attributes
+*	Bug fix: Preview->build() greedy regex
+*	Bug fix: Web->minify() single-line comment on last line
+*	Bug fix: Web->request(), follow_location with cURL and open_basedir
+*	Bug fix: Web->send() Single quotes around filename not interpreted correctly by some browsers
+
 3.5.0 (2 June 2015)
 *	NEW: until() method for long polling
 *	NEW: abort() to disconnect HTTP client (and continue execution)

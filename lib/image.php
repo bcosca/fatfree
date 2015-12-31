@@ -230,9 +230,9 @@ class Image {
 		$ratio=($origw=imagesx($this->data))/($origh=imagesy($this->data));
 		if (!$crop) {
 			if ($width/$ratio<=$height)
-				$height=$width/$ratio;
+				$height=round($width/$ratio);
 			else
-				$width=$height*$ratio;
+				$width=round($height*$ratio);
 		}
 		if (!$enlarge) {
 			$width=min($origw,$width);
@@ -245,12 +245,12 @@ class Image {
 		// Resize
 		if ($crop) {
 			if ($width/$ratio<=$height) {
-				$cropw=$origh*$width/$height;
+				$cropw=round($origh*$width/$height);
 				imagecopyresampled($tmp,$this->data,
 					0,0,($origw-$cropw)/2,0,$width,$height,$cropw,$origh);
 			}
 			else {
-				$croph=$origw*$height/$width;
+				$croph=round($origw*$height/$width);
 				imagecopyresampled($tmp,$this->data,
 					0,0,0,($origh-$croph)/2,$width,$height,$origw,$croph);
 			}
@@ -487,6 +487,14 @@ class Image {
 		call_user_func_array('image'.$format,
 			array_merge(array($this->data),$args));
 		return ob_get_clean();
+	}
+
+	/**
+	*	Return image resource
+	*	@return resource
+	**/
+	function data() {
+		return $this->data;
 	}
 
 	/**

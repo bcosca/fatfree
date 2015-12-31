@@ -133,7 +133,7 @@ class Web extends Prefab {
 			header('Content-Type: '.($mime?:$this->mime($file)));
 			if ($force)
 				header('Content-Disposition: attachment; '.
-					'filename='.var_export(basename($file),TRUE));
+					'filename="'.basename($file).'"');
 			header('Accept-Ranges: bytes');
 			header('Content-Length: '.$size);
 			header('X-Powered-By: '.Base::instance()->get('PACKAGE'));
@@ -259,10 +259,13 @@ class Web extends Prefab {
 	**/
 	protected function _curl($url,$options) {
 		$curl=curl_init($url);
-		curl_setopt($curl,CURLOPT_FOLLOWLOCATION,
-			$options['follow_location']);
+		if (!ini_get('open_basedir'))
+			curl_setopt($curl,CURLOPT_FOLLOWLOCATION,
+				$options['follow_location']);
 		curl_setopt($curl,CURLOPT_MAXREDIRS,
 			$options['max_redirects']);
+		curl_setopt($curl,CURLOPT_PROTOCOLS,CURLPROTO_HTTP|CURLPROTO_HTTPS);
+		curl_setopt($curl,CURLOPT_REDIR_PROTOCOLS,CURLPROTO_HTTP|CURLPROTO_HTTPS);
 		curl_setopt($curl,CURLOPT_CUSTOMREQUEST,$options['method']);
 		if (isset($options['header']))
 			curl_setopt($curl,CURLOPT_HTTPHEADER,$options['header']);
@@ -288,6 +291,11 @@ class Web extends Prefab {
 		curl_exec($curl);
 		curl_close($curl);
 		$body=ob_get_clean();
+		if ($options['follow_location'] &&
+			preg_match('/^Location: (.+)$/m',implode(PHP_EOL,$headers),$loc)) {
+			$options['max_redirects']--;
+			return $this->request($loc[1],$options);
+		}
 		return array(
 			'body'=>$body,
 			'headers'=>$headers,
@@ -357,7 +365,8 @@ class Web extends Prefab {
 		if (!$socket)
 			return FALSE;
 		stream_set_blocking($socket,TRUE);
-		stream_set_timeout($socket,$options['timeout']);
+		stream_set_timeout($socket,isset($options['timeout'])?
+			$options['timeout']:ini_get('default_socket_timeout'));
 		fputs($socket,$options['method'].' '.$parts['path'].
 			($parts['query']?('?'.$parts['query']):'').' HTTP/1.0'.$eol
 		);
@@ -565,7 +574,7 @@ class Web extends Prefab {
 						$src=$fw->read($save);
 						for ($ptr=0,$len=strlen($src);$ptr<$len;) {
 							if (preg_match('/^@import\h+url'.
-								'\(\h*([\'"])(.+?)\1\h*\)[^;]*;/',
+								'\(\h*([\'"])((?!(?:https?:)?\/\/).+?)\1\h*\)[^;]*;/',
 								substr($src,$ptr),$parts)) {
 								$path=dirname($file);
 								$data.=$this->minify(
@@ -586,7 +595,8 @@ class Web extends Prefab {
 									// Single-line comment
 									$str=strstr(
 										substr($src,$ptr+2),"\n",TRUE);
-									$ptr+=strlen($str)+2;
+									$ptr+=(empty($str))?
+										strlen(substr($src,$ptr)):strlen($str)+2;
 								}
 								else {
 									// Presume it's a regex pattern
@@ -785,7 +795,7 @@ class Web extends Prefab {
 				'ù'=>'u','ű'=>'u','ů'=>'u','ư'=>'u','ū'=>'u','ǚ'=>'u',
 				'ǜ'=>'u','ǔ'=>'u','ǖ'=>'u','ũ'=>'u','ü'=>'ue','в'=>'v',
 				'ŵ'=>'w','ы'=>'y','ÿ'=>'y','ý'=>'y','ŷ'=>'y','ź'=>'z',
-				'ž'=>'z','з'=>'z','ż'=>'z','ж'=>'zh'
+				'ž'=>'z','з'=>'z','ż'=>'z','ж'=>'zh','ь'=>'','ъ'=>''
 			)+Base::instance()->get('DIACRITICS'))))),'-');
 	}
 

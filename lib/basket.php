@@ -195,7 +195,7 @@ class Basket extends Magic {
 		if (is_string($var))
 			$var=\Base::instance()->get($var);
 		foreach ($var as $key=>$val)
-			$this->item[$key]=$val;
+			$this->set($key,$val);
 	}
 
 	/**

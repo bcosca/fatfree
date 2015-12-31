@@ -25,7 +25,15 @@ class Session {
 
 	protected
 		//! Session ID
-		$sid;
+		$sid,
+		//! Anti-CSRF token
+		$_csrf,
+		//! User agent
+		$_agent,
+		//! IP,
+		$_ip,
+		//! Suspect callback
+		$onsuspect;
 
 	/**
 	*	Open session
@@ -42,6 +50,7 @@ class Session {
 	*	@return TRUE
 	**/
 	function close() {
+		$this->sid=NULL;
 		return TRUE;
 	}
 
@@ -51,9 +60,20 @@ class Session {
 	*	@param $id string
 	**/
 	function read($id) {
-		if ($id!=$this->sid)
-			$this->sid=$id;
-		return Cache::instance()->exists($id.'.@',$data)?$data['data']:FALSE;
+		$this->sid=$id;
+		if (!$data=Cache::instance()->get($id.'.@'))
+			return FALSE;
+		if ($data['ip']!=$this->_ip || $data['agent']!=$this->_agent) {
+			$fw=Base::instance();
+			if (!isset($this->onsuspect) || FALSE===$fw->call($this->onsuspect,array($this,$id))) {
+				//NB: `session_destroy` can't be called at that stage (`session_start` not completed)
+				$this->destroy($id);
+				$this->close();
+				$fw->clear('COOKIE.'.session_name());
+				$fw->error(403);
+			}
+		}
+		return $data['data'];
 	}
 
 	/**
@@ -64,20 +84,12 @@ class Session {
 	**/
 	function write($id,$data) {
 		$fw=Base::instance();
-		$sent=headers_sent();
-		$headers=$fw->get('HEADERS');
-		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-			$fw->hash(mt_rand());
 		$jar=$fw->get('JAR');
-		if ($id!=$this->sid)
-			$this->sid=$id;
 		Cache::instance()->set($id.'.@',
 			array(
 				'data'=>$data,
-				'csrf'=>$sent?$this->csrf():$csrf,
-				'ip'=>$fw->get('IP'),
-				'agent'=>isset($headers['User-Agent'])?
-					$headers['User-Agent']:'',
+				'ip'=>$this->_ip,
+				'agent'=>$this->_agent,
 				'stamp'=>time()
 			),
 			$jar['expire']?($jar['expire']-time()):0
@@ -92,9 +104,6 @@ class Session {
 	**/
 	function destroy($id) {
 		Cache::instance()->clear($id.'.@');
-		setcookie(session_name(),'',strtotime('-1 year'));
-		unset($_COOKIE[session_name()]);
-		header_remove('Set-Cookie');
 		return TRUE;
 	}
 
@@ -109,50 +118,55 @@ class Session {
 	}
 
 	/**
-	*	Return anti-CSRF token
-	*	@return string|FALSE
-	**/
+	 *	Return session id (if session has started)
+	 *	@return string|NULL
+	 **/
+	function sid() {
+		return $this->sid;
+	}
+
+	/**
+	 *	Return anti-CSRF token
+	 *	@return string
+	 **/
 	function csrf() {
-		return Cache::instance()->
-			exists(($this->sid?:session_id()).'.@',$data)?
-				$data['csrf']:FALSE;
+		return $this->_csrf;
 	}
 
 	/**
-	*	Return IP address
-	*	@return string|FALSE
-	**/
+	 *	Return IP address
+	 *	@return string
+	 **/
 	function ip() {
-		return Cache::instance()->
-			exists(($this->sid?:session_id()).'.@',$data)?
-				$data['ip']:FALSE;
+		return $this->_ip;
 	}
 
 	/**
-	*	Return Unix timestamp
-	*	@return string|FALSE
-	**/
+	 *	Return Unix timestamp
+	 *	@return string|FALSE
+	 **/
 	function stamp() {
-		return Cache::instance()->
-			exists(($this->sid?:session_id()).'.@',$data)?
-				$data['stamp']:FALSE;
+		if (!$this->sid)
+			session_start();
+		return Cache::instance()->exists($this->sid.'.@',$data)?
+			$data['stamp']:FALSE;
 	}
 
 	/**
-	*	Return HTTP user agent
-	*	@return string|FALSE
-	**/
+	 *	Return HTTP user agent
+	 *	@return string
+	 **/
 	function agent() {
-		return Cache::instance()->
-			exists(($this->sid?:session_id()).'.@',$data)?
-				$data['agent']:FALSE;
+		return $this->_agent;
 	}
 
 	/**
 	*	Instantiate class
 	*	@param $onsuspect callback
+	*	@param $key string
 	**/
-	function __construct($onsuspect=NULL) {
+	function __construct($onsuspect=NULL,$key=NULL) {
+		$this->onsuspect=$onsuspect;
 		session_set_save_handler(
 			array($this,'open'),
 			array($this,'close'),
@@ -162,30 +176,14 @@ class Session {
 			array($this,'cleanup')
 		);
 		register_shutdown_function('session_commit');
-		@session_start();
 		$fw=\Base::instance();
 		$headers=$fw->get('HEADERS');
-		if (($ip=$this->ip()) && $ip!=$fw->get('IP') ||
-			($agent=$this->agent()) &&
-			(!isset($headers['User-Agent']) ||
-				$agent!=$headers['User-Agent'])) {
-			if (isset($onsuspect))
-				$fw->call($onsuspect,array($this));
-			else {
-				session_destroy();
-				$fw->error(403);
-			}
-		}
-		$csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+		$this->_csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
 			$fw->hash(mt_rand());
-		$jar=$fw->get('JAR');
-		if (Cache::instance()->exists(($this->sid=session_id()).'.@',$data)) {
-			$data['csrf']=$csrf;
-			Cache::instance()->set($this->sid.'.@',
-				$data,
-				$jar['expire']?($jar['expire']-time()):0
-			);
-		}
+		if ($key)
+			$fw->set($key,$this->_csrf);
+		$this->_agent=isset($headers['User-Agent'])?$headers['User-Agent']:'';
+		$this->_ip=$fw->get('IP');
 	}
 
 }
