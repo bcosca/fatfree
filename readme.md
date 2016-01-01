@@ -2444,9 +2444,10 @@ If you feel that this software is one great weapon to have in your programming a
 The Fat-Free Framework is community-driven software. It can't be what it is today without the help and support from the following people and organizations:
 
 * GitHub
+* Stehlik & Company
+* bodalgo.com
 * Square Lines, LLC
 * Mirosystems
-* Stehlik & Company
 * Talis Group, Ltd.
 * Tecnilógica
 * G Holdings, LLC
@@ -2455,11 +2456,13 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * PHP Experts, Inc.
 * Meins und Vogel GmbH
 * Online Prepaid Services
+* Frugal Photographer
 * Christian Knuth
+* Florent Racineux
 * Sascha Ohms
 * Lars Brandi Jensen
-* Jermaine Maree
 * Eyðun Lamhauge
+* Jermaine Maree
 * Sergey Zaretsky
 * Daniel Kloke
 * Brian Nelson
@@ -2509,7 +2512,6 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Biswajit Nayak
 * R Mohan
 * Michael Messner
-* Florent Racineux
 * Jason Borseth
 * Dmitrij Chernov
 * Marek Toman
@@ -2547,6 +2549,16 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Steve Cove
 * Steven Witten
 * Silvan Seeholzer
+* Toni Schönbuchner
+* Marek Toman
+* Dexter Freivald
+* Chad West
+* Bond Akinmade
+* AlpiSol - Ernaldo Pisati
+* Adam Wilkins
+* Mihai Flaviu Molnar
+* Carolina R Molla
+* Andres Espinoza Arce
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
