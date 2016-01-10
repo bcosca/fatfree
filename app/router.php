@@ -5,11 +5,11 @@ namespace App;
 class Router extends Controller {
 
 	function callee() {
-		\Base::instance()->set('called',TRUE);
+		\F3\Base::instance()->set('called',TRUE);
 	}
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -23,7 +23,7 @@ class Router extends Controller {
 		if (is_file($file))
 			@unlink($file);
 		$f3->set('ONREROUTE',function($url,$permanent){
-			$f3=\Base::instance();
+			$f3=\F3\Base::instance();
 			$f3->set('reroute',$url);
 		});
 		$f3->reroute('/foo?bar=baz');
@@ -109,7 +109,7 @@ class Router extends Controller {
 		$f3->map('/dummy','NS\C');
 		$ok=TRUE;
 		$list='';
-		foreach (explode('|',\Base::VERBS) as $verb) {
+		foreach (explode('|',\F3\Base::VERBS) as $verb) {
 			$f3->mock($verb.' /dummy',array('a'=>'hello'));
 			if ($f3->get('route')!=$verb ||
 				preg_match('/GET|HEAD/',strtoupper($verb)) &&
@@ -131,7 +131,7 @@ class Router extends Controller {
 		$f3->mock('OPTIONS /dummy');
 		$test->expect(
 			preg_grep('/Allow: '.
-				str_replace('|',',',\Base::VERBS.'/'),headers_list()),
+				str_replace('|',',',\F3\Base::VERBS.'/'),headers_list()),
 			'HTTP OPTIONS request returns allowed methods'
 		);
 		$f3->clear('ERROR');
@@ -293,7 +293,7 @@ class Router extends Controller {
 		);
 		$f3->clear('called');
 		$f3->call(function() {
-			\Base::instance()->set('called',TRUE);
+			\F3\Base::instance()->set('called',TRUE);
 		});
 		$test->expect(
 			$f3->get('called'),
@@ -313,7 +313,7 @@ class Router extends Controller {
 }
 
 function callee() {
-	\Base::instance()->set('called',TRUE);
+	\F3\Base::instance()->set('called',TRUE);
 }
 
 function a($x) {

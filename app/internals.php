@@ -5,7 +5,7 @@ namespace App;
 class Internals extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -24,7 +24,7 @@ class Internals extends Controller {
 		);
 		$f3->foo='bar';
 		$test->expect(
-			$f3===\Base::instance() && @\Base::instance()->foo=='bar',
+			$f3===\F3\Base::instance() && @\F3\Base::instance()->foo=='bar',
 			'Same framework instance returned'
 		);
 		$test->expect(
@@ -125,17 +125,17 @@ class Internals extends Controller {
 			$f3->decode($out)=='I\'ll "walk" the <b>dog</b> now™',
 			'Decode HTML entities'
 		);
-		$obj=\Matrix::instance();
+		$obj=\F3\Matrix::instance();
 		$test->expect(
-			\Registry::exists($class=get_class($obj)),
+			\F3\Registry::exists($class=get_class($obj)),
 			'instance() saves object to framework registry'
 		);
 		$test->expect(
-			$f3->constants($f3,'REQ_')==array('SYNC'=>\Base::REQ_SYNC,'AJAX'=>\Base::REQ_AJAX),
+			$f3->constants($f3,'REQ_')==array('SYNC'=>\F3\Base::REQ_SYNC,'AJAX'=>\F3\Base::REQ_AJAX),
 			'Fetch constants from a class (object)'
 		);
 		$test->expect(
-			$f3->constants('ISO','CC_')==\ISO::instance()->countries(),
+			$f3->constants('\F3\ISO','CC_')==\F3\ISO::instance()->countries(),
 			'Fetch constants from a class (string)'
 		);
 		$f3->set('results',$test->results());

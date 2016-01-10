@@ -5,7 +5,7 @@ namespace App;
 class SQL extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -16,8 +16,8 @@ class SQL extends Controller {
 		);
 		if ($loaded) {
 			if (!is_dir('tmp/'))
-				mkdir('tmp/',\Base::MODE,TRUE);
-			$db=new \DB\SQL('sqlite:tmp/sqlite.db');
+				mkdir('tmp/',\F3\Base::MODE,TRUE);
+			$db=new \F3\DB\SQL('sqlite:tmp/sqlite.db');
 			$db->exec(
 				array(
 					'PRAGMA temp_store=MEMORY;',
@@ -25,7 +25,7 @@ class SQL extends Controller {
 					'PRAGMA foreign_keys=ON;'
 				)
 			);
-			//$db=new \DB\SQL('mysql:host=localhost');
+			//$db=new \F3\DB\SQL('mysql:host=localhost');
 			$engine=$db->driver();
 			$test->expect(
 				is_object($db),
@@ -44,7 +44,7 @@ class SQL extends Controller {
 					)
 				);
 				unset($db);
-				$db=new \DB\SQL(
+				$db=new \F3\DB\SQL(
 					'mysql:host=localhost;dbname=test');
 			}
 			$db->exec(
@@ -193,7 +193,7 @@ class SQL extends Controller {
 				($schema=$db->schema('movies',NULL,60)) && count($schema)==3,
 				'Schema retrieved'
 			);
-			$movie=new \DB\SQL\Mapper($db,'movies');
+			$movie=new \F3\DB\SQL\Mapper($db,'movies');
 			$test->expect(
 				$type=$movie->dbtype(),
 				'DB type: '.$type
@@ -394,7 +394,7 @@ class SQL extends Controller {
 			$obj=$movie->findone(array($db->quotekey('title').'=?','Zodiac'));
 			$class=get_class($obj);
 			$test->expect(
-				$class=='DB\SQL\Mapper' &&
+				$class=='F3\DB\SQL\Mapper' &&
 				$obj->get('title')=='Zodiac' &&
 				$obj->get('director')=='David Fincher' &&
 				$obj->get('year')==2007,
@@ -433,7 +433,7 @@ class SQL extends Controller {
 					');'
 				)
 			);
-			$ticket=new \DB\SQL\Mapper($db,'tickets');
+			$ticket=new \F3\DB\SQL\Mapper($db,'tickets');
 			$ticket->set('title','The River Murders');
 			$ticket->save();
 			$ticket->save(); // intentional
@@ -504,7 +504,7 @@ class SQL extends Controller {
 				$db->exec(
 					'DROP TABLE IF EXISTS '.$db->quotekey('sessions').';'
 				);
-				$session=new \DB\SQL\Session($db);
+				$session=new \F3\DB\SQL\Session($db);
 				$test->expect(
 					$session->sid()===NULL,
 					'Database-managed session instantiated but not started'

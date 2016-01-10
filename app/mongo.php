@@ -5,7 +5,7 @@ namespace App;
 class Mongo extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -16,7 +16,7 @@ class Mongo extends Controller {
 		);
 		if ($loaded) {
 			try {
-				$db=new \DB\Mongo('mongodb://localhost:27017','test');
+				$db=new \F3\DB\Mongo('mongodb://localhost:27017','test');
 			}
 			catch (\Exception $x) {
 				$db=NULL;
@@ -30,7 +30,7 @@ class Mongo extends Controller {
 					$uuid=$db->uuid(),
 					'UUID: '.$uuid
 				);
-				$movie=new \DB\Mongo\Mapper($db,'movies');
+				$movie=new \F3\DB\Mongo\Mapper($db,'movies');
 				$test->expect(
 					$type=$movie->dbtype(),
 					'DB type: '.$type
@@ -176,7 +176,7 @@ class Mongo extends Controller {
 				$obj=$movie->findone(array('title'=>'Zodiac'));
 				$class=get_class($obj);
 				$test->expect(
-					$class=='DB\Mongo\Mapper' &&
+					$class=='F3\DB\Mongo\Mapper' &&
 					$obj->get('title')=='Zodiac' &&
 					$obj->get('director')=='David Fincher' &&
 					$obj->get('year')==2007,
@@ -188,7 +188,7 @@ class Mongo extends Controller {
 					$obj['year']==2007,
 					'Associative array access'
 				);
-				$session=new \DB\Mongo\Session($db);
+				$session=new \F3\DB\Mongo\Session($db);
 				$test->expect(
 					$session->sid()===NULL,
 					'Database-managed session instantiated but not started'

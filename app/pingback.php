@@ -6,7 +6,7 @@ class Pingback extends Controller {
 
 	function get($f3) {
 		// Client
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -16,7 +16,7 @@ class Pingback extends Controller {
 			'XML-RPC extension loaded'
 		);
 		if ($loaded) {
-			$pingback=new \Web\Pingback;
+			$pingback=new \F3\Web\Pingback;
 			$source=$f3->get('BASE').'/pingback2?page=pingback/client';
 			$test->expect(
 				$f3->read($f3->get('UI').'pingback/server.htm'),
@@ -33,7 +33,7 @@ class Pingback extends Controller {
 			);
 			$test->expect(
 				@file_get_contents($file)==
-					\View::instance()->render('pingback/client.htm'),
+					\F3\View::instance()->render('pingback/client.htm'),
 				'Read source contents'
 			);
 			@unlink($file);
@@ -53,7 +53,7 @@ class Pingback extends Controller {
 	}
 
 	function post($f3) {
-		\Web\Pingback::instance()->listen(
+		\F3\Web\Pingback::instance()->listen(
 			function($source,$text) use($f3) {
 				$f3->write($f3->get('TEMP').$f3->hash($source).'.htm',$text);
 			}

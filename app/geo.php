@@ -5,12 +5,12 @@ namespace App;
 class Geo extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$geo=new \Web\Geo;
+		$geo=new \F3\Web\Geo;
 		$test->expect(
 			($info=$geo->tzinfo($tz=$f3->get('TZ'))) &&
 				isset($info['offset']) && isset($info['country']) &&

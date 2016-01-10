@@ -5,7 +5,7 @@ namespace App;
 class Autoload extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -43,7 +43,7 @@ class Autoload extends Controller {
 			'NS\NS6\NS7\C: ns/ns6/ns7/c.php'
 		);
 		$test->expect(
-			class_exists('\Cache'),
+			class_exists('\F3\Cache'),
 			'Class in root namespace: lib/base.php'
 		);
 		$f3->set('results',$test->results());

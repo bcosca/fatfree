@@ -5,20 +5,20 @@ namespace App;
 class Auth extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
 		if (!is_dir('tmp/'))
-			mkdir('tmp/',\Base::MODE,TRUE);
-		$db=new \DB\Jig('tmp/');
+			mkdir('tmp/',\F3\Base::MODE,TRUE);
+		$db=new \F3\DB\Jig('tmp/');
 		$db->drop();
-		$user=new \DB\Jig\Mapper($db,'users');
+		$user=new \F3\DB\Jig\Mapper($db,'users');
 		$user->set('user_id','admin');
 		$user->set('password','secret');
 		$user->save();
-		$auth=new \Auth($user,array('id'=>'user_id','pw'=>'password'));
+		$auth=new \F3\Auth($user,array('id'=>'user_id','pw'=>'password'));
 		$test->expect(
 			$auth->basic(),
 			'HTTP basic auth mechanism'
@@ -30,13 +30,13 @@ class Auth extends Controller {
 		$db->drop();
 		if (extension_loaded('mongo')) {
 			try {
-				$db=new \DB\Mongo('mongodb://localhost:27017','test');
+				$db=new \F3\DB\Mongo('mongodb://localhost:27017','test');
 				$db->drop();
-				$user=new \DB\Mongo\Mapper($db,'users');
+				$user=new \F3\DB\Mongo\Mapper($db,'users');
 				$user->set('user_id','admin');
 				$user->set('password','secret');
 				$user->save();
-				$auth=new \Auth($user,
+				$auth=new \F3\Auth($user,
 					array('id'=>'user_id','pw'=>'password'));
 				$test->expect(
 					$auth->login('admin','secret') &&
@@ -48,7 +48,7 @@ class Auth extends Controller {
 			}
 		}
 		if (extension_loaded('pdo_sqlite')) {
-			$db=new \DB\SQL('sqlite::memory:');
+			$db=new \F3\DB\SQL('sqlite::memory:');
 			$db->exec(
 				'CREATE TABLE users ('.
 					'user_id VARCHAR(30),'.
@@ -56,11 +56,11 @@ class Auth extends Controller {
 					'PRIMARY KEY(user_id)'.
 				');'
 			);
-			$user=new \DB\SQL\Mapper($db,'users');
+			$user=new \F3\DB\SQL\Mapper($db,'users');
 			$user->set('user_id','admin');
 			$user->set('password','secret');
 			$user->save();
-			$auth=new \Auth($user,
+			$auth=new \F3\Auth($user,
 				array('id'=>'user_id','pw'=>'password'));
 			$test->expect(
 				$auth->login('admin','secret') &&

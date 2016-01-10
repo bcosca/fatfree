@@ -5,12 +5,12 @@ namespace App;
 class Template extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$tpl=\Preview::instance();
+		$tpl=\F3\Preview::instance();
 		$f3->set('foo','bar->baz');
 		$test->expect(
 			$tpl->render('templates/test1.htm')=='bar-&gt;baz',
@@ -139,7 +139,7 @@ class Template extends Controller {
 				($eval='$this->esc($foo)'),
 			$expr.': '.$eval
 		);
-		$tpl=\Template::instance();
+		$tpl=\F3\Template::instance();
 		$f3->set('foo','bar');
 		$f3->set('cond',TRUE);
 		$f3->set('file','templates/test1.htm');
@@ -440,13 +440,13 @@ class Template extends Controller {
 			array_fill(0,1000,array_combine(range('a','j'),range(0,9))));
 		$now=microtime(TRUE);
 		$test->expect(
-			\View::instance()->render('benchmark.htm'),
+			\F3\View::instance()->render('benchmark.htm'),
 			'Raw PHP template: '.
 				round(1e3*(microtime(TRUE)-$now),2).' msecs'
 		);
 		$now=microtime(TRUE);
 		$test->expect(
-			\Template::instance()->render('templates/benchmark.htm'),
+			\F3\Template::instance()->render('templates/benchmark.htm'),
 			'Use template engine: '.
 				round(1e3*(microtime(TRUE)-$now),2).' msecs'
 		);
