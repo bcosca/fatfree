@@ -35,11 +35,12 @@ class Internals extends Controller {
 			$f3->split('a|bc;d,efg')==array('a','bc','d','efg'),
 			'Split comma-, semi-colon, or pipe-separated string'
 		);
+		var_dump($f3->stringify(2e3));
 		$test->expect(
 			$f3->stringify(9)==='9' &&
 			$f3->stringify(1.5)==='1.5' &&
 			$f3->stringify(-7)==='-7' &&
-			$f3->stringify(2e3)==='2000',
+			(int)$f3->stringify(2e3)===2000,
 			'Convert number to exportable string'
 		);
 		$test->expect(
