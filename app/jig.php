@@ -5,12 +5,12 @@ namespace App;
 class Jig extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$db=new \DB\Jig;
+		$db=new \F3\DB\Jig;
 		$db->drop();
 		$test->expect(
 			is_object($db),
@@ -20,7 +20,7 @@ class Jig extends Controller {
 			$uuid=$db->uuid(),
 			'UUID: '.$uuid
 		);
-		$movie=new \DB\Jig\Mapper($db,'movies');
+		$movie=new \F3\DB\Jig\Mapper($db,'movies');
 		$test->expect(
 			$type=$movie->dbtype(),
 			'DB type: '.$type
@@ -221,7 +221,7 @@ class Jig extends Controller {
 		$obj=$movie->findone(array('@title=?','Zodiac'));
 		$class=get_class($obj);
 		$test->expect(
-			$class=='DB\Jig\Mapper' &&
+			$class=='F3\DB\Jig\Mapper' &&
 			$obj->get('title')=='Zodiac' &&
 			$obj->get('director')=='David Fincher' &&
 			$obj->get('year')==2007,
@@ -233,7 +233,7 @@ class Jig extends Controller {
 			$obj['year']==2007,
 			'Associative array access'
 		);
-		$session=new \DB\Jig\Session($db);
+		$session=new \F3\DB\Jig\Session($db);
 		$test->expect(
 			$session->sid()===NULL,
 			'Database-managed session instantiated but not started'

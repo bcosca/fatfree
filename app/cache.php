@@ -5,7 +5,7 @@ namespace App;
 class Cache extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -26,9 +26,9 @@ class Cache extends Controller {
 		);
 		$repeat=TRUE;
 		while ($repeat) {
-			$cache=\Cache::instance();
+			$cache=\F3\Cache::instance();
 			$test->expect(
-				$cache===\Cache::instance(),
+				$cache===\F3\Cache::instance(),
 				'Same cache engine instance returned'
 			);
 			$cache->set($f3->hash('foo').'.var','bar',0.05);
@@ -154,7 +154,7 @@ class Cache extends Controller {
 					sprintf('%.1f',(microtime(TRUE)-$mark)*1e3).'ms'
 			);
 			$cache->clear($hash);
-			$session=new \Session;
+			$session=new \F3\Session;
 			$test->expect(
 				$session->sid()===NULL,
 				'Cache-based session instantiated but not started'

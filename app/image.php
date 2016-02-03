@@ -5,7 +5,7 @@ namespace App;
 class Image extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -15,7 +15,7 @@ class Image extends Controller {
 			'GD2 extension loaded'
 		);
 		if ($loaded) {
-			$img=new \Image;
+			$img=new \F3\Image;
 			$test->expect(
 				$src=$f3->base64(
 					$img->captcha('fonts/thunder.ttf')->
@@ -44,9 +44,9 @@ class Image extends Controller {
 				'<img src="'.$src.'" title="Identicon" />'
 			);
 			$f3->set('file','images/south-park.jpg');
-			$img=new \Image($f3->get('file'),TRUE);
+			$img=new \F3\Image($f3->get('file'),TRUE);
 			$test->expect(
-				$orig=\View::instance()->render('image.htm'),
+				$orig=\F3\View::instance()->render('image.htm'),
 				'Original image rendered from template<br />'.$orig
 			);
 			$test->expect(
@@ -166,17 +166,17 @@ class Image extends Controller {
 				'<img src="'.$src.'" '.
 					'title="'.$img->width().'x'.$img->height().'" />'
 			);
-			$ovr=new \Image('images/watermark.png');
+			$ovr=new \F3\Image('images/watermark.png');
 			$ovr->resize(100,38)->rotate(90);
 			$test->expect(
 				$src=$f3->base64($img->restore()->
-					overlay($ovr,\Image::POS_Right|\Image::POS_Middle)->
+					overlay($ovr,\F3\Image::POS_Right|\F3\Image::POS_Middle)->
 					dump(),'image/png'),
 				'Overlay<br />'.
 				'<img src="'.$src.'" '.
 					'title="'.$img->width().'x'.$img->height().'" />'
 			);
-			$ovr=new \Image('images/watermark.png');
+			$ovr=new \F3\Image('images/watermark.png');
 			$ovr->resize(100,38)->rotate(45);
 			$test->expect(
 				$src=$f3->base64($img->restore()->

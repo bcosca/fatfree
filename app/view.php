@@ -5,12 +5,12 @@ namespace App;
 class View extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$view=\View::instance();
+		$view=\F3\View::instance();
 		$raw='<&>"\'ä';
 		$escaped="&lt;&amp;&gt;&quot;'ä";
 		$escapedTwice="&amp;lt;&amp;amp;&amp;gt;&amp;quot;'ä";

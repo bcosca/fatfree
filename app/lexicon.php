@@ -5,7 +5,7 @@ namespace App;
 class Lexicon extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -19,7 +19,7 @@ class Lexicon extends Controller {
 			$language=$f3->get('LANGUAGE'),
 			'LANGUAGE: '.$language.' auto-detected'
 		);
-		$template=\Template::instance();
+		$template=\F3\Template::instance();
 		$f3->set('LANGUAGE','fr-FR');
 		$test->expect(
 			substr_count($f3->decode($template->render('templates/lexicon.htm')),

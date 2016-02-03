@@ -5,12 +5,12 @@ namespace App;
 class Web extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$web=\Web::instance();
+		$web=\F3\Web::instance();
 		$test->expect(
 			$web->slug($text='Ñõw is the tîme~for all good mên. to cóme! to the aid 0f-thëir_côuntry')==
 				'now-is-the-time-for-all-good-men-to-come-to-the-aid-0f-their-country',
@@ -74,7 +74,7 @@ class Web extends Controller {
 		$now=microtime(TRUE);
 		$test->expect(
 			$web->minify('js/underscore.js')==
-				\View::instance()->render('js/underscore.min.js'),
+				\F3\View::instance()->render('js/underscore.min.js'),
 			'Minify Javascript ('.round(1e3*(microtime(TRUE)-$now),1).' msecs)'
 		);
 		$now=microtime(TRUE);

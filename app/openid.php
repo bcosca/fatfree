@@ -5,12 +5,12 @@ namespace App;
 class OpenID extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$openid=new \Web\OpenID;
+		$openid=new \F3\Web\OpenID;
 		$openid->set('identity','https://www.google.com/accounts/o8/id');
 		$openid->set('return_to',
 			$f3->get('SCHEME').'://'.$f3->get('HOST').

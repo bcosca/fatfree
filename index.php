@@ -1,6 +1,6 @@
 <?php
 
-$f3=require('lib/base.php');
+$f3=require('f3/base.php');
 
 $f3->set('DEBUG',2);
 $f3->set('UI','ui/');

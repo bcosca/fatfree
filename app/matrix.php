@@ -5,7 +5,7 @@ namespace App;
 class Matrix extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
@@ -16,7 +16,7 @@ class Matrix extends Controller {
 			array('id'=>345,'name'=>'george','sales'=>0.57),
 			array('id'=>234,'name'=>'john','sales'=>0.79)
 		);
-		$matrix=\Matrix::instance();
+		$matrix=\F3\Matrix::instance();
 		$matrix->sort($array,'name');
 		$test->expect(
 			$array==array(

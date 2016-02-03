@@ -5,13 +5,13 @@ namespace App;
 class Google extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$f3=\Base::instance();
-		$map=new \Web\Google\StaticMap;
+		$f3=\F3\Base::instance();
+		$map=new \F3\Web\Google\StaticMap;
 		$test->expect(
 			$img=$f3->base64(
 				$map->center('Brooklyn Bridge, New York, NY')->zoom(13)->

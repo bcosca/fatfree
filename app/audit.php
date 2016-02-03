@@ -5,12 +5,12 @@ namespace App;
 class Audit extends Controller {
 
 	function get($f3) {
-		$test=new \Test;
+		$test=new \F3\Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$audit=new \Audit;
+		$audit=new \F3\Audit;
 		$test->expect(
 			!$audit->url('http://www.example.com/space here.html') &&
 			$audit->url('http://www.example.com/space%20here.html'),

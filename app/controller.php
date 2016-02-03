@@ -15,7 +15,7 @@ class Controller {
 	}
 
 	function afterroute() {
-		echo \Preview::instance()->render('layout.htm');
+		echo \F3\Preview::instance()->render('layout.htm');
 	}
 
 }
