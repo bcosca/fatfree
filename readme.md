@@ -85,7 +85,7 @@ Unzip the contents of the distribution package anywhere in your hard drive. By d
 
 **Important:** If your application uses APC, Memcached, WinCache, XCache, or a filesystem cache, clear all cache entries first before overwriting an older version of the framework with a new one.
 
-Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 5.3. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by outdated PHP versions. To find out, open your console (`bash` shell on GNU/Linux, or `cmd.exe` on Windows):-
+Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 5.4. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by outdated PHP versions. To find out, open your console (`bash` shell on GNU/Linux, or `cmd.exe` on Windows):-
 
 ```
 /path/to/php -v
@@ -94,12 +94,13 @@ Make sure you're running the right version of PHP. F3 does not support versions 
 PHP will let you know which particular version you're running and you should get something that looks similar to this:-
 
 ```
-PHP 5.3.15 (cli) (built: Jul 20 2012 00:20:38)
-Copyright (c) 1997-2012 The PHP Group
-Zend Engine v2.3.0, Copyright (c) 1998-2012 Zend Technologies
+PHP 5.4.30 (cli) (built: Jul 22 2014 21:34:41)
+Copyright (c) 1997-2014 The PHP Group
+Zend Engine v2.4.0, Copyright (c) 1998-2014 Zend Technologies
+    with Xdebug v2.2.5, Copyright (c) 2002-2014, by Derick Rethans
 ```
 
-Upgrade if necessary and come back here if you've made the jump to PHP 5.3 or a later release. If you need a PHP 5.3+ hosting service provider, try one of these services:
+Upgrade if necessary and come back here if you've made the jump to PHP 5.4 or a later release. If you need a PHP 5.4+ hosting service provider, try one of these services:
 
 * [A2 Hosting](http://www.a2hosting.com/2461-15-1-72.html)
 * [DreamHost](http://www.dreamhost.com/r.cgi?665472)
@@ -458,7 +459,7 @@ $f3->set('AUTOLOAD','admin/autoload/; user/autoload/; default/');
 
 ### Working with Namespaces
 
-`AUTOLOAD` allows class hierarchies to reside in similarly-named subfolders, so if you want the framework to autoload a PHP 5.3 namespaced class that's invoked in the following manner:-
+`AUTOLOAD` allows class hierarchies to reside in similarly-named subfolders, so if you want the framework to autoload a PHP 5.4 namespaced class that's invoked in the following manner:-
 
 ``` php
 $f3->set('AUTOLOAD','autoload/');
@@ -875,7 +876,7 @@ And populate the `@buddy` array in your PHP code before serving the template:-
 $f3->set('buddy',['Tom','Dick','Harry']);
 ```
 
-However, if you simply insert `{{ @buddy }}` in your template, PHP 5.3 will replace it with `'Array'` because it converts the token to a string. PHP 5.4, on the other hand, will generate an `Array to string conversion` notice at runtime.
+However, if you simply insert `{{ @buddy }}` in your template, PHP 5.4 will replace it with `'Array'` because it converts the token to a string. PHP 5.4, on the other hand, will generate an `Array to string conversion` notice at runtime.
 
 F3 allows you to embed expressions in templates. These expressions may take on various forms, like arithmetic calculations, boolean expressions, PHP constants, etc. Here are a few examples:-
 
