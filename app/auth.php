@@ -18,7 +18,7 @@ class Auth extends Controller {
 		$user->set('user_id','admin');
 		$user->set('password','secret');
 		$user->save();
-		$auth=new \Auth($user,array('id'=>'user_id','pw'=>'password'));
+		$auth=new \Auth($user,['id'=>'user_id','pw'=>'password']);
 		$test->expect(
 			$auth->basic(),
 			'HTTP basic auth mechanism'
@@ -37,7 +37,7 @@ class Auth extends Controller {
 				$user->set('password','secret');
 				$user->save();
 				$auth=new \Auth($user,
-					array('id'=>'user_id','pw'=>'password'));
+					['id'=>'user_id','pw'=>'password']);
 				$test->expect(
 					$auth->login('admin','secret') &&
 					!$auth->login('user','what'),
@@ -61,7 +61,7 @@ class Auth extends Controller {
 			$user->set('password','secret');
 			$user->save();
 			$auth=new \Auth($user,
-				array('id'=>'user_id','pw'=>'password'));
+				['id'=>'user_id','pw'=>'password']);
 			$test->expect(
 				$auth->login('admin','secret') &&
 				!$auth->login('user','what'),

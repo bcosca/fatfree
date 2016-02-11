@@ -48,11 +48,11 @@ class View extends Controller {
 			'Embedded view with full custom HIVE'
 		);
 		$test->expect(
-			$view->render('view/hive_size.php', null, null)!=='0',
+			$view->render('view/hive_size.php',NULL,NULL)!=='0',
 			'Default HIVE is not empty'
 		);
 		$test->expect(
-			$view->render('view/hive_size.php', null, array())==='0',
+			$view->render('view/hive_size.php',NULL,[])==='0',
 			'Empty custom HIVE'
 		);
 		$test->expect(

@@ -180,7 +180,7 @@ class Image extends Controller {
 			$ovr->resize(100,38)->rotate(45);
 			$test->expect(
 				$src=$f3->base64($img->restore()->
-					overlay($ovr,array(65,25),50)->
+					overlay($ovr,[65,25],50)->
 					dump(),'image/png'),
 				'Overlay, 50% transparency, manually aligned<br />'.
 				'<img src="'.$src.'" '.

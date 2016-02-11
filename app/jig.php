@@ -29,7 +29,7 @@ class Jig extends Controller {
 			is_object($movie),
 			'Mapper instantiated'
 		);
-		$movie->load(array('@title=?','The Hobbit'));
+		$movie->load(['@title=?','The Hobbit']);
 		$test->expect(
 			$movie->dry(),
 			'Mapper is dry'
@@ -42,7 +42,7 @@ class Jig extends Controller {
 			$db->log(),
 			'Jig profiler active'
 		);
-		$movie->load(array('preg_match(?,@title)','/Donnie Brasco/'));
+		$movie->load(['preg_match(?,@title)','/Donnie Brasco/']);
 		$test->expect(
 			$movie->count()==1 &&
 			$movie->get('title')=='Donnie Brasco' &&
@@ -67,11 +67,11 @@ class Jig extends Controller {
 		$movie->save();
 		$movie->save(); // intentional
 		$movie->load(
-			array(
+			[
 				'@title=? AND @director=?',
 				'The River Murders',
 				'Rich Cowan'
-			)
+			]
 		);
 		$test->expect(
 			$movie->get('title')=='The River Murders' &&
@@ -80,13 +80,13 @@ class Jig extends Controller {
 			'Parameterized query (positional)'
 		);
 		$movie->load(
-			array(
+			[
 				'@title=? AND @director=?',
-				array(
+				[
 					1=>'The River Murders',
 					2=>'Rich Cowan'
-				)
-			)
+				]
+			]
 		);
 		$test->expect(
 			$movie->get('title')=='The River Murders' &&
@@ -95,11 +95,11 @@ class Jig extends Controller {
 			'Parameterized query (alternative positional)'
 		);
 		$movie->load(
-			array(
+			[
 				'@title=:title AND @director=:director',
 				':title'=>'The River Murders',
 				':director'=>'Rich Cowan'
-			)
+			]
 		);
 		$test->expect(
 			$movie->get('title')=='The River Murders' &&
@@ -108,13 +108,13 @@ class Jig extends Controller {
 			'Parameterized query (named)'
 		);
 		$movie->load(
-			array(
+			[
 				'@title=:title AND @director=:director',
-				array(
+				[
 					':title'=>'The River Murders',
 					':director'=>'Rich Cowan'
-				)
-			)
+				]
+			]
 		);
 		$test->expect(
 			$movie->get('title')=='The River Murders' &&
@@ -218,7 +218,7 @@ class Jig extends Controller {
 			!$movie->exists('year'),
 			'Navigation beyond cursor limit'
 		);
-		$obj=$movie->findone(array('@title=?','Zodiac'));
+		$obj=$movie->findone(['@title=?','Zodiac']);
 		$class=get_class($obj);
 		$test->expect(
 			$class=='DB\Jig\Mapper' &&
@@ -249,7 +249,7 @@ class Jig extends Controller {
 			$session->sid()===NULL,
 			'Database-managed session written and closed'
 		);
-		$_SESSION=array();
+		$_SESSION=[];
 		$test->expect(
 			$f3->get('SESSION.foo')=='hello world',
 			'Session variable retrieved from database'
@@ -279,7 +279,7 @@ class Jig extends Controller {
 			implode(PHP_EOL,array_reverse(headers_list())),$m))
 			$after=$m[1];
 		$test->expect(
-			empty($_SESSION) && $session->count(array('session_id=?',$sid))==0 &&
+			empty($_SESSION) && $session->count(['session_id=?',$sid])==0 &&
 			$before==$sid && $after=='deleted' && empty($_COOKIE[session_name()]),
 			'Session destroyed and cookie expired'
 		);

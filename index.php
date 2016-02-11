@@ -6,7 +6,7 @@ $f3->set('DEBUG',2);
 $f3->set('UI','ui/');
 
 $f3->set('menu',
-	array(
+	[
 		'/'=>'Globals',
 		'/internals'=>'Internals',
 		'/hive'=>'Hive',
@@ -33,7 +33,7 @@ $f3->set('menu',
 		'/google'=>'Google',
 		'/openid'=>'OpenID',
 		'/pingback'=>'Pingback'
-	)
+	]
 );
 
 $f3->map('/','App\Globals');

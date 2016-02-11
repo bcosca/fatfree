@@ -92,20 +92,20 @@ class Basket extends Controller {
 			'Count items in basket'
 		);
 		$test->expect(
-			array_values($basket->checkout())==array(
-				array(
+			array_values($basket->checkout())==[
+				[
 					'item'=>'chicken wings',
 					'quantity'=>2,
 					'price'=>0.68,
 					'measure'=>'pound'
-				),
-				array(
+				],
+				[
 					'item'=>'blue cheese',
 					'quantity'=>1,
 					'price'=>7.5,
 					'measure'=>'12oz'
-				)
-			),
+				]
+			],
 			'Check out'
 		);
 		$basket->item='Chocolate cake';

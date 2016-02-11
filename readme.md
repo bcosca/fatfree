@@ -561,10 +561,10 @@ To set several variables at once:
 
 ``` php
 $f3->mset(
-    array(
+    [
         'foo'=>'bar',
         'baz'=>123
-    )
+    ]
 );
 ```
 
@@ -628,14 +628,14 @@ echo $f3->get('b'); // returns the same string: 'firecracker'
 F3 also provides some primitive methods for working with array variables:-
 
 ``` php
-$f3->set('colors',array('red','blue','yellow'));
+$f3->set('colors',['red','blue','yellow']);
 $f3->push('colors','green'); // works like PHP's array_push()
 echo $f3->pop('colors'); // returns 'green'
 
 $f3->unshift('colors','purple'); // similar to array_unshift()
 echo $f3->shift('colors'); // returns 'purple'
 
-$f3->set('grays',array('light','dark'));
+$f3->set('grays',['light','dark']);
 $result=$f3->merge('colors','grays'); // merges the two arrays
 ```
 
@@ -723,9 +723,9 @@ Instead of creating a PHP script that contains the following sample code:-
 ``` php
 $f3->set('num',123);
 $f3->set('str','abc');
-$f3->set('hash',array('x'=>1,'y'=>2,'z'=>3));
-$f3->set('items',array(7,8,9));
-$f3->set('mix',array('this',123.45,FALSE));
+$f3->set('hash',['x'=>1,'y'=>2,'z'=>3]);
+$f3->set('items',[7,8,9]);
+$f3->set('mix',['this',123.45,FALSE]);
 ```
 
 You can construct a configuration file that does the same thing:-
@@ -872,7 +872,7 @@ But what about arrays? Fat-Free recognizes arrays and you can employ them in you
 And populate the `@buddy` array in your PHP code before serving the template:-
 
 ``` php
-$f3->set('buddy',array('Tom','Dick','Harry'));
+$f3->set('buddy',['Tom','Dick','Harry']);
 ```
 
 However, if you simply insert `{{ @buddy }}` in your template, PHP 5.3 will replace it with `'Array'` because it converts the token to a string. PHP 5.4, on the other hand, will generate an `Array to string conversion` notice at runtime.
@@ -998,7 +998,7 @@ Fat-Free can also handle repetitive HTML blocks:-
 The `group` attribute `@fruits` inside the `<repeat>` directive must be an array and should be set in your PHP code accordingly:-
 
 ``` php
-$f3->set('fruits',array('apple','orange ',' banana'));
+$f3->set('fruits',['apple','orange ',' banana']);
 ```
 
 Nothing is gained by assigning a value to `@fruit` in your application code. Fat-Free ignores any preset value it may have because it uses the variable to represent the current item during iteration over the group. The output of the above HTML template fragment and the corresponding PHP code becomes:-
@@ -1028,10 +1028,10 @@ Apply the following F3 command:-
 
 ``` php
 $f3->set('div',
-    array(
-        'coffee'=>array('arabica','barako','liberica','kopiluwak'),
-        'tea'=>array('darjeeling','pekoe','samovar')
-    )
+    [
+        'coffee'=>['arabica','barako','liberica','kopiluwak'],
+        'tea'=>['darjeeling','pekoe','samovar']
+    ]
 );
 ```
 
@@ -1163,23 +1163,23 @@ First, create a dictionary file with the following structure (one file per langu
 
 ``` php
 <?php
-return array(
+return [
     'love'=>'I love F3',
     'today'=>'Today is {0,date}',
     'pi'=>'{0,number}',
     'money'=>'Amount remaining: {0,number,currency}'
-);
+];
 ```
 
 Save it as `dict/en.php`. Let's create another dictionary, this time for German. Save the file as `dict/de.php`:-
 
 ``` php
 <?php
-return array(
+return [
     'love'=>'Ich liebe F3',
     'today'=>'Heute ist {0,date}',
     'money'=>'Restbetrag: {0,number,currency}'
-);
+];
 ```
 
 Dictionaries are nothing more than key-value pairs. F3 automatically instantiates framework variables based on the keys in the language files. As such, it's easy to embed these variables as tokens in your templates. Using the F3 template engine:-
@@ -1316,11 +1316,11 @@ Here's another example. Instead of a single statement provided as an argument to
 
 ``` php
 $db->exec(
-    array(
+    [
         'DELETE FROM diet WHERE food="cola"',
         'INSERT INTO diet (food) VALUES ("carrot")',
         'SELECT * FROM diet'
-    )
+    ]
 );
 ```
 
@@ -1376,16 +1376,16 @@ Our example in the previous section will be a lot safer from SQL injection if wr
 
 ``` php
 $db->exec(
-    array(
+    [
         'DELETE FROM diet WHERE food=:name',
         'INSERT INTO diet (food) VALUES (?)',
         'SELECT * FROM diet'
-    ),
-    array(
+    ],
+    [
         array(':name'=>'cola'),
         array(1=>'carrot'),
         NULL
-    )
+    ]
 );
 ```
 
@@ -1420,7 +1420,7 @@ To retrieve a record from our table:-
 
 ``` php
 $user=new DB\SQL\Mapper($db,'users');
-$user->load(array('userID=?','tarzan'));
+$user->load(['userID=?','tarzan']);
 ```
 
 The first line instantiates a data mapper object that interacts with the `users` table in our database. Behind the scene, F3 retrieves the structure of the `users` table and determines which field(s) are defined as primary key(s). At this point, the mapper object contains no data yet (dry state) so `$user` is nothing more than a structured object - but it contains the methods it needs to perform the basic CRUD operations and some extras. To retrieve a record from our users table with a `userID` field containing the string value `tarzan`, we use the `load() method`. This process is called "auto-hydrating" the data mapper object.
@@ -1432,7 +1432,7 @@ If you prefer working with NoSQL databases, the similarities in query syntax are
 ``` php
 $db=new DB\Mongo('mongodb://localhost:27017','testdb');
 $user=new DB\Mongo\Mapper($db,'users');
-$user->load(array('userID'=>'tarzan'));
+$user->load(['userID'=>'tarzan']);
 ```
 
 With Jig, the syntax is similar to F3's template engine:-
@@ -1440,7 +1440,7 @@ With Jig, the syntax is similar to F3's template engine:-
 ``` php
 $db=new DB\Jig('db/data/',DB\Jig::FORMAT_JSON);
 $user=new DB\Jig\Mapper($db,'users');
-$user->load(array('@userID=?','tarzan'));
+$user->load(['@userID=?','tarzan']);
 ```
 
 ### The Smart SQL ORM
@@ -1493,7 +1493,7 @@ To remove a mapped record from our table, invoke the `erase()` method on an auto
 
 ``` php
 $user=new DB\SQL\Mapper($db,'users');
-$user->load(array('userID=? AND password=?','cheetah','ch1mp'));
+$user->load(['userID=? AND password=?','cheetah','ch1mp']);
 $user->erase();
 ```
 
@@ -1501,7 +1501,7 @@ Jig's query syntax would be slightly similar:-
 
 ``` php
 $user=new DB\Jig\Mapper($db,'users');
-$user->load(array('@userID=? AND @password=?','cheetah','chimp'));
+$user->load(['@userID=? AND @password=?','cheetah','chimp']);
 $user->erase();
 ```
 
@@ -1509,7 +1509,7 @@ And the MongoDB equivalent would be:-
 
 ``` php
 $user=new DB\Mongo\Mapper($db,'users');
-$user->load(array('userID'=>'cheetah','password'=>'chimp'));
+$user->load(['userID'=>'cheetah','password'=>'chimp']);
 $user->erase();
 ```
 
@@ -1539,7 +1539,7 @@ On the other hand, if we wanted to retrieve a record and copy the field values t
 
 ``` php
 $f3->set('user',new DB\SQL\Mapper($db,'users'));
-$f3->get('user')->load(array('userID=?','jane'));
+$f3->get('user')->load(['userID=?','jane']);
 $f3->get('user')->copyTo('POST');
 ```
 
@@ -1559,11 +1559,11 @@ By default, a data mapper's `load()` method retrieves only the first record that
 $user=new DB\SQL\Mapper($db,'users');
 $user->load('visits>3');
 // Rewritten as a parameterized query
-$user->load(array('visits>?',3));
+$user->load(['visits>?',3]);
 
 // For MongoDB users:-
 // $user=new DB\Mongo\Mapper($db,'users');
-// $user->load(array('visits'=>array('$gt'=>3)));
+// $user->load(['visits'=>['$gt'=>3]]);
 
 // If you prefer Jig:-
 // $user=new DB\Jig\Mapper($db,'users');
@@ -1587,12 +1587,12 @@ The `load()` method accepts a second argument: an array of options containing ke
 
 ``` php
 $user->load(
-    array('visits>?',3),
-    array(
+    ['visits>?',3],
+    [
         'order'=>'userID DESC'
         'offset'=>5,
         'limit'=>3
-    )
+    ]
 );
 ```
 
@@ -1608,7 +1608,7 @@ LIMIT 3 OFFSET 5;
 This is one way of presenting data in small chunks. Here's another way of paginating results:-
 
 ``` php
-$page=$user->paginate(2,5,array('visits>?',3));
+$page=$user->paginate(2,5,['visits>?',3]);
 ```
 
 In the above scenario, F3 will retrieve records that match the criteria `'visits>3'`. It will then limit the results to 5 records (per page) starting at page offset 2 (0-based). The framework will return an array consisting of the following elements:-
@@ -1643,7 +1643,7 @@ No `totalprice` field exists, so we can tell the framework to request from the d
 ``` php
 $item=new DB\SQL\Mapper($db,'products');
 $item->totalprice='unitprice*quantity';
-$item->load(array('productID=:pid',':pid'=>'apple'));
+$item->load(['productID=:pid',':pid'=>'apple']);
 echo $item->totalprice;
 ```
 
@@ -1680,19 +1680,19 @@ Remember that a virtual field must be defined prior to data retrieval. The ORM d
 If you have no need for record-by-record navigation, you can retrieve an entire batch of records in one shot:-
 
 ``` php
-$frequentUsers=$user->find(array('visits>?',3),array('order'=>'userID'));
+$frequentUsers=$user->find(['visits>?',3],['order'=>'userID']);
 ```
 
 Jig mapper's query syntax has a slight resemblance:-
 
 ``` php
-$frequentUsers=$user->find(array('@visits>?',3),array('order'=>'userID'));
+$frequentUsers=$user->find(['@visits>?',3],['order'=>'userID']);
 ```
 
 The equivalent code using the MongoDB mapper:-
 
 ``` php
-$frequentUsers=$user->find(array('visits'=>array('$gt'=>3)),array('userID'=>1));
+$frequentUsers=$user->find(['visits'=>['$gt'=>3]],['userID'=>1]);
 ```
 
 The `find()` method searches the `users` table for records that match the criteria, sorts the result by `userID` and returns the result as an array of mapper objects. `find('visits>3')` is different from `load('visits>3')`. The latter refers to the current `$user` object. `find()` does not have any effect on `skip()`.
@@ -1704,12 +1704,12 @@ The `find()` method has the following syntax:-
 ``` php
 find(
     $criteria,
-    array(
+    [
         'group'=>'foo',
         'order'=>'foo,bar',
         'limit'=>5,
         'offset'=>0
-    )
+    ]
 );
 ```
 
@@ -1732,7 +1732,7 @@ echo $array['city'].', '.$array['country'];
 To retrieve the number of records in a table that match a certain condition, use the `count()` method.
 
 ``` php
-if (!$user->count(array('visits>?',10)))
+if (!$user->count(['visits>?',10]))
     echo 'We need a better ad campaign!';
 ```
 
@@ -1742,12 +1742,12 @@ There's also a `select()` method that's similar to `find()` but provides more fi
 select(
     'foo, bar, MIN(baz) AS lowest',
     'foo > ?',
-    array(
+    [
         'group'=>'foo, bar',
         'order'=>'baz ASC',
         'limit'=>5,
         'offset'=>3
-    )
+    ]
 );
 ```
 
@@ -1779,7 +1779,7 @@ class Vendor extends DB\SQL\Mapper {
     // Specialized query
     function listByCity() {
         return $this->select(
-            'vendorID,name,city',array('order'=>'city DESC'));
+            'vendorID,name,city',['order'=>'city DESC']);
         /*
             We could have done the the same thing with plain vanilla SQL:-
             return $this->db->exec(
@@ -1824,7 +1824,7 @@ Your application code becomes simple because it does not have to maintain two ma
 
 ``` php
 $combined=new DB\SQL\Mapper($db,'combined');
-$combined->load(array('project=?',123));
+$combined->load(['project=?',123]);
 echo $combined->name;
 ```
 
@@ -1866,7 +1866,7 @@ This simple example sends an HTTP request to the page located at www.google.com 
 ``` php
 $host='localhost:5984';
 $web->request($host.'/_all_dbs'),
-$web->request($host.'/testdb/',array('method'=>'PUT'));
+$web->request($host.'/testdb/',['method'=>'PUT']);
 ```
 
 You may have noticed that you can pass an array of additional options to the `request()` method:-
@@ -1875,20 +1875,20 @@ You may have noticed that you can pass an array of additional options to the `re
 $web->request(
     'https://www.example.com:443?'.
     http_build_query(
-        array(
+        [
             'key1'=>'value1',
             'key2'=>'value2'
-        )
+        ]
     ),
-    array(
-        'headers'=>array(
+    [
+        'headers'=>[
             'Accept: text/html,application/xhtml+xml,application/xml',
             'Accept-Language: en-us'
-        ),
+        ],
         'follow_location'=>FALSE,
         'max_redirects'=>30,
         'ignore_errors'=>TRUE
-    )
+    ]
 );
 ```
 
@@ -2117,7 +2117,7 @@ $f3->mock('GET /test?foo=bar');
 To mock a POST request and submit a simulated HTML form:-
 
 ``` php
-$f3->mock('POST /test',array('foo'=>'bar'));
+$f3->mock('POST /test',['foo'=>'bar']);
 ```
 
 ### Expecting the Worst that can Happen

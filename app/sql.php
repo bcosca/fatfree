@@ -19,11 +19,11 @@ class SQL extends Controller {
 				mkdir('tmp/',\Base::MODE,TRUE);
 			$db=new \DB\SQL('sqlite:tmp/sqlite.db');
 			$db->exec(
-				array(
+				[
 					'PRAGMA temp_store=MEMORY;',
 					'PRAGMA journal_mode=MEMORY;',
 					'PRAGMA foreign_keys=ON;'
-				)
+				]
 			);
 			//$db=new \DB\SQL('mysql:host=localhost');
 			$engine=$db->driver();
@@ -37,18 +37,18 @@ class SQL extends Controller {
 			);
 			if ($engine=='mysql') {
 				$db->exec(
-					array(
+					[
 						'DROP DATABASE IF EXISTS '.$db->quotekey('test').';',
 						'CREATE DATABASE '.$db->quotekey('test').
 							' DEFAULT CHARSET=utf8;'
-					)
+					]
 				);
 				unset($db);
 				$db=new \DB\SQL(
 					'mysql:host=localhost;dbname=test');
 			}
 			$db->exec(
-				array(
+				[
 					'DROP TABLE IF EXISTS '.$db->quotekey('movies').';',
 					'CREATE TABLE '.$db->quotekey('movies').' ('.
 						$db->quotekey('title').
@@ -56,7 +56,7 @@ class SQL extends Controller {
 						$db->quotekey('director').' VARCHAR(255),'.
 						$db->quotekey('year').' INTEGER'.
 					');'
-				)
+				]
 			);
 			$test->expect(
 				$db->log(),
@@ -72,7 +72,7 @@ class SQL extends Controller {
 			);
 			$db->begin();
 			$db->exec(
-				array (
+				[
 					'INSERT INTO '.$db->quotekey('movies').' ('.
 						$db->quotekey('title').','.
 						$db->quotekey('director').','.
@@ -81,23 +81,23 @@ class SQL extends Controller {
 					'VALUES (\'Fight Club\',\'David Fincher\',1999);',
 					'DELETE FROM '.$db->quotekey('movies').' WHERE '.
 						$db->quotekey('title').'=\'Reservoir Dogs\';'
-				)
+				]
 			);
 			$db->rollback();
 			$test->expect(
 				$db->exec('SELECT * FROM '.$db->quotekey('movies').';')==
-				array(
-					array(
+				[
+					[
 						'title'=>'Reservoir Dogs',
 						'director'=>'Quentin Tarantino',
 						'year'=>1992
-					)
-				),
+					]
+				],
 				'Manual rollback'
 			);
 			$db->begin();
 			$db->exec(
-				array (
+				[
 					'INSERT INTO '.$db->quotekey('movies').' ('.
 						$db->quotekey('title').','.
 						$db->quotekey('director').','.
@@ -106,22 +106,22 @@ class SQL extends Controller {
 					'VALUES (\'Fight Club\',\'David Fincher\',1999);',
 					'DELETE FROM '.$db->quotekey('movies').' WHERE '.
 						$db->quotekey('title').'=\'Reservoir Dogs\';'
-				)
+				]
 			);
 			$db->commit();
 			$test->expect(
 				$db->exec('SELECT * FROM '.$db->quotekey('movies').';')==
-				array(
-					array(
+				[
+					[
 						'title'=>'Fight Club',
 						'director'=>'David Fincher',
 						'year'=>1999
-					)
-				),
+					]
+				],
 				'Manual commit'
 			);
 			$db->exec(
-				array (
+				[
 					'INSERT INTO '.$db->quotekey('movies').' ('.
 						$db->quotekey('title').','.
 						$db->quotekey('director').','.
@@ -130,17 +130,17 @@ class SQL extends Controller {
 					'VALUES (\'Donnie Brasco\',\'Mike Newell\',1997);',
 					'DELETE FROM '.$db->quotekey('movies').' WHERE '.
 						$db->quotekey('title').'=\'Fight Club\';'
-				)
+				]
 			);
 			$test->expect(
 				$db->exec('SELECT * FROM '.$db->quotekey('movies').';')==
-				array(
-					array(
+				[
+					[
 						'title'=>'Donnie Brasco',
 						'director'=>'Mike Newell',
 						'year'=>1997
-					)
-				),
+					]
+				],
 				'Auto-commit'
 			);
 			@$db->exec(
@@ -153,40 +153,40 @@ class SQL extends Controller {
 			);
 			$test->expect(
 				$db->exec('SELECT * FROM '.$db->quotekey('movies').';')==
-				array(
-					array(
+				[
+					[
 						'title'=>'Donnie Brasco',
 						'director'=>'Mike Newell',
 						'year'=>1997
-					)
-				),
+					]
+				],
 				'Flag primary key violation'
 			);
 			$test->expect(
 				$db->exec(
 					'SELECT * FROM '.$db->quotekey('movies').' WHERE '.
 						$db->quotekey('director').'=?;',
-						array(1=>'Mike Newell'))==
-				array(
-					array(
+						[1=>'Mike Newell'])==
+				[
+					[
 						'title'=>'Donnie Brasco',
 						'director'=>'Mike Newell',
 						'year'=>1997
-					)
-				),
+					]
+				],
 				'Parameterized query (positional)'
 			);
 			$test->expect(
 				$db->exec('SELECT * FROM '.$db->quotekey('movies').' WHERE '.
 					$db->quotekey('director').'=:name;',
-					array(':name'=>'Mike Newell'))==
-				array(
-					array(
+					[':name'=>'Mike Newell'])==
+				[
+					[
 						'title'=>'Donnie Brasco',
 						'director'=>'Mike Newell',
 						'year'=>1997
-					)
-				),
+					]
+				],
 				'Parameterized query (named)'
 			);
 			$test->expect(
@@ -202,12 +202,12 @@ class SQL extends Controller {
 				is_object($movie),
 				'Mapper instantiated'
 			);
-			$movie->load(array($db->quotekey('title').'=?','The Hobbit'));
+			$movie->load([$db->quotekey('title').'=?','The Hobbit']);
 			$test->expect(
 				$movie->dry(),
 				'Mapper is dry'
 			);
-			$movie->load(array($db->quotekey('title').'=?','Donnie Brasco'));
+			$movie->load([$db->quotekey('title').'=?','Donnie Brasco']);
 			$test->expect(
 				$movie->count()==1 &&
 				$movie->get('title')=='Donnie Brasco' &&
@@ -232,12 +232,12 @@ class SQL extends Controller {
 			$movie->save();
 			$movie->save(); // intentional
 			$movie->load(
-				array(
+				[
 					$db->quotekey('title').'=? AND '.
 					$db->quotekey('director').'=?',
 					'The River Murders',
 					'Rich Cowan'
-				)
+				]
 			);
 			$test->expect(
 				$movie->get('title')=='The River Murders' &&
@@ -246,14 +246,14 @@ class SQL extends Controller {
 				'Parameterized query (positional)'
 			);
 			$movie->load(
-				array(
+				[
 					$db->quotekey('title').'=? AND '.
 					$db->quotekey('director').'=?',
-					array(
+					[
 						1=>'The River Murders',
 						2=>'Rich Cowan'
-					)
-				)
+					]
+				]
 			);
 			$test->expect(
 				$movie->get('title')=='The River Murders' &&
@@ -262,12 +262,12 @@ class SQL extends Controller {
 				'Parameterized query (alternative positional)'
 			);
 			$movie->load(
-				array(
+				[
 					$db->quotekey('title').'=:title AND '.
 					$db->quotekey('director').'=:director',
 					':title'=>'The River Murders',
 					':director'=>'Rich Cowan'
-				)
+				]
 			);
 			$test->expect(
 				$movie->get('title')=='The River Murders' &&
@@ -276,14 +276,14 @@ class SQL extends Controller {
 				'Parameterized query (named)'
 			);
 			$movie->load(
-				array(
+				[
 					$db->quotekey('title').'=:title AND '.
 					$db->quotekey('director').'=:director',
-					array(
+					[
 						':title'=>'The River Murders',
 						':director'=>'Rich Cowan'
-					)
-				)
+					]
+				]
 			);
 			$test->expect(
 				$movie->get('title')=='The River Murders' &&
@@ -391,7 +391,7 @@ class SQL extends Controller {
 				!$movie->get('year'),
 				'Navigation beyond cursor limit'
 			);
-			$obj=$movie->findone(array($db->quotekey('title').'=?','Zodiac'));
+			$obj=$movie->findone([$db->quotekey('title').'=?','Zodiac']);
 			$class=get_class($obj);
 			$test->expect(
 				$class=='DB\SQL\Mapper' &&
@@ -423,7 +423,7 @@ class SQL extends Controller {
 					break;
 			}
 			$db->exec(
-				array(
+				[
 					'DROP TABLE IF EXISTS '.$db->quotekey('tickets').';',
 					'CREATE TABLE tickets ('.
 						$db->quotekey('ticketno').' '.$inc.' PRIMARY KEY,'.
@@ -431,7 +431,7 @@ class SQL extends Controller {
 						'FOREIGN KEY ('.$db->quotekey('title').') '.
 						'REFERENCES movies ('.$db->quotekey('title').')'.
 					');'
-				)
+				]
 			);
 			$ticket=new \DB\SQL\Mapper($db,'tickets');
 			$ticket->set('title','The River Murders');
@@ -480,21 +480,21 @@ class SQL extends Controller {
 				'Ad hoc field destroyed'
 			);
 			$f3->set('GET',
-				array(
+				[
 					'title'=>'admin\'; '.
 					'DELETE FROM '.$db->quotekey('tickets').'; '.
 					'SELECT \'1'
-				)
+				]
 			);
 			$ticket->copyfrom('GET');
 			$ticket->save();
 			$ticket->load(
-				array(
+				[
 					$db->quotekey('title').'=?',
 					'admin\'; '.
 					'DELETE FROM '.$db->quotekey('tickets').'; '.
 					'SELECT \'1'
-				)
+				]
 			);
 			$test->expect(
 				!$ticket->dry(),
@@ -520,7 +520,7 @@ class SQL extends Controller {
 					$session->sid()===NULL,
 					'Database-managed session written and closed'
 				);
-				$_SESSION=array();
+				$_SESSION=[];
 				$test->expect(
 					$f3->get('SESSION.foo')=='hello world',
 					'Session variable retrieved from database'
@@ -550,7 +550,7 @@ class SQL extends Controller {
 					implode(PHP_EOL,array_reverse(headers_list())),$m))
 					$after=$m[1];
 				$test->expect(
-					empty($_SESSION) && $session->count(array('session_id=?',$sid))==0 &&
+					empty($_SESSION) && $session->count(['session_id=?',$sid])==0 &&
 					$before==$sid && $after=='deleted' && empty($_COOKIE[session_name()]),
 					'Session destroyed and cookie expired'
 				);

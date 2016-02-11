@@ -64,9 +64,9 @@ class Cache extends Controller {
 				'Boolean: '.sprintf('%.1f',(microtime(TRUE)-$mark)*1e3).'ms'
 			);
 			$mark=microtime(TRUE);
-			$cache->set('d',array('hello','world'),$ttl);
+			$cache->set('d',['hello','world'],$ttl);
 			$test->expect(
-				$cache->get('d')==array('hello','world'),
+				$cache->get('d')==['hello','world'],
 				'Array: '.sprintf('%.1f',(microtime(TRUE)-$mark)*1e3).'ms'
 			);
 			$mark=microtime(TRUE);
@@ -94,7 +94,7 @@ class Cache extends Controller {
 				$cache->get('a')===1 &&
 				$cache->get('b')===2.34 &&
 				$cache->get('c')===TRUE &&
-				$cache->get('d')==array('hello','world') &&
+				$cache->get('d')==['hello','world'] &&
 				$cache->get('foo')=='baz' &&
 				is_object($cache->get('e')),
 				'Cache integrity test'
@@ -170,7 +170,7 @@ class Cache extends Controller {
 				$session->sid()===NULL,
 				'Cache-based session written and closed'
 			);
-			$_SESSION=array();
+			$_SESSION=[];
 			$test->expect(
 				$f3->get('SESSION.foo')=='hello world',
 				'Session variable retrieved from database'

@@ -38,10 +38,10 @@ class Hive extends Controller {
 			$f3->e===$f3->get('e'),
 			'Scientific notation'
 		);
-		$f3->set('array',array('w'=>FALSE,'x'=>'abc','y'=>123,'z'=>4.56));
+		$f3->set('array',['w'=>FALSE,'x'=>'abc','y'=>123,'z'=>4.56]);
 		$test->expect(
 			$f3->get('array')===
-				array('w'=>FALSE,'x'=>'abc','y'=>123,'z'=>4.56) &&
+				['w'=>FALSE,'x'=>'abc','y'=>123,'z'=>4.56] &&
 			$f3['array']===$f3->array && $f3->array===$f3->get('array'),
 			'Array value'
 		);
@@ -81,31 +81,31 @@ class Hive extends Controller {
 			$f3->array['z']===4.56,
 			'Float element'
 		);
-		$f3->set('array',array('w'=>FALSE,'x'=>'qrs','y'=>123,'z'=>4.56));
+		$f3->set('array',['w'=>FALSE,'x'=>'qrs','y'=>123,'z'=>4.56]);
 		$test->expect(
 			$f3->get('array')===
-				array('w'=>FALSE,'x'=>'qrs','y'=>123,'z'=>4.56) &&
+				['w'=>FALSE,'x'=>'qrs','y'=>123,'z'=>4.56] &&
 			$f3['array']===$f3->array &&
 			$f3->array===$f3->get('array'),
 			'Array altered'
 		);
-		$f3['array']=array('a'=>array('b'=>array('c'=>'hello')));
+		$f3['array']=['a'=>['b'=>['c'=>'hello']]];
 		$test->expect(
-			$f3->get('array')===array('a'=>array('b'=>array('c'=>'hello'))) &&
+			$f3->get('array')===['a'=>['b'=>['c'=>'hello']]] &&
 			$f3['array']===$f3->array &&
 			$f3->array===$f3->get('array'),
 			'Value replaced; now a multidimensional array'
 		);
 		$test->expect(
-			$f3->get('array.a')===array('b'=>array('c'=>'hello')) &&
-			$f3->get('array[a]')===array('b'=>array('c'=>'hello')) &&
-			$f3->get('array.a[b]')===array('c'=>'hello') &&
-			$f3->get('array[a].b')===array('c'=>'hello') &&
-			$f3->get('array[a][\'b\']')===array('c'=>'hello') &&
+			$f3->get('array.a')===['b'=>['c'=>'hello']] &&
+			$f3->get('array[a]')===['b'=>['c'=>'hello']] &&
+			$f3->get('array.a[b]')===['c'=>'hello'] &&
+			$f3->get('array[a].b')===['c'=>'hello'] &&
+			$f3->get('array[a][\'b\']')===['c'=>'hello'] &&
 			$f3->get('array.a.b.c')==='hello' &&
 			$f3->get('array[a][b][c]')==='hello' &&
-			$f3->get('array["a"]')===array('b'=>array('c'=>'hello')) &&
-			$f3->get('array["a"]["b"]')===array('c'=>'hello') &&
+			$f3->get('array["a"]')===['b'=>['c'=>'hello']] &&
+			$f3->get('array["a"]["b"]')===['c'=>'hello'] &&
 			$f3->get('array["a"][\'b\']["c"]')==='hello' &&
 			$f3->get('array["a"]["b"]["c"]')==='hello' &&
 			$f3['array']['a']===$f3->array['a'] &&
@@ -190,17 +190,17 @@ class Hive extends Controller {
 			'Non-existent array'
 		);
 		$f3->set('domains',
-			array(
+			[
 				'google.com'=>'Google',
 				'yahoo.com'=>'Yahoo'
-			)
+			]
 		);
 		$test->expect(
 			$f3->get('domains')==
-			array(
+			[
 				'google.com'=>'Google',
 				'yahoo.com'=>'Yahoo'
-			) && $f3->domains==$f3->get('domains') &&
+			] && $f3->domains==$f3->get('domains') &&
 			$f3->get('domains[google.com]')=='Google' &&
 			$f3['domains']['google.com']=='Google' &&
 			$f3->domains['google.com']=='Google' &&
@@ -246,36 +246,36 @@ class Hive extends Controller {
 		$f3->clear('z');
 		$f3->push('z',1);
 		$test->expect(
-			$f3->get('z')==array(1) &&
+			$f3->get('z')==[1] &&
 			$f3->push('z',2)==2 &&
-			$f3->get('z')==array(1,2),
+			$f3->get('z')==[1,2],
 			'Array push create'
 		);
-		$f3->set('z',array(1,2,3));
+		$f3->set('z',[1,2,3]);
 		$f3->push('z',4);
 		$test->expect(
-			$f3->get('z')==array(1,2,3,4),
+			$f3->get('z')==[1,2,3,4],
 			'Array push'
 		);
 		$test->expect(
 			$f3->pop('z')==4 &&
-			$f3->get('z')==array(1,2,3),
+			$f3->get('z')==[1,2,3],
 			'Array pop'
 		);
 		$f3->unshift('z',0);
 		$test->expect(
-			$f3->get('z')==array(0,1,2,3),
+			$f3->get('z')==[0,1,2,3],
 			'Array shift'
 		);
 		$test->expect(
 			$f3->shift('z')==0 &&
-			$f3->get('z')==array(1,2,3),
+			$f3->get('z')==[1,2,3],
 			'Array unshift'
 		);
-		$f3->set('q',array('a'=>2,'b'=>5,'c'=>7));
+		$f3->set('q',['a'=>2,'b'=>5,'c'=>7]);
 		$f3->flip('q');
 		$test->expect(
-			$f3->get('q')==array(2=>'a',5=>'b',7=>'c'),
+			$f3->get('q')==[2=>'a',5=>'b',7=>'c'],
 			'Array flip'
 		);
 		$f3->set('results',$test->results());

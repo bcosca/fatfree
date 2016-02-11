@@ -11,7 +11,7 @@ class Markdown extends Controller {
 			'No errors expected at this point'
 		);
 		$md=\Markdown::instance();
-		$cases=array(
+		$cases=[
 			'Code Blocks',
 			'Blockquotes with code blocks',
 			'Nested blockquotes',
@@ -37,7 +37,7 @@ class Markdown extends Controller {
 			'Literal quotes in titles',
 			'PHP-specific bugs',
 			'Tricky combinations'
-		);
+		];
 		foreach ($cases as $case) {
 			$txt=$f3->read($f3->get('UI').'markdown/'.$case.'.txt');
 			$test->expect(

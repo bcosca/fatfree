@@ -39,7 +39,7 @@ class Mongo extends Controller {
 					is_object($movie),
 					'Mapper instantiated'
 				);
-				$movie->load(array('title'=>'The Hobbit'));
+				$movie->load(['title'=>'The Hobbit']);
 				$test->expect(
 					$movie->dry(),
 					'Mapper is dry'
@@ -53,7 +53,7 @@ class Mongo extends Controller {
 					$db->log(),
 					'MongoDB profiler active'
 				);
-				$movie->load(array('title'=>'Donnie Brasco'));
+				$movie->load(['title'=>'Donnie Brasco']);
 				$test->expect(
 					$movie->count()==1 &&
 					$movie->get('title')=='Donnie Brasco' &&
@@ -173,7 +173,7 @@ class Mongo extends Controller {
 					!$movie->exists('year'),
 					'Navigation beyond cursor limit'
 				);
-				$obj=$movie->findone(array('title'=>'Zodiac'));
+				$obj=$movie->findone(['title'=>'Zodiac']);
 				$class=get_class($obj);
 				$test->expect(
 					$class=='DB\Mongo\Mapper' &&
@@ -204,7 +204,7 @@ class Mongo extends Controller {
 					$session->sid()===NULL,
 					'Database-managed session written and closed'
 				);
-				$_SESSION=array();
+				$_SESSION=[];
 				$test->expect(
 					$f3->get('SESSION.foo')=='hello world',
 					'Session variable retrieved from database'
@@ -234,8 +234,10 @@ class Mongo extends Controller {
 					implode(PHP_EOL,array_reverse(headers_list())),$m))
 					$after=$m[1];
 				$test->expect(
-					empty($_SESSION) && $session->count(array('session_id=?',$sid))==0 &&
-					$before==$sid && $after=='deleted' && empty($_COOKIE[session_name()]),
+					empty($_SESSION) && $session->count(['session_id=?',$sid])==0 &&
+					$before==$sid &&
+					$after=='deleted' &&
+					empty($_COOKIE[session_name()]),
 					'Session destroyed and cookie expired'
 				);
 				$db->drop();

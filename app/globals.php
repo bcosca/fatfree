@@ -207,7 +207,7 @@ class Globals extends Controller {
 			'HTTP headers match HEADERS variable'
 		);
 		$ok=TRUE;
-		$hdrs=array();
+		$hdrs=[];
 		foreach (array_keys($f3->get('HEADERS')) as $hdr) {
 			$f3->set('HEADERS["'.$hdr.'"]','foo');
 			$hdr=strtoupper(str_replace('-','_',$hdr));

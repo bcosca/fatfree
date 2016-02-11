@@ -110,7 +110,7 @@ class Router extends Controller {
 		$ok=TRUE;
 		$list='';
 		foreach (explode('|',\Base::VERBS) as $verb) {
-			$f3->mock($verb.' /dummy',array('a'=>'hello'));
+			$f3->mock($verb.' /dummy',['a'=>'hello']);
 			if ($f3->get('route')!=$verb ||
 				preg_match('/GET|HEAD/',strtoupper($verb)) &&
 				$f3->get('body') && !parse_url($f3->get('URI'),PHP_URL_QUERY))
@@ -176,31 +176,31 @@ class Router extends Controller {
 		$test->expect(
 			$f3->get('PARAMS.id')=='macademia-nuts' &&
 			is_numeric($qty=$f3->get('PARAMS.quantity')) && $qty==253 &&
-			$_GET==array('a'=>1,'b'=>3,'c'=>5),
+			$_GET==['a'=>1,'b'=>3,'c'=>5],
 			'Query string mocked'
 		);
-		$f3->mock('GET /food/chicken/999?d=246&e=357',array('f'=>468));
+		$f3->mock('GET /food/chicken/999?d=246&e=357',['f'=>468]);
 		$test->expect(
-			$_GET==array('d'=>246,'e'=>357,'f'=>468),
+			$_GET==['d'=>246,'e'=>357,'f'=>468],
 			'Query string and mock arguments merged'
 		);
 		$test->expect(
 			$f3->get('id')=='chicken' && $f3->get('quantity')==999,
 			'Route parameters captured along with query'
 		);
-		$f3->mock('POST /food/sushki/134?a=1',array('b'=>2));
+		$f3->mock('POST /food/sushki/134?a=1',['b'=>2]);
 		$test->expect(
-			$_GET==array('a'=>1) && $_POST==array('b'=>2) && $_REQUEST==array('a'=>1,'b'=>2) && $f3->get('BODY')=='b=2',
+			$_GET==['a'=>1] && $_POST==['b'=>2] && $_REQUEST==['a'=>1,'b'=>2] && $f3->get('BODY')=='b=2',
 			'Request body and superglobals $_GET, $_POST, $_REQUEST correctly set on mocked POST'
 		);
-		$f3->mock('PUT /food/sushki/134?a=1',array('b'=>2));
+		$f3->mock('PUT /food/sushki/134?a=1',['b'=>2]);
 		$test->expect(
-			$_GET==array('a'=>1) && $_POST==array() && $_REQUEST==array('a'=>1) && $f3->get('BODY')=='b=2',
+			$_GET==['a'=>1] && $_POST==[] && $_REQUEST==['a'=>1] && $f3->get('BODY')=='b=2',
 			'Request body and superglobals $_GET, $_POST, $_REQUEST correctly set on mocked PUT'
 		);
-		$f3->mock('POST /food/sushki/134?a=1',array('b'=>2),NULL,'c=3');
+		$f3->mock('POST /food/sushki/134?a=1',['b'=>2],NULL,'c=3');
 		$test->expect(
-			$_GET==array('a'=>1) && $_POST==array('b'=>2) && $_REQUEST==array('a'=>1,'b'=>2) && $f3->get('BODY')=='c=3',
+			$_GET==['a'=>1] && $_POST==['b'=>2] && $_REQUEST==['a'=>1,'b'=>2] && $f3->get('BODY')=='c=3',
 			'Mocked request body precedence over arguments'
 		);
 		$f3->mock('GET @grub(@id=%C3%B6%C3%A4%C3%BC,@quantity=123)');
@@ -217,14 +217,14 @@ class Router extends Controller {
 		$f3->route('GET /foo/bar','NS\C->get');
 		$f3->mock('GET /dummy');
 		$test->expect(
-			array_keys($f3->get('ROUTES'))==array(
+			array_keys($f3->get('ROUTES'))==[
 				'/foo/bar',
 				'/foo/@b',
 				'/foo/*',
 				'/foo',
 				'/@a',
 				'/*',
-			),
+			],
 			'Route precedence order'
 		);
 		$f3->clear('ROUTES');
@@ -280,7 +280,7 @@ class Router extends Controller {
 		);
 		$f3->clear('called');
 		$obj=new Router;
-		$f3->call(array($obj,'callee'));
+		$f3->call([$obj,'callee']);
 		$test->expect(
 			$f3->get('called'),
 			'Call method (PHP array format)'
@@ -300,7 +300,7 @@ class Router extends Controller {
 			'Call lambda function'
 		);
 		$test->expect(
-			$f3->chain('App\a,App\b,App\c',1)==array(1,2,4),
+			$f3->chain('App\a,App\b,App\c',1)==[1,2,4],
 			'Callback chain()'
 		);
 		$test->expect(

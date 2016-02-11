@@ -32,10 +32,9 @@ class Internals extends Controller {
 			'Coerce directory separators'
 		);
 		$test->expect(
-			$f3->split('a|bc;d,efg')==array('a','bc','d','efg'),
+			$f3->split('a|bc;d,efg')==['a','bc','d','efg'],
 			'Split comma-, semi-colon, or pipe-separated string'
 		);
-		var_dump($f3->stringify(2e3));
 		$test->expect(
 			$f3->stringify(9)==='9' &&
 			$f3->stringify(1.5)==='1.5' &&
@@ -48,21 +47,20 @@ class Internals extends Controller {
 			'Convert string to exportable string'
 		);
 		$test->expect(
-			$f3->stringify(array(1,'a',0.5))==
-				'array(1,\'a\',0.5)' &&
-			$f3->stringify(array('x'=>'hello','y'=>'world'))==
-				'array(\'x\'=>\'hello\',\'y\'=>\'world\')',
+			$f3->stringify([1,'a',0.5])=='[1,\'a\',0.5]' &&
+			$f3->stringify(['x'=>'hello','y'=>'world'])==
+				'[\'x\'=>\'hello\',\'y\'=>\'world\']',
 			'Convert array to exportable string'
 		);
 		$obj=new \stdClass;
 		$obj->hello='world';
 		$test->expect(
 			$f3->stringify($obj)==
-				'stdClass::__set_state(array(\'hello\'=>\'world\'))',
+				'stdClass::__set_state([\'hello\'=>\'world\'])',
 			'Convert object to exportable string'
 		);
 		$test->expect(
-			$f3->csv(array(1,'a',0.5))=='1,\'a\',0.5',
+			$f3->csv([1,'a',0.5])=='1,\'a\',0.5',
 			'Flatten and convert array to CSV string'
 		);
 		$test->expect(
@@ -73,7 +71,7 @@ class Internals extends Controller {
 			$f3->camelcase('hello_world')=='helloWorld',
 			'Camel-case'
 		);
-		$hash=array();
+		$hash=[];
 		$found=FALSE;
 		for ($i=0;$i<10000;$i++)
 			if (is_int(array_search(
@@ -85,19 +83,19 @@ class Internals extends Controller {
 			!$found,
 			'No hash() collisions'
 		);
-		$_GET=array('foo'=>'ok<h1>foo</h1><p>bar<span>baz</span></p>');
+		$_GET=['foo'=>'ok<h1>foo</h1><p>bar<span>baz</span></p>'];
 		$f3->scrub($_GET);
 		$test->expect(
 			$f3->get('GET["foo"]')=='okfoobarbaz',
 			'Scrub all HTML tags'
 		);
-		$_GET=array('foo'=>'ok<h1>foo</h1><p>bar<span>baz</span></p>');
+		$_GET=['foo'=>'ok<h1>foo</h1><p>bar<span>baz</span></p>'];
 		$f3->scrub($_GET,'p,span');
 		$test->expect(
 			$f3->get('GET["foo"]')=='okfoo<p>bar<span>baz</span></p>',
 			'Scrub specific HTML tags'
 		);
-		$_GET=array('foo'=>'ok<h1>foo</h1><p>bar<span>baz</span></p>');
+		$_GET=['foo'=>'ok<h1>foo</h1><p>bar<span>baz</span></p>'];
 		$f3->scrub($_GET,'*');
 		$test->expect(
 			$f3->get('GET["foo"]')=='ok<h1>foo</h1><p>bar<span>baz</span></p>',
@@ -132,7 +130,7 @@ class Internals extends Controller {
 			'instance() saves object to framework registry'
 		);
 		$test->expect(
-			$f3->constants($f3,'REQ_')==array('SYNC'=>\Base::REQ_SYNC,'AJAX'=>\Base::REQ_AJAX),
+			$f3->constants($f3,'REQ_')==['SYNC'=>\Base::REQ_SYNC,'AJAX'=>\Base::REQ_AJAX],
 			'Fetch constants from a class (object)'
 		);
 		$test->expect(

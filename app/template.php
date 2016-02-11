@@ -121,7 +121,7 @@ class Template extends Controller {
 			$expr.': '.$eval
 		);
 		$test->expect(
-			$tpl->token($expr='@foo->zip(@bar,\'qux\',123,array(\'a\'=>\'hello\'))')==($eval='$foo->zip($bar,\'qux\',123,array(\'a\'=>\'hello\'))'),
+			$tpl->token($expr='@foo->zip(@bar,\'qux\',123,[\'a\'=>\'hello\'])')==($eval='$foo->zip($bar,\'qux\',123,[\'a\'=>\'hello\'])'),
 			$expr.': '.$eval
 		);
 		$test->expect(
@@ -160,10 +160,10 @@ class Template extends Controller {
 		);
 		$f3->clear('foo');
 		$f3->set('div',
-			array(
-				'coffee'=>array('arabica','barako','liberica','kopiluwak'),
-				'tea'=>array('darjeeling','pekoe','samovar')
-			)
+			[
+				'coffee'=>['arabica','barako','liberica','kopiluwak'],
+				'tea'=>['darjeeling','pekoe','samovar']
+			]
 		);
 		$test->expect(
 			preg_replace('/[\t\r\n]/','',
@@ -218,7 +218,7 @@ class Template extends Controller {
 		);
 		$f3->clear('cond1');
 		$f3->clear('cond2');
-		$f3->set('test',array('string'=>'thin','int'=>123,'bool'=>FALSE));
+		$f3->set('test',['string'=>'thin','int'=>123,'bool'=>FALSE]);
 		$test->expect(
 			preg_replace('/\s/','',$tpl->render('templates/test11.htm'))==
 				'<em>thin</em>-1failed123124',
@@ -243,7 +243,7 @@ class Template extends Controller {
 					'<span>6</span>'.
 					'<span>xyz</span>'.
 					'<span>1</span>'.
-					'<span>array(1,3,5)</span>'.
+					'<span>[1,3,5]</span>'.
 					'<span>a</span>'.
 					'<span>b</span>'.
 					'<span>c</span>'.
@@ -265,32 +265,32 @@ class Template extends Controller {
 		$lines=array_map('trim',explode("\n",$result));
 		$test->expect(
 			$lines[0]==$f3->stringify(
-				array('@attrib'=>array('bar'=>'123','baz'=>'abc'))),
+				['@attrib'=>['bar'=>'123','baz'=>'abc']]),
 			'Custom tag'
 		);
 		$test->expect(
 			isset($lines[1]) && $lines[1]==$f3->stringify(
-				array('@attrib'=>array('bar'=>'test2'),'test2')),
+				['@attrib'=>['bar'=>'test2'],'test2']),
 			'Custom tag with inner content'
 		);
 		$test->expect(
 			isset($lines[2]) && $lines[2]==$f3->stringify(
-				array('@attrib'=>array('bar'=>'test3','disabled'=>NULL),'test3')),
+				['@attrib'=>['bar'=>'test3','disabled'=>NULL],'test3']),
 			'Custom tag with value-less attribute'
 		);
 		$test->expect(
 			isset($lines[3]) && $lines[3]==$f3->stringify(
-				array('@attrib'=>array('data-foo'=>'baz'),'test4')),
+				['@attrib'=>['data-foo'=>'baz'],'test4']),
 			'Custom tag with hyphenated attribute'
 		);
 		$test->expect(
 			isset($lines[4]) && $lines[4]==$f3->stringify(
-				array('@attrib'=>array('foo'=>'{{ @t1 }}'),'param with token')),
+				['@attrib'=>['foo'=>'{{ @t1 }}'],'param with token']),
 			'Custom tag with attribute containing token'
 		);
 		$test->expect(
 			isset($lines[5]) && $lines[5]==$f3->stringify(
-				array('@attrib'=>array('bar'=>'{{ @baz }}','baz'=>'abc'),'multiple params')),
+				['@attrib'=>['bar'=>'{{ @baz }}','baz'=>'abc'],'multiple params']),
 			'Custom tag with mixed attributes'
 		);
 		$test->expect(

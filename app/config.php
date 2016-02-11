@@ -36,15 +36,15 @@ class Config extends Controller {
 			'Multi-line string'
 		);
 		$test->expect(
-			$f3->get('list')==array(7,8,9),
+			$f3->get('list')==[7,8,9],
 			'Ordinary array'
 		);
 		$test->expect(
-			$f3->get('hash')==array('x'=>1,'y'=>2,'z'=>3),
+			$f3->get('hash')==['x'=>1,'y'=>2,'z'=>3],
 			'Array with named keys'
 		);
 		$test->expect(
-			$f3->get('mix')==array('this',123.45,FALSE),
+			$f3->get('mix')==['this',123.45,FALSE],
 			'Array with mixed elements'
 		);
 		$test->expect(

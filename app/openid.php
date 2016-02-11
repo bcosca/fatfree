@@ -19,13 +19,13 @@ class OpenID extends Controller {
 		$test->expect(
 			$openid->auth(
 				NULL,
-				array(
+				[
 					'country'=>'http://axschema.org/contact/country/home',
 					'email'=>'http://axschema.org/contact/email',
 					'firstname'=>'http://axschema.org/namePerson/first',
 					'lastname'=>'http://axschema.org/namePerson/last'
-				),
-				array('firstname','lastname')
+				],
+				['firstname','lastname']
 			),
 			'OpenID authentication'
 		);
