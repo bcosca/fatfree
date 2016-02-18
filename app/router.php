@@ -159,12 +159,6 @@ class Router extends Controller {
 				$f3->set('quantity',$args['quantity']);
 			}
 		);
-		$f3->set('PARAMS.id','pork');
-		$f3->set('PARAMS.quantity',123);
-		$test->expect(
-			$f3->get('ALIASES.grub')=='/food/pork/123',
-			'Default tokens in named route substituted'
-		);
 		$f3->mock('GET @grub(@id=beef,@quantity=789)');
 		$test->expect(
 			$f3->get('PARAMS.id')=='beef' &&
