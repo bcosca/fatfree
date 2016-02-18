@@ -204,18 +204,24 @@ class Router extends Controller {
 		);
 		$f3->clear('ROUTES');
 		$f3->route('GET /*','NS\C->get');
+		$f3->route('GET /','NS\C->get');
 		$f3->route('GET /@a','NS\C->get');
+		$f3->route('GET /foo*','NS\C->get');
 		$f3->route('GET /foo','NS\C->get');
 		$f3->route('GET /foo/*','NS\C->get');
 		$f3->route('GET /foo/@b','NS\C->get');
+		$f3->route('GET /foo/0','NS\C->get');
 		$f3->route('GET /foo/bar','NS\C->get');
 		$f3->mock('GET /dummy');
 		$test->expect(
 			array_keys($f3->get('ROUTES'))==[
 				'/foo/bar',
+				'/foo/0',
 				'/foo/@b',
 				'/foo/*',
 				'/foo',
+				'/foo*',
+				'/',
 				'/@a',
 				'/*',
 			],
