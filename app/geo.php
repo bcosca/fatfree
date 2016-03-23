@@ -27,7 +27,7 @@ class Geo extends Controller {
 					(' (IP address '.$loc['request'].')'):'')
 		);
 		$test->expect(
-			is_array($w=$geo->weather($loc['latitude'],$loc['longitude'])),
+			is_array($w=$geo->weather($loc['latitude'],$loc['longitude'],'a3d75b435095b31daeacd62c4945a649')),
 			'Weather: '.
 				(isset($w['name'])?$w['name']:'').
 				(isset($w['main']['temp'])?
@@ -35,6 +35,7 @@ class Geo extends Controller {
 				(isset($w['wind']['speed'])?
 					(', wind speed: '.((float)$w['wind']['speed']).' knots'):'')
 		);
+		var_dump($w);
 		$f3->set('results',$test->results());
 	}
 
