@@ -64,9 +64,9 @@ class Lexicon extends Controller {
 			"Mixed PREFIX: \"$prefix\""
 		);
 		$f3->set('foo',
-			'{0, plural,'.
-				'zero {There\'s nothing on the table.},'.
-				'one {A book is on the table.},'.
+			'{0, plural, '.
+				'zero {There\'s nothing on the table.}, '.
+				'one {A book is on the table.}, '.
 				'other {There are # books on the table.}'.
 			'}'
 		);
