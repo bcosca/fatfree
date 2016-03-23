@@ -35,7 +35,6 @@ class Geo extends Controller {
 				(isset($w['wind']['speed'])?
 					(', wind speed: '.((float)$w['wind']['speed']).' knots'):'')
 		);
-		var_dump($w);
 		$f3->set('results',$test->results());
 	}
 
