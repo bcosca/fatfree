@@ -292,9 +292,13 @@ class Web extends Prefab {
 		curl_close($curl);
 		$body=ob_get_clean();
 		if ($options['follow_location'] &&
-			preg_match('/^Location: (.+)$/m',implode(PHP_EOL,$headers),$loc)) {
-			$options['max_redirects']--;
-			return $this->request($loc[1],$options);
+		    preg_match('/^Location: (.+)$/m',implode(PHP_EOL,$headers),$loc)) {
+		    $options['max_redirects']--;
+		    if(stripos($loc[1], '/') === 0){
+		        $parsed_url = parse_url($url);
+		        $loc[1] = $parsed_url['scheme'] . '://' . $parsed_url['host'] . $loc[1];
+		    }
+		    return $this->request($loc[1],$options);
 		}
 		return array(
 			'body'=>$body,
