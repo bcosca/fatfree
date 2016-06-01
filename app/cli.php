@@ -15,16 +15,35 @@ class CLI extends Controller {
 		);
 		if (isset($this->binary)) {
 			$test->expect(
-				$this->exec('/web')=='<h1>Web</h1>',
-				'Mock HTTP request'
-			);
-			$test->expect(
 				$this->exec('/web?foo=bar')=='<h1>Web</h1>foo=bar',
-				'Pass query string'
+				'Web-style argument (HTTP request)'
 			);
 			$test->expect(
-				$this->exec('')=='Home',
-				'Default argument'
+				$this->exec('log show')=='show',
+				'Console-style arguments'
+			);
+			$test->expect(
+				$this->exec('debug uri')=='/debug/uri?' &&
+				$this->exec('debug uri -a=1 --name=foo')=='/debug/uri?a=1&name=foo' &&
+				$this->exec('debug get -a=1 --name=foo')=='a:1,name:foo',
+				'Console-style options'
+			);
+			$test->expect(
+				$this->exec('debug uri -a -b --force')=='/debug/uri?a=&b=&force=',
+				'Console-style flags'
+			);
+			$test->expect(
+				$this->exec('debug uri -abc=1 -d=2')=='/debug/uri?a=&b=&c=1&d=2',
+				'Console-style combined flags'
+			);
+			$test->expect(
+				$this->exec('debug -a=1 uri -b=2')=='/debug/uri?a=1&b=2',
+				'The position of options doesn\'t matter'
+			);
+			$test->expect(
+				$this->exec('')=='Home' &&
+				$this->exec('--color=blue')=='Home is blue',
+				'Default route'
 			);
 		}
 		$f3->set('results',$test->results());
