@@ -130,7 +130,7 @@ class Internals extends Controller {
 			'instance() saves object to framework registry'
 		);
 		$test->expect(
-			$f3->constants($f3,'REQ_')==['SYNC'=>\Base::REQ_SYNC,'AJAX'=>\Base::REQ_AJAX],
+			$f3->constants($f3,'REQ_')==['SYNC'=>\Base::REQ_SYNC,'AJAX'=>\Base::REQ_AJAX,'CLI'=>\Base::REQ_CLI],
 			'Fetch constants from a class (object)'
 		);
 		$test->expect(

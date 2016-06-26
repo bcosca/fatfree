@@ -70,7 +70,7 @@ class Config extends Controller {
 			'Named route defined'
 		);
 		$test->expect(
-			$f3->exists('ROUTES./404.3.POST'),
+			$f3->exists('ROUTES./404.0.POST'),
 			'Named route defined with an existing name'
 		);
 		$test->expect(

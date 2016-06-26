@@ -33,7 +33,7 @@ class Geo extends Controller {
 				(isset($w['main']['temp'])?
 					(', temperature: '.$w['main']['temp'].'°C'):'').
 				(isset($w['wind']['speed'])?
-					(', wind speed: '.((float)$w['wind']['speed']).' knots'):'')
+					(', wind speed: '.((float)$w['wind']['speed']).' m/s'):'')
 		);
 		$f3->set('results',$test->results());
 	}
