@@ -199,7 +199,7 @@ class Image extends Controller {
 					'title="'.$img->width().'x'.$img->height().'" />'
 			);
 			$test->expect(
-				$src=$f3->base64($img->restore()->dump('png',NULL,9,PNG_ALL_FILTERS),'image/png'),
+				$src=$f3->base64($img->restore()->dump('png',9,PNG_ALL_FILTERS),'image/png'),
 				'Dump with additional arguments<br />'.
 				'<img src="'.$src.'" '.
 					'title="'.$img->width().'x'.$img->height().'" />'
