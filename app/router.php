@@ -209,6 +209,7 @@ class Router extends Controller {
 		$f3->route('GET /foo*','NS\C->get');
 		$f3->route('GET /foo','NS\C->get');
 		$f3->route('GET /foo/*','NS\C->get');
+		$f3->route('GET /foo/@a.htm','NS\C->get');
 		$f3->route('GET /foo/@b','NS\C->get');
 		$f3->route('GET /foo/0','NS\C->get');
 		$f3->route('GET /foo/bar','NS\C->get');
@@ -217,6 +218,7 @@ class Router extends Controller {
 			array_keys($f3->get('ROUTES'))==[
 				'/foo/bar',
 				'/foo/0',
+				'/foo/@a.htm',
 				'/foo/@b',
 				'/foo/*',
 				'/foo',
