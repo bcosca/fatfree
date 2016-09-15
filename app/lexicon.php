@@ -5,6 +5,7 @@ namespace App;
 class Lexicon extends Controller {
 
 	function get($f3) {
+		$f3->set('CACHE',TRUE);
 		$test=new \Test;
 		$test->expect(
 			is_null($f3->get('ERROR')),
@@ -20,25 +21,25 @@ class Lexicon extends Controller {
 			'LANGUAGE: '.$language.' auto-detected'
 		);
 		$template=\Template::instance();
-		$f3->set('LANGUAGE','fr-FR');
+		$f3->set('LANGUAGE','fr-FR',60);
 		$test->expect(
 			substr_count($f3->decode($template->render('templates/lexicon.htm')),
 			'Les naïfs ægithales hâtifs pondant à Noël où il gèle sont sûrs d\'être déçus et de voir leurs drôles d\'œufs abîmés.'),
 			'fr-FR'
 		);
-		$f3->set('LANGUAGE','en-US');
+		$f3->set('LANGUAGE','en-US',60);
 		$test->expect(
 			substr_count($f3->decode($template->render('templates/lexicon.htm')),
 			'The quick brown fox jumps over the lazy dog.'),
 			'en-US'
 		);
-		$f3->set('LANGUAGE','es-CL');
+		$f3->set('LANGUAGE','es-CL',60);
 		$test->expect(
 			substr_count($f3->decode($template->render('templates/lexicon.htm')),
 			'El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro.'),
 			'es-CL'
 		);
-		$f3->set('LANGUAGE','en');
+		$f3->set('LANGUAGE','en',60);
 		$test->expect(
 			preg_match('/I love Fat-Free!/',
 				$template->render('templates/lexicon.htm')),
