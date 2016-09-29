@@ -128,6 +128,7 @@ class Audit extends Controller {
 		$type='MasterCard';
 		$test->expect(
 			$audit->card('5555555555554444')==$type &&
+			$audit->card('2221000010000015')==$type &&
 			$audit->card('5105105105105100')==$type,
 			$type
 		);
