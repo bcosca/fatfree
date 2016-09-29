@@ -32,6 +32,7 @@ $f3->set('menu',
 		'/web'=>'Web',
 		'/geo'=>'Geo',
 		'/google'=>'Google',
+		'/openid'=>'OpenID',
 		'/pingback'=>'Pingback'
 	]
 );
