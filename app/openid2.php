@@ -12,17 +12,14 @@ class OpenID2 extends Controller {
 			'No errors expected at this point'
 		);
 		$openid=new \Web\OpenID;
+		$openid->set('endpoint','https://steamcommunity.com/openid');
 		$test->expect(
 			$openid->verified(),
 			'OpenID '.$openid->get('identity').' verified'
 		);
 		$test->expect(
 			$response=$openid->response(),
-			'OpenID attributes in response: '.
-				(isset($response['ext1.value.firstname'])?
-					$response['ext1.value.firstname']:'').
-				(isset($response['ext1.value.lastname'])?
-					(' '.$response['ext1.value.lastname']):'')
+			'OpenID attributes in response: '.var_export($response,true)
 		);
 		$f3->set('results',$test->results());
 	}

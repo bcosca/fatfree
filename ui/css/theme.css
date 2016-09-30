@@ -68,7 +68,7 @@ h1 {
 	min-width:2em;
 }
 .main span.text {
-	white-space:nowrap;
+	/*white-space:nowrap;*/
 	margin:0.15em 0.5em;
 }
 .main span.pass {
