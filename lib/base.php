@@ -249,7 +249,7 @@ final class Base extends Prefab implements ArrayAccess {
 		$null=NULL;
 		$parts=$this->cut($key);
 		if ($parts[0]=='SESSION') {
-			@session_start();
+			if(!isset($_SESSION)){session_start();}
 			$this->sync('SESSION');
 		}
 		elseif (!preg_match('/^\w+$/',$parts[0]))
