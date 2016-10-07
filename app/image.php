@@ -37,14 +37,12 @@ class Image extends Controller {
 					'Translucent CAPTCHA<br />'.
 				'<img src="'.$src.'" title="CAPTCHA" />'
 			);
-			/*
 			$test->expect(
 				$src=$f3->base64(
-					$img->identicon(md5(mt_rand()),48)->dump(),'image/png'),
+					$img->identicon(md5(mt_rand()),64)->dump(),'image/png'),
 				'Identicon<br />'.
 				'<img src="'.$src.'" title="Identicon" />'
 			);
-			*/
 			$f3->set('file','images/south-park.jpg');
 			$img=new \Image($f3->get('file'),TRUE);
 			$test->expect(
