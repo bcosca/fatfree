@@ -31,7 +31,6 @@ class Router extends Controller {
 			$f3->get('reroute')=='/foo?bar=baz',
 			'Custom rerouting'
 		);
-		$f3->set('ONREROUTE',NULL);
 		$f3->clear('ROUTES');
 		$f3->route('GET|POST @hello:/',
 			function($f3) {
@@ -50,9 +49,29 @@ class Router extends Controller {
 		$f3->route('GET @complex:/resize/@format/*/sep/*','App->nowhere');
 		$test->expect(
 			$f3->alias('complex','format=20x20,2=foo/bar,3=baz.gif')=='/resize/20x20/foo/bar/sep/baz.gif' &&
-			$f3->alias('complex','1=20x20,2=foo/bar,3=baz.gif')=='/resize/20x20/foo/bar/sep/baz.gif',
+			$f3->alias('complex','1=20x20,2=foo/bar,3=baz.gif')=='/resize/20x20/foo/bar/sep/baz.gif' &&
+			$f3->alias('complex','1=20x20,2=foo,3=bar',['x'=>123,'y'=>['z'=>2]])=='/resize/20x20/foo/sep/bar?x=123&y%5Bz%5D=2',
 			'Alias() function'
 		);
+		$f3->reroute('@hello');
+		$rr1=$f3->get('reroute');
+		$f3->reroute('@hello?x=789');
+		$rr2=$f3->get('reroute');
+		$f3->reroute('@complex(format=20x20,2=foo/bar,3=baz.gif)');
+		$rr3=$f3->get('reroute');
+		$f3->reroute('@complex(format=20x20,2=foo/bar,3=baz.gif)?x=789');
+		$rr4=$f3->get('reroute');
+		$f3->reroute(['complex',['format'=>'20x20',2=>'foo/bar',3=>'baz.gif']]);
+		$rr5=$f3->get('reroute');
+		$test->expect(
+			$rr1=='/' &&
+			$rr2=='/?x=789' &&
+			$rr3=='/resize/20x20/foo/bar/sep/baz.gif' &&
+			$rr4=='/resize/20x20/foo/bar/sep/baz.gif?x=789' &&
+			$rr5=='/resize/20x20/foo/bar/sep/baz.gif',
+			'Rerouting to alias'
+		);
+		$f3->set('ONREROUTE',NULL);
 		$f3->mock('GET /');
 		$test->expect(
 			$f3->get('bar')=='foo',
