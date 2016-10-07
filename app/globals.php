@@ -220,12 +220,10 @@ class Globals extends Controller {
 			'Altering HEADERS variable affects HTTP headers'
 		);
 		$ok=TRUE;
-		foreach ($hdrs as $hdr) {
-			$_SERVER['HTTP_'.$hdr]='bar';
-			if ($f3->get('HEADERS["'.
-				str_replace(' ','-',
-					ucwords(str_replace('_',' ',strtolower($hdr)))).'"]')!=
-				$_SERVER['HTTP_'.$hdr])
+		foreach (array_keys($f3->get('HEADERS')) as $hdr) {
+			$tmp=strtoupper(strtr($hdr,'-','_'));
+			$_SERVER['HTTP_'.$tmp]='bar';
+			if ($f3->get('HEADERS["'.$hdr.'"]')!=$_SERVER['HTTP_'.$tmp])
 				$ok=FALSE;
 		}
 		$test->expect(
