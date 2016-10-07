@@ -93,13 +93,13 @@ class Web extends Controller {
 				$web->engine($wrapper);
 				$now=microtime(TRUE);
 				$test->expect(
-					$req=$web->request($url='http://www.google.com/'),
+					$req=@$web->request($url='http://www.google.com/'),
 					'HTTP request ('.$url.') using '.$req['engine'].' '.
 					'('.round(1e3*(microtime(TRUE)-$now),1).' msecs)'
 				);
 				$now=microtime(TRUE);
 				$test->expect(
-					$web->request('pingback2?page=pingback/client'),
+					@$web->request('pingback2?page=pingback/client'),
 					'HTTP request (local resource: '.
 					round(1e3*(microtime(TRUE)-$now),1).' msecs)'
 				);
