@@ -10,10 +10,6 @@ class Config extends Controller {
 			is_null($f3->get('ERROR')),
 			'No errors expected at this point'
 		);
-		$f3->set('CONFIG',function($sec,$lval,$rval) use($f3){
-			if (preg_match('/function:strtoupper/i',$sec))
-				$f3->set($lval,strtoupper($rval));
-		});
 		$f3->config('app.ini');
 		$test->expect(
 			$f3->get('test')=='',
