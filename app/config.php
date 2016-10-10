@@ -76,9 +76,17 @@ class Config extends Controller {
 		$test->expect(
 			$f3->get('section1.myvar')=='myval1' &&
 			$f3->get('section2.myvar')=='myval2' &&
-			$f3->get('section3.dummy')=='HAIL THE CONQUERING HERO',
+			$f3->get('section3.dummy')=='HAIL THE CONQUERING HERO' &&
+			$f3->get('section3.great')=='EXACTLY',
 			'Custom section'
 		);
+		$cache=\Cache::instance();
+		$test->expect(
+			$cache->exists($hash=$f3->hash('section1.myvar').'.var',$val) &&
+			$val=='myval1',
+			'Config variable cached'
+		);
+		$cache->clear($hash);
 		$f3->set('results',$test->results());
 	}
 
