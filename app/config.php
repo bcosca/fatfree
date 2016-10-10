@@ -82,9 +82,15 @@ class Config extends Controller {
 		);
 		$cache=\Cache::instance();
 		$test->expect(
-			$cache->exists($hash=$f3->hash('section1.myvar').'.var',$val) &&
-			$val=='myval1',
-			'Config variable cached'
+			$cache->exists($hash=$f3->hash('num').'.var',$val) &&
+			$val==123,
+			'Primitive value cached'
+		);
+		$cache->clear($hash);
+		$test->expect(
+			$cache->exists($hash=$f3->hash('mix').'.var',$val) &&
+			$val==["this",123.45,FALSE],
+			'Array value cached'
 		);
 		$cache->clear($hash);
 		$f3->set('results',$test->results());
