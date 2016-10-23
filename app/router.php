@@ -84,14 +84,20 @@ class Router extends Controller {
 			'Mixed request routing pattern'
 		);
 		$f3->clear('ROUTES');
-		$f3->route('GET /wild/*',
+		$f3->route(['GET /wild/*','GET /wild/*/page/*'],
 			function($f3) {
 			}
 		);
 		$f3->mock('GET /wild/dangerous/beast?at=large');
 		$test->expect(
-			$f3->get('PARAMS.1')=='dangerous/beast',
+			$f3->get('PARAMS.*')=='dangerous/beast',
 			'Wildcard routing pattern'
+		);
+		$f3->mock('GET /wild/dangerous/beast/page/fourty/seven');
+		$test->expect(
+			$f3->get('PARAMS.*.0')=='dangerous/beast'
+			&& $f3->get('PARAMS.*.1')=='fourty/seven',
+			'Wildcard routing pattern [multiple]'
 		);
 		$f3->set('type','none');
 		$f3->route('GET|POST / [ajax]',
