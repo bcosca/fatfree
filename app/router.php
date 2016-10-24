@@ -48,20 +48,19 @@ class Router extends Controller {
 		);
 		$f3->route('GET @complex:/resize/@format/*/sep/*','App->nowhere');
 		$test->expect(
-			$f3->alias('complex','format=20x20,2=foo/bar,3=baz.gif')=='/resize/20x20/foo/bar/sep/baz.gif' &&
-			$f3->alias('complex','1=20x20,2=foo/bar,3=baz.gif')=='/resize/20x20/foo/bar/sep/baz.gif' &&
-			$f3->alias('complex','1=20x20,2=foo,3=bar',['x'=>123,'y'=>['z'=>2]])=='/resize/20x20/foo/sep/bar?x=123&y%5Bz%5D=2',
+			$f3->alias('complex','format=20x20,*=[foo/bar,baz.gif]')=='/resize/20x20/foo/bar/sep/baz.gif' &&
+			$f3->alias('complex','format=20x20,*=[foo,bar]',['x'=>123,'y'=>['z'=>2]])=='/resize/20x20/foo/sep/bar?x=123&y%5Bz%5D=2',
 			'Alias() function'
 		);
 		$f3->reroute('@hello');
 		$rr1=$f3->get('reroute');
 		$f3->reroute('@hello?x=789');
 		$rr2=$f3->get('reroute');
-		$f3->reroute('@complex(format=20x20,2=foo/bar,3=baz.gif)');
+		$f3->reroute('@complex(format=20x20,*=[foo/bar,baz.gif])');
 		$rr3=$f3->get('reroute');
-		$f3->reroute('@complex(format=20x20,2=foo/bar,3=baz.gif)?x=789');
+		$f3->reroute('@complex(format=20x20,*=[foo/bar,baz.gif])?x=789');
 		$rr4=$f3->get('reroute');
-		$f3->reroute(['complex',['format'=>'20x20',2=>'foo/bar',3=>'baz.gif']]);
+		$f3->reroute(['complex',['format'=>'20x20','*'=>['foo/bar','baz.gif']]]);
 		$rr5=$f3->get('reroute');
 		$test->expect(
 			$rr1=='/' &&
@@ -90,7 +89,7 @@ class Router extends Controller {
 		);
 		$f3->mock('GET /wild/dangerous/beast?at=large');
 		$test->expect(
-			$f3->get('PARAMS.1')=='dangerous/beast',
+			$f3->get('PARAMS["*"]')=='dangerous/beast',
 			'Wildcard routing pattern'
 		);
 		$f3->set('type','none');
