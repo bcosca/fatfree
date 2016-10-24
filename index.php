@@ -33,6 +33,7 @@ $f3->set('menu',
 		'/geo'=>'Geo',
 		'/google'=>'Google',
 		'/openid'=>'OpenID',
+		'/oauth2'=>'OAuth2',
 		'/pingback'=>'Pingback'
 	]
 );

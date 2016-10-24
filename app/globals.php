@@ -199,7 +199,8 @@ class Globals extends Controller {
 		);
 		$ok=TRUE;
 		foreach ($f3->get('HEADERS') as $hdr=>$val)
-			if ($_SERVER['HTTP_'.strtoupper(str_replace('-','_',$hdr))]!=
+			if (isset($_SERVER['HTTP_'.strtoupper(str_replace('-','_',$hdr))]) &&
+				$_SERVER['HTTP_'.strtoupper(str_replace('-','_',$hdr))]!=
 				$val)
 				$ok=FALSE;
 		$test->expect(
@@ -212,7 +213,7 @@ class Globals extends Controller {
 			$f3->set('HEADERS["'.$hdr.'"]','foo');
 			$hdr=strtoupper(str_replace('-','_',$hdr));
 			$hdrs[]=$hdr;
-			if ($_SERVER['HTTP_'.$hdr]!='foo')
+			if (isset($_SERVER['HTTP_'.$hdr]) && $_SERVER['HTTP_'.$hdr]!='foo')
 				$ok=FALSE;
 		}
 		$test->expect(
@@ -222,9 +223,11 @@ class Globals extends Controller {
 		$ok=TRUE;
 		foreach (array_keys($f3->get('HEADERS')) as $hdr) {
 			$tmp=strtoupper(strtr($hdr,'-','_'));
-			$_SERVER['HTTP_'.$tmp]='bar';
-			if ($f3->get('HEADERS["'.$hdr.'"]')!=$_SERVER['HTTP_'.$tmp])
-				$ok=FALSE;
+			if (isset($_SERVER['HTTP_'.$tmp])) {
+				$_SERVER['HTTP_'.$tmp]='bar';
+				if ($f3->get('HEADERS["'.$hdr.'"]')!=$_SERVER['HTTP_'.$tmp])
+					$ok=FALSE;
+			}
 		}
 		$test->expect(
 			$ok,
