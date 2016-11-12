@@ -2260,7 +2260,11 @@ class Cache extends Prefab {
 			case 'apcu':
 				return apc_store($ndx,$data,$ttl);
 			case 'redis':
-				return $this->ref->set($ndx,$data,array('ex'=>$ttl));
+				if($ttl > 0) {
+					return $this->ref->set($ndx,$data,array('ex'=>$ttl));
+				} else {
+					return $this->ref->set($ndx,$data);
+				}
 			case 'memcache':
 				return memcache_set($this->ref,$ndx,$data,0,$ttl);
 			case 'wincache':
