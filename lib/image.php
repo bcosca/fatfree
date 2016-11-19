@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -28,6 +28,7 @@ class Image {
 		E_Color='Invalid color specified: %s',
 		E_File='File not found',
 		E_Font='CAPTCHA font not found',
+		E_TTF='No TrueType support in GD module',
 		E_Length='Invalid CAPTCHA length: %s';
 	//@}
 
@@ -54,9 +55,11 @@ class Image {
 	/**
 	*	Convert RGB hex triad to array
 	*	@return array|FALSE
-	*	@param $color int
+	*	@param $color int|string
 	**/
 	function rgb($color) {
+		if (is_string($color))
+			$color=hexdec($color);
 		$hex=str_pad($hex=dechex($color),$color<4096?3:6,'0',STR_PAD_LEFT);
 		if (($len=strlen($hex))>6)
 			user_error(sprintf(self::E_Color,'0x'.$hex),E_USER_ERROR);
@@ -225,9 +228,17 @@ class Image {
 	*	@param $crop bool
 	*	@param $enlarge bool
 	**/
-	function resize($width,$height,$crop=TRUE,$enlarge=TRUE) {
+	function resize($width=NULL,$height=NULL,$crop=TRUE,$enlarge=TRUE) {
+		if (is_null($width) && is_null($height))
+			return $this;
+		$origw=$this->width();
+		$origh=$this->height();
+		if (is_null($width))
+			$width=round(($height/$origh)*$origw);
+		if (is_null($height))
+			$height=round(($width/$origw)*$origh);
 		// Adjust dimensions; retain aspect ratio
-		$ratio=($origw=imagesx($this->data))/($origh=imagesy($this->data));
+		$ratio=$origw/$origh;
 		if (!$crop) {
 			if ($width/$ratio<=$height)
 				$height=round($width/$ratio);
@@ -331,24 +342,24 @@ class Image {
 	*	@param $blocks int
 	**/
 	function identicon($str,$size=64,$blocks=4) {
-		$sprites=array(
-			array(.5,1,1,0,1,1),
-			array(.5,0,1,0,.5,1,0,1),
-			array(.5,0,1,0,1,1,.5,1,1,.5),
-			array(0,.5,.5,0,1,.5,.5,1,.5,.5),
-			array(0,.5,1,0,1,1,0,1,1,.5),
-			array(1,0,1,1,.5,1,1,.5,.5,.5),
-			array(0,0,1,0,1,.5,0,0,.5,1,0,1),
-			array(0,0,.5,0,1,.5,.5,1,0,1,.5,.5),
-			array(.5,0,.5,.5,1,.5,1,1,.5,1,.5,.5,0,.5),
-			array(0,0,1,0,.5,.5,1,.5,.5,1,.5,.5,0,1),
-			array(0,.5,.5,1,1,.5,.5,0,1,0,1,1,0,1),
-			array(.5,0,1,0,1,1,.5,1,1,.75,.5,.5,1,.25),
-			array(0,.5,.5,0,.5,.5,1,0,1,.5,.5,1,.5,.5,0,1),
-			array(0,0,1,0,1,1,0,1,1,.5,.5,.25,.5,.75,0,.5,.5,.25),
-			array(0,.5,.5,.5,.5,0,1,0,.5,.5,1,.5,.5,1,.5,.5,0,1),
-			array(0,0,1,0,.5,.5,.5,0,0,.5,1,.5,.5,1,.5,.5,0,1)
-		);
+		$sprites=[
+			[.5,1,1,0,1,1],
+			[.5,0,1,0,.5,1,0,1],
+			[.5,0,1,0,1,1,.5,1,1,.5],
+			[0,.5,.5,0,1,.5,.5,1,.5,.5],
+			[0,.5,1,0,1,1,0,1,1,.5],
+			[1,0,1,1,.5,1,1,.5,.5,.5],
+			[0,0,1,0,1,.5,0,0,.5,1,0,1],
+			[0,0,.5,0,1,.5,.5,1,0,1,.5,.5],
+			[.5,0,.5,.5,1,.5,1,1,.5,1,.5,.5,0,.5],
+			[0,0,1,0,.5,.5,1,.5,.5,1,.5,.5,0,1],
+			[0,.5,.5,1,1,.5,.5,0,1,0,1,1,0,1],
+			[.5,0,1,0,1,1,.5,1,1,.75,.5,.5,1,.25],
+			[0,.5,.5,0,.5,.5,1,0,1,.5,.5,1,.5,.5,0,1],
+			[0,0,1,0,1,1,0,1,1,.5,.5,.25,.5,.75,0,.5,.5,.25],
+			[0,.5,.5,.5,.5,0,1,0,.5,.5,1,.5,.5,1,.5,.5,0,1],
+			[0,0,1,0,.5,.5,.5,0,0,.5,1,.5,.5,1,.5,.5,0,1]
+		];
 		$hash=sha1($str);
 		$this->data=imagecreatetruecolor($size,$size);
 		list($r,$g,$b)=$this->rgb(hexdec(substr($hash,-3)));
@@ -360,15 +371,10 @@ class Image {
 			for ($i=$j,$x=$blocks-1-$j;$i<$x;$i++) {
 				$sprite=imagecreatetruecolor($dim,$dim);
 				imagefill($sprite,0,0,IMG_COLOR_TRANSPARENT);
-				if ($block=$sprites[
-					hexdec($hash[($j*$blocks+$i)*2])%$ctr]) {
-					for ($k=0,$pts=count($block);$k<$pts;$k++)
-						$block[$k]*=$dim;
-					imagefilledpolygon($sprite,$block,$pts/2,$fg);
-				}
-				$sprite=imagerotate($sprite,
-					90*(hexdec($hash[($j*$blocks+$i)*2+1])%4),
-					imagecolorallocatealpha($sprite,0,0,0,127));
+				$block=$sprites[hexdec($hash[($j*$blocks+$i)*2])%$ctr];
+				for ($k=0,$pts=count($block);$k<$pts;$k++)
+					$block[$k]*=$dim;
+				imagefilledpolygon($sprite,$block,$pts/2,$fg);
 				for ($k=0;$k<4;$k++) {
 					imagecopyresampled($this->data,$sprite,
 						$i*$dim/2,$j*$dim/2,0,0,$dim/2,$dim/2,$dim,$dim);
@@ -398,6 +404,10 @@ class Image {
 			user_error(sprintf(self::E_Length,$len),E_USER_ERROR);
 			return FALSE;
 		}
+		if (!function_exists('imagettftext')) {
+			user_error(self::E_TTF,E_USER_ERROR);
+			return FALSE;
+		}
 		$fw=Base::instance();
 		foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
 			if (is_file($path=$dir.$font)) {
@@ -405,7 +415,7 @@ class Image {
 					$ssl?bin2hex(openssl_random_pseudo_bytes($len)):uniqid(),
 					-$len));
 				$block=$size*3;
-				$tmp=array();
+				$tmp=[];
 				for ($i=0,$width=0,$height=0;$i<$len;$i++) {
 					// Process at 2x magnification
 					$box=imagettfbbox($size*2,0,$path,$seed[$i]);
@@ -472,8 +482,10 @@ class Image {
 			header('Content-Type: image/'.$format);
 			header('X-Powered-By: '.Base::instance()->get('PACKAGE'));
 		}
-		call_user_func_array('image'.$format,
-			array_merge(array($this->data),$args));
+		call_user_func_array(
+			'image'.$format,
+			array_merge([$this->data,NULL],$args)
+		);
 	}
 
 	/**
@@ -484,8 +496,10 @@ class Image {
 		$args=func_get_args();
 		$format=$args?array_shift($args):'png';
 		ob_start();
-		call_user_func_array('image'.$format,
-			array_merge(array($this->data),$args));
+		call_user_func_array(
+			'image'.$format,
+			array_merge([$this->data,NULL],$args)
+		);
 		return ob_get_clean();
 	}
 
@@ -507,8 +521,7 @@ class Image {
 			if (!is_dir($dir=$fw->get('TEMP')))
 				mkdir($dir,Base::MODE,TRUE);
 			$this->count++;
-			$fw->write($dir.'/'.
-				$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
+			$fw->write($dir.'/'.$fw->get('SEED').'.'.
 				$fw->hash($this->file).'-'.$this->count.'.png',
 				$this->dump());
 		}
@@ -523,8 +536,7 @@ class Image {
 	function restore($state=1) {
 		$fw=Base::instance();
 		if ($this->flag && is_file($file=($path=$fw->get('TEMP').
-			$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-			$fw->hash($this->file).'-').$state.'.png')) {
+			$fw->get('SEED').'.'.$fw->hash($this->file).'-').$state.'.png')) {
 			if (is_resource($this->data))
 				imagedestroy($this->data);
 			$this->data=imagecreatefromstring($fw->read($file));
@@ -553,11 +565,12 @@ class Image {
 
 	/**
 	*	Load string
-	*	@return object
+	*	@return object|FALSE
 	*	@param $str string
 	**/
 	function load($str) {
-		$this->data=imagecreatefromstring($str);
+		if (!$this->data=@imagecreatefromstring($str))
+			return FALSE;
 		imagesavealpha($this->data,TRUE);
 		$this->save();
 		return $this;
@@ -592,9 +605,7 @@ class Image {
 		if (is_resource($this->data)) {
 			imagedestroy($this->data);
 			$fw=Base::instance();
-			$path=$fw->get('TEMP').
-				$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-				$fw->hash($this->file);
+			$path=$fw->get('TEMP').$fw->get('SEED').'.'.$fw->hash($this->file);
 			if ($glob=@glob($path.'*.png',GLOB_NOSORT))
 				foreach ($glob as $match)
 					if (preg_match('/-(\d+)\.png/',$match))

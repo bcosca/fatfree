@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -38,7 +38,7 @@ class Pingback extends \Prefab {
 		$web=\Web::instance();
 		$req=$web->request($url);
 		$found=FALSE;
-		if ($req && $req['body']) {
+		if ($req['body']) {
 			// Look for pingback header
 			foreach ($req['headers'] as $header)
 				if (preg_match('/^X-Pingback:\h*(.+)/',$header,$href)) {
@@ -71,7 +71,7 @@ class Pingback extends \Prefab {
 			$doc=new \DOMDocument('1.0',$fw->get('ENCODING'));
 			$doc->stricterrorchecking=FALSE;
 			$doc->recover=TRUE;
-			if ($req && @$doc->loadhtml($req['body'])) {
+			if (@$doc->loadhtml($req['body'])) {
 				// Parse anchor tags
 				$links=$doc->getelementsbytagname('a');
 				foreach ($links as $link) {
@@ -79,17 +79,17 @@ class Pingback extends \Prefab {
 					// Find pingback-enabled resources
 					if ($permalink && $found=$this->enabled($permalink)) {
 						$req=$web->request($found,
-							array(
+							[
 								'method'=>'POST',
 								'header'=>'Content-Type: application/xml',
 								'content'=>xmlrpc_encode_request(
 									'pingback.ping',
-									array($source,$permalink),
-									array('encoding'=>$fw->get('ENCODING'))
+									[$source,$permalink],
+									['encoding'=>$fw->get('ENCODING')]
 								)
-							)
+							]
 						);
-						if ($req && $req['body'])
+						if ($req['body'])
 							$this->log.=date('r').' '.
 								$permalink.' [permalink:'.$found.']'.PHP_EOL.
 								$req['body'].PHP_EOL;
@@ -118,7 +118,7 @@ class Pingback extends \Prefab {
 			$path=$fw->get('BASE');
 		$web=\Web::instance();
 		$args=xmlrpc_decode_request($fw->get('BODY'),$method,$charset);
-		$options=array('encoding'=>$charset);
+		$options=['encoding'=>$charset];
 		if ($method=='pingback.ping' && isset($args[0],$args[1])) {
 			list($source,$permalink)=$args;
 			$doc=new \DOMDocument('1.0',$fw->get('ENCODING'));
@@ -138,8 +138,7 @@ class Pingback extends \Prefab {
 					$links=$doc->getelementsbytagname('a');
 					foreach ($links as $link) {
 						if ($link->getattribute('href')==$permalink) {
-							call_user_func_array($func,
-								array($source,$req['body']));
+							call_user_func_array($func,[$source,$req['body']]);
 							// Success
 							die(xmlrpc_encode_request(NULL,$source,$options));
 						}

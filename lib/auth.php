@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -19,7 +19,6 @@
 	with Fat-Free Framework.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-
 
 //! Authorization/authentication plug-in
 class Auth {
@@ -48,19 +47,19 @@ class Auth {
 	protected function _jig($id,$pw,$realm) {
 		return (bool)
 			call_user_func_array(
-				array($this->mapper,'load'),
-				array(
+				[$this->mapper,'load'],
+				[
 					array_merge(
-						array(
+						[
 							'@'.$this->args['id'].'==? AND '.
 							'@'.$this->args['pw'].'==?'.
 							(isset($this->args['realm'])?
 								(' AND @'.$this->args['realm'].'==?'):''),
 							$id,$pw
-						),
-						(isset($this->args['realm'])?array($realm):array())
+						],
+						(isset($this->args['realm'])?[$realm]:[])
 					)
-				)
+				]
 			);
 	}
 
@@ -74,12 +73,12 @@ class Auth {
 	protected function _mongo($id,$pw,$realm) {
 		return (bool)
 			$this->mapper->load(
-				array(
+				[
 					$this->args['id']=>$id,
 					$this->args['pw']=>$pw
-				)+
+				]+
 				(isset($this->args['realm'])?
-					array($this->args['realm']=>$realm):array())
+					[$this->args['realm']=>$realm]:[])
 			);
 	}
 
@@ -93,19 +92,19 @@ class Auth {
 	protected function _sql($id,$pw,$realm) {
 		return (bool)
 			call_user_func_array(
-				array($this->mapper,'load'),
-				array(
+				[$this->mapper,'load'],
+				[
 					array_merge(
-						array(
+						[
 							$this->args['id'].'=? AND '.
 							$this->args['pw'].'=?'.
 							(isset($this->args['realm'])?
 								(' AND '.$this->args['realm'].'=?'):''),
 							$id,$pw
-						),
-						(isset($this->args['realm'])?array($realm):array())
+						],
+						(isset($this->args['realm'])?[$realm]:[])
 					)
-				)
+				]
 			);
 	}
 

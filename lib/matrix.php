@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -45,7 +45,7 @@ class Matrix extends Prefab {
 	*	@param $var array
 	**/
 	function transpose(array &$var) {
-		$out=array();
+		$out=[];
 		foreach ($var as $keyx=>$cols)
 			foreach ($cols as $keyy=>$valy)
 				$out[$keyy][$keyx]=$valy;
@@ -63,7 +63,7 @@ class Matrix extends Prefab {
 		uasort(
 			$var,
 			function($val1,$val2) use($col,$order) {
-				list($v1,$v2)=array($val1[$col],$val2[$col]);
+				list($v1,$v2)=[$val1[$col],$val2[$col]];
 				$out=is_numeric($v1) && is_numeric($v2)?
 					Base::instance()->sign($v1-$v2):strcmp($v1,$v2);
 				if ($order==SORT_DESC)
@@ -96,12 +96,15 @@ class Matrix extends Prefab {
 	*	@param $first int
 	**/
 	function calendar($date='now',$first=0) {
-		$parts=getdate(strtotime($date));
-		$days=cal_days_in_month(CAL_GREGORIAN,$parts['mon'],$parts['year']);
-		$ref=date('w',strtotime(date('Y-m',$parts[0]).'-01'))+(7-$first)%7;
-		$out=array();
-		for ($i=0;$i<$days;$i++)
-			$out[floor(($ref+$i)/7)][($ref+$i)%7]=$i+1;
+		$out=FALSE;
+		if (extension_loaded('calendar')) {
+			$parts=getdate(strtotime($date));
+			$days=cal_days_in_month(CAL_GREGORIAN,$parts['mon'],$parts['year']);
+			$ref=date('w',strtotime(date('Y-m',$parts[0]).'-01'))+(7-$first)%7;
+			$out=[];
+			for ($i=0;$i<$days;$i++)
+				$out[floor(($ref+$i)/7)][($ref+$i)%7]=$i+1;
+		}
 		return $out;
 	}
 

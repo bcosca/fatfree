@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -321,7 +321,7 @@ class Markdown extends Prefab {
 		$tmp='';
 		while ($str!=$tmp)
 			$str=preg_replace_callback(
-				'/(?<!\\\\)([*_]{1,3})(.*?)(?!\\\\)\1(?=[\s[:punct:]]|$)/',
+				'/(?<=\s|^)(?<!\\\\)([*_]{1,3})(.*?)(?!\\\\)\1(?=[\s[:punct:]]|$)/',
 				function($expr) {
 					switch (strlen($expr[1])) {
 						case 1:
@@ -427,12 +427,12 @@ class Markdown extends Prefab {
 	**/
 	function esc($str) {
 		if (!$this->special)
-			$this->special=array(
+			$this->special=[
 				'...'=>'&hellip;',
 				'(tm)'=>'&trade;',
 				'(r)'=>'&reg;',
 				'(c)'=>'&copy;'
-			);
+			];
 		foreach ($this->special as $key=>$val)
 			$str=preg_replace('/'.preg_quote($key,'/').'/i',$val,$str);
 		return htmlspecialchars($str,ENT_COMPAT,
@@ -454,7 +454,7 @@ class Markdown extends Prefab {
 	*	@param $str string
 	**/
 	function scan($str) {
-		$inline=array('img','a','text','auto','code');
+		$inline=['img','a','text','auto','code'];
 		foreach ($inline as $func)
 			$str=$this->{'_'.$func}($str);
 		return $str;
@@ -468,7 +468,7 @@ class Markdown extends Prefab {
 	protected function build($str) {
 		if (!$this->blocks) {
 			// Regexes for capturing entire blocks
-			$this->blocks=array(
+			$this->blocks=[
 				'blockquote'=>'/^(?:\h?>\h?.*?(?:\n+|$))+/',
 				'pre'=>'/^(?:(?: {4}|\t).+?(?:\n+|$))+/',
 				'fence'=>'/^`{3}\h*(\w+)?.*?[^\n]*\n+(.+?)`{3}[^\n]*'.
@@ -486,7 +486,7 @@ class Markdown extends Prefab {
 					'(?:\/>|>(?:(?>[^><]+)|(?R))*<\/\2>))'.
 					'\h*(?:\n{2,}|\n*$)|<[\?%].+?[\?%]>\h*(?:\n?$|\n*))/s',
 				'p'=>'/^(.+?(?:\n{2,}|\n*$))/s'
-			);
+			];
 		}
 		$self=$this;
 		// Treat lines with nothing but whitespaces as empty lines
@@ -546,7 +546,7 @@ class Markdown extends Prefab {
 					if (preg_match($regex,substr($str,$ptr),$match)) {
 						$ptr+=strlen($match[0]);
 						$dst.=call_user_func_array(
-							array($this,'_'.$func),
+							[$this,'_'.$func],
 							count($match)>1?array_slice($match,1):$match
 						);
 						break;

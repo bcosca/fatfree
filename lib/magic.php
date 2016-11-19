@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -70,7 +70,7 @@ abstract class Magic implements ArrayAccess {
 	**/
 	function offsetset($key,$val) {
 		return Base::instance()->visible($this,$key)?
-			($this->key=$val):$this->set($key,$val);
+			($this->$key=$val):$this->set($key,$val);
 	}
 
 	/**

@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -57,21 +57,27 @@ class Mongo {
 	}
 
 	/**
-	*	Return MongoDB profiler results
+	*	Return MongoDB profiler results (or disable logging)
+	*	@param $flag bool
 	*	@return string
 	**/
-	function log() {
-		$cursor=$this->selectcollection('system.profile')->find();
-		foreach (iterator_to_array($cursor) as $frame)
-			if (!preg_match('/\.system\..+$/',$frame['ns']))
-				$this->log.=date('r',$frame['ts']->sec).' ('.
-					sprintf('%.1f',$frame['millis']).'ms) '.
-					$frame['ns'].' ['.$frame['op'].'] '.
-					(empty($frame['query'])?
-						'':json_encode($frame['query'])).
-					(empty($frame['command'])?
-						'':json_encode($frame['command'])).
-					PHP_EOL;
+	function log($flag=TRUE) {
+		if ($flag) {
+			$cursor=$this->selectcollection('system.profile')->find();
+			foreach (iterator_to_array($cursor) as $frame)
+				if (!preg_match('/\.system\..+$/',$frame['ns']))
+					$this->log.=date('r',$frame['ts']->sec).' ('.
+						sprintf('%.1f',$frame['millis']).'ms) '.
+						$frame['ns'].' ['.$frame['op'].'] '.
+						(empty($frame['query'])?
+							'':json_encode($frame['query'])).
+						(empty($frame['command'])?
+							'':json_encode($frame['command'])).
+						PHP_EOL;
+		} else {
+			$this->log=FALSE;
+			$this->setprofilinglevel(-1);
+		}
 		return $this->log;
 	}
 
@@ -81,7 +87,8 @@ class Mongo {
 	**/
 	function drop() {
 		$out=$this->db->drop();
-		$this->setprofilinglevel(2);
+		if ($this->log!==FALSE)
+			$this->setprofilinglevel(2);
 		return $out;
 	}
 
@@ -92,7 +99,11 @@ class Mongo {
 	*	@param $args array
 	**/
 	function __call($func,array $args) {
-		return call_user_func_array(array($this->db,$func),$args);
+		return call_user_func_array([$this->db,$func],$args);
+	}
+
+	//! Prohibit cloning
+	private function __clone() {
 	}
 
 	/**
@@ -104,7 +115,7 @@ class Mongo {
 	function __construct($dsn,$dbname,array $options=NULL) {
 		$this->uuid=\Base::instance()->hash($this->dsn=$dsn);
 		$class=class_exists('\MongoClient')?'\MongoClient':'\Mongo';
-		$this->db=new \MongoDB(new $class($dsn,$options?:array()),$dbname);
+		$this->db=new \MongoDB(new $class($dsn,$options?:[]),$dbname);
 		$this->setprofilinglevel(2);
 	}
 

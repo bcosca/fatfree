@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -33,7 +33,7 @@ class Mapper extends \DB\Cursor {
 		//! Document identifier
 		$id,
 		//! Document contents
-		$document=array();
+		$document=[];
 
 	/**
 	*	Return database type
@@ -97,7 +97,7 @@ class Mapper extends \DB\Cursor {
 		$mapper->id=$id;
 		foreach ($row as $field=>$val)
 			$mapper->document[$field]=$val;
-		$mapper->query=array(clone($mapper));
+		$mapper->query=[clone($mapper)];
 		if (isset($mapper->trigger['load']))
 			\Base::instance()->call($mapper->trigger['load'],$mapper);
 		return $mapper;
@@ -111,7 +111,7 @@ class Mapper extends \DB\Cursor {
 	function cast($obj=NULL) {
 		if (!$obj)
 			$obj=$this;
-		return $obj->document+array('_id'=>$this->id);
+		return $obj->document+['_id'=>$this->id];
 	}
 
 	/**
@@ -157,20 +157,20 @@ class Mapper extends \DB\Cursor {
 	**/
 	function find($filter=NULL,array $options=NULL,$ttl=0,$log=TRUE) {
 		if (!$options)
-			$options=array();
-		$options+=array(
+			$options=[];
+		$options+=[
 			'order'=>NULL,
 			'limit'=>0,
 			'offset'=>0
-		);
+		];
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
 		$db=$this->db;
 		$now=microtime(TRUE);
-		$data=array();
+		$data=[];
 		if (!$fw->get('CACHE') || !$ttl || !($cached=$cache->exists(
 			$hash=$fw->hash($this->db->dir().
-				$fw->stringify(array($filter,$options))).'.jig',$data)) ||
+				$fw->stringify([$filter,$options])).'.jig',$data)) ||
 			$cached[0]+$ttl<microtime(TRUE)) {
 			$data=$db->read($this->file);
 			if (is_null($data))
@@ -188,8 +188,8 @@ class Mapper extends \DB\Cursor {
 				$args=isset($filter[1]) && is_array($filter[1])?
 					$filter[1]:
 					array_slice($filter,1,NULL,TRUE);
-				$args=is_array($args)?$args:array(1=>$args);
-				$keys=$vals=array();
+				$args=is_array($args)?$args:[1=>$args];
+				$keys=$vals=[];
 				$tokens=array_slice(
 					token_get_all('<?php '.$this->token($expr)),1);
 				$data=array_filter($data,
@@ -248,7 +248,7 @@ class Mapper extends \DB\Cursor {
 								$val1[$col]=NULL;
 							if (!array_key_exists($col,$val2))
 								$val2[$col]=NULL;
-							list($v1,$v2)=array($val1[$col],$val2[$col]);
+							list($v1,$v2)=[$val1[$col],$val2[$col]];
 							if ($out=strnatcmp($v1,$v2)*
 								(($order==SORT_ASC)*2-1))
 								return $out;
@@ -263,7 +263,7 @@ class Mapper extends \DB\Cursor {
 				// Save to cache backend
 				$cache->set($hash,$data,$ttl);
 		}
-		$out=array();
+		$out=[];
 		foreach ($data as $id=>&$doc) {
 			unset($doc['_id']);
 			$out[]=$this->factory($id,$doc);
@@ -303,7 +303,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $ofs int
 	**/
 	function skip($ofs=1) {
-		$this->document=($out=parent::skip($ofs))?$out->document:array();
+		$this->document=($out=parent::skip($ofs))?$out->document:[];
 		$this->id=$out?$out->id:NULL;
 		if ($this->document && isset($this->trigger['load']))
 			\Base::instance()->call($this->trigger['load'],$this);
@@ -324,10 +324,10 @@ class Mapper extends \DB\Cursor {
 			!connection_aborted())
 			usleep(mt_rand(0,100));
 		$this->id=$id;
-		$pkey=array('_id'=>$this->id);
+		$pkey=['_id'=>$this->id];
 		if (isset($this->trigger['beforeinsert']) &&
 			\Base::instance()->call($this->trigger['beforeinsert'],
-				array($this,$pkey))===FALSE)
+				[$this,$pkey])===FALSE)
 			return $this->document;
 		$data[$id]=$this->document;
 		$db->write($this->file,$data);
@@ -335,8 +335,8 @@ class Mapper extends \DB\Cursor {
 			$this->file.' [insert] '.json_encode($this->document));
 		if (isset($this->trigger['afterinsert']))
 			\Base::instance()->call($this->trigger['afterinsert'],
-				array($this,$pkey));
-		$this->load(array('@_id=?',$this->id));
+				[$this,$pkey]);
+		$this->load(['@_id=?',$this->id]);
 		return $this->document;
 	}
 
@@ -350,7 +350,7 @@ class Mapper extends \DB\Cursor {
 		$data=&$db->read($this->file);
 		if (isset($this->trigger['beforeupdate']) &&
 			\Base::instance()->call($this->trigger['beforeupdate'],
-				array($this,array('_id'=>$this->id)))===FALSE)
+				[$this,['_id'=>$this->id]])===FALSE)
 			return $this->document;
 		$data[$this->id]=$this->document;
 		$db->write($this->file,$data);
@@ -358,7 +358,7 @@ class Mapper extends \DB\Cursor {
 			$this->file.' [update] '.json_encode($this->document));
 		if (isset($this->trigger['afterupdate']))
 			\Base::instance()->call($this->trigger['afterupdate'],
-				array($this,array('_id'=>$this->id)));
+				[$this,['_id'=>$this->id]]);
 		return $this->document;
 	}
 
@@ -371,7 +371,7 @@ class Mapper extends \DB\Cursor {
 		$db=$this->db;
 		$now=microtime(TRUE);
 		$data=&$db->read($this->file);
-		$pkey=array('_id'=>$this->id);
+		$pkey=['_id'=>$this->id];
 		if ($filter) {
 			foreach ($this->find($filter,NULL,FALSE) as $mapper)
 				if (!$mapper->erase())
@@ -386,14 +386,14 @@ class Mapper extends \DB\Cursor {
 			return FALSE;
 		if (isset($this->trigger['beforeerase']) &&
 			\Base::instance()->call($this->trigger['beforeerase'],
-				array($this,$pkey))===FALSE)
+				[$this,$pkey])===FALSE)
 			return FALSE;
 		$db->write($this->file,$data);
 		if ($filter) {
 			$args=isset($filter[1]) && is_array($filter[1])?
 				$filter[1]:
 				array_slice($filter,1,NULL,TRUE);
-			$args=is_array($args)?$args:array(1=>$args);
+			$args=is_array($args)?$args:[1=>$args];
 			foreach ($args as $key=>$val) {
 				$vals[]=\Base::instance()->
 					stringify(is_array($val)?$val[0]:$val);
@@ -405,7 +405,7 @@ class Mapper extends \DB\Cursor {
 			($filter?preg_replace($keys,$vals,$filter[0],1):''));
 		if (isset($this->trigger['aftererase']))
 			\Base::instance()->call($this->trigger['aftererase'],
-				array($this,$pkey));
+				[$this,$pkey]);
 		return TRUE;
 	}
 
@@ -415,7 +415,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function reset() {
 		$this->id=NULL;
-		$this->document=array();
+		$this->document=[];
 		parent::reset();
 	}
 

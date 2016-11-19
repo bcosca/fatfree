@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -180,7 +180,7 @@ class UTF extends Prefab {
 	*	@param $str string
 	**/
 	function emojify($str) {
-		$map=array(
+		$map=[
 			':('=>'\u2639', // frown
 			':)'=>'\u263a', // smile
 			'<3'=>'\u2665', // heart
@@ -191,7 +191,7 @@ class UTF extends Prefab {
 			':,'=>'\u1f60f', // think
 			':/'=>'\u1f623', // skeptic
 			'8O'=>'\u1f632', // oops
-		)+Base::instance()->get('EMOJI');
+		]+Base::instance()->get('EMOJI');
 		return $this->translate(str_replace(array_keys($map),
 			array_values($map),$str));
 	}

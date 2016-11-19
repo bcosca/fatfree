@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -31,9 +31,11 @@ class Mapper extends \DB\Cursor {
 		//! Mongo collection
 		$collection,
 		//! Mongo document
-		$document=array(),
+		$document=[],
 		//! Mongo cursor
-		$cursor;
+		$cursor,
+		//! Defined fields
+		$fields;
 
 	/**
 	*	Return database type
@@ -92,7 +94,7 @@ class Mapper extends \DB\Cursor {
 		$mapper->reset();
 		foreach ($row as $key=>$val)
 			$mapper->document[$key]=$val;
-		$mapper->query=array(clone($mapper));
+		$mapper->query=[clone($mapper)];
 		if (isset($mapper->trigger['load']))
 			\Base::instance()->call($mapper->trigger['load'],$mapper);
 		return $mapper;
@@ -119,48 +121,48 @@ class Mapper extends \DB\Cursor {
 	**/
 	function select($fields=NULL,$filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
-			$options=array();
-		$options+=array(
+			$options=[];
+		$options+=[
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
 			'offset'=>0
-		);
+		];
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
 		if (!($cached=$cache->exists($hash=$fw->hash($this->db->dsn().
-			$fw->stringify(array($fields,$filter,$options))).'.mongo',
+			$fw->stringify([$fields,$filter,$options])).'.mongo',
 			$result)) || !$ttl || $cached[0]+$ttl<microtime(TRUE)) {
 			if ($options['group']) {
 				$grp=$this->collection->group(
 					$options['group']['keys'],
 					$options['group']['initial'],
 					$options['group']['reduce'],
-					array(
+					[
 						'condition'=>$filter,
 						'finalize'=>$options['group']['finalize']
-					)
+					]
 				);
 				$tmp=$this->db->selectcollection(
 					$fw->get('HOST').'.'.$fw->get('BASE').'.'.
 					uniqid(NULL,TRUE).'.tmp'
 				);
-				$tmp->batchinsert($grp['retval'],array('w'=>1));
-				$filter=array();
+				$tmp->batchinsert($grp['retval'],['w'=>1]);
+				$filter=[];
 				$collection=$tmp;
 			}
 			else {
-				$filter=$filter?:array();
+				$filter=$filter?:[];
 				$collection=$this->collection;
 			}
-			$this->cursor=$collection->find($filter,$fields?:array());
+			$this->cursor=$collection->find($filter,$fields?:[]);
 			if ($options['order'])
 				$this->cursor=$this->cursor->sort($options['order']);
 			if ($options['limit'])
 				$this->cursor=$this->cursor->limit($options['limit']);
 			if ($options['offset'])
 				$this->cursor=$this->cursor->skip($options['offset']);
-			$result=array();
+			$result=[];
 			while ($this->cursor->hasnext())
 				$result[]=$this->cursor->getnext();
 			if ($options['group'])
@@ -169,7 +171,7 @@ class Mapper extends \DB\Cursor {
 				// Save to cache backend
 				$cache->set($hash,$result,$ttl);
 		}
-		$out=array();
+		$out=[];
 		foreach ($result as $doc)
 			$out[]=$this->factory($doc);
 		return $out;
@@ -184,14 +186,14 @@ class Mapper extends \DB\Cursor {
 	**/
 	function find($filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
-			$options=array();
-		$options+=array(
+			$options=[];
+		$options+=[
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
 			'offset'=>0
-		);
-		return $this->select(NULL,$filter,$options,$ttl);
+		];
+		return $this->select($this->fields,$filter,$options,$ttl);
 	}
 
 	/**
@@ -204,9 +206,9 @@ class Mapper extends \DB\Cursor {
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
 		if (!($cached=$cache->exists($hash=$fw->hash($fw->stringify(
-			array($filter))).'.mongo',$result)) || !$ttl ||
+			[$filter])).'.mongo',$result)) || !$ttl ||
 			$cached[0]+$ttl<microtime(TRUE)) {
-			$result=$this->collection->count($filter?:array());
+			$result=$this->collection->count($filter?:[]);
 			if ($fw->get('CACHE') && $ttl)
 				// Save to cache backend
 				$cache->set($hash,$result,$ttl);
@@ -221,7 +223,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $ofs int
 	**/
 	function skip($ofs=1) {
-		$this->document=($out=parent::skip($ofs))?$out->document:array();
+		$this->document=($out=parent::skip($ofs))?$out->document:[];
 		if ($this->document && isset($this->trigger['load']))
 			\Base::instance()->call($this->trigger['load'],$this);
 		return $out;
@@ -236,13 +238,13 @@ class Mapper extends \DB\Cursor {
 			return $this->update();
 		if (isset($this->trigger['beforeinsert']) &&
 			\Base::instance()->call($this->trigger['beforeinsert'],
-				array($this,array('_id'=>$this->document['_id'])))===FALSE)
+				[$this,['_id'=>$this->document['_id']]])===FALSE)
 			return $this->document;
 		$this->collection->insert($this->document);
-		$pkey=array('_id'=>$this->document['_id']);
+		$pkey=['_id'=>$this->document['_id']];
 		if (isset($this->trigger['afterinsert']))
 			\Base::instance()->call($this->trigger['afterinsert'],
-				array($this,$pkey));
+				[$this,$pkey]);
 		$this->load($pkey);
 		return $this->document;
 	}
@@ -252,16 +254,16 @@ class Mapper extends \DB\Cursor {
 	*	@return array
 	**/
 	function update() {
-		$pkey=array('_id'=>$this->document['_id']);
+		$pkey=['_id'=>$this->document['_id']];
 		if (isset($this->trigger['beforeupdate']) &&
 			\Base::instance()->call($this->trigger['beforeupdate'],
-				array($this,$pkey))===FALSE)
+				[$this,$pkey])===FALSE)
 			return $this->document;
 		$this->collection->update(
-			$pkey,$this->document,array('upsert'=>TRUE));
+			$pkey,$this->document,['upsert'=>TRUE]);
 		if (isset($this->trigger['afterupdate']))
 			\Base::instance()->call($this->trigger['afterupdate'],
-				array($this,$pkey));
+				[$this,$pkey]);
 		return $this->document;
 	}
 
@@ -273,17 +275,17 @@ class Mapper extends \DB\Cursor {
 	function erase($filter=NULL) {
 		if ($filter)
 			return $this->collection->remove($filter);
-		$pkey=array('_id'=>$this->document['_id']);
+		$pkey=['_id'=>$this->document['_id']];
 		if (isset($this->trigger['beforeerase']) &&
 			\Base::instance()->call($this->trigger['beforeerase'],
-				array($this,$pkey))===FALSE)
+				[$this,$pkey])===FALSE)
 			return FALSE;
 		$result=$this->collection->
-			remove(array('_id'=>$this->document['_id']));
+			remove(['_id'=>$this->document['_id']]);
 		parent::erase();
 		if (isset($this->trigger['aftererase']))
 			\Base::instance()->call($this->trigger['aftererase'],
-				array($this,$pkey));
+				[$this,$pkey]);
 		return $result;
 	}
 
@@ -292,7 +294,7 @@ class Mapper extends \DB\Cursor {
 	*	@return NULL
 	**/
 	function reset() {
-		$this->document=array();
+		$this->document=[];
 		parent::reset();
 	}
 
@@ -351,10 +353,12 @@ class Mapper extends \DB\Cursor {
 	*	@return void
 	*	@param $db object
 	*	@param $collection string
+	*	@param $fields array
 	**/
-	function __construct(\DB\Mongo $db,$collection) {
+	function __construct(\DB\Mongo $db,$collection,$fields=NULL) {
 		$this->db=$db;
 		$this->collection=$db->selectcollection($collection);
+		$this->fields=$fields;
 		$this->reset();
 	}
 

@@ -1,5 +1,112 @@
 CHANGELOG
 
+3.6.0 (19 November 2016)
+*	NEW: [cli] request type
+*	NEW: console-friendly CLI mode
+*	NEW: lexicon caching
+*	NEW: Silent operator skips startup error check (#125)
+*	NEW: DB\SQL->trans()
+*	NEW: custom config section parser, i.e. [conf > Foo::bar]
+*	NEW: support for cache tags in SQL
+*	NEW: custom FORMATS
+*	NEW: Mongo mapper fields whitelist
+*	NEW: WebSocket server
+*	NEW: Base->extend method (#158)
+*	NEW: Implement framework variable caching via config, i.e. FOO = "bar" | 3600
+*	NEW: Lightweight OAuth2 client
+*	NEW: SEED variable, configurable app-specific hashing prefix (#149, bcosca/fatfree#951, bcosca/fatfree#884, bcosca/fatfree#629)
+*	NEW: CLI variable
+*	NEW: Web->send, specify custom filename (#124)
+*	NEW: Web->send, added flushing flag (#131)
+*	NEW: Indexed route wildcards, now exposed in PARAMS['*']
+*	Changed: PHP 5.4 is now the minimum version requirement
+*	Changed: Prevent database wrappers from being cloned
+*	Changed: Router works on PATH instead of URI (#126) NB: PARAMS.0 no longer contains the query string
+*	Changed: Removed ALIASES autobuilding (#118)
+*	Changed: Route wildcards match empty strings (#119)
+*	Changed: Disable default debug highlighting, HIGHLIGHT is false now
+*	General PHP 5.4 optimizations
+*	Optimized config parsing
+*	Optimized Base->recursive
+*	Optimized header extraction
+*	Optimized cache/expire headers
+*	Optimized session_start behaviour (bcosca/fatfree#673)
+*	Optimized reroute regex
+*	Tweaked cookie removal
+*	Better route precedence order
+*	Performance tweak: reduced cache calls
+*	Refactored lexicon (LOCALES) build-up, much faster now
+*	Added turkish locale bug workaround
+*	Geo->tzinfo Update to UTC
+*	Added Xcache reset (bcosca/fatfree#928)
+*	Redis cache: allow db name in dsn
+*	SMTP: Improve server emulation responses
+*	SMTP: Optimize transmission envelope
+*	SMTP: Implement mock transmission
+*	SMTP: Various bug fixes and feature improvements
+*	SMTP: quit on failed authentication
+*	Geo->weather: force metric units
+*	Base->until: Implement CLI interoperability
+*	Base->format: looser plural syntax
+*	Base->format: Force decimal as default number format
+*	Base->merge: Added $keep flag to save result to the hive key
+*	Base->reroute: Allow array as URL argument for aliasing
+*	Base->alias: Allow query string (or array) to be appended to alias
+*	Permit reroute to named routes with URL query segment
+*	Sync COOKIE global on set()
+*	Permit non-hive variables to use JS dot notation
+*	RFC2616: Use absolute URIs for Location header
+*	Matrix->calendar: Check if calendar extension is loaded
+*	Markdown: require start of line/whitespace for text processing (#136)
+*	DB\[SQL|Jig|Mongo]->log(FALSE) disables logging
+*	DB\SQL->exec: Added timestamp toggle to db log
+*	DB\SQL->schema: Remove unnecessary line terminators
+*	DB\SQL\Mapper: allow array filter with empty string
+*	DB\SQL\Mapper: optimized handling for key-less tables
+*	DB\SQL\Mapper: added float support (#106)
+*	DB\SQL\Session: increased default column sizes (#148, bcosca/fatfree#931, bcosca/fatfree#950)
+*	Web: Catch cURL errors
+*	Optimize Web->receive (bcosca/fatfree#930)
+*	Web->minify: fix arbitrary file download vulnerability
+*	Web->request: fix cache control max-age detection (bcosca/fatfree#908)
+*	Web->request: Add request headers & error message to return value (bcosca/fatfree#737)
+*	Web->request: Refactored response to HTTP request
+*	Web->send flush while sending big files
+*	Image->rgb: allow hex strings
+*	Image->captcha: Check if GD module supports TrueType
+*	Image->load: Return FALSE on load failure
+*	Image->resize: keep aspect ratio when only width or height was given
+*	Updated OpenID lib (bcosca/fatfree#965)
+*	Audit->card: add new mastercard "2" BIN range (bcosca/fatfree#954)
+*	Deprecated: Bcrypt class
+*	Preview->render: optimized detection to remove short open PHP tags and allow xml tags (#133)
+*	Display file and line number in exception handler (bcosca/fatfree#967)
+*	Added error reporting level to Base->error and ERROR.level (bcosca/fatfree#957)
+*	Added optional custom cache instance to Session (#141)
+*	CLI-aware mock()
+*	XFRAME and PACKAGE can be switched off now (#128)
+*	Bug fix: wrong time calculation on memcache reset (#170)
+*	Bug fix: encode CLI parameters
+*	Bug fix: Close connection on abort explicitly (#162)
+*	Bug fix: Image->identicon, Avoid double-size sprite rotation (and possible segfault)
+*	Bug fix: Magic->offsetset, access property as array element (#147)
+*	Bug fix: multi-line custom template tag parsing (bcosca/fatfree#935)
+*	Bug fix: cache headers on errors (bcosca/fatfree#885)
+*	Bug fix: Web, deprecated CURLOPT_SSL_VERIFYHOST in curl
+*	Bug fix: Web, Invalid user error constant (bcosca/fatfree#962)
+*	Bug fix: Web->request, redirections for domain-less location (#135)
+*	Bug fix: DB\SQL\Mapper, reset changed flag after update (#142, #152)
+*	Bug fix: DB\SQL\Mapper, fix changed flag when using assignment operator #143 #150 #151
+*	Bug fix: DB\SQL\Mapper, revival of the HAVING clause
+*	Bug fix: DB\SQL\Mapper, pgsql with non-integer primary keys (bcosca/fatfree#916)
+*	Bug fix: DB\SQL\Session, quote table name (bcosca/fatfree#977)
+*	Bug fix: snakeCase returns word starting with underscore (bcosca/fatfree#927)
+*	Bug fix: mock does not populate PATH variable
+*	Bug fix: Geo->weather API key (#129)
+*	Bug fix: Incorrect compilation of array element with zero index
+*	Bug fix: Compilation of array construct is incorrect
+*	Bug fix: Trailing slash redirection on UTF-8 paths (#121)
+
 3.5.1 (31 December 2015)
 *	NEW: ttl attribute in <include> template tag
 *	NEW: allow anonymous function for template filter

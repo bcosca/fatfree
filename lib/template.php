@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -32,7 +32,7 @@ class Template extends Preview {
 		//! Template tags
 		$tags,
 		//! Custom tag handlers
-		$custom=array();
+		$custom=[];
 
 	/**
 	*	Template -set- tag handler
@@ -60,14 +60,14 @@ class Template extends Preview {
 			($attrib['with']=$this->token($attrib['with'])) &&
 			preg_match_all('/(\w+)\h*=\h*(.+?)(?=,|$)/',
 				$attrib['with'],$pairs,PREG_SET_ORDER)?
-					'array('.implode(',',
+					('['.implode(',',
 						array_map(function($pair) {
 							return '\''.$pair[1].'\'=>'.
 								(preg_match('/^\'.*\'$/',$pair[2]) ||
 									preg_match('/\$/',$pair[2])?
 									$pair[2]:
 									\Base::instance()->stringify($pair[2]));
-						},$pairs)).')+get_defined_vars()':
+						},$pairs)).']+get_defined_vars()'):
 					'get_defined_vars()';
 		$ttl=isset($attrib['ttl'])?(int)$attrib['ttl']:0;
 		return
@@ -127,7 +127,7 @@ class Template extends Preview {
 				(isset($attrib['counter'])?
 					(($ctr=$this->token($attrib['counter'])).'=0; '):'').
 				'foreach (('.
-				$this->token($attrib['group']).'?:array()) as '.
+				$this->token($attrib['group']).'?:[]) as '.
 				(isset($attrib['key'])?
 					($this->token($attrib['key']).'=>'):'').
 				$this->token($attrib['value']).'):'.
@@ -147,12 +147,12 @@ class Template extends Preview {
 		// Grab <true> and <false> blocks
 		foreach ($node as $pos=>$block)
 			if (isset($block['true']))
-				$true=array($pos,$block);
+				$true=[$pos,$block];
 			elseif (isset($block['false']))
-				$false=array($pos,$block);
+				$false=[$pos,$block];
 		if (isset($true,$false) && $true[0]>$false[0])
 			// Reverse <true> and <false> blocks
-			list($node[$true[0]],$node[$false[0]])=array($false[1],$true[1]);
+			list($node[$true[0]],$node[$false[0]])=[$false[1],$true[1]];
 		return
 			'<?php if ('.$this->token($attrib['if']).'): ?>'.
 				$this->build($node).
@@ -229,7 +229,7 @@ class Template extends Preview {
 	*	@return string
 	*	@param $node array|string
 	**/
-	protected function build($node) {
+	function build($node) {
 		if (is_string($node))
 			return parent::build($node);
 		$out='';
@@ -259,7 +259,7 @@ class Template extends Preview {
 		if ($func[0]=='_')
 			return call_user_func_array($this->custom[$func],$args);
 		if (method_exists($this,$func))
-			return call_user_func_array(array($this,$func),$args);
+			return call_user_func_array([$this,$func],$args);
 		user_error(sprintf(self::E_Method,$func),E_USER_ERROR);
 	}
 
@@ -270,9 +270,9 @@ class Template extends Preview {
 	**/
 	function parse($text) {
 		// Build tree structure
-		for ($ptr=0,$w=5,$len=strlen($text),$tree=array(),$tmp='';$ptr<$len;)
+		for ($ptr=0,$w=5,$len=strlen($text),$tree=[],$tmp='';$ptr<$len;)
 			if (preg_match('/^(.{0,'.$w.'}?)<(\/?)(?:F3:)?'.
-				'('.$this->tags.')\b((?:\h+[\w-]+'.
+				'('.$this->tags.')\b((?:\s+[\w-]+'.
 				'(?:\h*=\h*(?:"(?:.*?)"|\'(?:.*?)\'))?|'.
 				'\h*\{\{.+?\}\})*)\h*(\/?)>/is',
 				substr($text,$ptr),$match)) {
@@ -281,7 +281,7 @@ class Template extends Preview {
 				// Element node
 				if ($match[2]) {
 					// Find matching start tag
-					$stack=array();
+					$stack=[];
 					for($i=count($tree)-1;$i>=0;$i--) {
 						$item = $tree[$i];
 						if (is_array($item) && array_key_exists($match[3],$item)
@@ -296,7 +296,7 @@ class Template extends Preview {
 				else {
 					// Start tag
 					$node=&$tree[][$match[3]];
-					$node=array();
+					$node=[];
 					if ($match[4]) {
 						// Process attributes
 						preg_match_all(

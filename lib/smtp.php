@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -118,20 +118,41 @@ class SMTP extends Magic {
 	*	@return string
 	*	@param $cmd string
 	*	@param $log bool
+	*	@param $mock bool
 	**/
-	protected function dialog($cmd=NULL,$log=TRUE) {
-		$socket=&$this->socket;
-		if (!is_null($cmd))
-			fputs($socket,$cmd."\r\n");
+	protected function dialog($cmd=NULL,$log=TRUE,$mock=FALSE) {
 		$reply='';
-		while (!feof($socket) && ($info=stream_get_meta_data($socket)) &&
-			!$info['timed_out'] && $str=fgets($socket,4096)) {
-			$reply.=$str;
-			if (preg_match('/(?:^|\n)\d{3} .+?\r\n/s',$reply))
+		if ($mock) {
+			$host=str_replace('ssl://','',$this->host);
+			switch ($cmd) {
+			case NULL:
+				$reply='220 '.$host.' ESMTP ready'."\n";
 				break;
+			case 'DATA':
+				$reply='354 Go ahead'."\n";
+				break;
+			case 'QUIT':
+				$reply='221 '.$host.' closing connection'."\n";
+				break;
+			default:
+				$reply='250 OK'."\n";
+				break;
+			}
+		}
+		else {
+			$socket=&$this->socket;
+			if ($cmd)
+				fputs($socket,$cmd."\r\n");
+			while (!feof($socket) && ($info=stream_get_meta_data($socket)) &&
+				!$info['timed_out'] && $str=fgets($socket,4096)) {
+				$reply.=$str;
+				if (preg_match('/(?:^|\n)\d{3} .+?\r\n/s',$reply))
+					break;
+			}
 		}
 		if ($log) {
-			$this->log.=$cmd."\n";
+			if ($cmd)
+				$this->log.=$cmd."\n";
 			$this->log.=str_replace("\r",'',$reply);
 		}
 		return $reply;
@@ -147,9 +168,9 @@ class SMTP extends Magic {
 	function attach($file,$alias=NULL,$cid=NULL) {
 		if (!is_file($file))
 			user_error(sprintf(self::E_Attach,$file),E_USER_ERROR);
-		if (is_string($alias))
-			$file=array($alias=>$file);
-		$this->attachments[]=array('filename'=>$file,'cid'=>$cid);
+		if ($alias)
+			$file=[$alias=>$file];
+		$this->attachments[]=['filename'=>$file,'cid'=>$cid];
 	}
 
 	/**
@@ -157,8 +178,9 @@ class SMTP extends Magic {
 	*	@return bool
 	*	@param $message string
 	*	@param $log bool
+	*	@param $mock bool
 	**/
-	function send($message,$log=TRUE) {
+	function send($message,$log=TRUE,$mock=FALSE) {
 		if ($this->scheme=='ssl' && !extension_loaded('openssl'))
 			return FALSE;
 		// Message should not be blank
@@ -168,20 +190,25 @@ class SMTP extends Magic {
 		// Retrieve headers
 		$headers=$this->headers;
 		// Connect to the server
-		$socket=&$this->socket;
-		$socket=@fsockopen($this->host,$this->port);
-		if (!$socket)
-			return FALSE;
-		stream_set_blocking($socket,TRUE);
+		if (!$mock) {
+			$socket=&$this->socket;
+			$socket=@fsockopen($this->host,$this->port,$errno,$errstr);
+			if (!$socket) {
+				$fw->error(500,$errstr);
+				return FALSE;
+			}
+			stream_set_blocking($socket,TRUE);
+		}
 		// Get server's initial response
-		$this->dialog(NULL,FALSE);
+		$this->dialog(NULL,TRUE,$mock);
 		// Announce presence
-		$reply=$this->dialog('EHLO '.$fw->get('HOST'),$log);
+		$reply=$this->dialog('EHLO '.$fw->get('HOST'),$log,$mock);
 		if (strtolower($this->scheme)=='tls') {
-			$this->dialog('STARTTLS',$log);
-			stream_socket_enable_crypto(
-				$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
-			$reply=$this->dialog('EHLO '.$fw->get('HOST'),$log);
+			$this->dialog('STARTTLS',$log,$mock);
+			if (!$mock)
+				stream_socket_enable_crypto(
+					$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
+			$reply=$this->dialog('EHLO '.$fw->get('HOST'),$log,$mock);
 		}
 		if (preg_match('/8BITMIME/',$reply))
 			$headers['Content-Transfer-Encoding']='8bit';
@@ -192,12 +219,22 @@ class SMTP extends Magic {
 		}
 		if ($this->user && $this->pw && preg_match('/AUTH/',$reply)) {
 			// Authenticate
-			$this->dialog('AUTH LOGIN',$log);
-			$this->dialog(base64_encode($this->user),$log);
-			$this->dialog(base64_encode($this->pw),$log);
+			$this->dialog('AUTH LOGIN',$log,$mock);
+			$this->dialog(base64_encode($this->user),$log,$mock);
+			$auth_rply=$this->dialog(base64_encode($this->pw),$log,$mock);
+			if (!preg_match('/^235\s.*/',$auth_rply)) {
+				$this->dialog('QUIT',$log,$mock);
+				if (!$mock && $socket)
+					fclose($socket);
+				return FALSE;
+			}
 		}
+		if (empty($headers['Message-ID']))
+			$headers['Message-ID']='<'.uniqid('',TRUE).'@'.$this->host.'>';
+		if (empty($headers['Date']))
+			$headers['Date']=date('r');
 		// Required headers
-		$reqd=array('From','To','Subject');
+		$reqd=['From','To','Subject'];
 		foreach ($reqd as $id)
 			if (empty($headers[$id]))
 				user_error(sprintf(self::E_Header,$id),E_USER_ERROR);
@@ -205,21 +242,32 @@ class SMTP extends Magic {
 		$str='';
 		// Stringify headers
 		foreach ($headers as $key=>&$val) {
-			if (!in_array($key,$reqd) && (!$this->attachments ||
-				$key!='Content-Type' && $key!='Content-Transfer-Encoding'))
+			if (!in_array($key,$reqd) &&
+				(!$this->attachments ||
+				$key!='Content-Type' &&
+				$key!='Content-Transfer-Encoding'))
 				$str.=$key.': '.$val.$eol;
-			if (in_array($key,array('From','To','Cc','Bcc')) &&
-				!preg_match('/[<>]/',$val))
-				$val='<'.$val.'>';
+			if (in_array($key,['From','To','Cc','Bcc'])) {
+				$email='';
+				preg_match_all('/(?:".+?" )?(?:<.+?>|[^ ,]+)/',
+					$val,$matches,PREG_SET_ORDER);
+				foreach ($matches as $raw)
+					$email.=($email?', ':'').
+						(preg_match('/<.+?>/',$raw[0])?
+							$raw[0]:
+							('<'.$raw[0].'>'));
+				$val=$email;
+			}
 			unset($val);
 		}
 		// Start message dialog
-		$this->dialog('MAIL FROM: '.strstr($headers['From'],'<'),$log);
+		$this->dialog('MAIL FROM: '.strstr($headers['From'],'<'),$log,$mock);
 		foreach ($fw->split($headers['To'].
 			(isset($headers['Cc'])?(';'.$headers['Cc']):'').
-			(isset($headers['Bcc'])?(';'.$headers['Bcc']):'')) as $dst)
-			$this->dialog('RCPT TO: '.strstr($dst,'<'),$log);
-		$this->dialog('DATA',$log);
+			(isset($headers['Bcc'])?(';'.$headers['Bcc']):'')) as $dst) {
+			$this->dialog('RCPT TO: '.strstr($dst,'<'),$log,$mock);
+		}
+		$this->dialog('DATA',$log,$mock);
 		if ($this->attachments) {
 			// Replace Content-Type
 			$type=$headers['Content-Type'];
@@ -241,28 +289,25 @@ class SMTP extends Magic {
 			$out.=$str.$eol;
 			$out.=$message.$eol;
 			foreach ($this->attachments as $attachment) {
-				if (is_array($attachment['filename'])) {
+				if (is_array($attachment['filename']))
 					list($alias,$file)=each($attachment['filename']);
-					$filename=$alias;
-					$attachment['filename']=$file;
-				}
 				else
-					$filename=basename($attachment['filename']);
+					$alias=basename($file=$attachment['filename']);
 				$out.='--'.$hash.$eol;
 				$out.='Content-Type: application/octet-stream'.$eol;
 				$out.='Content-Transfer-Encoding: base64'.$eol;
 				if ($attachment['cid'])
 					$out.='Content-ID: '.$attachment['cid'].$eol;
 				$out.='Content-Disposition: attachment; '.
-					'filename="'.$filename.'"'.$eol;
+					'filename="'.$alias.'"'.$eol;
 				$out.=$eol;
 				$out.=chunk_split(base64_encode(
-					file_get_contents($attachment['filename']))).$eol;
+					file_get_contents($file))).$eol;
 			}
 			$out.=$eol;
 			$out.='--'.$hash.'--'.$eol;
 			$out.='.';
-			$this->dialog($out,FALSE);
+			$this->dialog($out,TRUE,$mock);
 		}
 		else {
 			// Send mail headers
@@ -274,10 +319,10 @@ class SMTP extends Magic {
 			$out.=$message.$eol;
 			$out.='.';
 			// Send message
-			$this->dialog($out);
+			$this->dialog($out,TRUE,$mock);
 		}
-		$this->dialog('QUIT',$log);
-		if ($socket)
+		$this->dialog('QUIT',$log,$mock);
+		if (!$mock && $socket)
 			fclose($socket);
 		return TRUE;
 	}
@@ -290,12 +335,13 @@ class SMTP extends Magic {
 	*	@param $user string
 	*	@param $pw string
 	**/
-	function __construct($host='localhost',$port=25,$scheme=null,$user=null,$pw=null) {
-		$this->headers=array(
+	function __construct(
+		$host='localhost',$port=25,$scheme=NULL,$user=NULL,$pw=NULL) {
+		$this->headers=[
 			'MIME-Version'=>'1.0',
 			'Content-Type'=>'text/plain; '.
 				'charset='.Base::instance()->get('ENCODING')
-		);
+		];
 		$this->host=$host;
 		if (strtolower($this->scheme=strtolower($scheme))=='ssl')
 			$this->host='ssl://'.$host;

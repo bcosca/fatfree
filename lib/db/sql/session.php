@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -63,12 +63,13 @@ class Session extends Mapper {
 	*	@param $id string
 	**/
 	function read($id) {
-		$this->load(array('session_id=?',$this->sid=$id));
+		$this->load(['session_id=?',$this->sid=$id]);
 		if ($this->dry())
 			return FALSE;
 		if ($this->get('ip')!=$this->_ip || $this->get('agent')!=$this->_agent) {
 			$fw=\Base::instance();
-			if (!isset($this->onsuspect) || FALSE===$fw->call($this->onsuspect,array($this,$id))) {
+			if (!isset($this->onsuspect) ||
+				$fw->call($this->onsuspect,[$this,$id])===FALSE) {
 				//NB: `session_destroy` can't be called at that stage (`session_start` not completed)
 				$this->destroy($id);
 				$this->close();
@@ -101,7 +102,7 @@ class Session extends Mapper {
 	*	@param $id string
 	**/
 	function destroy($id) {
-		$this->erase(array('session_id=?',$id));
+		$this->erase(['session_id=?',$id]);
 		return TRUE;
 	}
 
@@ -111,7 +112,7 @@ class Session extends Mapper {
 	*	@param $max int
 	**/
 	function cleanup($max) {
-		$this->erase(array('stamp+?<?',$max,time()));
+		$this->erase(['stamp+?<?',$max,time()]);
 		return TRUE;
 	}
 
@@ -176,12 +177,12 @@ class Session extends Mapper {
 						'CREATE TABLE dbo.'):
 					('CREATE TABLE IF NOT EXISTS '.
 						((($name=$db->name())&&$db->driver()!='pgsql')?
-							($name.'.'):''))).
-				$table.' ('.$eol.
-					$tab.$db->quotekey('session_id').' VARCHAR(40),'.$eol.
+							($db->quotekey($name,FALSE).'.'):''))).
+				$db->quotekey($table,FALSE).' ('.$eol.
+					$tab.$db->quotekey('session_id').' VARCHAR(255),'.$eol.
 					$tab.$db->quotekey('data').' TEXT,'.$eol.
-					$tab.$db->quotekey('ip').' VARCHAR(40),'.$eol.
-					$tab.$db->quotekey('agent').' VARCHAR(255),'.$eol.
+					$tab.$db->quotekey('ip').' VARCHAR(45),'.$eol.
+					$tab.$db->quotekey('agent').' VARCHAR(300),'.$eol.
 					$tab.$db->quotekey('stamp').' INTEGER,'.$eol.
 					$tab.'PRIMARY KEY ('.$db->quotekey('session_id').')'.$eol.
 				');'
@@ -190,18 +191,17 @@ class Session extends Mapper {
 		parent::__construct($db,$table);
 		$this->onsuspect=$onsuspect;
 		session_set_save_handler(
-			array($this,'open'),
-			array($this,'close'),
-			array($this,'read'),
-			array($this,'write'),
-			array($this,'destroy'),
-			array($this,'cleanup')
+			[$this,'open'],
+			[$this,'close'],
+			[$this,'read'],
+			[$this,'write'],
+			[$this,'destroy'],
+			[$this,'cleanup']
 		);
 		register_shutdown_function('session_commit');
 		$fw=\Base::instance();
 		$headers=$fw->get('HEADERS');
-		$this->_csrf=$fw->hash($fw->get('ROOT').$fw->get('BASE')).'.'.
-			$fw->hash(mt_rand());
+		$this->_csrf=$fw->get('SEED').'.'.$fw->hash(mt_rand());
 		if ($key)
 			$fw->set($key,$this->_csrf);
 		$this->_agent=isset($headers['User-Agent'])?$headers['User-Agent']:'';
