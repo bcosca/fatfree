@@ -411,6 +411,11 @@ class SQL extends Controller {
 					!$movie->required('director'),
 				'Required: '.$out
 			);
+			$movie->erase('');
+			$test->expect(
+				$movie->count()==0,
+				'All records erased'	
+			);
 			switch ($engine) {
 				case 'mysql':
 					$inc='INT NOT NULL AUTO_INCREMENT';
