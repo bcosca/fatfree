@@ -2558,6 +2558,13 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 * Mihai Flaviu Molnar
 * Carolina R Molla
 * Andres Espinoza Arce
+* Jan Kremlacek
+* Eric Schultz
+* Ricardo Andrade
+* Derek Loewen
+* Michael Nelson
+* Denis Bach
+* Lenard Osmani
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
