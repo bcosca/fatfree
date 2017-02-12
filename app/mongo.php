@@ -11,7 +11,7 @@ class Mongo extends Controller {
 			'No errors expected at this point'
 		);
 		$test->expect(
-			$loaded=extension_loaded('mongo'),
+			$loaded=extension_loaded('mongodb'),
 			'MongoDB extension enabled'
 		);
 		if ($loaded) {
@@ -23,7 +23,7 @@ class Mongo extends Controller {
 			}
 			$test->expect(
 				$db,
-				'DB wrapper initialized (Version '.\Mongo::VERSION.')'
+				'DB wrapper initialized (Version '.MONGODB_VERSION.')'
 			);
 			if ($db) {
 				$test->expect(
