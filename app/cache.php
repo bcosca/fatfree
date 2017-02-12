@@ -100,12 +100,15 @@ class Cache extends Controller {
 				'Cache integrity test'
 			);
 			$mark=microtime(TRUE);
+			$cache->reset();
+			/*
 			$cache->clear('a');
 			$cache->clear('b');
 			$cache->clear('c');
 			$cache->clear('d');
 			$cache->clear('e');
 			$cache->clear('foo');
+			*/
 			$test->expect(
 				!$cache->exists('a') &&
 				!$cache->exists('b') &&
@@ -201,15 +204,17 @@ class Cache extends Controller {
 				$after=$m[1];
 			$test->expect(
 				empty($_SESSION) && !$cache->exists($sid.'@') &&
-				$before==$sid && $after=='deleted' && empty($_COOKIE[session_name()]),
+				$before==$sid && $after=='deleted' &&
+				empty($_COOKIE[session_name()]),
 				'Session destroyed and cookie expired'
 			);
 			$backend=$f3->get('CACHE');
 			$f3->clear('CACHE');
-			if (extension_loaded('memcache') &&
-				!preg_match('/memcache=/',$backend) && !preg_match('/redis=/',$backend)) {
-				$f3->set('CACHE','memcache=localhost');
-				if (preg_match('/memcache=/',$backend=$f3->get('CACHE'))) {
+			if (extension_loaded('memcached') &&
+				!preg_match('/memcached=/',$backend) &&
+				!preg_match('/redis=/',$backend)) {
+				$f3->set('CACHE','memcached=localhost');
+				if (preg_match('/memcached=/',$backend=$f3->get('CACHE'))) {
 					$test->expect(
 						$backend,
 						'Cache backend '.$f3->stringify($backend).' specified'
