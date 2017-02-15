@@ -2810,7 +2810,7 @@ class Preview extends View {
 			$this->mime='text/html';
 		if (!is_dir($tmp=$fw->get('TEMP')))
 			mkdir($tmp,Base::MODE,TRUE);
-		foreach ($fw->split($fw->get('UI')) as $dir) {
+		foreach ($fw->split($fw->get('UI').';./') as $dir) {
 			if ($cache->exists($hash=$fw->hash($dir.$file),$data))
 				return $data;
 			if (is_file($view=$fw->fixslashes($dir.$file))) {
