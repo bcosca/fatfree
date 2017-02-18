@@ -1,0 +1,51 @@
+<template id="test-case">
+	<p>
+		<span class="status"></span>
+		<span class="text"></span><br/>
+	</p>
+</template>
+<script src="js/jquery-3.1.1.min.js"></script>
+<script>
+$(function() {
+	var i=1,
+		message={
+			a:'hello, world',
+			b:123,
+			c:['a','b']
+		};
+	function testCase(status,text) {
+		var test=$($('#test-case').clone().html());
+		test.find('.status').addClass(status).html(i);
+		test.find('.text').html(text);
+		$('.js-insert').append(test);
+		i++;
+	}
+	testCase('pass','No errors expected at this point');
+	var socket=new window.WebSocket('ws://{{ @HOST }}:9000');
+	if (socket) {
+		socket.onopen=function() {
+			testCase('pass','Connected to socket server');
+			socket.send(JSON.stringify(message));
+			testCase('pass','Message sent to server');
+		};
+		socket.onerror=function(e) {
+			console.log(e);
+			testCase('fail','Unexpected error');
+		};
+		socket.onmessage=function(e) {
+			testCase('pass','Message received');
+			if (e.data==JSON.stringify(message))
+				testCase('pass','Message fidelity confirmed');
+			else
+				testCase('fail','Message corrupted in transit');
+			socket.close();
+		};
+		socket.onclose=function() {
+			testCase('pass','WebSocket closed');
+			socket=null;
+		}
+	}
+	else
+		testCase('fail','Unable to connect to socket server');
+});
+</script>
