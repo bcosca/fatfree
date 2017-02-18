@@ -414,7 +414,7 @@ class SQL extends Controller {
 			$movie->erase('');
 			$test->expect(
 				$movie->count()==0,
-				'All records erased'	
+				'All records erased'
 			);
 			switch ($engine) {
 				case 'mysql':

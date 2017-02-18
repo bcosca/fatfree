@@ -22,7 +22,7 @@ class Router extends Controller {
 		);
 		if (is_file($file))
 			@unlink($file);
-		$f3->set('ONREROUTE',function($url,$permanent){
+		$f3->set('ONREROUTE',function($url,$permanent) {
 			$f3=\Base::instance();
 			$f3->set('reroute',$url);
 		});
