@@ -2,7 +2,8 @@
 
 $f3=require('lib/base.php');
 
-require('lib/MongoDB/functions.php');
+if (extension_loaded('mongodb') && is_file($file='lib/MongoDB/functions.php'))
+	require($file);
 
 $f3->set('DEBUG',2);
 $f3->set('UI','ui/');
