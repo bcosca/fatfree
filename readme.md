@@ -553,7 +553,11 @@ Variables defined in Fat-Free are global, i.e. they can be accessed by any MVC c
 To assign a value to a Fat-Free variable:
 
 ``` php
-$f3->set('var',value)
+$f3->set('var',value); // or
+$f3->var=value;
+
+$f3->set('hello.world','good morning'); // translates to: 'hello' == array('world'=>'good morning')
+$f3->{'hello.world'}='good morning'; // same as prior statement
 ```
 
 **Note:** Fat-Free variables accept all PHP data types, including objects and anonymous functions.
@@ -572,19 +576,22 @@ $f3->mset(
 To retrieve the value of a framework variable named `var`:-
 
 ``` php
-$f3->get('var')
+echo $f3->get('var'); // or
+echo $f3->var;
 ```
 
 To remove a Fat-Free variable from memory if you no longer need it (discard it so it doesn't interfere with your other functions/methods), use the method:-
 
 ``` php
-$f3->clear('var')
+$f3->clear('var'); // or
+unset($f3->var);
 ```
 
 To find out if a variable has been previously defined:-
 
 ``` php
-$f3->exists('var')
+$f3->exists('var') //
+isset($f3->var)
 ```
 
 ### Globals
