@@ -556,7 +556,7 @@ To assign a value to a Fat-Free variable:
 $f3->set('var',value); // or
 $f3->var=value;
 
-$f3->set('hello.world','good morning'); // translates to: 'hello' == array('world'=>'good morning')
+$f3->set('hello.world','good morning'); // translates to: hello['world'] == 'good morning'
 $f3->{'hello.world'}='good morning'; // same as prior statement
 ```
 
