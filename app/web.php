@@ -126,6 +126,7 @@ class Web extends Controller {
 		);
 		$f3->clear('CACHE');
 		$f3->set('ESCAPE',FALSE);
+		header_remove();
 		$f3->set('results',$test->results());
 	}
 

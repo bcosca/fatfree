@@ -35,6 +35,8 @@
 				<p class="stats">{{ 'Page rendered in {0} msecs / Memory usage {1} Kibytes',round(1e3*(microtime(TRUE)-$TIME),2),round(memory_get_usage(TRUE)/1e3,1) | format }}</p>
 			</div>
 		</div>
-		{{ @JS | raw }}
+		{~ if (isset(@JS)): ~}
+			{{ @JS | raw }}
+		{~ endif ~}
 	</body>
 </html>
