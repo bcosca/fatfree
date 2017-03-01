@@ -1,0 +1,1 @@
+<?php $vars=get_defined_vars(); ksort($vars); echo serialize($vars);

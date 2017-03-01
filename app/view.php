@@ -56,6 +56,11 @@ class View extends Controller {
 			'Empty custom HIVE'
 		);
 		$test->expect(
+			$view->render('view/hive_content.php',NULL,['fw'=>1,'hive'=>2,'implicit'=>3,'mime'=>4])
+				=='a:4:{s:2:"fw";i:1;s:4:"hive";i:2;s:8:"implicit";i:3;s:4:"mime";i:4;}',
+			'Variables $fw, $hive, $implicit and $mime are available'
+		);
+		$test->expect(
 			$f3->CACHE===false,
 			'Enable caching'
 		);
