@@ -373,8 +373,8 @@ class Template extends Controller {
 			'Escaped values'
 		);
 		$test->expect(
-			$tpl->resolve('{{ @string }}')=='<test>' &&
-			$tpl->resolve('{{ @ENV.content }}')=='<ok>' &&
+			$tpl->resolve('<p>{{ @string }}</p>')=='<p>&lt;test&gt;</p>' &&
+			$tpl->resolve('<p>{{ @ENV.content }}</p>')=='<p>&lt;ok&gt;</p>' &&
 			$tpl->resolve('{* hello *}')=='',
 			'resolve() template strings'
 		);
