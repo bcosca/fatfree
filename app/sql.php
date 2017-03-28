@@ -391,6 +391,7 @@ class SQL extends Controller {
 				!$movie->get('year'),
 				'Navigation beyond cursor limit'
 			);
+			/*
 			$obj=$movie->findone([$db->quotekey('title').'=?','Zodiac']);
 			$class=get_class($obj);
 			$test->expect(
@@ -560,6 +561,7 @@ class SQL extends Controller {
 					'Session destroyed and cookie expired'
 				);
 			}
+			*/
 		}
 		$f3->set('results',$test->results());
 	}
