@@ -373,8 +373,8 @@ class Template extends Controller {
 			'Escaped values'
 		);
 		$test->expect(
-			$tpl->resolve('{{ @string }}')=='<test>' &&
-			$tpl->resolve('{{ @ENV.content }}')=='<ok>' &&
+			$tpl->resolve('{{ @string }}')=='&lt;test&gt;' &&
+			$tpl->resolve('{{ @ENV.content }}')=='&lt;ok&gt;' &&
 			$tpl->resolve('{* hello *}')=='',
 			'resolve() template strings'
 		);
@@ -413,13 +413,13 @@ class Template extends Controller {
 			'Double pipe OR condition: '.$expr.' - '.$eval
 		);
 		$test->expect(
-			$tpl->token($expr='(@foo&&@bar)?@baz:@qux | esc')==
-			($eval='$this->esc(($foo&&$bar)?$baz:$qux)'),
+			$tpl->token($expr='(@foo && @bar)? @baz: @qux | esc')==
+			($eval='$this->esc(($foo && $bar)? $baz: $qux)'),
 			'Ternary condition with filter: '.$expr.' - '.$eval
 		);
 		$test->expect(
-			$tpl->token($expr='(@foo||@bar)?@baz:@qux | esc')==
-			($eval='$this->esc(($foo||$bar)?$baz:$qux)'),
+			$tpl->token($expr='(@foo || @bar)? @baz: @qux | esc')==
+			($eval='$this->esc(($foo || $bar)? $baz: $qux)'),
 			'Double pipe OR condition with filter: '.$expr.' - '.$eval
 		);
 		$test->expect(
