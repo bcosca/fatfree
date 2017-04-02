@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -138,28 +138,35 @@ class Web extends Prefab {
 					'filename="'.($name!==NULL?$name:basename($file)).'"');
 			header('Accept-Ranges: bytes');
 			header('Content-Length: '.$size);
-			header('X-Powered-By: '.Base::instance()->get('PACKAGE'));
+			header('X-Powered-By: '.Base::instance()->PACKAGE);
 		}
-		$ctr=0;
-		$handle=fopen($file,'rb');
-		$start=microtime(TRUE);
-		while (!feof($handle) &&
-			($info=stream_get_meta_data($handle)) &&
-			!$info['timed_out'] && !connection_aborted()) {
-			if ($kbps) {
-				// Throttle output
-				$ctr++;
-				if ($ctr/$kbps>$elapsed=microtime(TRUE)-$start)
-					usleep(1e6*($ctr/$kbps-$elapsed));
-			}
-			// Send 1KiB and reset timer
-			echo fread($handle,1024);
-			if ($flush) {
-				ob_flush();
-				flush();
-			}
+		if (!$kbps && $flush) {
+			while (ob_get_level())
+				ob_end_clean();
+			readfile($file);
 		}
-		fclose($handle);
+		else {
+			$ctr=0;
+			$handle=fopen($file,'rb');
+			$start=microtime(TRUE);
+			while (!feof($handle) &&
+				($info=stream_get_meta_data($handle)) &&
+				!$info['timed_out'] && !connection_aborted()) {
+				if ($kbps) {
+					// Throttle output
+					$ctr++;
+					if ($ctr/$kbps>$elapsed=microtime(TRUE)-$start)
+						usleep(1e6*($ctr/$kbps-$elapsed));
+				}
+				// Send 1KiB and reset timer
+				echo fread($handle,1024);
+				if ($flush) {
+					ob_flush();
+					flush();
+				}
+			}
+			fclose($handle);
+		}
 		return $size;
 	}
 
@@ -172,13 +179,13 @@ class Web extends Prefab {
 	**/
 	function receive($func=NULL,$overwrite=FALSE,$slug=TRUE) {
 		$fw=Base::instance();
-		$dir=$fw->get('UPLOADS');
+		$dir=$fw->UPLOADS;
 		if (!is_dir($dir))
 			mkdir($dir,Base::MODE,TRUE);
-		if ($fw->get('VERB')=='PUT') {
-			$tmp=$fw->get('TEMP').$fw->get('SEED').'.'.$fw->hash(uniqid());
-			if (!$fw->get('RAW'))
-				$fw->write($tmp,$fw->get('BODY'));
+		if ($fw->VERB=='PUT') {
+			$tmp=$fw->TEMP.$fw->SEED.'.'.$fw->hash(uniqid());
+			if (!$fw->RAW)
+				$fw->write($tmp,$fw->BODY);
 			else {
 				$src=@fopen('php://input','r');
 				$dst=@fopen($tmp,'w');
@@ -191,7 +198,7 @@ class Web extends Prefab {
 				fclose($dst);
 				fclose($src);
 			}
-			$base=basename($fw->get('URI'));
+			$base=basename($fw->URI);
 			$file=[
 				'name'=>$dir.
 					($slug && preg_match('/(.+?)(\.\w+)?$/',$base,$parts)?
@@ -482,9 +489,9 @@ class Web extends Prefab {
 		$parts=parse_url($url);
 		if (empty($parts['scheme'])) {
 			// Local URL
-			$url=$fw->get('SCHEME').'://'.
-				$fw->get('HOST').
-				($url[0]!='/'?($fw->get('BASE').'/'):'').$url;
+			$url=$fw->SCHEME.'://'.$fw->HOST.
+				(in_array($fw->PORT,[80,443])?'':(':'.$fw->PORT)).
+				($url[0]!='/'?($fw->BASE.'/'):'').$url;
 			$parts=parse_url($url);
 		}
 		elseif (!preg_match('/https?/',$parts['scheme']))
@@ -537,7 +544,7 @@ class Web extends Prefab {
 			'ignore_errors'=>FALSE
 		];
 		$eol="\r\n";
-		if ($fw->get('CACHE') &&
+		if ($fw->CACHE &&
 			preg_match('/GET|HEAD/',$options['method'])) {
 			$cache=Cache::instance();
 			if ($cache->exists(
@@ -584,13 +591,13 @@ class Web extends Prefab {
 		$cache=Cache::instance();
 		$dst='';
 		if (!isset($path))
-			$path=$fw->get('UI').';./';
+			$path=$fw->UI.';./';
 		foreach ($fw->split($path,FALSE) as $dir)
 			foreach ($files as $file)
 				if (is_file($save=$fw->fixslashes($dir.$file)) &&
 					is_bool(strpos($save,'../')) &&
 					preg_match('/\.(css|js)$/i',$file)) {
-					if ($fw->get('CACHE') &&
+					if ($fw->CACHE &&
 						($cached=$cache->exists(
 							$hash=$fw->hash($save).'.'.$ext[0],$data)) &&
 						$cached[0]>filemtime($save))
@@ -685,7 +692,9 @@ class Web extends Prefab {
 									preg_match('/[\w'.($ext[0]=='css'?
 										'#\.%+\-*()\[\]':'\$').']{2}|'.
 										'[+\-]{2}/',
-										substr($data,-1).$src[$ptr+1]))
+										substr($data,-1).$src[$ptr+1]) ||
+									($ext[0]=='css' && $ptr+2<strlen($src) &&
+									preg_match('/:\w/',substr($src,$ptr+1,2))))
 									$data.=' ';
 								$ptr++;
 								continue;
@@ -693,13 +702,15 @@ class Web extends Prefab {
 							$data.=$src[$ptr];
 							$ptr++;
 						}
-						if ($fw->get('CACHE'))
+						if ($ext[0]=='css')
+							$data=str_replace(';}','}',$data);
+						if ($fw->CACHE)
 							$cache->set($hash,$data);
 						$dst.=$data;
 					}
 				}
 		if (PHP_SAPI!='cli' && $header)
-			header('Content-Type: '.$mime.'; charset='.$fw->get('ENCODING'));
+			header('Content-Type: '.$mime.'; charset='.$fw->ENCODING);
 		return $dst;
 	}
 
@@ -767,6 +778,62 @@ class Web extends Prefab {
 	}
 
 	/**
+	*	Return preset diacritics translation table
+	*	@return array
+	**/
+	function diacritics() {
+		return [
+			'Ǎ'=>'A','А'=>'A','Ā'=>'A','Ă'=>'A','Ą'=>'A','Å'=>'A',
+			'Ǻ'=>'A','Ä'=>'Ae','Á'=>'A','À'=>'A','Ã'=>'A','Â'=>'A',
+			'Æ'=>'AE','Ǽ'=>'AE','Б'=>'B','Ç'=>'C','Ć'=>'C','Ĉ'=>'C',
+			'Č'=>'C','Ċ'=>'C','Ц'=>'C','Ч'=>'Ch','Ð'=>'Dj','Đ'=>'Dj',
+			'Ď'=>'Dj','Д'=>'Dj','É'=>'E','Ę'=>'E','Ё'=>'E','Ė'=>'E',
+			'Ê'=>'E','Ě'=>'E','Ē'=>'E','È'=>'E','Е'=>'E','Э'=>'E',
+			'Ë'=>'E','Ĕ'=>'E','Ф'=>'F','Г'=>'G','Ģ'=>'G','Ġ'=>'G',
+			'Ĝ'=>'G','Ğ'=>'G','Х'=>'H','Ĥ'=>'H','Ħ'=>'H','Ï'=>'I',
+			'Ĭ'=>'I','İ'=>'I','Į'=>'I','Ī'=>'I','Í'=>'I','Ì'=>'I',
+			'И'=>'I','Ǐ'=>'I','Ĩ'=>'I','Î'=>'I','Ĳ'=>'IJ','Ĵ'=>'J',
+			'Й'=>'J','Я'=>'Ja','Ю'=>'Ju','К'=>'K','Ķ'=>'K','Ĺ'=>'L',
+			'Л'=>'L','Ł'=>'L','Ŀ'=>'L','Ļ'=>'L','Ľ'=>'L','М'=>'M',
+			'Н'=>'N','Ń'=>'N','Ñ'=>'N','Ņ'=>'N','Ň'=>'N','Ō'=>'O',
+			'О'=>'O','Ǿ'=>'O','Ǒ'=>'O','Ơ'=>'O','Ŏ'=>'O','Ő'=>'O',
+			'Ø'=>'O','Ö'=>'Oe','Õ'=>'O','Ó'=>'O','Ò'=>'O','Ô'=>'O',
+			'Œ'=>'OE','П'=>'P','Ŗ'=>'R','Р'=>'R','Ř'=>'R','Ŕ'=>'R',
+			'Ŝ'=>'S','Ş'=>'S','Š'=>'S','Ș'=>'S','Ś'=>'S','С'=>'S',
+			'Ш'=>'Sh','Щ'=>'Shch','Ť'=>'T','Ŧ'=>'T','Ţ'=>'T','Ț'=>'T',
+			'Т'=>'T','Ů'=>'U','Ű'=>'U','Ŭ'=>'U','Ũ'=>'U','Ų'=>'U',
+			'Ū'=>'U','Ǜ'=>'U','Ǚ'=>'U','Ù'=>'U','Ú'=>'U','Ü'=>'Ue',
+			'Ǘ'=>'U','Ǖ'=>'U','У'=>'U','Ư'=>'U','Ǔ'=>'U','Û'=>'U',
+			'В'=>'V','Ŵ'=>'W','Ы'=>'Y','Ŷ'=>'Y','Ý'=>'Y','Ÿ'=>'Y',
+			'Ź'=>'Z','З'=>'Z','Ż'=>'Z','Ž'=>'Z','Ж'=>'Zh','á'=>'a',
+			'ă'=>'a','â'=>'a','à'=>'a','ā'=>'a','ǻ'=>'a','å'=>'a',
+			'ä'=>'ae','ą'=>'a','ǎ'=>'a','ã'=>'a','а'=>'a','ª'=>'a',
+			'æ'=>'ae','ǽ'=>'ae','б'=>'b','č'=>'c','ç'=>'c','ц'=>'c',
+			'ċ'=>'c','ĉ'=>'c','ć'=>'c','ч'=>'ch','ð'=>'dj','ď'=>'dj',
+			'д'=>'dj','đ'=>'dj','э'=>'e','é'=>'e','ё'=>'e','ë'=>'e',
+			'ê'=>'e','е'=>'e','ĕ'=>'e','è'=>'e','ę'=>'e','ě'=>'e',
+			'ė'=>'e','ē'=>'e','ƒ'=>'f','ф'=>'f','ġ'=>'g','ĝ'=>'g',
+			'ğ'=>'g','г'=>'g','ģ'=>'g','х'=>'h','ĥ'=>'h','ħ'=>'h',
+			'ǐ'=>'i','ĭ'=>'i','и'=>'i','ī'=>'i','ĩ'=>'i','į'=>'i',
+			'ı'=>'i','ì'=>'i','î'=>'i','í'=>'i','ï'=>'i','ĳ'=>'ij',
+			'ĵ'=>'j','й'=>'j','я'=>'ja','ю'=>'ju','ķ'=>'k','к'=>'k',
+			'ľ'=>'l','ł'=>'l','ŀ'=>'l','ĺ'=>'l','ļ'=>'l','л'=>'l',
+			'м'=>'m','ņ'=>'n','ñ'=>'n','ń'=>'n','н'=>'n','ň'=>'n',
+			'ŉ'=>'n','ó'=>'o','ò'=>'o','ǒ'=>'o','ő'=>'o','о'=>'o',
+			'ō'=>'o','º'=>'o','ơ'=>'o','ŏ'=>'o','ô'=>'o','ö'=>'oe',
+			'õ'=>'o','ø'=>'o','ǿ'=>'o','œ'=>'oe','п'=>'p','р'=>'r',
+			'ř'=>'r','ŕ'=>'r','ŗ'=>'r','ſ'=>'s','ŝ'=>'s','ș'=>'s',
+			'š'=>'s','ś'=>'s','с'=>'s','ş'=>'s','ш'=>'sh','щ'=>'shch',
+			'ß'=>'ss','ţ'=>'t','т'=>'t','ŧ'=>'t','ť'=>'t','ț'=>'t',
+			'у'=>'u','ǘ'=>'u','ŭ'=>'u','û'=>'u','ú'=>'u','ų'=>'u',
+			'ù'=>'u','ű'=>'u','ů'=>'u','ư'=>'u','ū'=>'u','ǚ'=>'u',
+			'ǜ'=>'u','ǔ'=>'u','ǖ'=>'u','ũ'=>'u','ü'=>'ue','в'=>'v',
+			'ŵ'=>'w','ы'=>'y','ÿ'=>'y','ý'=>'y','ŷ'=>'y','ź'=>'z',
+			'ž'=>'z','з'=>'z','ż'=>'z','ж'=>'zh','ь'=>'','ъ'=>''
+		];
+	}
+
+	/**
 	*	Return a URL/filesystem-friendly version of string
 	*	@return string
 	*	@param $text string
@@ -774,55 +841,7 @@ class Web extends Prefab {
 	function slug($text) {
 		return trim(strtolower(preg_replace('/([^\pL\pN])+/u','-',
 			trim(strtr(str_replace('\'','',$text),
-			[
-				'Ǎ'=>'A','А'=>'A','Ā'=>'A','Ă'=>'A','Ą'=>'A','Å'=>'A',
-				'Ǻ'=>'A','Ä'=>'Ae','Á'=>'A','À'=>'A','Ã'=>'A','Â'=>'A',
-				'Æ'=>'AE','Ǽ'=>'AE','Б'=>'B','Ç'=>'C','Ć'=>'C','Ĉ'=>'C',
-				'Č'=>'C','Ċ'=>'C','Ц'=>'C','Ч'=>'Ch','Ð'=>'Dj','Đ'=>'Dj',
-				'Ď'=>'Dj','Д'=>'Dj','É'=>'E','Ę'=>'E','Ё'=>'E','Ė'=>'E',
-				'Ê'=>'E','Ě'=>'E','Ē'=>'E','È'=>'E','Е'=>'E','Э'=>'E',
-				'Ë'=>'E','Ĕ'=>'E','Ф'=>'F','Г'=>'G','Ģ'=>'G','Ġ'=>'G',
-				'Ĝ'=>'G','Ğ'=>'G','Х'=>'H','Ĥ'=>'H','Ħ'=>'H','Ï'=>'I',
-				'Ĭ'=>'I','İ'=>'I','Į'=>'I','Ī'=>'I','Í'=>'I','Ì'=>'I',
-				'И'=>'I','Ǐ'=>'I','Ĩ'=>'I','Î'=>'I','Ĳ'=>'IJ','Ĵ'=>'J',
-				'Й'=>'J','Я'=>'Ja','Ю'=>'Ju','К'=>'K','Ķ'=>'K','Ĺ'=>'L',
-				'Л'=>'L','Ł'=>'L','Ŀ'=>'L','Ļ'=>'L','Ľ'=>'L','М'=>'M',
-				'Н'=>'N','Ń'=>'N','Ñ'=>'N','Ņ'=>'N','Ň'=>'N','Ō'=>'O',
-				'О'=>'O','Ǿ'=>'O','Ǒ'=>'O','Ơ'=>'O','Ŏ'=>'O','Ő'=>'O',
-				'Ø'=>'O','Ö'=>'Oe','Õ'=>'O','Ó'=>'O','Ò'=>'O','Ô'=>'O',
-				'Œ'=>'OE','П'=>'P','Ŗ'=>'R','Р'=>'R','Ř'=>'R','Ŕ'=>'R',
-				'Ŝ'=>'S','Ş'=>'S','Š'=>'S','Ș'=>'S','Ś'=>'S','С'=>'S',
-				'Ш'=>'Sh','Щ'=>'Shch','Ť'=>'T','Ŧ'=>'T','Ţ'=>'T','Ț'=>'T',
-				'Т'=>'T','Ů'=>'U','Ű'=>'U','Ŭ'=>'U','Ũ'=>'U','Ų'=>'U',
-				'Ū'=>'U','Ǜ'=>'U','Ǚ'=>'U','Ù'=>'U','Ú'=>'U','Ü'=>'Ue',
-				'Ǘ'=>'U','Ǖ'=>'U','У'=>'U','Ư'=>'U','Ǔ'=>'U','Û'=>'U',
-				'В'=>'V','Ŵ'=>'W','Ы'=>'Y','Ŷ'=>'Y','Ý'=>'Y','Ÿ'=>'Y',
-				'Ź'=>'Z','З'=>'Z','Ż'=>'Z','Ž'=>'Z','Ж'=>'Zh','á'=>'a',
-				'ă'=>'a','â'=>'a','à'=>'a','ā'=>'a','ǻ'=>'a','å'=>'a',
-				'ä'=>'ae','ą'=>'a','ǎ'=>'a','ã'=>'a','а'=>'a','ª'=>'a',
-				'æ'=>'ae','ǽ'=>'ae','б'=>'b','č'=>'c','ç'=>'c','ц'=>'c',
-				'ċ'=>'c','ĉ'=>'c','ć'=>'c','ч'=>'ch','ð'=>'dj','ď'=>'dj',
-				'д'=>'dj','đ'=>'dj','э'=>'e','é'=>'e','ё'=>'e','ë'=>'e',
-				'ê'=>'e','е'=>'e','ĕ'=>'e','è'=>'e','ę'=>'e','ě'=>'e',
-				'ė'=>'e','ē'=>'e','ƒ'=>'f','ф'=>'f','ġ'=>'g','ĝ'=>'g',
-				'ğ'=>'g','г'=>'g','ģ'=>'g','х'=>'h','ĥ'=>'h','ħ'=>'h',
-				'ǐ'=>'i','ĭ'=>'i','и'=>'i','ī'=>'i','ĩ'=>'i','į'=>'i',
-				'ı'=>'i','ì'=>'i','î'=>'i','í'=>'i','ï'=>'i','ĳ'=>'ij',
-				'ĵ'=>'j','й'=>'j','я'=>'ja','ю'=>'ju','ķ'=>'k','к'=>'k',
-				'ľ'=>'l','ł'=>'l','ŀ'=>'l','ĺ'=>'l','ļ'=>'l','л'=>'l',
-				'м'=>'m','ņ'=>'n','ñ'=>'n','ń'=>'n','н'=>'n','ň'=>'n',
-				'ŉ'=>'n','ó'=>'o','ò'=>'o','ǒ'=>'o','ő'=>'o','о'=>'o',
-				'ō'=>'o','º'=>'o','ơ'=>'o','ŏ'=>'o','ô'=>'o','ö'=>'oe',
-				'õ'=>'o','ø'=>'o','ǿ'=>'o','œ'=>'oe','п'=>'p','р'=>'r',
-				'ř'=>'r','ŕ'=>'r','ŗ'=>'r','ſ'=>'s','ŝ'=>'s','ș'=>'s',
-				'š'=>'s','ś'=>'s','с'=>'s','ş'=>'s','ш'=>'sh','щ'=>'shch',
-				'ß'=>'ss','ţ'=>'t','т'=>'t','ŧ'=>'t','ť'=>'t','ț'=>'t',
-				'у'=>'u','ǘ'=>'u','ŭ'=>'u','û'=>'u','ú'=>'u','ų'=>'u',
-				'ù'=>'u','ű'=>'u','ů'=>'u','ư'=>'u','ū'=>'u','ǚ'=>'u',
-				'ǜ'=>'u','ǔ'=>'u','ǖ'=>'u','ũ'=>'u','ü'=>'ue','в'=>'v',
-				'ŵ'=>'w','ы'=>'y','ÿ'=>'y','ý'=>'y','ŷ'=>'y','ź'=>'z',
-				'ž'=>'z','з'=>'z','ż'=>'z','ж'=>'zh','ь'=>'','ъ'=>''
-			]+Base::instance()->get('DIACRITICS'))))),'-');
+			$this->diacritics()+Base::instance()->DIACRITICS)))),'-');
 	}
 
 	/**
@@ -874,9 +893,9 @@ if (!function_exists('gzdecode')) {
 	**/
 	function gzdecode($str) {
 		$fw=Base::instance();
-		if (!is_dir($tmp=$fw->get('TEMP')))
+		if (!is_dir($tmp=$fw->TEMP))
 			mkdir($tmp,Base::MODE,TRUE);
-		file_put_contents($file=$tmp.'/'.$fw->get('SEED').'.'.
+		file_put_contents($file=$tmp.'/'.$fw->SEED.'.'.
 			$fw->hash(uniqid(NULL,TRUE)).'.gz',$str,LOCK_EX);
 		ob_start();
 		readgzfile($file);

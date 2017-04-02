@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -45,6 +45,8 @@ class SMTP extends Magic {
 		$user,
 		//! Password
 		$pw,
+		//! TLS/SSL stream context
+		$context,
 		//! TCP/IP socket
 		$socket,
 		//! Server-client conversation
@@ -117,7 +119,7 @@ class SMTP extends Magic {
 	*	Send SMTP command and record server response
 	*	@return string
 	*	@param $cmd string
-	*	@param $log bool
+	*	@param $log bool|string
 	*	@param $mock bool
 	**/
 	protected function dialog($cmd=NULL,$log=TRUE,$mock=FALSE) {
@@ -177,7 +179,7 @@ class SMTP extends Magic {
 	*	Transmit message
 	*	@return bool
 	*	@param $message string
-	*	@param $log bool
+	*	@param $log bool|string
 	*	@param $mock bool
 	**/
 	function send($message,$log=TRUE,$mock=FALSE) {
@@ -192,7 +194,9 @@ class SMTP extends Magic {
 		// Connect to the server
 		if (!$mock) {
 			$socket=&$this->socket;
-			$socket=@fsockopen($this->host,$this->port,$errno,$errstr);
+			$socket=@stream_socket_client($this->host.':'.$this->port,
+				$errno,$errstr,ini_get('default_socket_timeout'),
+				STREAM_CLIENT_CONNECT,$this->context);
 			if (!$socket) {
 				$fw->error(500,$errstr);
 				return FALSE;
@@ -202,13 +206,13 @@ class SMTP extends Magic {
 		// Get server's initial response
 		$this->dialog(NULL,TRUE,$mock);
 		// Announce presence
-		$reply=$this->dialog('EHLO '.$fw->get('HOST'),$log,$mock);
+		$reply=$this->dialog('EHLO '.$fw->HOST,$log,$mock);
 		if (strtolower($this->scheme)=='tls') {
 			$this->dialog('STARTTLS',$log,$mock);
 			if (!$mock)
 				stream_socket_enable_crypto(
 					$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
-			$reply=$this->dialog('EHLO '.$fw->get('HOST'),$log,$mock);
+			$reply=$this->dialog('EHLO '.$fw->HOST,$log,$mock);
 		}
 		if (preg_match('/8BITMIME/',$reply))
 			$headers['Content-Transfer-Encoding']='8bit';
@@ -221,16 +225,16 @@ class SMTP extends Magic {
 			// Authenticate
 			$this->dialog('AUTH LOGIN',$log,$mock);
 			$this->dialog(base64_encode($this->user),$log,$mock);
-			$auth_rply=$this->dialog(base64_encode($this->pw),$log,$mock);
-			if (!preg_match('/^235\s.*/',$auth_rply)) {
+			$reply=$this->dialog(base64_encode($this->pw),$log,$mock);
+			if (!preg_match('/^235\s.*/',$reply)) {
 				$this->dialog('QUIT',$log,$mock);
 				if (!$mock && $socket)
 					fclose($socket);
 				return FALSE;
 			}
 		}
-		if (empty($headers['Message-ID']))
-			$headers['Message-ID']='<'.uniqid('',TRUE).'@'.$this->host.'>';
+		if (empty($headers['Message-Id']))
+			$headers['Message-Id']='<'.uniqid('',TRUE).'@'.$this->host.'>';
 		if (empty($headers['Date']))
 			$headers['Date']=date('r');
 		// Required headers
@@ -297,7 +301,7 @@ class SMTP extends Magic {
 				$out.='Content-Type: application/octet-stream'.$eol;
 				$out.='Content-Transfer-Encoding: base64'.$eol;
 				if ($attachment['cid'])
-					$out.='Content-ID: '.$attachment['cid'].$eol;
+					$out.='Content-Id: '.$attachment['cid'].$eol;
 				$out.='Content-Disposition: attachment; '.
 					'filename="'.$alias.'"'.$eol;
 				$out.=$eol;
@@ -307,7 +311,7 @@ class SMTP extends Magic {
 			$out.=$eol;
 			$out.='--'.$hash.'--'.$eol;
 			$out.='.';
-			$this->dialog($out,TRUE,$mock);
+			$this->dialog($out,preg_match('/verbose/i',$log),$mock);
 		}
 		else {
 			// Send mail headers
@@ -319,7 +323,7 @@ class SMTP extends Magic {
 			$out.=$message.$eol;
 			$out.='.';
 			// Send message
-			$this->dialog($out,TRUE,$mock);
+			$this->dialog($out,preg_match('/verbose/i',$log),$mock);
 		}
 		$this->dialog('QUIT',$log,$mock);
 		if (!$mock && $socket)
@@ -334,20 +338,21 @@ class SMTP extends Magic {
 	*	@param $scheme string
 	*	@param $user string
 	*	@param $pw string
+	*	@param $ctx resource
 	**/
 	function __construct(
-		$host='localhost',$port=25,$scheme=NULL,$user=NULL,$pw=NULL) {
+		$host='localhost',$port=25,$scheme=NULL,$user=NULL,$pw=NULL,$ctx=NULL) {
 		$this->headers=[
 			'MIME-Version'=>'1.0',
 			'Content-Type'=>'text/plain; '.
-				'charset='.Base::instance()->get('ENCODING')
+				'charset='.Base::instance()->ENCODING
 		];
-		$this->host=$host;
-		if (strtolower($this->scheme=strtolower($scheme))=='ssl')
-			$this->host='ssl://'.$host;
+		$this->host=strtolower((($this->scheme=strtolower($scheme))=='ssl'?
+			'ssl':'tcp').'://'.$host);
 		$this->port=$port;
 		$this->user=$user;
 		$this->pw=$pw;
+		$this->context=stream_context_create($ctx);
 	}
 
 }

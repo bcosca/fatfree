@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -120,21 +120,20 @@ class Mapper extends \DB\Cursor {
 	*	@param $str string
 	**/
 	function token($str) {
-		$self=$this;
 		$str=preg_replace_callback(
 			'/(?<!\w)@(\w(?:[\w\.\[\]])*)/',
-			function($token) use($self) {
+			function($token) {
 				// Convert from JS dot notation to PHP array notation
 				return '$'.preg_replace_callback(
 					'/(\.\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
-					function($expr) use($self) {
+					function($expr) {
 						$fw=\Base::instance();
 						return
 							'['.
 							($expr[1]?
 								$fw->stringify(substr($expr[1],1)):
 								(preg_match('/^\w+/',
-									$mix=$self->token($expr[2]))?
+									$mix=$this->token($expr[2]))?
 									$fw->stringify($mix):
 									$mix)).
 							']';
@@ -168,7 +167,7 @@ class Mapper extends \DB\Cursor {
 		$db=$this->db;
 		$now=microtime(TRUE);
 		$data=[];
-		if (!$fw->get('CACHE') || !$ttl || !($cached=$cache->exists(
+		if (!$fw->CACHE || !$ttl || !($cached=$cache->exists(
 			$hash=$fw->hash($this->db->dir().
 				$fw->stringify([$filter,$options])).'.jig',$data)) ||
 			$cached[0]+$ttl<microtime(TRUE)) {
@@ -259,7 +258,7 @@ class Mapper extends \DB\Cursor {
 			}
 			$data=array_slice($data,
 				$options['offset'],$options['limit']?:NULL,TRUE);
-			if ($fw->get('CACHE') && $ttl)
+			if ($fw->CACHE && $ttl)
 				// Save to cache backend
 				$cache->set($hash,$data,$ttl);
 		}
@@ -286,11 +285,12 @@ class Mapper extends \DB\Cursor {
 	*	Count records that match criteria
 	*	@return int
 	*	@param $filter array
+	*	@param $options array
 	*	@param $ttl int
 	**/
-	function count($filter=NULL,$ttl=0) {
+	function count($filter=NULL,array $options=NULL,$ttl=0) {
 		$now=microtime(TRUE);
-		$out=count($this->find($filter,NULL,$ttl,FALSE));
+		$out=count($this->find($filter,$options,$ttl,FALSE));
 		$this->db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [count] '.($filter?json_encode($filter):''));
 		return $out;
@@ -366,15 +366,16 @@ class Mapper extends \DB\Cursor {
 	*	Delete current record
 	*	@return bool
 	*	@param $filter array
+	*	@param $quick bool
 	**/
-	function erase($filter=NULL) {
+	function erase($filter=NULL,$quick=FALSE) {
 		$db=$this->db;
 		$now=microtime(TRUE);
 		$data=&$db->read($this->file);
 		$pkey=['_id'=>$this->id];
 		if ($filter) {
 			foreach ($this->find($filter,NULL,FALSE) as $mapper)
-				if (!$mapper->erase())
+				if (!$mapper->erase(null,$quick))
 					return FALSE;
 			return TRUE;
 		}
@@ -384,7 +385,7 @@ class Mapper extends \DB\Cursor {
 		}
 		else
 			return FALSE;
-		if (isset($this->trigger['beforeerase']) &&
+		if (!$quick && isset($this->trigger['beforeerase']) &&
 			\Base::instance()->call($this->trigger['beforeerase'],
 				[$this,$pkey])===FALSE)
 			return FALSE;
@@ -403,7 +404,7 @@ class Mapper extends \DB\Cursor {
 		$db->jot('('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
 			$this->file.' [erase] '.
 			($filter?preg_replace($keys,$vals,$filter[0],1):''));
-		if (isset($this->trigger['aftererase']))
+		if (!$quick && isset($this->trigger['aftererase']))
 			\Base::instance()->call($this->trigger['aftererase'],
 				[$this,$pkey]);
 		return TRUE;
@@ -427,7 +428,7 @@ class Mapper extends \DB\Cursor {
 	**/
 	function copyfrom($var,$func=NULL) {
 		if (is_string($var))
-			$var=\Base::instance()->get($var);
+			$var=\Base::instance()->$var;
 		if ($func)
 			$var=call_user_func($func,$var);
 		foreach ($var as $key=>$val)

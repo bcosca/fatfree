@@ -1,5 +1,62 @@
 CHANGELOG
 
+3.6.1 (2 April 2017)
+*	NEW: Recaptcha plugin (#194)
+*	NEW: MB variable for detecting multibyte support
+*	NEW: DB\SQL: Cache parsed schema for the TTL duration
+*	NEW: quick erase flag on Jig/Mongo/SQL mappers (#193)
+*	NEW: Allow OPTIONS method to return a response body (#171)
+*	NEW: Add support for Memcached (bcosca/fatfree#997)
+*	NEW: Rudimentary preload resource (HTTP2 server) support via template push()
+*	NEW: Add support for new MongoDB driver (#177)
+*	Changed: template filter are all lowercase now
+*	Changed: Fix template lookup inconsistency: removed base dir from UI on render
+*	Changed: count() method now has an options argument (#192)
+*	Changed: SMTP, Spit out error message if any
+*	\DB\SQL\Mapper: refactored row count strategy
+*	DB\SQL\Mapper: Allow non-scalar values to be assigned as mapper property
+*	DB\SQL::PARAM_FLOAT: remove cast to float (#106 and bcosca/fatfree#984) (#191)
+*	DB\SQL\mapper->erase: allow empty string
+*	DB\SQL\mapper->insert: fields reset after successful INSERT
+*	Add option to debounce Cursor->paginate subset (#195)
+*	View: Don't delete sandboxed variables (#198)
+*	Preview: Optimize compilation of template expressions
+*	Preview: Use shorthand tag for direct rendering
+*	Preview->resolve(): new tweak to allow template persistence as option
+*	Web: Expose diacritics translation table
+*	SMTP: Enable logging of message body only when $log argument is 'verbose'
+*	SMTP: Convert headers to camelcase for consistency
+*	make cache seed more flexible, #164
+*	Improve trace details for DEBUG>2
+*	Enable config() to read from an array of input files
+*	Improved alias and reroute regex
+*	Make camelCase and snakeCase Unicode-aware
+*	format: Provision for optional whitespaces
+*	Break APCu-BC dependence
+*	Old PHP 5.3 cleanup
+*	Debug log must include HTTP query
+*	Recognize X-Forwarded-Port header (bcosca/fatfree#1002)
+*	Avoid use of deprecated mcrypt module
+*	Return only the client's IP when using the `X-Forwarded-For` header to deduce an IP address
+*	Remove orphan mutex locks on termination (#157)
+*	Use 80 as default port number to avoid issues when `$_SERVER['SERVER_PORT']` is not existing
+*	fread replaced with readfile() for simple send() usecase
+*	Bug fix: request URI with multiple leading slashes, #203
+*	Bug fix: Query generates wrong adhoc field value
+*	Bug fix: SMTP stream context issue #200
+*	Bug fix: child pseudo class selector in minify, bcosca/fatfree#1008
+*	Bug fix: "Undefined index: CLI" error (#197)
+*	Bug fix: cast Cache-Control expire time to int, bcosca/fatfree#1004
+*	Bug fix: Avoid issuance of multiple Content-Type headers for nested templates
+*	Bug fix: wildcard token issue with digits (bcosca/fatfree#996)
+*	Bug fix: afterupdate ignored when row does not change
+*	Bug fix: session handler read() method for PHP7 (need strict string) #184 #185
+*	Bug fix: reroute mocking in CLI mode (#183)
+*	Bug fix: Reroute authoritative relative references (#181)
+*	Bug fix: locales order and charset hyphen
+*	Bug fix: base stripped twice in router (#176)
+
+
 3.6.0 (19 November 2016)
 *	NEW: [cli] request type
 *	NEW: console-friendly CLI mode

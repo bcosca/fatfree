@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -59,7 +59,7 @@ class Log {
 	**/
 	function __construct($file) {
 		$fw=Base::instance();
-		if (!is_dir($dir=$fw->get('LOGS')))
+		if (!is_dir($dir=$fw->LOGS))
 			mkdir($dir,Base::MODE,TRUE);
 		$this->file=$dir.$file;
 	}

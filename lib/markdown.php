@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -64,7 +64,7 @@ class Markdown extends Prefab {
 	protected function _fence($hint,$str) {
 		$str=$this->snip($str);
 		$fw=Base::instance();
-		if ($fw->get('HIGHLIGHT')) {
+		if ($fw->HIGHLIGHT) {
 			switch (strtolower($hint)) {
 				case 'php':
 					$str=$fw->highlight($str);
@@ -288,20 +288,19 @@ class Markdown extends Prefab {
 		if (strlen($str)) {
 			if (preg_match('/^(.+?\n)([>#].+)$/s',$str,$parts))
 				return $this->_p($parts[1]).$this->build($parts[2]);
-			$self=$this;
 			$str=preg_replace_callback(
 				'/([^<>\[]+)?(<[\?%].+?[\?%]>|<.+?>|\[.+?\]\s*\(.+?\))|'.
 				'(.+)/s',
-				function($expr) use($self) {
+				function($expr) {
 					$tmp='';
 					if (isset($expr[4]))
-						$tmp.=$self->esc($expr[4]);
+						$tmp.=$this->esc($expr[4]);
 					else {
 						if (isset($expr[1]))
-							$tmp.=$self->esc($expr[1]);
+							$tmp.=$this->esc($expr[1]);
 						$tmp.=$expr[2];
 						if (isset($expr[3]))
-							$tmp.=$self->esc($expr[3]);
+							$tmp.=$this->esc($expr[3]);
 					}
 					return $tmp;
 				},
@@ -347,17 +346,16 @@ class Markdown extends Prefab {
 	*	@param $str string
 	**/
 	protected function _img($str) {
-		$self=$this;
 		return preg_replace_callback(
 			'/!(?:\[(.+?)\])?\h*\(<?(.*?)>?(?:\h*"(.*?)"\h*)?\)/',
-			function($expr) use($self) {
+			function($expr) {
 				return '<img src="'.$expr[2].'"'.
 					(empty($expr[1])?
 						'':
-						(' alt="'.$self->esc($expr[1]).'"')).
+						(' alt="'.$this->esc($expr[1]).'"')).
 					(empty($expr[3])?
 						'':
-						(' title="'.$self->esc($expr[3]).'"')).' />';
+						(' title="'.$this->esc($expr[3]).'"')).' />';
 			},
 			$str
 		);
@@ -369,15 +367,14 @@ class Markdown extends Prefab {
 	*	@param $str string
 	**/
 	protected function _a($str) {
-		$self=$this;
 		return preg_replace_callback(
 			'/(?<!\\\\)\[(.+?)(?!\\\\)\]\h*\(<?(.*?)>?(?:\h*"(.*?)"\h*)?\)/',
-			function($expr) use($self) {
-				return '<a href="'.$self->esc($expr[2]).'"'.
+			function($expr) {
+				return '<a href="'.$this->esc($expr[2]).'"'.
 					(empty($expr[3])?
 						'':
-						(' title="'.$self->esc($expr[3]).'"')).
-					'>'.$self->scan($expr[1]).'</a>';
+						(' title="'.$this->esc($expr[3]).'"')).
+					'>'.$this->scan($expr[1]).'</a>';
 			},
 			$str
 		);
@@ -389,12 +386,11 @@ class Markdown extends Prefab {
 	*	@param $str string
 	**/
 	protected function _auto($str) {
-		$self=$this;
 		return preg_replace_callback(
 			'/`.*?<(.+?)>.*?`|<(.+?)>/',
-			function($expr) use($self) {
+			function($expr) {
 				if (empty($expr[1]) && parse_url($expr[2],PHP_URL_SCHEME)) {
-					$expr[2]=$self->esc($expr[2]);
+					$expr[2]=$this->esc($expr[2]);
 					return '<a href="'.$expr[2].'">'.$expr[2].'</a>';
 				}
 				return $expr[0];
@@ -409,12 +405,11 @@ class Markdown extends Prefab {
 	*	@param $str string
 	**/
 	protected function _code($str) {
-		$self=$this;
 		return preg_replace_callback(
 			'/`` (.+?) ``|(?<!\\\\)`(.+?)(?!\\\\)`/',
-			function($expr) use($self) {
+			function($expr) {
 				return '<code>'.
-					$self->esc(empty($expr[1])?$expr[2]:$expr[1]).'</code>';
+					$this->esc(empty($expr[1])?$expr[2]:$expr[1]).'</code>';
 			},
 			$str
 		);
@@ -436,7 +431,7 @@ class Markdown extends Prefab {
 		foreach ($this->special as $key=>$val)
 			$str=preg_replace('/'.preg_quote($key,'/').'/i',$val,$str);
 		return htmlspecialchars($str,ENT_COMPAT,
-			Base::instance()->get('ENCODING'),FALSE);
+			Base::instance()->ENCODING,FALSE);
 	}
 
 	/**
@@ -488,7 +483,6 @@ class Markdown extends Prefab {
 				'p'=>'/^(.+?(?:\n{2,}|\n*$))/s'
 			];
 		}
-		$self=$this;
 		// Treat lines with nothing but whitespaces as empty lines
 		$str=preg_replace('/\n\h+(?=\n)/',"\n",$str);
 		// Initialize block parser
@@ -509,16 +503,16 @@ class Markdown extends Prefab {
 						'/(?<!\\\\)\[('.$ref.')(?!\\\\)\]\s*\[\]|'.
 						'(!?)(?:\[([^\[\]]+)\]\s*)?'.
 						'(?<!\\\\)\[('.$ref.')(?!\\\\)\]/',
-						function($expr) use($match,$self) {
+						function($expr) use($match) {
 							return (empty($expr[2]))?
 								// Anchor
-								('<a href="'.$self->esc($match[2]).'"'.
+								('<a href="'.$this->esc($match[2]).'"'.
 								(empty($match[3])?
 									'':
 									(' title="'.
-										$self->esc($match[3]).'"')).'>'.
+										$this->esc($match[3]).'"')).'>'.
 								// Link
-								$self->scan(
+								$this->scan(
 									empty($expr[3])?
 										(empty($expr[1])?
 											$expr[4]:
@@ -530,11 +524,11 @@ class Markdown extends Prefab {
 								(empty($expr[2])?
 									'':
 									(' alt="'.
-										$self->esc($expr[3]).'"')).
+										$this->esc($expr[3]).'"')).
 								(empty($match[3])?
 									'':
 									(' title="'.
-										$self->esc($match[3]).'"')).
+										$this->esc($match[3]).'"')).
 								' />');
 						},
 						$tmp=$dst

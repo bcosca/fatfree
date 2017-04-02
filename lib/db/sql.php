@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -113,16 +113,16 @@ class SQL {
 
 	/**
 	*	Cast value to PHP type
-	*	@return scalar
+	*	@return mixed
 	*	@param $type string
-	*	@param $val scalar
+	*	@param $val mixed
 	**/
 	function value($type,$val) {
 		switch ($type) {
 			case self::PARAM_FLOAT:
-				return (float)(is_string($val)
-					? str_replace(',','.',preg_replace('/([.,])(?!\d+$)/','',$val))
-					: $val);
+				if (!is_string($val))
+					$val=str_replace(',','.',$val);
+				return $val;
 			case \PDO::PARAM_NULL:
 				return (unset)$val;
 			case \PDO::PARAM_INT:
@@ -185,7 +185,7 @@ class SQL {
 				continue;
 			$now=microtime(TRUE);
 			$keys=$vals=[];
-			if ($fw->get('CACHE') && $ttl && ($cached=$cache->exists(
+			if ($fw->CACHE && $ttl && ($cached=$cache->exists(
 				$hash=$fw->hash($this->dsn.$cmd.
 				$fw->stringify($arg)).($tag?'.'.$tag:'').'.sql',$result)) &&
 				$cached[0]+$ttl>microtime(TRUE)) {
@@ -246,7 +246,7 @@ class SQL {
 								$result[$pos][trim($key,'\'"[]`')]=$val;
 						}
 					$this->rows=count($result);
-					if ($fw->get('CACHE') && $ttl)
+					if ($fw->CACHE && $ttl)
 						// Save to cache backend
 						$cache->set($hash,$result,$ttl);
 				}
@@ -297,6 +297,13 @@ class SQL {
 	*	@param $ttl int|array
 	**/
 	function schema($table,$fields=NULL,$ttl=0) {
+		$fw=\Base::instance();
+		$cache=\Cache::instance();
+		if ($fw->CACHE && $ttl &&
+			($cached=$cache->exists(
+				$hash=$fw->hash($this->dsn.$table).'.schema',$result)) &&
+			$cached[0]+$ttl>microtime(TRUE))
+			return $result;
 		if (strpos($table,'.'))
 			list($schema,$table)=explode('.',$table);
 		// Supported engines
@@ -354,32 +361,34 @@ class SQL {
 		];
 		if (is_string($fields))
 			$fields=\Base::instance()->split($fields);
+		$conv=[
+			'int\b|integer'=>\PDO::PARAM_INT,
+			'bool'=>\PDO::PARAM_BOOL,
+			'blob|bytea|image|binary'=>\PDO::PARAM_LOB,
+			'float|real|double|decimal|numeric'=>self::PARAM_FLOAT,
+			'.+'=>\PDO::PARAM_STR
+		];
 		foreach ($cmd as $key=>$val)
 			if (preg_match('/'.$key.'/',$this->engine)) {
 				$rows=[];
-				foreach ($this->exec($val[0],NULL,$ttl) as $row) {
-					if (!$fields || in_array($row[$val[1]],$fields))
+				foreach ($this->exec($val[0],NULL) as $row)
+					if (!$fields || in_array($row[$val[1]],$fields)) {
+						foreach ($conv as $regex=>$type)
+							if (preg_match('/'.$regex.'/i',$row[$val[2]]))
+								break;
 						$rows[$row[$val[1]]]=[
 							'type'=>$row[$val[2]],
-							'pdo_type'=>
-								preg_match('/int\b|integer/i',$row[$val[2]])?
-									\PDO::PARAM_INT:
-									(preg_match('/bool/i',$row[$val[2]])?
-										\PDO::PARAM_BOOL:
-										(preg_match(
-											'/blob|bytea|image|binary/i',
-											$row[$val[2]])?\PDO::PARAM_LOB:
-											(preg_match(
-												'/float|decimal|real|numeric|double/i',
-												$row[$val[2]])?self::PARAM_FLOAT:
-												\PDO::PARAM_STR))),
+							'pdo_type'=>$type,
 							'default'=>is_string($row[$val[3]])?
 								preg_replace('/^\s*([\'"])(.*)\1\s*/','\2',
 								$row[$val[3]]):$row[$val[3]],
 							'nullable'=>$row[$val[4]]==$val[5],
 							'pkey'=>$row[$val[6]]==$val[7]
 						];
-				}
+					}
+				if ($fw->CACHE && $ttl)
+					// Save to cache backend
+					$cache->set($hash,$rows,$ttl);
 				return $rows;
 			}
 		user_error(sprintf(self::E_PKey,$table),E_USER_ERROR);
@@ -492,7 +501,7 @@ class SQL {
 			$options=[];
 		if (isset($parts[0]) && strstr($parts[0],':',TRUE)=='mysql')
 			$options+=[\PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES '.
-				strtolower(str_replace('-','',$fw->get('ENCODING'))).';'];
+				strtolower(str_replace('-','',$fw->ENCODING)).';'];
 		$this->pdo=new \PDO($dsn,$user,$pw,$options);
 		$this->engine=$this->pdo->getattribute(\PDO::ATTR_DRIVER_NAME);
 	}

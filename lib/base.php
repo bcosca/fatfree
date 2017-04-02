@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -45,7 +45,7 @@ final class Base extends Prefab implements ArrayAccess {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.6.0-Release';
+		VERSION='3.6.1-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -96,7 +96,7 @@ final class Base extends Prefab implements ArrayAccess {
 		//! Mapped PHP globals
 		GLOBALS='GET|POST|COOKIE|REQUEST|SESSION|FILES|SERVER|ENV',
 		//! HTTP verbs
-		VERBS='GET|HEAD|POST|PUT|PATCH|DELETE|CONNECT',
+		VERBS='GET|HEAD|POST|PUT|PATCH|DELETE|CONNECT|OPTIONS',
 		//! Default directory permissions
 		MODE=0755,
 		//! Syntax highlighting stylesheet
@@ -128,6 +128,8 @@ final class Base extends Prefab implements ArrayAccess {
 		$init,
 		//! Language lookup sequence
 		$languages,
+		//! Mutex locks
+		$locks=[],
 		//! Default fallback language
 		$fallback='en';
 
@@ -184,24 +186,6 @@ final class Base extends Prefab implements ArrayAccess {
 	}
 
 	/**
-	*	Assemble url from alias name
-	*	@return string
-	*	@param $name string
-	*	@param $params array|string
-	*	@param $query string|array
-	**/
-	function alias($name,$params=[],$query=NULL) {
-		if (!is_array($params))
-			$params=$this->parse($params);
-		if (empty($this->hive['ALIASES'][$name]))
-			user_error(sprintf(self::E_Named,$name),E_USER_ERROR);
-		$url=$this->build($this->hive['ALIASES'][$name],$params);
-		if (is_array($query))
-			$query=http_build_query($query);
-		return $url.($query?('?'.$query):'');
-	}
-
-	/**
 	*	Parse string containing key-value pairs
 	*	@return array
 	*	@param $str string
@@ -227,31 +211,33 @@ final class Base extends Prefab implements ArrayAccess {
 	*	@param $str string
 	**/
 	function compile($str) {
-		$fw=$this;
 		return preg_replace_callback(
-			'/(?<!\w)@(\w(?:[\h\w\.\[\]\(]|\->|::)*)/',
-			function($var) use($fw) {
-				return '$'.preg_replace_callback(
-					'/\.(\w+)\(|\.(\w+)|\[((?:[^\[\]]*|(?R))*)\]/',
-					function($expr) use($fw) {
-						return $expr[1]?
-							((function_exists($expr[1])?
-								('.'.$expr[1]):
-								('['.var_export($expr[1],TRUE).']')).'('):
-							('['.
-								(isset($expr[3])?
-									(strlen($expr[3])?
-										var_export(
-											trim($fw->compile($expr[3])),
-											TRUE):
-										''):
-									var_export(ctype_digit($expr[2])?
-										(int)$expr[2]:
-										$expr[2],TRUE)).
-							']');
-					},
-					$var[1]
-				);
+			'/(?<!\w)@(\w+(?:(?:\->|::)\w+)?)'.
+			'((?:\.\w+|\[(?:(?:[^\[\]]*|(?R))*)\]|(?:\->|::)\w+|\()*)/',
+			function($expr) {
+				$str='$'.$expr[1];
+				if (isset($expr[2]))
+					$str.=preg_replace_callback(
+						'/\.(\w+)(\()?|\[((?:[^\[\]]*|(?R))*)\]/',
+						function($sub) {
+							if (empty($sub[2])) {
+								if (ctype_digit($sub[1]))
+									$sub[1]=(int)$sub[1];
+								$out='['.
+									(isset($sub[3])?
+										$this->compile($sub[3]):
+										var_export($sub[1],TRUE)).
+								']';
+							}
+							else
+								$out=function_exists($sub[1])?
+									$sub[0]:
+									('['.var_export($sub[1],TRUE).']'.$sub[2]);
+							return $out;
+						},
+						$expr[2]
+					);
+				return $str;
 			},
 			$str
 		);
@@ -561,7 +547,7 @@ final class Base extends Prefab implements ArrayAccess {
 	**/
 	function push($key,$val) {
 		$ref=&$this->ref($key);
-		$ref[] = $val;
+		$ref[]=$val;
 		return $val;
 	}
 
@@ -625,7 +611,8 @@ final class Base extends Prefab implements ArrayAccess {
 		$ref=&$this->ref($key);
 		if (!$ref)
 			$ref=[];
-		$out=array_replace_recursive(is_string($src)?$this->hive[$src]:$src,$ref);
+		$out=array_replace_recursive(
+			is_string($src)?$this->hive[$src]:$src,$ref);
 		if ($keep)
 			$ref=$out;
 		return $out;
@@ -705,7 +692,7 @@ final class Base extends Prefab implements ArrayAccess {
 	**/
 	function camelcase($str) {
 		return preg_replace_callback(
-			'/_(\w)/',
+			'/_(\pL)/u',
 			function($match) {
 				return strtoupper($match[1]);
 			},
@@ -719,7 +706,7 @@ final class Base extends Prefab implements ArrayAccess {
 	*	@param $str string
 	**/
 	function snakecase($str) {
-		return strtolower(preg_replace('/(?!^)[[:upper:]]/','_\0',$str));
+		return strtolower(preg_replace('/(?!^)\p{Lu}/u','_\0',$str));
 	}
 
 	/**
@@ -839,12 +826,11 @@ final class Base extends Prefab implements ArrayAccess {
 	*	@param $tags string
 	**/
 	function clean($arg,$tags=NULL) {
-		$fw=$this;
 		return $this->recursive($arg,
-			function($val) use($fw,$tags) {
+			function($val) use($tags) {
 				if ($tags!='*')
 					$val=trim(strip_tags($val,
-						'<'.implode('><',$fw->split($tags)).'>'));
+						'<'.implode('><',$this->split($tags)).'>'));
 				return trim(preg_replace(
 					'/[\x00-\x08\x0B\x0C\x0E-\x1F]/','',$val));
 			}
@@ -871,9 +857,9 @@ final class Base extends Prefab implements ArrayAccess {
 		// Get formatting rules
 		$conv=localeconv();
 		return preg_replace_callback(
-			'/\{(?P<pos>\d+)\s*(?:,\s*(?P<type>\w+)\s*'.
+			'/\{\s*(?P<pos>\d+)\s*(?:,\s*(?P<type>\w+)\s*'.
 			'(?:,\s*(?P<mod>(?:\w+(?:\s*\{.+?\}\s*,?\s*)?)*)'.
-			'(?:,\s*(?P<prop>.+?))?)?)?\}/',
+			'(?:,\s*(?P<prop>.+?))?)?)?\s*\}/',
 			function($expr) use($args,$conv) {
 				extract($expr);
 				extract($conv);
@@ -902,7 +888,7 @@ final class Base extends Prefab implements ArrayAccess {
 										return number_format(
 											$args[$pos],0,'',$thousands_sep);
 									case 'currency':
-										$int=$cstm=false;
+										$int=$cstm=FALSE;
 										if (isset($prop) &&
 											$cstm=!$int=($prop=='int'))
 											$currency_symbol=$prop;
@@ -1009,10 +995,11 @@ final class Base extends Prefab implements ArrayAccess {
 					$country=@constant('ISO::CC_'.strtolower($parts[1])))
 					$locale.='-'.$country;
 			}
-			$locales[]=$locale;
+			$locale=str_replace('-','_',$locale);
 			$locales[]=$locale.'.'.ini_get('default_charset');
+			$locales[]=$locale;
 		}
-		setlocale(LC_ALL,str_replace('-','_',$locales));
+		setlocale(LC_ALL,$locales);
 		return implode(',',$this->languages);
 	}
 
@@ -1106,6 +1093,7 @@ final class Base extends Prefab implements ArrayAccess {
 	**/
 	function expire($secs=0) {
 		if (!$this->hive['CLI'] && !headers_sent()) {
+			$secs=(int)$secs;
 			if ($this->hive['PACKAGE'])
 				header('X-Powered-By: '.$this->hive['PACKAGE']);
 			if ($this->hive['XFRAME'])
@@ -1115,7 +1103,7 @@ final class Base extends Prefab implements ArrayAccess {
 			if ($this->hive['VERB']=='GET' && $secs) {
 				$time=microtime(TRUE);
 				header_remove('Pragma');
-				header('Cache-Control: max-age='.(int)$secs);
+				header('Cache-Control: max-age='.$secs);
 				header('Expires: '.gmdate('r',$time+$secs));
 				header('Last-Modified: '.gmdate('r'));
 			}
@@ -1160,7 +1148,7 @@ final class Base extends Prefab implements ArrayAccess {
 		return isset($headers['Client-IP'])?
 			$headers['Client-IP']:
 			(isset($headers['X-Forwarded-For'])?
-				$headers['X-Forwarded-For']:
+				explode(',',$headers['X-Forwarded-For'])[0]:
 				(isset($_SERVER['REMOTE_ADDR'])?
 					$_SERVER['REMOTE_ADDR']:''));
 	}
@@ -1182,11 +1170,12 @@ final class Base extends Prefab implements ArrayAccess {
 		$trace=array_filter(
 			$trace,
 			function($frame) use($debug) {
-				return $debug && isset($frame['file']) &&
+				return isset($frame['file']) &&
+					($debug>2 ||
 					($frame['file']!=__FILE__ || $debug>1) &&
 					(empty($frame['function']) ||
 					!preg_match('/^(?:(?:trigger|user)_error|'.
-						'__call|call_user_func)/',$frame['function']));
+						'__call|call_user_func)/',$frame['function'])));
 			}
 		);
 		if (!$format)
@@ -1223,6 +1212,8 @@ final class Base extends Prefab implements ArrayAccess {
 		$prior=$this->hive['ERROR'];
 		$header=$this->status($code);
 		$req=$this->hive['VERB'].' '.$this->hive['PATH'];
+		if ($this->hive['QUERY'])
+			$req.='?'.$this->hive['QUERY'];
 		if (!$text)
 			$text='HTTP '.$code.' ('.$req.')';
 		error_log($text);
@@ -1316,6 +1307,24 @@ final class Base extends Prefab implements ArrayAccess {
 	}
 
 	/**
+	*	Assemble url from alias name
+	*	@return string
+	*	@param $name string
+	*	@param $params array|string
+	*	@param $query string|array
+	**/
+	function alias($name,$params=[],$query=NULL) {
+		if (!is_array($params))
+			$params=$this->parse($params);
+		if (empty($this->hive['ALIASES'][$name]))
+			user_error(sprintf(self::E_Named,$name),E_USER_ERROR);
+		$url=$this->build($this->hive['ALIASES'][$name],$params);
+		if (is_array($query))
+			$query=http_build_query($query);
+		return $url.($query?('?'.$query):'');
+	}
+
+	/**
 	*	Bind handler to route pattern
 	*	@return NULL
 	*	@param $pattern string|array
@@ -1331,8 +1340,8 @@ final class Base extends Prefab implements ArrayAccess {
 				$this->route($item,$handler,$ttl,$kbps);
 			return;
 		}
-		preg_match('/([\|\w]+)\h+(?:(?:@(\w+)\h*:\h*)?(@(\w+)|[^\h]+))'.
-			'(?:\h+\[('.implode('|',$types).')\])?/',$pattern,$parts);
+		preg_match('/([\|\w]+)\h+(?:(?:@?(.+?)\h*:\h*)?(@(\w+)|[^\h]+))'.
+			'(?:\h+\[('.implode('|',$types).')\])?/u',$pattern,$parts);
 		if (isset($parts[2]) && $parts[2])
 			$this->hive['ALIASES'][$alias=$parts[2]]=$parts[3];
 		elseif (!empty($parts[4])) {
@@ -1362,19 +1371,18 @@ final class Base extends Prefab implements ArrayAccess {
 			$url=$this->hive['REALM'];
 		if (is_array($url))
 			$url=call_user_func_array([$this,'alias'],$url);
-		elseif (preg_match('/^(?:@(\w+)(?:(\(.+?)\))*(\?.+)*)/',$url,$parts)) {
-			if (empty($this->hive['ALIASES'][$parts[1]]))
-				user_error(sprintf(self::E_Named,$parts[1]),E_USER_ERROR);
+		elseif (preg_match('/^(?:@?([^\/()?]+)(?:(\(.+?)\))*(\?.+)*)/',
+			$url,$parts) &&
+			isset($this->hive['ALIASES'][$parts[1]]))
 			$url=$this->hive['ALIASES'][$parts[1]];
-		}
 		$url=$this->build($url,isset($parts[2])?$this->parse($parts[2]):[]).
 			(isset($parts[3])?$parts[3]:'');
 		if (($handler=$this->hive['ONREROUTE']) &&
 			$this->call($handler,[$url,$permanent])!==FALSE)
 			return;
-		if ($url[0]=='/') {
+		if ($url[0]=='/' && (empty($url[1]) || $url[1]!='/')) {
 			$port=$this->hive['PORT'];
-			$port=in_array($port,[80,443])?'':':'.$port;
+			$port=in_array($port,[80,443])?'':(':'.$port);
 			$url=$this->hive['SCHEME'].'://'.
 				$this->hive['HOST'].$port.$this->hive['BASE'].$url;
 		}
@@ -1383,7 +1391,7 @@ final class Base extends Prefab implements ArrayAccess {
 			$this->status($permanent?301:302);
 			die;
 		}
-		$this->mock('GET '.$url);
+		$this->mock('GET '.$url.' [cli]');
 	}
 
 	/**
@@ -1470,7 +1478,7 @@ final class Base extends Prefab implements ArrayAccess {
 				'(?P<\3>[^\/\?]+)',
 				$wild).'\/?$/'.$case.'um',$url,$args);
 		foreach (array_keys($args) as $key) {
-			if (preg_match('/_\d+/',$key)) {
+			if (preg_match('/^_\d+$/',$key)) {
 				if (empty($args['*']))
 					$args['*']=$args[$key];
 				else {
@@ -1509,13 +1517,16 @@ final class Base extends Prefab implements ArrayAccess {
 		array_multisort($paths,SORT_DESC,$keys,$vals);
 		$this->hive['ROUTES']=array_combine($keys,$vals);
 		// Convert to BASE-relative URL
-		$req=$this->rel(urldecode($this->hive['PATH']));
+		$req=urldecode($this->hive['PATH']);
+		$preflight=FALSE;
 		if ($cors=(isset($this->hive['HEADERS']['Origin']) &&
 			$this->hive['CORS']['origin'])) {
 			$cors=$this->hive['CORS'];
 			header('Access-Control-Allow-Origin: '.$cors['origin']);
 			header('Access-Control-Allow-Credentials: '.
-				($cors['credentials']?'true':'false'));
+				var_export($cors['credentials'],TRUE));
+			$preflight=
+				isset($this->hive['HEADERS']['Access-Control-Request-Method']);
 		}
 		$allowed=[];
 		foreach ($this->hive['ROUTES'] as $pattern=>$routes) {
@@ -1529,8 +1540,7 @@ final class Base extends Prefab implements ArrayAccess {
 				$route=$routes[$ptr];
 			if (!$route)
 				continue;
-			if ($this->hive['VERB']!='OPTIONS' &&
-				isset($route[$this->hive['VERB']])) {
+			if (isset($route[$this->hive['VERB']]) && !$preflight) {
 				if ($this->hive['VERB']=='GET' &&
 					preg_match('/.+\/$/',$this->hive['PATH']))
 					$this->reroute(substr($this->hive['PATH'],0,-1).
@@ -1622,7 +1632,8 @@ final class Base extends Prefab implements ArrayAccess {
 					else
 						echo $body;
 				}
-				return $result;
+				if ($result || $this->hive['VERB']!='OPTIONS')
+					return $result;
 			}
 			$allowed=array_merge($allowed,array_keys($route));
 		}
@@ -1815,33 +1826,36 @@ final class Base extends Prefab implements ArrayAccess {
 	*	Configure framework according to .ini-style file settings;
 	*	If optional 2nd arg is provided, template strings are interpreted
 	*	@return object
-	*	@param $file string
+	*	@param $source string|array
 	*	@param $allow bool
 	**/
-	function config($file,$allow=FALSE) {
-		preg_match_all(
-			'/(?<=^|\n)(?:'.
-				'\[(?<section>.+?)\]|'.
-				'(?<lval>[^\h\r\n;].*?)\h*=\h*'.
-				'(?<rval>(?:\\\\\h*\r?\n|.+?)*)'.
-			')(?=\r?\n|$)/',
-			$this->read($file),
-			$matches,PREG_SET_ORDER);
-		if ($matches) {
-			$sec='globals';
-			$cmd=[];
-			foreach ($matches as $match) {
-				if ($match['section']) {
-					$sec=$match['section'];
-					if (preg_match(
-						'/^(?!(?:global|config|route|map|redirect)s\b)'.
-						'((?:\.?\w)+)/i',$sec,$msec) &&
-						!$this->exists($msec[0]))
-						$this->set($msec[0],NULL);
-					preg_match('/^(config|route|map|redirect)s\b|'.
-						'^((?:\.?\w)+)\s*\>\s*(.*)/i',$sec,$cmd);
-				}
-				else {
+	function config($source,$allow=FALSE) {
+		if (is_string($source))
+			$source=$this->split($source);
+		foreach ($source as $file) {
+			preg_match_all(
+				'/(?<=^|\n)(?:'.
+					'\[(?<section>.+?)\]|'.
+					'(?<lval>[^\h\r\n;].*?)\h*=\h*'.
+					'(?<rval>(?:\\\\\h*\r?\n|.+?)*)'.
+				')(?=\r?\n|$)/',
+				$this->read($file),
+				$matches,PREG_SET_ORDER);
+			if ($matches) {
+				$sec='globals';
+				$cmd=[];
+				foreach ($matches as $match) {
+					if ($match['section']) {
+						$sec=$match['section'];
+						if (preg_match(
+							'/^(?!(?:global|config|route|map|redirect)s\b)'.
+							'((?:\.?\w)+)/i',$sec,$msec) &&
+							!$this->exists($msec[0]))
+							$this->set($msec[0],NULL);
+						preg_match('/^(config|route|map|redirect)s\b|'.
+							'^((?:\.?\w)+)\s*\>\s*(.*)/i',$sec,$cmd);
+						continue;
+					}
 					if ($allow) {
 						$match['lval']=Preview::instance()->
 							resolve($match['lval']);
@@ -1849,12 +1863,14 @@ final class Base extends Prefab implements ArrayAccess {
 							resolve($match['rval']);
 					}
 					if (!empty($cmd)) {
-						(isset($cmd[3])) ?
-						$this->call($cmd[3],[$match['lval'],$match['rval'],$cmd[2]])
-						: call_user_func_array(
+						isset($cmd[3])?
+						$this->call($cmd[3],
+							[$match['lval'],$match['rval'],$cmd[2]]):
+						call_user_func_array(
 							[$this,$cmd[1]],
 							array_merge([$match['lval']],
-								str_getcsv($match['rval'])));
+								str_getcsv($match['rval']))
+						);
 					}
 					else {
 						$rval=preg_replace(
@@ -1875,7 +1891,8 @@ final class Base extends Prefab implements ArrayAccess {
 								return preg_replace('/\\\\"/','"',$val);
 							},
 							// Mark quoted strings with 0x00 whitespace
-							str_getcsv(preg_replace('/(?<!\\\\)(")(.*?)\1/',
+							str_getcsv(preg_replace(
+								'/(?<!\\\\)(")(.*?)\1/',
 								"\\1\x00\\2\\1",trim($rval)))
 						);
 						preg_match('/^(?<section>[^:]+)(?:\:(?<func>.+))?/',
@@ -1923,9 +1940,11 @@ final class Base extends Prefab implements ArrayAccess {
 			@unlink($lock);
 		while (!($handle=@fopen($lock,'x')) && !connection_aborted())
 			usleep(mt_rand(0,100));
+		$this->locks[$id]=$lock;
 		$out=$this->call($func,$args);
 		fclose($handle);
 		@unlink($lock);
+		unset($this->locks[$id]);
 		return $out;
 	}
 
@@ -2025,6 +2044,8 @@ final class Base extends Prefab implements ArrayAccess {
 		if (!($error=error_get_last()) &&
 			session_status()==PHP_SESSION_ACTIVE)
 			session_commit();
+		foreach ($this->locks as $lock)
+			@unlink($lock);
 		$handler=$this->hive['UNLOAD'];
 		if ((!$handler || $this->call($handler,$this)===FALSE) &&
 			$error && in_array($error['type'],
@@ -2116,8 +2137,10 @@ final class Base extends Prefab implements ArrayAccess {
 	*	@param $key string
 	*	@param $args array
 	**/
-	function __call($key,$args) {
-		return call_user_func_array($this->get($key),$args);
+	function __call($key,array $args) {
+		if ($this->exists($key,$val))
+			return call_user_func_array($val,$args);
+		user_error(sprintf(self::E_Method,$key),E_USER_ERROR);
 	}
 
 	//! Prohibit cloning
@@ -2136,20 +2159,19 @@ final class Base extends Prefab implements ArrayAccess {
 		@ini_set('register_globals',0);
 		// Intercept errors/exceptions; PHP5.3-compatible
 		$check=error_reporting((E_ALL|E_STRICT)&~(E_NOTICE|E_USER_NOTICE));
-		$fw=$this;
 		set_exception_handler(
-			function($obj) use($fw) {
-				$fw->hive['EXCEPTION']=$obj;
-				$fw->error(500,
+			function($obj) {
+				$this->hive['EXCEPTION']=$obj;
+				$this->error(500,
 					$obj->getmessage().' '.
 					'['.$obj->getFile().':'.$obj->getLine().']',
 					$obj->gettrace());
 			}
 		);
 		set_error_handler(
-			function($level,$text) use($fw) {
+			function($level,$text,$file,$line) {
 				if ($level & error_reporting())
-					$fw->error(500,$text,NULL,$level);
+					$this->error(500,$text,NULL,$level);
 			}
 		);
 		if (!isset($_SERVER['SERVER_NAME']))
@@ -2222,7 +2244,8 @@ final class Base extends Prefab implements ArrayAccess {
 		if (!$cli)
 			$base=rtrim($this->fixslashes(
 				dirname($_SERVER['SCRIPT_NAME'])),'/');
-		$uri=parse_url($_SERVER['REQUEST_URI']);
+		$uri=parse_url((preg_match('/^\w+:\/\//',$_SERVER['REQUEST_URI'])?'':
+			'//'.$_SERVER['SERVER_NAME']).$_SERVER['REQUEST_URI']);
 		$path=preg_replace('/^'.preg_quote($base,'/').'/','',$uri['path']);
 		session_cache_limiter('');
 		call_user_func_array('session_set_cookie_params',
@@ -2236,8 +2259,10 @@ final class Base extends Prefab implements ArrayAccess {
 				'httponly'=>TRUE
 			]
 		);
-		$port=0;
-		if (isset($_SERVER['SERVER_PORT']))
+		$port=80;
+		if (isset($headers['X-Forwarded-Port']))
+			$port=$headers['X-Forwarded-Port'];
+		elseif (isset($_SERVER['SERVER_PORT']))
 			$port=$_SERVER['SERVER_PORT'];
 		// Default configuration
 		$this->hive+=[
@@ -2281,6 +2306,7 @@ final class Base extends Prefab implements ArrayAccess {
 				$this->fallback,
 			'LOCALES'=>'./',
 			'LOGS'=>'./',
+			'MB'=>extension_loaded('mbstring'),
 			'ONERROR'=>NULL,
 			'ONREROUTE'=>NULL,
 			'PACKAGE'=>self::PACKAGE,
@@ -2295,8 +2321,8 @@ final class Base extends Prefab implements ArrayAccess {
 			'QUIET'=>FALSE,
 			'RAW'=>FALSE,
 			'REALM'=>$scheme.'://'.$_SERVER['SERVER_NAME'].
-				($port && $port!=80 && $port!=443?
-					(':'.$port):'').$_SERVER['REQUEST_URI'],
+				($port && !in_array($port,[80,443])?(':'.$port):'').
+				$_SERVER['REQUEST_URI'],
 			'RESPONSE'=>'',
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
 			'ROUTES'=>[],
@@ -2367,13 +2393,16 @@ class Cache extends Prefab {
 		switch ($parts[0]) {
 			case 'apc':
 			case 'apcu':
-				$raw=apc_fetch($ndx);
+				$raw=call_user_func($parts[0].'_fetch',$ndx);
 				break;
 			case 'redis':
 				$raw=$this->ref->get($ndx);
 				break;
 			case 'memcache':
 				$raw=memcache_get($this->ref,$ndx);
+				break;
+			case 'memcached':
+				$raw=$this->ref->get($ndx);
 				break;
 			case 'wincache':
 				$raw=wincache_ucache_get($ndx);
@@ -2415,11 +2444,13 @@ class Cache extends Prefab {
 		switch ($parts[0]) {
 			case 'apc':
 			case 'apcu':
-				return apc_store($ndx,$data,$ttl);
+				return call_user_func($parts[0].'_store',$ndx,$data,$ttl);
 			case 'redis':
-				return $this->ref->set($ndx,$data, $ttl ? ['ex'=>$ttl] : []);
+				return $this->ref->set($ndx,$data,$ttl?['ex'=>$ttl]:[]);
 			case 'memcache':
 				return memcache_set($this->ref,$ndx,$data,0,$ttl);
+			case 'memcached':
+				return $this->ref->set($ndx,$data,$ttl);
 			case 'wincache':
 				return wincache_ucache_set($ndx,$data,$ttl);
 			case 'xcache':
@@ -2452,11 +2483,13 @@ class Cache extends Prefab {
 		switch ($parts[0]) {
 			case 'apc':
 			case 'apcu':
-				return apc_delete($ndx);
+				return call_user_func($parts[0].'_delete',$ndx);
 			case 'redis':
 				return $this->ref->del($ndx);
 			case 'memcache':
 				return memcache_delete($this->ref,$ndx);
+			case 'memcached':
+				return $this->ref->delete($ndx);
 			case 'wincache':
 				return wincache_ucache_delete($ndx);
 			case 'xcache':
@@ -2471,40 +2504,32 @@ class Cache extends Prefab {
 	*	Clear contents of cache backend
 	*	@return bool
 	*	@param $suffix string
-	*	@param $lifetime int
 	**/
-	function reset($suffix=NULL,$lifetime=0) {
+	function reset($suffix=NULL) {
 		if (!$this->dsn)
 			return TRUE;
-		$regex='/'.preg_quote($this->prefix.'.','/').'.+?'.
+		$regex='/'.preg_quote($this->prefix.'.','/').'.+'.
 			preg_quote($suffix,'/').'/';
 		$parts=explode('=',$this->dsn,2);
 		switch ($parts[0]) {
 			case 'apc':
 			case 'apcu':
-				$info=apc_cache_info('user');
+				$info=call_user_func($parts[0].'_cache_info',
+					$parts[0]=='apcu'?FALSE:'user');
 				if (!empty($info['cache_list'])) {
 					$key=array_key_exists('info',
 						$info['cache_list'][0])?'info':'key';
-					$mtkey=array_key_exists('mtime',$info['cache_list'][0])?
-						'mtime':'modification_time';
 					foreach ($info['cache_list'] as $item)
-						if (preg_match($regex,$item[$key]) &&
-							$item[$mtkey]+$lifetime<time())
-							apc_delete($item[$key]);
+						if (preg_match($regex,$item[$key]))
+							call_user_func($parts[0].'_delete',$item[$key]);
 				}
 				return TRUE;
 			case 'redis':
-				$fw=Base::instance();
 				$keys=$this->ref->keys($this->prefix.'.*'.$suffix);
-				foreach($keys as $key) {
-					$val=$fw->unserialize($this->ref->get($key));
-					if ($val[1]+$lifetime<time())
-						$this->ref->del($key);
-				}
+				foreach($keys as $key)
+					$this->ref->del($key);
 				return TRUE;
 			case 'memcache':
-				$fw=Base::instance();
 				foreach (memcache_get_extended_stats(
 					$this->ref,'slabs') as $slabs)
 					foreach (array_filter(array_keys($slabs),'is_numeric')
@@ -2513,17 +2538,19 @@ class Cache extends Prefab {
 							$this->ref,'cachedump',$id) as $data)
 							if (is_array($data))
 								foreach (array_keys($data) as $key)
-									if (preg_match($regex,$key) &&
-										($val=$fw->unserialize(memcache_get($this->ref,$key))) &&
-										$val[1]+$lifetime<time())
+									if (preg_match($regex,$key))
 										memcache_delete($this->ref,$key);
+				return TRUE;
+			case 'memcached':
+				foreach ($this->ref->getallkeys()?:[] as $key)
+					if (preg_match($regex,$key))
+						$this->ref->delete($key);
 				return TRUE;
 			case 'wincache':
 				$info=wincache_ucache_info();
 				foreach ($info['ucache_entries'] as $item)
-					if (preg_match($regex,$item['key_name']) &&
-						$item['use_time']+$lifetime<time())
-					wincache_ucache_delete($item['key_name']);
+					if (preg_match($regex,$item['key_name']))
+						wincache_ucache_delete($item['key_name']);
 				return TRUE;
 			case 'xcache':
 				xcache_unset_by_prefix($this->prefix.'.');
@@ -2531,8 +2558,7 @@ class Cache extends Prefab {
 			case 'folder':
 				if ($glob=@glob($parts[1].'*'))
 					foreach ($glob as $file)
-						if (preg_match($regex,basename($file)) &&
-							filemtime($file)+$lifetime<time())
+						if (preg_match($regex,basename($file)))
 							@unlink($file);
 				return TRUE;
 		}
@@ -2543,8 +2569,9 @@ class Cache extends Prefab {
 	*	Load/auto-detect cache backend
 	*	@return string
 	*	@param $dsn bool|string
+	*	@param $seed bool|string
 	**/
-	function load($dsn) {
+	function load($dsn,$seed=NULL) {
 		$fw=Base::instance();
 		if ($dsn=trim($dsn)) {
 			if (preg_match('/^redis=(.+)/',$dsn,$parts) &&
@@ -2565,24 +2592,31 @@ class Cache extends Prefab {
 					else
 						memcache_add_server($this->ref,$host,$port);
 				}
+			elseif (preg_match('/^memcached=(.+)/',$dsn,$parts) &&
+				extension_loaded('memcached'))
+				foreach ($fw->split($parts[1]) as $server) {
+					list($host,$port)=explode(':',$server)+[1=>11211];
+					if (empty($this->ref))
+						$this->ref=new Memcached();
+					$this->ref->addServer($host,$port);
+				}
 			if (empty($this->ref) && !preg_match('/^folder\h*=/',$dsn))
 				$dsn=($grep=preg_grep('/^(apc|wincache|xcache)/',
 					array_map('strtolower',get_loaded_extensions())))?
 						// Auto-detect
 						current($grep):
 						// Use filesystem as fallback
-						('folder='.$fw->get('TEMP').'cache/');
+						('folder='.$fw->TEMP.'cache/');
 			if (preg_match('/^folder\h*=\h*(.+)/',$dsn,$parts) &&
 				!is_dir($parts[1]))
 				mkdir($parts[1],Base::MODE,TRUE);
 		}
-		$this->prefix=$fw->get('SEED');
+		$this->prefix=$seed?:$fw->SEED;
 		return $this->dsn=$dsn;
 	}
 
 	/**
 	*	Class constructor
-	*	@return object
 	*	@param $dsn bool|string
 	**/
 	function __construct($dsn=FALSE) {
@@ -2595,10 +2629,14 @@ class Cache extends Prefab {
 //! View handler
 class View extends Prefab {
 
+	private
+		//! Temporary hive
+		$temp;
+
 	protected
 		//! Template file
-		$view,
-		//! post-rendering handler
+		$file,
+		//! Post-rendering handler
 		$trigger,
 		//! Nesting level
 		$level=0;
@@ -2635,26 +2673,32 @@ class View extends Prefab {
 	*	Create sandbox for template execution
 	*	@return string
 	*	@param $hive array
+	*	@param $mime string
 	**/
-	protected function sandbox(array $hive=NULL) {
-		$this->level++;
+	protected function sandbox(array $hive=NULL,$mime=NULL) {
 		$fw=Base::instance();
 		$implicit=FALSE;
 		if (is_null($hive)) {
 			$implicit=TRUE;
 			$hive=$fw->hive();
 		}
-		if ($this->level<2 || $implicit) {
-			if ($fw->get('ESCAPE'))
+		if ($this->level<1 || $implicit) {
+			if (!$fw->CLI && !headers_sent() &&
+				!preg_grep ('/^Content-Type:/',headers_list()))
+				header('Content-Type: '.($mime?:'text/html').'; '.
+					'charset='.$fw->ENCODING);
+			if ($fw->ESCAPE)
 				$hive=$this->esc($hive);
 			if (isset($hive['ALIASES']))
 				$hive['ALIASES']=$fw->build($hive['ALIASES']);
 		}
-		unset($fw,$implicit);
-		extract($hive);
-		unset($hive);
+		$this->temp=$hive;
+		unset($fw,$hive,$implicit,$mime);
+		extract($this->temp);
+		$this->temp=NULL;
+		$this->level++;
 		ob_start();
-		require($this->view);
+		require($this->file);
 		$this->level--;
 		return ob_get_clean();
 	}
@@ -2667,21 +2711,18 @@ class View extends Prefab {
 	*	@param $hive array
 	*	@param $ttl int
 	**/
-	function render($file,$mime='text/html',array $hive=NULL,$ttl=0) {
+	function render($file,$mime=NULL,array $hive=NULL,$ttl=0) {
 		$fw=Base::instance();
 		$cache=Cache::instance();
 		if ($cache->exists($hash=$fw->hash($file),$data))
 			return $data;
-		foreach ($fw->split($fw->get('UI').';./') as $dir)
-			if (is_file($this->view=$fw->fixslashes($dir.$file))) {
+		foreach ($fw->split($fw->UI) as $dir)
+			if (is_file($this->file=$fw->fixslashes($dir.$file))) {
 				if (isset($_COOKIE[session_name()]) &&
 					!headers_sent() && session_status()!=PHP_SESSION_ACTIVE)
 					session_start();
 				$fw->sync('SESSION');
-				if ($mime && !$fw->get('CLI') && !headers_sent())
-					header('Content-Type: '.$mime.'; '.
-						'charset='.$fw->get('ENCODING'));
-				$data=$this->sandbox($hive);
+				$data=$this->sandbox($hive,$mime);
 				if(isset($this->trigger['afterrender']))
 					foreach($this->trigger['afterrender'] as $func)
 						$data=$fw->call($func,$data);
@@ -2706,14 +2747,12 @@ class View extends Prefab {
 class Preview extends View {
 
 	protected
-		//! MIME type
-		$mime,
 		//! token filter
 		$filter=[
 			'esc'=>'$this->esc',
 			'raw'=>'$this->raw',
-			'alias'=>'\Base::instance()->alias',
-			'format'=>'\Base::instance()->format'
+			'alias'=>'Base::instance()->alias',
+			'format'=>'Base::instance()->format'
 		];
 
 	/**
@@ -2730,8 +2769,8 @@ class Preview extends View {
 			foreach (Base::instance()->split($parts[2]) as $func)
 				$str=is_string($cmd=$this->filter($func))?
 					$cmd.'('.$str.')':
-					'\Base::instance()->call('.
-						'$this->filter(\''.$func.'\'),['.$str.'])';
+					'Base::instance()->'.
+					'call($this->filter(\''.$func.'\'),['.$str.'])';
 		}
 		return $str;
 	}
@@ -2745,6 +2784,7 @@ class Preview extends View {
 	function filter($key=NULL,$func=NULL) {
 		if (!$key)
 			return array_keys($this->filter);
+		$key=strtolower($key);
 		if (!$func)
 			return $this->filter[$key];
 		$this->filter[$key]=$func;
@@ -2756,22 +2796,20 @@ class Preview extends View {
 	*	@param $node string
 	**/
 	protected function build($node) {
-		$self=$this;
 		return preg_replace_callback(
-			'/\{\-(.+?)\-\}|\{\{(.+?)\}\}(\n+)?|(\{\*.*?\*\})/s',
-			function($expr) use($self) {
+			'/\{\-(.+?)\-\}|\{\{(.+?)\}\}(\n*)/s',
+			function($expr) {
 				if ($expr[1])
 					return $expr[1];
-				$str=trim($self->token($expr[2]));
-				return empty($expr[4])?
-					('<?php echo '.$str.'; ?>'.
-					(isset($expr[3])?$expr[3]."\n":'')):
-					'';
+				$str='<?= '.trim($this->token($expr[2])).' ?>';
+				if (isset($expr[3]))
+					$str.=$expr[3];
+				return $str;
 			},
 			preg_replace_callback(
 				'/\{~(.+?)~\}/s',
-				function($expr) use($self) {
-					return '<?php '.$self->token($expr[1]).' ?>';
+				function($expr) {
+					return '<?php '.$this->token($expr[1]).' ?>';
 				},
 				$node
 			)
@@ -2783,14 +2821,43 @@ class Preview extends View {
 	*	@return string
 	*	@param $str string
 	*	@param $hive array
+	*	@param $ttl int
+	*	@param $persist bool
 	**/
-	function resolve($str,array $hive=NULL) {
-		if (!$hive)
-			$hive=\Base::instance()->hive();
-		extract($hive);
-		ob_start();
-		eval(' ?>'.$this->build($str).'<?php ');
-		return ob_get_clean();
+	function resolve($str,array $hive=NULL,$ttl=0,$persist=FALSE) {
+		$fw=Base::instance();
+		$cache=Cache::instance();
+		if ($ttl && $cache->exists($hash=$fw->hash($str),$data))
+			return $data;
+		// Remove PHP code and comments
+		$text=preg_replace(
+			'/\h*<\?(?!xml)(?:php|\s*=)?.+?\?>\h*|\{\*.+?\*\}/is','',$str);
+		if ($persist) {
+			if (!is_dir($tmp=$fw->TEMP))
+				mkdir($tmp,Base::MODE,TRUE);
+			if (!is_file($this->file=($tmp.
+				$fw->SEED.'.'.$hash.'.php')))
+				$fw->write($this->file,$this->build($text));
+			if (isset($_COOKIE[session_name()]) &&
+				!headers_sent() && session_status()!=PHP_SESSION_ACTIVE)
+				session_start();
+			$fw->sync('SESSION');
+			$data=$this->sandbox($hive);
+		}
+		else {
+			if (!$hive)
+				$hive=$fw->hive();
+			if ($fw->ESCAPE)
+				$hive=$this->esc($hive);
+			extract($hive);
+			unset($hive);
+			ob_start();
+			eval(' ?>'.$this->build($text).'<?php ');
+			$data=ob_get_clean();
+		}
+		if ($ttl)
+			$cache->set($hash,$data,$ttl);
+		return $data;
 	}
 
 	/**
@@ -2804,39 +2871,32 @@ class Preview extends View {
 	function render($file,$mime=NULL,array $hive=NULL,$ttl=0) {
 		$fw=Base::instance();
 		$cache=Cache::instance();
-		if ($mime)
-			$this->mime=$mime;
-		elseif (!$this->mime)
-			$this->mime='text/html';
-		if (!is_dir($tmp=$fw->get('TEMP')))
+		if (!is_dir($tmp=$fw->TEMP))
 			mkdir($tmp,Base::MODE,TRUE);
-		foreach ($fw->split($fw->get('UI').';./') as $dir) {
+		foreach ($fw->split($fw->UI) as $dir) {
 			if ($cache->exists($hash=$fw->hash($dir.$file),$data))
 				return $data;
 			if (is_file($view=$fw->fixslashes($dir.$file))) {
-				if (!is_file($this->view=($tmp.
-					$fw->get('SEED').'.'.$fw->hash($view).'.php')) ||
-					filemtime($this->view)<filemtime($view)) {
+				if (!is_file($this->file=($tmp.
+					$fw->SEED.'.'.$fw->hash($view).'.php')) ||
+					filemtime($this->file)<filemtime($view)) {
 					// Remove PHP code and comments
 					$text=preg_replace(
-						'/\h*<\?(?!xml)(?:php|\s*=)?.+?\?>\h*'.
-						'|\{\*.+?\*\}/is','',
+						'/\h*<\?(?!xml)(?:php|\s*=)?.+?\?>\h*|'.
+						'\{\*.+?\*\}/is','',
 						$fw->read($view));
 					if (method_exists($this,'parse'))
 						$text=$this->parse($text);
-					$fw->write($this->view,$this->build($text));
+					$fw->write($this->file,$this->build($text));
 				}
 				if (isset($_COOKIE[session_name()]) &&
 					!headers_sent() && session_status()!=PHP_SESSION_ACTIVE)
 					session_start();
 				$fw->sync('SESSION');
-				if (!$fw->get('CLI') && !headers_sent())
-					header('Content-Type: '.$this->mime.'; '.
-						'charset='.$fw->get('ENCODING'));
-				$data=$this->sandbox($hive);
+				$data=$this->sandbox($hive,$mime);
 				if(isset($this->trigger['afterrender']))
 					foreach ($this->trigger['afterrender'] as $func)
-						$data = $fw->call($func, $data);
+						$data=$fw->call($func, $data);
 				if ($ttl)
 					$cache->set($hash,$data,$ttl);
 				return $data;

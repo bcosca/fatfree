@@ -22,44 +22,37 @@
 
 namespace Web\Google;
 
-//! Google Static Maps API v2 plug-in
-class StaticMap {
+//! Google ReCAPTCHA v2 plug-in
+class Recaptcha {
 
 	const
 		//! API URL
-		URL_Static='http://maps.googleapis.com/maps/api/staticmap';
-
-	protected
-		//! Query arguments
-		$query=array();
+		URL_Recaptcha='https://www.google.com/recaptcha/api/siteverify';
 
 	/**
-	*	Specify API key-value pair via magic call
-	*	@return object
-	*	@param $func string
-	*	@param $args array
-	**/
-	function __call($func,array $args) {
-		$this->query[]=array($func,$args[0]);
-		return $this;
-	}
-
-	/**
-	*	Generate map
-	*	@return string
-	**/
-	function dump() {
+	 *	Verify reCAPTCHA response
+	 *	@param string $secret
+	 *	@param string $response
+	 *	@return bool
+	 **/
+	static function verify($secret,$response=NULL) {
 		$fw=\Base::instance();
+		if (!isset($response))
+			$response=$fw->{'POST.g-recaptcha-response'};
+		if (!$response)
+			return FALSE;
 		$web=\Web::instance();
-		$out='';
-		return ($req=$web->request(
-			self::URL_Static.'?'.array_reduce(
-				$this->query,
-				function($out,$item) {
-					return ($out.=($out?'&':'').
-						urlencode($item[0]).'='.urlencode($item[1]));
-				}
-			))) && $req['body']?$req['body']:FALSE;
+		$out=$web->request(self::URL_Recaptcha,[
+			'method'=>'POST',
+			'content'=>http_build_query([
+				'secret'=>$secret,
+				'response'=>$response,
+				'remoteip'=>$fw->IP
+			]),
+		]);
+		return isset($out['body']) &&
+			($json=json_decode($out['body'],TRUE)) &&
+			isset($json['success']) && $json['success'];
 	}
 
 }

@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -62,6 +62,8 @@ class OAuth2 extends \Magic {
 				)
 			);
 		$response=$web->request($uri,$options);
+		if ($response['error'])
+			user_error($response['error'],E_USER_ERROR);
 		return $response['body'] &&
 			preg_grep('/HTTP\/1\.\d 200/',$response['headers'])?
 			json_decode($response['body'],TRUE):
@@ -121,7 +123,7 @@ class OAuth2 extends \Magic {
 	/**
 	*	Remove scope/claim
 	*	@return NULL
-	*	@param $key
+	*	@param $key string
 	**/
 	function clear($key=NULL) {
 		if ($key)

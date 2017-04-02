@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -409,7 +409,7 @@ class Image {
 			return FALSE;
 		}
 		$fw=Base::instance();
-		foreach ($fw->split($path?:$fw->get('UI').';./') as $dir)
+		foreach ($fw->split($path?:$fw->UI.';./') as $dir)
 			if (is_file($path=$dir.$font)) {
 				$seed=strtoupper(substr(
 					$ssl?bin2hex(openssl_random_pseudo_bytes($len)):uniqid(),
@@ -448,7 +448,7 @@ class Image {
 				}
 				imagesavealpha($this->data,TRUE);
 				if ($key)
-					$fw->set($key,$seed);
+					$fw->$key=$seed;
 				return $this->save();
 			}
 		user_error(self::E_Font,E_USER_ERROR);
@@ -480,7 +480,7 @@ class Image {
 		$format=$args?array_shift($args):'png';
 		if (PHP_SAPI!='cli') {
 			header('Content-Type: image/'.$format);
-			header('X-Powered-By: '.Base::instance()->get('PACKAGE'));
+			header('X-Powered-By: '.Base::instance()->PACKAGE);
 		}
 		call_user_func_array(
 			'image'.$format,
@@ -518,10 +518,10 @@ class Image {
 	function save() {
 		$fw=Base::instance();
 		if ($this->flag) {
-			if (!is_dir($dir=$fw->get('TEMP')))
+			if (!is_dir($dir=$fw->TEMP))
 				mkdir($dir,Base::MODE,TRUE);
 			$this->count++;
-			$fw->write($dir.'/'.$fw->get('SEED').'.'.
+			$fw->write($dir.'/'.$fw->SEED.'.'.
 				$fw->hash($this->file).'-'.$this->count.'.png',
 				$this->dump());
 		}
@@ -535,8 +535,8 @@ class Image {
 	**/
 	function restore($state=1) {
 		$fw=Base::instance();
-		if ($this->flag && is_file($file=($path=$fw->get('TEMP').
-			$fw->get('SEED').'.'.$fw->hash($this->file).'-').$state.'.png')) {
+		if ($this->flag && is_file($file=($path=$fw->TEMP.
+			$fw->SEED.'.'.$fw->hash($this->file).'-').$state.'.png')) {
 			if (is_resource($this->data))
 				imagedestroy($this->data);
 			$this->data=imagecreatefromstring($fw->read($file));
@@ -589,7 +589,7 @@ class Image {
 			// Create image from file
 			$this->file=$file;
 			if (!isset($path))
-				$path=$fw->get('UI').';./';
+				$path=$fw->UI.';./';
 			foreach ($fw->split($path,FALSE) as $dir)
 				if (is_file($dir.$file))
 					return $this->load($fw->read($dir.$file));
@@ -605,7 +605,7 @@ class Image {
 		if (is_resource($this->data)) {
 			imagedestroy($this->data);
 			$fw=Base::instance();
-			$path=$fw->get('TEMP').$fw->get('SEED').'.'.$fw->hash($this->file);
+			$path=$fw->TEMP.$fw->SEED.'.'.$fw->hash($this->file);
 			if ($glob=@glob($path.'*.png',GLOB_NOSORT))
 				foreach ($glob as $match)
 					if (preg_match('/-(\d+)\.png/',$match))

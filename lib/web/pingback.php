@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -66,9 +66,9 @@ class Pingback extends \Prefab {
 		$web=\Web::instance();
 		$parts=parse_url($source);
 		if (empty($parts['scheme']) || empty($parts['host']) ||
-			$parts['host']==$fw->get('HOST')) {
+			$parts['host']==$fw->HOST) {
 			$req=$web->request($source);
-			$doc=new \DOMDocument('1.0',$fw->get('ENCODING'));
+			$doc=new \DOMDocument('1.0',$fw->ENCODING);
 			$doc->stricterrorchecking=FALSE;
 			$doc->recover=TRUE;
 			if (@$doc->loadhtml($req['body'])) {
@@ -85,7 +85,7 @@ class Pingback extends \Prefab {
 								'content'=>xmlrpc_encode_request(
 									'pingback.ping',
 									[$source,$permalink],
-									['encoding'=>$fw->get('ENCODING')]
+									['encoding'=>$fw->ENCODING]
 								)
 							]
 						);
@@ -110,29 +110,29 @@ class Pingback extends \Prefab {
 	function listen($func,$path=NULL) {
 		$fw=\Base::instance();
 		if (PHP_SAPI!='cli') {
-			header('X-Powered-By: '.$fw->get('PACKAGE'));
+			header('X-Powered-By: '.$fw->PACKAGE);
 			header('Content-Type: application/xml; '.
-				'charset='.$charset=$fw->get('ENCODING'));
+				'charset='.$charset=$fw->ENCODING);
 		}
 		if (!$path)
-			$path=$fw->get('BASE');
+			$path=$fw->BASE;
 		$web=\Web::instance();
-		$args=xmlrpc_decode_request($fw->get('BODY'),$method,$charset);
+		$args=xmlrpc_decode_request($fw->BODY,$method,$charset);
 		$options=['encoding'=>$charset];
 		if ($method=='pingback.ping' && isset($args[0],$args[1])) {
 			list($source,$permalink)=$args;
-			$doc=new \DOMDocument('1.0',$fw->get('ENCODING'));
+			$doc=new \DOMDocument('1.0',$fw->ENCODING);
 			// Check local page if pingback-enabled
 			$parts=parse_url($permalink);
 			if ((empty($parts['scheme']) ||
-				$parts['host']==$fw->get('HOST')) &&
+				$parts['host']==$fw->HOST) &&
 				preg_match('/^'.preg_quote($path,'/').'/'.
-					($fw->get('CASELESS')?'i':''),$parts['path']) &&
+					($fw->CASELESS?'i':''),$parts['path']) &&
 				$this->enabled($permalink)) {
 				// Check source
 				$parts=parse_url($source);
 				if ((empty($parts['scheme']) ||
-					$parts['host']==$fw->get('HOST')) &&
+					$parts['host']==$fw->HOST) &&
 					($req=$web->request($source)) &&
 					$doc->loadhtml($req['body'])) {
 					$links=$doc->getelementsbytagname('a');

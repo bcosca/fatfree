@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -37,6 +37,8 @@ class Mongo {
 		$dsn,
 		//! MongoDB object
 		$db,
+		//! Legacy flag
+		$legacy,
 		//! MongoDB log
 		$log;
 
@@ -63,7 +65,7 @@ class Mongo {
 	**/
 	function log($flag=TRUE) {
 		if ($flag) {
-			$cursor=$this->selectcollection('system.profile')->find();
+			$cursor=$this->db->selectcollection('system.profile')->find();
 			foreach (iterator_to_array($cursor) as $frame)
 				if (!preg_match('/\.system\..+$/',$frame['ns']))
 					$this->log.=date('r',$frame['ts']->sec).' ('.
@@ -76,7 +78,10 @@ class Mongo {
 						PHP_EOL;
 		} else {
 			$this->log=FALSE;
-			$this->setprofilinglevel(-1);
+			if ($this->legacy)
+				$this->db->setprofilinglevel(-1);
+			else
+				$this->db->command(['profile'=>-1]);
 		}
 		return $this->log;
 	}
@@ -87,8 +92,12 @@ class Mongo {
 	**/
 	function drop() {
 		$out=$this->db->drop();
-		if ($this->log!==FALSE)
-			$this->setprofilinglevel(2);
+		if ($this->log!==FALSE) {
+			if ($this->legacy)
+				$this->db->setprofilinglevel(2);
+			else
+				$this->db->command(['profile'=>2]);
+		}
 		return $out;
 	}
 
@@ -100,6 +109,14 @@ class Mongo {
 	**/
 	function __call($func,array $args) {
 		return call_user_func_array([$this->db,$func],$args);
+	}
+
+	/**
+	*	Return TRUE if legacy driver is loaded
+	*	@return bool
+	**/
+	function legacy() {
+		return $this->legacy;
 	}
 
 	//! Prohibit cloning
@@ -114,9 +131,14 @@ class Mongo {
 	**/
 	function __construct($dsn,$dbname,array $options=NULL) {
 		$this->uuid=\Base::instance()->hash($this->dsn=$dsn);
-		$class=class_exists('\MongoClient')?'\MongoClient':'\Mongo';
-		$this->db=new \MongoDB(new $class($dsn,$options?:[]),$dbname);
-		$this->setprofilinglevel(2);
+		if ($this->legacy=class_exists('\MongoClient')) {
+			$this->db=new \MongoDB(new \MongoClient($dsn,$options?:[]),$dbname);
+			$this->db->setprofilinglevel(2);
+		}
+		else {
+			$this->db=(new \MongoDB\Client($dsn,$options?:[]))->$dbname;
+			$this->db->command(['profile'=>2]);
+		}
 	}
 
 }

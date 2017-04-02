@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -108,7 +108,7 @@ class Audit extends Prefab {
 	**/
 	function isdesktop($agent=NULL) {
 		if (!isset($agent))
-			$agent=Base::instance()->get('AGENT');
+			$agent=Base::instance()->AGENT;
 		return (bool)preg_match('/('.self::UA_Desktop.')/i',$agent) &&
 			!$this->ismobile($agent);
 	}
@@ -120,7 +120,7 @@ class Audit extends Prefab {
 	**/
 	function ismobile($agent=NULL) {
 		if (!isset($agent))
-			$agent=Base::instance()->get('AGENT');
+			$agent=Base::instance()->AGENT;
 		return (bool)preg_match('/('.self::UA_Mobile.')/i',$agent);
 	}
 
@@ -131,7 +131,7 @@ class Audit extends Prefab {
 	**/
 	function isbot($agent=NULL) {
 		if (!isset($agent))
-			$agent=Base::instance()->get('AGENT');
+			$agent=Base::instance()->AGENT;
 		return (bool)preg_match('/('.self::UA_Bot.')/i',$agent);
 	}
 

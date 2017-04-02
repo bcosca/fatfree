@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2016 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -80,7 +80,7 @@ class Jig {
 		$fw=\Base::instance();
 		switch ($this->format) {
 			case self::FORMAT_JSON:
-				$out=json_encode($data,@constant('JSON_PRETTY_PRINT'));
+				$out=json_encode($data,JSON_PRETTY_PRINT);
 				break;
 			case self::FORMAT_Serialized:
 				$out=$fw->serialize($data);
