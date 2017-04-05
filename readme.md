@@ -123,6 +123,20 @@ $f3->run();
 
 Prepend `base.php` on the first line with the appropriate path. Save the above code fragment as `index.php` in your Web root folder. We've written our first Web page.
 
+Using composer? Then just run `composer require bcosca/fatfree` and use the following:
+
+``` php
+require 'vendor/autoload.php';
+$f3 = \Base::instance();
+$f3->route('GET /',
+    function() {
+        echo 'Hello, world!';
+    }
+);
+$f3->run();
+```
+
+
 The first command tells the PHP interpreter that you want the framework's functions and features available to your application. The `$f3->route()` method informs Fat-Free that a Web page is available at the relative URL indicated by the slash (`/`). Anyone visiting your site located at `http://www.example.com/` will see the `'Hello, world!'` message because the URL `/` is equivalent to the root page. To create a route that branches out from the root page, like `http://www.example.com/inside/`, you can define another route with a simple `GET /inside` string.
 
 The route described above tells the framework to render the page only when it receives a URL request using the HTTP `GET` method. More complex Web sites containing forms use other HTTP methods like `POST`, and you can also implement that as part of a `$f3->route()` specification.
