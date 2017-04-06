@@ -457,7 +457,7 @@ class Template extends Controller {
 			'Multiple filter, multiple arguments: '.$expr.' - '.$eval
 		);
 		$test->expect(
-			$tpl->render('templates/test15.html')=='applecherry',
+			$tpl->render('templates/test15.html')=="apple\ncherry\n",
 			'Test custom filter'
 		);
 		$f3->set('div',
