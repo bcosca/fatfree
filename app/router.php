@@ -27,7 +27,6 @@ class Router extends Controller {
 			$f3->set('reroute',$url);
 		});
 		$f3->reroute('/foo?bar=baz');
-		var_dump($f3->get('reroute'));
 		$test->expect(
 			$f3->get('reroute')=='/foo?bar=baz',
 			'Custom rerouting'
