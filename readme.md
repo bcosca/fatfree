@@ -2408,7 +2408,7 @@ Once you get the hang of testing the smallest units of your application, you can
 <repeat
     group="{{ array @group|expr }}"
     [ key="{{ scalar @key }}" ]
-    value="{{ mixed @value }}
+    value="{{ mixed @value }}"
     [ counter="{{ scalar @key }}" ]>
     text-block
 </repeat>
