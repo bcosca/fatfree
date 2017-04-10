@@ -1037,8 +1037,8 @@ final class Base extends Prefab implements ArrayAccess {
 								$prefix=$match['prefix'].'.';
 							elseif (!array_key_exists(
 								$key=$prefix.$match['lval'],$lex))
-								$lex[$key]=trim(preg_replace(
-									'/\\\\\h*\r?\n/','',$match['rval']));
+								$lex[$key]=stripslashes(trim(preg_replace(
+									'/\\\\\h*\r?\n/','',$match['rval']), " \t\n\r\0\x0B\""));
 					}
 				}
 		if ($ttl)
