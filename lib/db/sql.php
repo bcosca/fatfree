@@ -202,6 +202,8 @@ class SQL {
 							str_replace('?',chr(0).'?',$cmd),1).PHP_EOL;
 			}
 			elseif (is_object($query=$this->pdo->prepare($cmd))) {
+				array_unshift($arg, '');
+				unset($arg[0]);
 				foreach ($arg as $key=>$val) {
 					if (is_array($val)) {
 						// User-specified data type
