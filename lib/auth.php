@@ -217,6 +217,7 @@ class Auth {
 		if (PHP_SAPI!='cli')
 			header('WWW-Authenticate: Basic realm="'.$realm.'"');
 		$fw->status(401);
+		exit();
 		return FALSE;
 	}
 
