@@ -2683,9 +2683,9 @@ class View extends Prefab {
 			$hive=$fw->hive();
 		}
 		if ($this->level<1 || $implicit) {
-			if (!$fw->CLI && !headers_sent() &&
+			if ($mime!=null && !$fw->CLI && !headers_sent() &&
 				!preg_grep ('/^Content-Type:/',headers_list()))
-				header('Content-Type: '.($mime?:'text/html').'; '.
+				header('Content-Type: '.$mime.'; '.
 					'charset='.$fw->ENCODING);
 			if ($fw->ESCAPE)
 				$hive=$this->esc($hive);
@@ -2711,7 +2711,7 @@ class View extends Prefab {
 	*	@param $hive array
 	*	@param $ttl int
 	**/
-	function render($file,$mime=NULL,array $hive=NULL,$ttl=0) {
+	function render($file,$mime="text/html",array $hive=NULL,$ttl=0) {
 		$fw=Base::instance();
 		$cache=Cache::instance();
 		if ($cache->exists($hash=$fw->hash($file),$data))
