@@ -2031,7 +2031,8 @@ final class Base extends Prefab implements ArrayAccess {
 			if ($func && is_file($file=$func($auto.$class).'.php') ||
 				is_file($file=$auto.$class.'.php') ||
 				is_file($file=$auto.strtolower($class).'.php') ||
-				is_file($file=strtolower($auto.$class).'.php'))
+				is_file($file=strtolower($auto.$class).'.php') ||
+				is_file($file=strtolower($auto).lcfirst($class).'.php'))
 				return require($file);
 	}
 
