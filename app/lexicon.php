@@ -24,7 +24,9 @@ class Lexicon extends Controller {
 		$f3->set('LANGUAGE','fr-FR',60);
 		$test->expect(
 			substr_count($f3->decode($template->render('templates/lexicon.htm')),
-			'Les naïfs ægithales hâtifs pondant à Noël où il gèle sont sûrs d\'être déçus et de voir leurs drôles d\'œufs abîmés.'),
+			'Les naïfs ægithales hâtifs pondant '."\n".
+			'à Noël où il gèle sont sûrs d\'être '."\n".
+			'déçus et de voir leurs drôles d\'œufs abîmés.'),
 			'fr-FR'
 		);
 		$f3->set('LANGUAGE','en-US',60);
