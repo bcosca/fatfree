@@ -561,8 +561,9 @@ class Mapper extends \DB\Cursor {
 	/**
 	*	Reset cursor
 	*	@return NULL
+	*	@param $adhoc boolean
 	**/
-	function reset() {
+	function reset($adhoc=False) {
 		foreach ($this->fields as &$field) {
 			$field['value']=NULL;
 			$field['initial']=NULL;
@@ -571,9 +572,12 @@ class Mapper extends \DB\Cursor {
 				$field['previous']=NULL;
 			unset($field);
 		}
-		foreach ($this->adhoc as &$field) {
+		foreach ($this->adhoc as $key=>&$field) {
 			$field['value']=NULL;
 			unset($field);
+			if ($adhoc) {
+				$this->clear($key);
+			}
 		}
 		parent::reset();
 	}
