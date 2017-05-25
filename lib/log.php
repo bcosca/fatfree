@@ -38,8 +38,10 @@ class Log {
 		$fw->write(
 			$this->file,
 			date($format).
-				(isset($_SERVER['REMOTE_ADDR'])?
-					(' ['.$_SERVER['REMOTE_ADDR'].']'):'').' '.
+                                (filter_var( $_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)?
+                                (' ['.filter_var( $_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ).
+                                (filter_var( $fw->get('HEADERS.X-Forwarded-For'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)?
+                                (' ('.filter_var( $fw->get('HEADERS.X-Forwarded-For'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4).')'):'').']'):'').' '.
 			trim($text).PHP_EOL,
 			TRUE
 		);
