@@ -146,6 +146,7 @@ CHANGELOG
 *	Bug fix: encode CLI parameters
 *	Bug fix: Close connection on abort explicitly (#162)
 *	Bug fix: Image->identicon, Avoid double-size sprite rotation (and possible segfault)
+*	Bug fix: Image->render and Image->dump, removed unnecessary 2nd argument (#146)
 *	Bug fix: Magic->offsetset, access property as array element (#147)
 *	Bug fix: multi-line custom template tag parsing (bcosca/fatfree#935)
 *	Bug fix: cache headers on errors (bcosca/fatfree#885)
