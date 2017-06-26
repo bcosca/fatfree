@@ -45,7 +45,7 @@ final class Base extends Prefab implements ArrayAccess {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.6.1-Release';
+		VERSION='3.6.2-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -351,7 +351,7 @@ final class Base extends Prefab implements ArrayAccess {
 		}
 		else switch ($key) {
 		case 'CACHE':
-			$val=Cache::instance()->load($val,TRUE);
+			$val=Cache::instance()->load($val);
 			break;
 		case 'ENCODING':
 			ini_set('default_charset',$val);
@@ -1000,7 +1000,7 @@ final class Base extends Prefab implements ArrayAccess {
 			$locales[]=$locale;
 		}
 		setlocale(LC_ALL,$locales);
-		return implode(',',$this->languages);
+		return $this->hive['LANGUAGE']=implode(',',$this->languages);
 	}
 
 	/**
@@ -1038,7 +1038,7 @@ final class Base extends Prefab implements ArrayAccess {
 							elseif (!array_key_exists(
 								$key=$prefix.$match['lval'],$lex))
 								$lex[$key]=trim(preg_replace(
-									'/\\\\\h*\r?\n/','',$match['rval']));
+									'/\\\\\h*\r?\n/',"\n",$match['rval']));
 					}
 				}
 		if ($ttl)
@@ -1171,8 +1171,8 @@ final class Base extends Prefab implements ArrayAccess {
 			$trace,
 			function($frame) use($debug) {
 				return isset($frame['file']) &&
-					($debug>2 ||
-					($frame['file']!=__FILE__ || $debug>1) &&
+					($debug>1 ||
+					($frame['file']!=__FILE__ || $debug) &&
 					(empty($frame['function']) ||
 					!preg_match('/^(?:(?:trigger|user)_error|'.
 						'__call|call_user_func)/',$frame['function'])));
@@ -1255,7 +1255,7 @@ final class Base extends Prefab implements ArrayAccess {
 				'</body>'.$eol.
 				'</html>');
 		if ($this->hive['HALT'])
-			die;
+			die(1);
 	}
 
 	/**
@@ -1365,8 +1365,9 @@ final class Base extends Prefab implements ArrayAccess {
 	*	@return NULL
 	*	@param $url array|string
 	*	@param $permanent bool
+	*	@param $die bool
 	**/
-	function reroute($url=NULL,$permanent=FALSE) {
+	function reroute($url=NULL,$permanent=FALSE,$die=TRUE) {
 		if (!$url)
 			$url=$this->hive['REALM'];
 		if (is_array($url))
@@ -1386,12 +1387,14 @@ final class Base extends Prefab implements ArrayAccess {
 			$url=$this->hive['SCHEME'].'://'.
 				$this->hive['HOST'].$port.$this->hive['BASE'].$url;
 		}
-		if (!$this->hive['CLI']) {
+		if ($this->hive['CLI'])
+			$this->mock('GET '.$url.' [cli]');
+		else {
 			header('Location: '.$url);
 			$this->status($permanent?301:302);
-			die;
+			if ($die)
+				die;
 		}
-		$this->mock('GET '.$url.' [cli]');
 	}
 
 	/**
@@ -1605,7 +1608,7 @@ final class Base extends Prefab implements ArrayAccess {
 						$this->hive['BODY']=file_get_contents('php://input');
 					ob_start();
 					// Call route handler
-					$result=$this->call($handler,[$this,$args],
+					$result=$this->call($handler,[$this,$args,$handler],
 						'beforeroute,afterroute');
 					$body=ob_get_clean();
 					if (isset($cache) && !error_get_last()) {
@@ -1705,12 +1708,13 @@ final class Base extends Prefab implements ArrayAccess {
 	function abort() {
 		if (!headers_sent() && session_status()!=PHP_SESSION_ACTIVE)
 			session_start();
-		session_commit();
 		$out='';
 		while (ob_get_level())
 			$out=ob_get_clean().$out;
+		header('Content-Encoding: none');
 		header('Content-Length: '.strlen($out));
 		header('Connection: close');
+		session_commit();
 		echo $out;
 		flush();
 		if (function_exists('fastcgi_finish_request'))
@@ -2246,6 +2250,9 @@ final class Base extends Prefab implements ArrayAccess {
 				dirname($_SERVER['SCRIPT_NAME'])),'/');
 		$uri=parse_url((preg_match('/^\w+:\/\//',$_SERVER['REQUEST_URI'])?'':
 			'//'.$_SERVER['SERVER_NAME']).$_SERVER['REQUEST_URI']);
+		$_SERVER['REQUEST_URI']=$uri['path'].
+			(isset($uri['query'])?'?'.$uri['query']:'').
+			(isset($uri['fragment'])?'#'.$uri['fragment']:'');
 		$path=preg_replace('/^'.preg_quote($base,'/').'/','',$uri['path']);
 		session_cache_limiter('');
 		call_user_func_array('session_set_cookie_params',
@@ -2683,9 +2690,9 @@ class View extends Prefab {
 			$hive=$fw->hive();
 		}
 		if ($this->level<1 || $implicit) {
-			if (!$fw->CLI && !headers_sent() &&
+			if (!$fw->CLI && $mime && !headers_sent() &&
 				!preg_grep ('/^Content-Type:/',headers_list()))
-				header('Content-Type: '.($mime?:'text/html').'; '.
+				header('Content-Type: '.$mime.'; '.
 					'charset='.$fw->ENCODING);
 			if ($fw->ESCAPE)
 				$hive=$this->esc($hive);
@@ -2711,7 +2718,7 @@ class View extends Prefab {
 	*	@param $hive array
 	*	@param $ttl int
 	**/
-	function render($file,$mime=NULL,array $hive=NULL,$ttl=0) {
+	function render($file,$mime='text/html',array $hive=NULL,$ttl=0) {
 		$fw=Base::instance();
 		$cache=Cache::instance();
 		if ($cache->exists($hash=$fw->hash($file),$data))
@@ -2749,11 +2756,26 @@ class Preview extends View {
 	protected
 		//! token filter
 		$filter=[
+			'c'=>'$this->c',
 			'esc'=>'$this->esc',
 			'raw'=>'$this->raw',
 			'alias'=>'Base::instance()->alias',
 			'format'=>'Base::instance()->format'
 		];
+
+	/**
+	*	Return C-locale equivalent of number
+	*	@return string
+	*	@param $val int|float
+	**/
+	function c($val) {
+		$fw=Base::instance();
+		$locale=setlocale(LC_NUMERIC,0);
+		setlocale(LC_NUMERIC,'C');
+		$out=(string)(float)$val;
+		$locale=setlocale(LC_NUMERIC,$locale);
+		return $out;
+	}
 
 	/**
 	*	Convert token to variable
@@ -2797,47 +2819,48 @@ class Preview extends View {
 	**/
 	protected function build($node) {
 		return preg_replace_callback(
-			'/\{\-(.+?)\-\}|\{\{(.+?)\}\}(\n*)/s',
+			'/\{~(.+?)~\}|\{\*(.+?)\*\}|\{\-(.+?)\-\}|'.
+			'\{\{(.+?)\}\}((?:\r?\n)*)/s',
 			function($expr) {
 				if ($expr[1])
-					return $expr[1];
-				$str='<?= '.trim($this->token($expr[2])).' ?>';
-				if (isset($expr[3]))
-					$str.=$expr[3];
+					$str='<?php '.$this->token($expr[1]).' ?>';
+				elseif ($expr[2])
+					return '';
+				elseif ($expr[3])
+					$str=$expr[3];
+				else {
+					$str='<?= '.trim($this->token($expr[4])).
+						(!empty($expr[5])?'.PHP_EOL':'').' ?>';
+					if (isset($expr[5]))
+						$str.=$expr[5];
+				}
 				return $str;
 			},
-			preg_replace_callback(
-				'/\{~(.+?)~\}/s',
-				function($expr) {
-					return '<?php '.$this->token($expr[1]).' ?>';
-				},
-				$node
-			)
+			$node
 		);
 	}
 
 	/**
 	*	Render template string
 	*	@return string
-	*	@param $str string
+	*	@param $node string|array
 	*	@param $hive array
 	*	@param $ttl int
 	*	@param $persist bool
 	**/
-	function resolve($str,array $hive=NULL,$ttl=0,$persist=FALSE) {
+	function resolve($node,array $hive=NULL,$ttl=0,$persist=FALSE) {
 		$fw=Base::instance();
 		$cache=Cache::instance();
-		if ($ttl && $cache->exists($hash=$fw->hash($str),$data))
+		if ($ttl || $persist)
+			$hash=$fw->hash($fw->serialize($node));
+		if ($ttl && $cache->exists($hash,$data))
 			return $data;
-		// Remove PHP code and comments
-		$text=preg_replace(
-			'/\h*<\?(?!xml)(?:php|\s*=)?.+?\?>\h*|\{\*.+?\*\}/is','',$str);
 		if ($persist) {
 			if (!is_dir($tmp=$fw->TEMP))
 				mkdir($tmp,Base::MODE,TRUE);
 			if (!is_file($this->file=($tmp.
 				$fw->SEED.'.'.$hash.'.php')))
-				$fw->write($this->file,$this->build($text));
+				$fw->write($this->file,$this->build($node));
 			if (isset($_COOKIE[session_name()]) &&
 				!headers_sent() && session_status()!=PHP_SESSION_ACTIVE)
 				session_start();
@@ -2852,12 +2875,24 @@ class Preview extends View {
 			extract($hive);
 			unset($hive);
 			ob_start();
-			eval(' ?>'.$this->build($text).'<?php ');
+			eval(' ?>'.$this->build($node).'<?php ');
 			$data=ob_get_clean();
 		}
 		if ($ttl)
 			$cache->set($hash,$data,$ttl);
 		return $data;
+	}
+
+	/**
+	 *	Parse template string
+	 *	@return string
+	 *	@param $text string
+	 **/
+	function parse($text) {
+		// Remove PHP code and comments
+		return preg_replace(
+			'/\h*<\?(?!xml)(?:php|\s*=)?.+?\?>\h*|'.
+			'\{\*.+?\*\}/is','', $text);
 	}
 
 	/**
@@ -2868,7 +2903,7 @@ class Preview extends View {
 	*	@param $hive array
 	*	@param $ttl int
 	**/
-	function render($file,$mime=NULL,array $hive=NULL,$ttl=0) {
+	function render($file,$mime='text/html',array $hive=NULL,$ttl=0) {
 		$fw=Base::instance();
 		$cache=Cache::instance();
 		if (!is_dir($tmp=$fw->TEMP))
@@ -2880,13 +2915,7 @@ class Preview extends View {
 				if (!is_file($this->file=($tmp.
 					$fw->SEED.'.'.$fw->hash($view).'.php')) ||
 					filemtime($this->file)<filemtime($view)) {
-					// Remove PHP code and comments
-					$text=preg_replace(
-						'/\h*<\?(?!xml)(?:php|\s*=)?.+?\?>\h*|'.
-						'\{\*.+?\*\}/is','',
-						$fw->read($view));
-					if (method_exists($this,'parse'))
-						$text=$this->parse($text);
+					$text=$this->parse($fw->read($view));
 					$fw->write($this->file,$this->build($text));
 				}
 				if (isset($_COOKIE[session_name()]) &&

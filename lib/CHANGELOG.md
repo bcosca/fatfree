@@ -1,24 +1,51 @@
 CHANGELOG
 
+3.6.2 (26 June 2017)
+*   Return a status code > 0 when dying on error [#220](https://github.com/bcosca/fatfree-core/issues/220)
+*   fix SMTP line width [#215](https://github.com/bcosca/fatfree-core/issues/215)
+*   Allow using a custom field for ldap user id checking [#217](https://github.com/bcosca/fatfree-core/issues/217)
+*   NEW: DB\SQL->exists: generic method to check if SQL table exists
+*   Pass handler to route handler and hooks [#1035](https://github.com/bcosca/fatfree/issues/1035)
+*   pass carriage return of multiline dictionary keys
+*   Better Web->slug customization
+*   fix incorrect header issue [#211](https://github.com/bcosca/fatfree-core/issues/211)
+*   fix schema issue on databases with case-sensitive collation, fixes [#209](https://github.com/bcosca/fatfree-core/issues/209)
+*   Add filter for deriving C-locale equivalent of a number
+*   Bug fix: @LANGUAGE remains unchanged after override
+*   abort: added Header pre-check
+*   Assemble URL after ONREROUTE
+*   Add reroute argument to skip script termination
+*   Invoke ONREROUTE after headers are sent
+*   SQLite switch to backtick as quote
+*   Bug fix: Incorrect timing in SQL query logs
+*   DB\SQL\Mapper: Cast return value of count to integer
+*   Patched $_SERVER['REQUEST_URI'] to ensure it contains a relative URI
+*   Tweak debug verbosity
+*   fix php carriage return issue in preview->build [#205](https://github.com/bcosca/fatfree-core/pull/205)
+*   fixed template string resolution [#205](https://github.com/bcosca/fatfree-core/pull/205)
+*   Fixed unexpected default seed on CACHE set [#1028](https://github.com/bcosca/fatfree/issues/1028)
+*   DB\SQL\Mapper: Optimized field escaping on options
+*   Optimize template conversion to PHP file
+
 3.6.1 (2 April 2017)
-*	NEW: Recaptcha plugin (#194)
+*	NEW: Recaptcha plugin [#194](https://github.com/bcosca/fatfree-core/pull/194)
 *	NEW: MB variable for detecting multibyte support
 *	NEW: DB\SQL: Cache parsed schema for the TTL duration
-*	NEW: quick erase flag on Jig/Mongo/SQL mappers (#193)
-*	NEW: Allow OPTIONS method to return a response body (#171)
+*	NEW: quick erase flag on Jig/Mongo/SQL mappers [#193](https://github.com/bcosca/fatfree-core/pull/193)
+*	NEW: Allow OPTIONS method to return a response body [#171](https://github.com/bcosca/fatfree-core/pull/171)
 *	NEW: Add support for Memcached (bcosca/fatfree#997)
 *	NEW: Rudimentary preload resource (HTTP2 server) support via template push()
-*	NEW: Add support for new MongoDB driver (#177)
+*	NEW: Add support for new MongoDB driver [#177](https://github.com/bcosca/fatfree-core/pull/177)
 *	Changed: template filter are all lowercase now
 *	Changed: Fix template lookup inconsistency: removed base dir from UI on render
-*	Changed: count() method now has an options argument (#192)
+*	Changed: count() method now has an options argument [#192](https://github.com/bcosca/fatfree-core/pull/192)
 *	Changed: SMTP, Spit out error message if any
 *	\DB\SQL\Mapper: refactored row count strategy
 *	DB\SQL\Mapper: Allow non-scalar values to be assigned as mapper property
 *	DB\SQL::PARAM_FLOAT: remove cast to float (#106 and bcosca/fatfree#984) (#191)
 *	DB\SQL\mapper->erase: allow empty string
 *	DB\SQL\mapper->insert: fields reset after successful INSERT
-*	Add option to debounce Cursor->paginate subset (#195)
+*	Add option to debounce Cursor->paginate subset [#195](https://github.com/bcosca/fatfree-core/pull/195)
 *	View: Don't delete sandboxed variables (#198)
 *	Preview: Optimize compilation of template expressions
 *	Preview: Use shorthand tag for direct rendering
@@ -55,7 +82,6 @@ CHANGELOG
 *	Bug fix: Reroute authoritative relative references (#181)
 *	Bug fix: locales order and charset hyphen
 *	Bug fix: base stripped twice in router (#176)
-
 
 3.6.0 (19 November 2016)
 *	NEW: [cli] request type

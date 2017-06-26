@@ -829,7 +829,8 @@ class Web extends Prefab {
 			'ù'=>'u','ű'=>'u','ů'=>'u','ư'=>'u','ū'=>'u','ǚ'=>'u',
 			'ǜ'=>'u','ǔ'=>'u','ǖ'=>'u','ũ'=>'u','ü'=>'ue','в'=>'v',
 			'ŵ'=>'w','ы'=>'y','ÿ'=>'y','ý'=>'y','ŷ'=>'y','ź'=>'z',
-			'ž'=>'z','з'=>'z','ż'=>'z','ж'=>'zh','ь'=>'','ъ'=>''
+			'ž'=>'z','з'=>'z','ż'=>'z','ж'=>'zh','ь'=>'','ъ'=>'',
+			'\''=>'',
 		];
 	}
 
@@ -840,8 +841,7 @@ class Web extends Prefab {
 	**/
 	function slug($text) {
 		return trim(strtolower(preg_replace('/([^\pL\pN])+/u','-',
-			trim(strtr(str_replace('\'','',$text),
-			$this->diacritics()+Base::instance()->DIACRITICS)))),'-');
+			trim(strtr($text,Base::instance()->DIACRITICS+$this->diacritics())))),'-');
 	}
 
 	/**

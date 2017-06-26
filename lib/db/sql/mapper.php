@@ -225,7 +225,7 @@ class Mapper extends \DB\Cursor {
 			$sql.=' GROUP BY '.implode(',',array_map(
 				function($str) use($db) {
 					return preg_replace_callback(
-						'/\b(\w+)\h*(HAVING.+|$)/i',
+						'/\b(\w+[._\-\w]*)\h*(HAVING.+|$)/i',
 						function($parts) use($db) {
 							return $db->quotekey($parts[1]).
 								(isset($parts[2])?(' '.$parts[2]):'');
@@ -238,7 +238,7 @@ class Mapper extends \DB\Cursor {
 		if ($options['order']) {
 			$sql.=' ORDER BY '.implode(',',array_map(
 				function($str) use($db) {
-					return preg_match('/^(\w+)(?:\h+(ASC|DESC))?\h*(?:,|$)/i',
+					return preg_match('/^\h*(\w+[._\-\w]*)(?:\h+((?:ASC|DESC)[\w\h]*))?\h*$/i',
 						$str,$parts)?
 						($db->quotekey($parts[1]).
 						(isset($parts[2])?(' '.$parts[2]):'')):$str;
@@ -348,7 +348,7 @@ class Mapper extends \DB\Cursor {
 		$sql='SELECT COUNT(*) AS '.$this->db->quotekey('_rows').' '.
 			'FROM ('.$sql.') AS '.$this->db->quotekey('_temp');
 		$result=$this->db->exec($sql,$args,$ttl);
-		return $result[0]['_rows'];
+		return (int)$result[0]['_rows'];
 	}
 
 	/**

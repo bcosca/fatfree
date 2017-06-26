@@ -214,6 +214,7 @@ class SMTP extends Magic {
 					$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
 			$reply=$this->dialog('EHLO '.$fw->HOST,$log,$mock);
 		}
+		$message=wordwrap($message,998);
 		if (preg_match('/8BITMIME/',$reply))
 			$headers['Content-Transfer-Encoding']='8bit';
 		else {

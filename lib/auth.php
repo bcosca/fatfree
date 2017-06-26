@@ -121,12 +121,12 @@ class Auth {
 			ldap_set_option($dc,LDAP_OPT_REFERRALS,0) &&
 			ldap_bind($dc,$this->args['rdn'],$this->args['pw']) &&
 			($result=ldap_search($dc,$this->args['base_dn'],
-				'uid='.$id)) &&
+				$this->args['uid'].'='.$id)) &&
 			ldap_count_entries($dc,$result) &&
 			($info=ldap_get_entries($dc,$result)) &&
 			@ldap_bind($dc,$info[0]['dn'],$pw) &&
 			@ldap_close($dc)) {
-			return $info[0]['uid'][0]==$id;
+			return $info[0][$this->args['uid']][0]==$id;
 		}
 		user_error(self::E_LDAP,E_USER_ERROR);
 	}
