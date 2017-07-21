@@ -23,6 +23,7 @@ $f3->route('GET /',
 			'Cache'=>
 				array(
 					'apc',
+					'apcu',
 					'memcache',
 					'memcached',
 					'redis',
