@@ -236,7 +236,7 @@ class Mapper extends \DB\Cursor {
 				explode(',',$options['group'])));
 		}
 		if ($options['order']) {
-			$sql.=' ORDER BY '.implode(',',array_map(
+			$ord=' ORDER BY '.implode(',',array_map(
 				function($str) use($db) {
 					return preg_match('/^\h*(\w+[._\-\w]*)(?:\h+((?:ASC|DESC)[\w\h]*))?\h*$/i',
 						$str,$parts)?
@@ -248,30 +248,32 @@ class Mapper extends \DB\Cursor {
 		if (preg_match('/mssql|sqlsrv|odbc/', $this->engine) &&
 			($options['limit'] || $options['offset'])) {
 			$pkeys=[];
-			foreach ($this->fields as $key=>$field)
-				if ($field['pkey'])
-					$pkeys[]=$key;
+			if (!$options['order']) {
+				foreach ($this->fields as $key=>$field)
+					if ($field['pkey'])
+						$pkeys[]=$key;
+				$ord=' ORDER BY '.$db->quotekey($pkeys[0]);
+			}
 			$ofs=$options['offset']?(int)$options['offset']:0;
 			$lmt=$options['limit']?(int)$options['limit']:0;
 			if (strncmp($db->version(),'11',2)>=0) {
 				// SQL Server 2012
-				if (!$options['order'])
-					$sql.=' ORDER BY '.$db->quotekey($pkeys[0]);
-				$sql.=' OFFSET '.$ofs.' ROWS';
+				$sql.=$ord.' OFFSET '.$ofs.' ROWS';
 				if ($lmt)
 					$sql.=' FETCH NEXT '.$lmt.' ROWS ONLY';
 			}
 			else {
 				// SQL Server 2008
-				$sql=str_replace('SELECT',
+				$sql=preg_replace('/SELECT/',
 					'SELECT '.
 					($lmt>0?'TOP '.($ofs+$lmt):'').' ROW_NUMBER() '.
-					'OVER (ORDER BY '.
-						$db->quotekey($pkeys[0]).') AS rnum,',$sql);
+					'OVER (.$ord.') AS rnum,',$sql,1);
 				$sql='SELECT * FROM ('.$sql.') x WHERE rnum > '.($ofs);
 			}
 		}
 		else {
+			if ($options['order'])
+				$sql.=$ord;
 			if ($options['limit'])
 				$sql.=' LIMIT '.(int)$options['limit'];
 			if ($options['offset'])
@@ -344,7 +346,9 @@ class Mapper extends \DB\Cursor {
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
 			$adhoc.=','.$field['expr'].' AS '.$this->db->quotekey($key);
-		list($sql,$args)=$this->stringify('*'.$adhoc,$filter,$options);
+		if (preg_match('/mssql|dblib|sqlsrv/',$this->engine))
+			$fix='TOP 100 PERCENT ';
+		list($sql,$args)=$this->stringify($fix.'*'.$adhoc,$filter,$options);
 		$sql='SELECT COUNT(*) AS '.$this->db->quotekey('_rows').' '.
 			'FROM ('.$sql.') AS '.$this->db->quotekey('_temp');
 		$result=$this->db->exec($sql,$args,$ttl);
