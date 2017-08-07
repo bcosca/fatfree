@@ -247,12 +247,12 @@ class Mapper extends \DB\Cursor {
 		}
 		if (preg_match('/mssql|sqlsrv|odbc/', $this->engine) &&
 			($options['limit'] || $options['offset'])) {
-			$pkeys=[];
 			if (!$options['order']) {
 				foreach ($this->fields as $key=>$field)
-					if ($field['pkey'])
-						$pkeys[]=$key;
-				$ord=' ORDER BY '.$db->quotekey($pkeys[0]);
+					if ($field['pkey']) {
+						$ord=' ORDER BY '.$db->quotekey($key);
+						break;
+					}
 			}
 			$ofs=$options['offset']?(int)$options['offset']:0;
 			$lmt=$options['limit']?(int)$options['limit']:0;
