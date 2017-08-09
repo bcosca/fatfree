@@ -101,6 +101,7 @@ class Cache extends Controller {
 			);
 			$mark=microtime(TRUE);
 			$cache->reset();
+			sleep(1);
 			/*
 			$cache->clear('a');
 			$cache->clear('b');
