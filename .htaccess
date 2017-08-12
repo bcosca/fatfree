@@ -8,9 +8,5 @@ RewriteEngine On
 # RewriteBase /
 
 RewriteRule ^(tmp)\/|\.ini$ - [R=404]
-
-RewriteCond %{REQUEST_FILENAME} !-l
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule .* index.php [L,QSA]
+FallbackResource index.php
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
