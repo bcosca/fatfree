@@ -376,10 +376,23 @@ class Template extends Controller {
 		);
 		$f3->set('foo','bar');
 		$f3->set('file','templates/test14.htm');
+		$exp=[
+			'BAR',123,456.7,
+			'quoted $string','unquoted string','partially \'quoted\' string',
+			NULL,FALSE,TRUE,
+			'NULL','FALSE','TRUE',
+			'$HOST',$f3->HOST,'HOST',
+			TRUE,FALSE,NULL,
+			$f3->HOST,PHP_VERSION,PHP_OS,
+		];
+		$res=[];
+		$f3->set('ex',function($val) use(&$res) { $res[] = $val; });
+		$tpl->render('templates/test13.htm');
 		$test->expect(
-			preg_replace('/\s*#\s*/','#',trim($tpl->render('templates/test13.htm')))=='bar#BAR,123,bar#quoted $string,unquoted string,bar#bar',
+			empty(array_diff_assoc($res,$exp)),
 			'<include> with extended hive'
 		);
+		$f3->clear('ex');
 		$f3->set('string','<test>');
 		$obj=new \stdclass;
 		$obj->content='<ok>';

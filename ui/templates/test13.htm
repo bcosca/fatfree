@@ -1,4 +1,7 @@
-{{ @foo }}#
-<include href="{{ @file }}" with="bar={{ strtoupper(@foo) }},baz=123" />#
-<include href="{{ @file }}" with="bar='quoted $string',baz=unquoted string" />#
-{{ @foo }}
+<include href="{{ @file }}" with="bar={{ strtoupper(@foo) }},baz=123,foo=456.7" />
+<include href="{{ @file }}" with="bar='quoted $string',baz=unquoted string,foo=partially 'quoted' string" />
+<include href="{{ @file }}" with="bar={{NULL}},baz={{FALSE}},foo={{TRUE}}" />
+<include href="{{ @file }}" with="bar={{'NULL'}},baz='{{FALSE}}',foo='TRUE'" />
+<include href="{{ @file }}" with="bar='{{@HOST}}',baz={{@HOST}},foo=HOST" />
+<include href="{{ @file }}" with="bar=TRUE,baz=FALSE,foo=NULL" />
+<include href="{{ @file }}" with="bar=@HOST,baz=PHP_VERSION,foo=PHP_OS" />
