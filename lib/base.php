@@ -2361,7 +2361,7 @@ final class Base extends Prefab implements ArrayAccess {
 				$global=>preg_match('/SERVER|ENV/',$global)?$sync:[]
 			];
 		}
-		if ($check && $error=error_get_last())
+		if ($check && $error=error_get_last() && error_get_last()['type']!=8192)
 			// Error detected
 			$this->error(500,
 				sprintf(self::E_Fatal,$error['message']),[$error]);
