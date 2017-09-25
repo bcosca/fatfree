@@ -122,7 +122,7 @@ class Auth {
 			ldap_set_option($dc,LDAP_OPT_REFERRALS,0) &&
 			ldap_bind($dc,$this->args['rdn'],$this->args['pw']) &&
 			($result=ldap_search($dc,$this->args['base_dn'],
-				$this->args['uid'].'='.$id)) &&
+				$this->args['uid'].'='.$id, array($this->args['uid']))) &&
 			ldap_count_entries($dc,$result) &&
 			($info=ldap_get_entries($dc,$result)) &&
 			@ldap_bind($dc,$info[0]['dn'],$pw) &&
