@@ -127,7 +127,8 @@ class Auth {
 			($info=ldap_get_entries($dc,$result)) &&
 			@ldap_bind($dc,$info[0]['dn'],$pw) &&
 			@ldap_close($dc)) {
-			return $info[0][$this->args['uid']][0]==$id;
+			$uid = strtolower($this->args['uid']);
+			return (mb_strtolower($info[0][$uid][0])) == (mb_strtolower($id));
 		}
 		user_error(self::E_LDAP,E_USER_ERROR);
 	}
