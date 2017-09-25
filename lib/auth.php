@@ -115,7 +115,8 @@ class Auth {
 	*	@param $pw string
 	**/
 	protected function _ldap($id,$pw) {
-		$dc=@ldap_connect($this->args['dc']);
+		$port = (!empty($this->args['port'])) ? intval($this->args['port']) : 389;
+		$dc=@ldap_connect($this->args['dc'], $port);
 		if ($dc &&
 			ldap_set_option($dc,LDAP_OPT_PROTOCOL_VERSION,3) &&
 			ldap_set_option($dc,LDAP_OPT_REFERRALS,0) &&
