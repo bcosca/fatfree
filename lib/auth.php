@@ -115,18 +115,20 @@ class Auth {
 	*	@param $pw string
 	**/
 	protected function _ldap($id,$pw) {
-		$dc=@ldap_connect($this->args['dc']);
+		$port = (!empty($this->args['port'])) ? intval($this->args['port']) : 389;
+		$dc=@ldap_connect($this->args['dc'], $port);
 		if ($dc &&
 			ldap_set_option($dc,LDAP_OPT_PROTOCOL_VERSION,3) &&
 			ldap_set_option($dc,LDAP_OPT_REFERRALS,0) &&
 			ldap_bind($dc,$this->args['rdn'],$this->args['pw']) &&
 			($result=ldap_search($dc,$this->args['base_dn'],
-				$this->args['uid'].'='.$id)) &&
+				$this->args['uid'].'='.$id, array($this->args['uid']))) &&
 			ldap_count_entries($dc,$result) &&
 			($info=ldap_get_entries($dc,$result)) &&
 			@ldap_bind($dc,$info[0]['dn'],$pw) &&
 			@ldap_close($dc)) {
-			return $info[0][$this->args['uid']][0]==$id;
+			$uid = strtolower($this->args['uid']);
+			return (mb_strtolower($info[0][$uid][0])) == (mb_strtolower($id));
 		}
 		user_error(self::E_LDAP,E_USER_ERROR);
 	}
