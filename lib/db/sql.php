@@ -229,7 +229,7 @@ class SQL {
 						'('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms)',
 						$this->log);
 				$error=$query->errorinfo();
-				if ($error[0]!=\PDO::ERR_NONE) {
+				if ($error && $error[0]!=\PDO::ERR_NONE) {
 					// Statement-level error occurred
 					if ($this->trans)
 						$this->rollback();
@@ -260,7 +260,7 @@ class SQL {
 			}
 			else {
 				$error=$this->errorinfo();
-				if ($error[0]!=\PDO::ERR_NONE) {
+				if ($error && $error[0]!=\PDO::ERR_NONE) {
 					// PDO-level error occurred
 					if ($this->trans)
 						$this->rollback();
