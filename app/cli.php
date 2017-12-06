@@ -23,7 +23,7 @@ class CLI extends Controller {
 				'Console-style arguments'
 			);
 			$test->expect(
-				$this->exec('debug uri')=='/debug/uri?' &&
+				$this->exec('debug uri')=='/debug/uri' &&
 				$this->exec('debug uri -a=1 --name=foo')=='/debug/uri?a=1&name=foo' &&
 				$this->exec('debug get -a=1 --name=foo')=='a:1,name:foo',
 				'Console-style options'
