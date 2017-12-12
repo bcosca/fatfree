@@ -228,7 +228,7 @@ class Mapper extends \DB\Cursor {
 						unset($fw,$tokens,$args,$ctr,$token,$key,$named);
 						extract($_row);
 						// Evaluate pseudo-SQL expression
-						return eval('return '.$_expr.';');
+						return eval('return $'.$_expr.';');
 					}
 				);
 			}
