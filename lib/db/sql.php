@@ -51,6 +51,9 @@ class SQL {
 		//! SQL log
 		$log;
 
+	// SQL Logging
+	use SQL\Logger;		
+
 	/**
 	*	Begin SQL transaction
 	*	@return bool
@@ -194,12 +197,14 @@ class SQL {
 					$keys[]='/'.preg_quote(is_numeric($key)?chr(0).'?':$key).
 						'/';
 				}
-				if ($log)
+				if ($log) {
+					$this->log_query(preg_replace($keys, $vals, str_replace('?',chr(0).'?',$cmd),1), 1e3*(microtime(TRUE)-$now), "CACHED");
 					$this->log.=($stamp?(date('r').' '):'').'('.
-						sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
-						'[CACHED] '.
-						preg_replace($keys,$vals,
-							str_replace('?',chr(0).'?',$cmd),1).PHP_EOL;
+					sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms) '.
+					'[CACHED] '.
+					preg_replace($keys,$vals,
+						str_replace('?',chr(0).'?',$cmd),1).PHP_EOL;
+				}					
 			}
 			elseif (is_object($query=$this->pdo->prepare($cmd))) {
 				foreach ($arg as $key=>$val) {
@@ -219,15 +224,17 @@ class SQL {
 					$keys[]='/'.preg_quote(is_numeric($key)?chr(0).'?':$key).
 						'/';
 				}
-				if ($log)
+				if ($log) 
 					$this->log.=($stamp?(date('r').' '):'').' (-0ms) '.
 						preg_replace($keys,$vals,
 							str_replace('?',chr(0).'?',$cmd),1).PHP_EOL;
 				$query->execute();
-				if ($log)
+				if ($log) {
+					$this->log_query(preg_replace($keys, $vals, str_replace('?',chr(0).'?',$cmd),1), 1e3*(microtime(TRUE)-$now));
 					$this->log=str_replace('(-0ms)',
 						'('.sprintf('%.1f',1e3*(microtime(TRUE)-$now)).'ms)',
 						$this->log);
+				}
 				$error=$query->errorinfo();
 				if ($error[0]!=\PDO::ERR_NONE) {
 					// Statement-level error occurred
