@@ -115,18 +115,27 @@ class Auth {
 	*	@param $pw string
 	**/
 	protected function _ldap($id,$pw) {
-		$dc=@ldap_connect($this->args['dc']);
+		$port=(int)($this->args['port']?:389);
+		$filter=$this->args['filter']=$this->args['filter']?:"uid=".$id;
+		$this->args['attr']=$this->args['attr']?:["uid"];
+		array_walk($this->args['attr'],
+		function($attr)use(&$filter,$id) {
+			$filter=str_ireplace($attr."=*",$attr."=".$id,$filter);});
+		$dc=@ldap_connect($this->args['dc'],$port);
 		if ($dc &&
 			ldap_set_option($dc,LDAP_OPT_PROTOCOL_VERSION,3) &&
 			ldap_set_option($dc,LDAP_OPT_REFERRALS,0) &&
 			ldap_bind($dc,$this->args['rdn'],$this->args['pw']) &&
 			($result=ldap_search($dc,$this->args['base_dn'],
-				$this->args['uid'].'='.$id)) &&
+				$filter,$this->args['attr'])) &&
 			ldap_count_entries($dc,$result) &&
 			($info=ldap_get_entries($dc,$result)) &&
+			$info['count']==1 &&
 			@ldap_bind($dc,$info[0]['dn'],$pw) &&
 			@ldap_close($dc)) {
-			return $info[0][$this->args['uid']][0]==$id;
+			return in_array($id,(array_map(function($value){return $value[0];},
+				array_intersect_key($info[0],
+					array_flip($this->args['attr'])))),TRUE);
 		}
 		user_error(self::E_LDAP,E_USER_ERROR);
 	}

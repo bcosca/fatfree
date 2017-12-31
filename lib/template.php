@@ -65,8 +65,8 @@ class Template extends Preview {
 							return '\''.$pair[1].'\'=>'.
 								(preg_match('/^\'.*\'$/',$pair[2]) ||
 									preg_match('/\$/',$pair[2])?
-									$pair[2]:
-									\Base::instance()->stringify($pair[2]));
+									$pair[2]:Base::instance()->stringify(
+										Base::instance()->cast($pair[2])));
 						},$pairs)).']+get_defined_vars()'):
 					'get_defined_vars()';
 		$ttl=isset($attrib['ttl'])?(int)$attrib['ttl']:0;

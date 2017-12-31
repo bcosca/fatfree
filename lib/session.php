@@ -95,7 +95,7 @@ class Session {
 				'agent'=>$this->_agent,
 				'stamp'=>time()
 			],
-			$jar['expire']?($jar['expire']-time()):0
+			$jar['expire']
 		);
 		return TRUE;
 	}

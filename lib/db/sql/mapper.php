@@ -236,7 +236,7 @@ class Mapper extends \DB\Cursor {
 				explode(',',$options['group'])));
 		}
 		if ($options['order']) {
-			$sql.=' ORDER BY '.implode(',',array_map(
+			$order=' ORDER BY '.implode(',',array_map(
 				function($str) use($db) {
 					return preg_match('/^\h*(\w+[._\-\w]*)(?:\h+((?:ASC|DESC)[\w\h]*))?\h*$/i',
 						$str,$parts)?
@@ -245,33 +245,36 @@ class Mapper extends \DB\Cursor {
 				},
 				explode(',',$options['order'])));
 		}
+		// SQL Server fixes
 		if (preg_match('/mssql|sqlsrv|odbc/', $this->engine) &&
 			($options['limit'] || $options['offset'])) {
-			$pkeys=[];
-			foreach ($this->fields as $key=>$field)
-				if ($field['pkey'])
-					$pkeys[]=$key;
+			// order by pkey when no ordering option was given
+			if (!$options['order'])
+				foreach ($this->fields as $key=>$field)
+					if ($field['pkey']) {
+						$order=' ORDER BY '.$db->quotekey($key);
+						break;
+					}
 			$ofs=$options['offset']?(int)$options['offset']:0;
 			$lmt=$options['limit']?(int)$options['limit']:0;
 			if (strncmp($db->version(),'11',2)>=0) {
-				// SQL Server 2012
-				if (!$options['order'])
-					$sql.=' ORDER BY '.$db->quotekey($pkeys[0]);
-				$sql.=' OFFSET '.$ofs.' ROWS';
+				// SQL Server >= 2012
+				$sql.=$order.' OFFSET '.$ofs.' ROWS';
 				if ($lmt)
 					$sql.=' FETCH NEXT '.$lmt.' ROWS ONLY';
 			}
 			else {
 				// SQL Server 2008
-				$sql=str_replace('SELECT',
+				$sql=preg_replace('/SELECT/',
 					'SELECT '.
 					($lmt>0?'TOP '.($ofs+$lmt):'').' ROW_NUMBER() '.
-					'OVER (ORDER BY '.
-						$db->quotekey($pkeys[0]).') AS rnum,',$sql);
+					'OVER ('.$order.') AS rnum,',$sql.$order,1);
 				$sql='SELECT * FROM ('.$sql.') x WHERE rnum > '.($ofs);
 			}
 		}
 		else {
+			if (isset($order))
+				$sql.=$order;
 			if ($options['limit'])
 				$sql.=' LIMIT '.(int)$options['limit'];
 			if ($options['offset'])
@@ -344,7 +347,10 @@ class Mapper extends \DB\Cursor {
 		$adhoc='';
 		foreach ($this->adhoc as $key=>$field)
 			$adhoc.=','.$field['expr'].' AS '.$this->db->quotekey($key);
-		list($sql,$args)=$this->stringify('*'.$adhoc,$filter,$options);
+		$fields='*'.$adhoc;
+		if (preg_match('/mssql|dblib|sqlsrv/',$this->engine))
+			$fields='TOP 100 PERCENT '.$fields;
+		list($sql,$args)=$this->stringify($fields,$filter,$options);
 		$sql='SELECT COUNT(*) AS '.$this->db->quotekey('_rows').' '.
 			'FROM ('.$sql.') AS '.$this->db->quotekey('_temp');
 		$result=$this->db->exec($sql,$args,$ttl);
@@ -418,22 +424,23 @@ class Mapper extends \DB\Cursor {
 			}
 		}
 		if ($fields) {
-			$this->db->exec(
+			$add='';
+			if ($this->engine=='pgsql') {
+				$names=array_keys($pkeys);
+				$aik=end($names);
+				$add=' RETURNING '.$this->db->quotekey($aik);
+			}
+			$lID=$this->db->exec(
 				(preg_match('/mssql|dblib|sqlsrv/',$this->engine) &&
 				array_intersect(array_keys($pkeys),$ckeys)?
 					'SET IDENTITY_INSERT '.$this->table.' ON;':'').
 				'INSERT INTO '.$this->table.' ('.$fields.') '.
-				'VALUES ('.$values.')',$args
+				'VALUES ('.$values.')'.$add,$args
 			);
-			$seq=NULL;
-			if ($this->engine=='pgsql') {
-				$names=array_keys($pkeys);
-				$aik=end($names);
-				if ($this->fields[$aik]['pdo_type']==\PDO::PARAM_INT)
-					$seq=$this->source.'_'.$aik.'_seq';
-			}
-			if ($this->engine!='oci' && !($this->engine=='pgsql' && !$seq))
-				$this->_id=$this->db->lastinsertid($seq);
+			if ($this->engine=='pgsql' && $lID)
+				$this->_id=$lID[0][$aik];
+			elseif ($this->engine!='oci')
+				$this->_id=$this->db->lastinsertid();
 			// Reload to obtain default and auto-increment field values
 			if ($reload=($inc || $filter))
 				$this->load($inc?

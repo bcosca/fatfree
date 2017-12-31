@@ -1,5 +1,37 @@
 CHANGELOG
 
+3.6.3 (31 December 2017)
+*	PHP7 fix: remove deprecated (unset) cast
+*	Web->request: restricted follow_location to 3XX responses only
+*	CLI mode: refactored arguments parsing
+*	CLI mode: fixed query string encoding
+*	SMTP: Refactor parsing of attachments
+*	SMTP: clean-up mail headers for multipart messages, [#1065](https://github.com/bcosca/fatfree/issues/1065)
+*	config: fixed performance issues on parsing config files
+*	config: cast command parameters in config entries to php type & constant, [#1030](https://github.com/bcosca/fatfree/issues/1030)
+*	config: reduced registry calls
+*	config: skip hive escaping when resolving dynamic config vars, [#1030](https://github.com/bcosca/fatfree/issues/1030)
+*	Bug fix: Incorrect cookie lifetime computation, [#1070](https://github.com/bcosca/fatfree/issues/1070), [#1016](https://github.com/bcosca/fatfree/issues/1016)
+*	DB\SQL\Mapper: use RETURNING option instead of a sequence query to get lastInsertId in PostgreSQL, [#1069](https://github.com/bcosca/fatfree/issues/1069), [#230](https://github.com/bcosca/fatfree-core/issues/230)
+*	DB\SQL\Session: check if _agent is too long for SQL based sessions [#236](https://github.com/bcosca/fatfree-core/issues/236)
+*	DB\SQL\Session: fix Session handler table creation issue on SQL Server, [#899](https://github.com/bcosca/fatfree/issues/899)
+*	DB\SQL: fix oracle db issue with empty error variable, [#1072](https://github.com/bcosca/fatfree/issues/1072)
+*	DB\SQL\Mapper: fix sorting issues on SQL Server, [#1052](https://github.com/bcosca/fatfree/issues/1052) [#225](https://github.com/bcosca/fatfree-core/issues/225)
+*	Prevent directory traversal attacks on filesystem based cache [#1073](https://github.com/bcosca/fatfree/issues/1073)
+*	Bug fix, Template: PHP constants used in include with attribute, [#983](https://github.com/bcosca/fatfree/issues/983)
+*	Bug fix, Template: Numeric value in expression alters PHP_EOL context
+*	Template: use existing linefeed instead of PHP_EOL, [#1048](https://github.com/bcosca/fatfree/issues/1048)
+*	Template: make newline interpolation handling configurable [#223](https://github.com/bcosca/fatfree-core/issues/223)
+*	Template: add beforerender to Preview
+*	fix custom FORMATS without modifiers
+*	Cache: Refactor Cache->reset for XCache
+*	Cache: loosen reset cache key pattern, [#1041](https://github.com/bcosca/fatfree/issues/1041)
+*	XCache: suffix reset only works if xcache.admin.enable_auth is disabled
+*	Added HTTP 103 as recently approved by the IETF
+*	LDAP changes to for AD flexibility [#227](https://github.com/bcosca/fatfree-core/issues/227)
+*	Hide debug trace from ajax errors when DEBUG=0 [#1071](https://github.com/bcosca/fatfree/issues/1071)
+*	fix View->render using potentially wrong cache entry
+
 3.6.2 (26 June 2017)
 *   Return a status code > 0 when dying on error [#220](https://github.com/bcosca/fatfree-core/issues/220)
 *   fix SMTP line width [#215](https://github.com/bcosca/fatfree-core/issues/215)

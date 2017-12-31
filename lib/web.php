@@ -305,6 +305,7 @@ class Web extends Prefab {
 		$body=ob_get_clean();
 		if (!$err &&
 			$options['follow_location'] &&
+			preg_grep('/HTTP\/1\.\d 3\d{2}/',$headers) &&
 			preg_match('/^Location: (.+)$/m',implode(PHP_EOL,$headers),$loc)) {
 			$options['max_redirects']--;
 			if($loc[1][0] == '/') {
@@ -424,6 +425,7 @@ class Web extends Prefab {
 						break;
 				}
 			if ($options['follow_location'] &&
+				preg_grep('/HTTP\/1\.\d 3\d{2}/',$headers) &&
 				preg_match('/Location: (.+?)'.preg_quote($eol).'/',
 				$html[0],$loc)) {
 				$options['max_redirects']--;
