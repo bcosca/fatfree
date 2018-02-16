@@ -374,6 +374,13 @@ class Template extends Controller {
 				array('@attrib'=>array('bar'=>NULL,'baz'=>'1'))),
 			'Node attribute with empty value'
 		);
+		$test->expect(
+			isset($lines[17]) && $lines[17]==$f3->stringify(
+				array('@attrib'=>array(':click'=>'alert','@change'=>'changed',
+					'v-on:submit.prevent'=>'onSubmit',"{{ 'ab-cd'.@x }}"=>'{{@foo}}'),
+					'special attributes')),
+			'Node with special attributes'
+		);
 		$f3->set('foo','bar');
 		$f3->set('file','templates/test14.htm');
 		$exp=[
