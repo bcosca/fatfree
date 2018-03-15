@@ -18,7 +18,7 @@ class Router extends Controller {
 			$result=is_file($file=$f3->get('TEMP').'redir') &&
 			$val=$f3->read($file),
 			'Rerouted to this page'.($result?(': '.
-				sprintf('%.1f',(microtime(TRUE)-$val)*1e3).'ms'):'')
+				sprintf('%.1f',(microtime(TRUE)-(float)$val)*1e3).'ms'):'')
 		);
 		if (is_file($file))
 			@unlink($file);
