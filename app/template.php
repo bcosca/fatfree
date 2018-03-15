@@ -395,8 +395,9 @@ class Template extends Controller {
 		$res=[];
 		$f3->set('ex',function($val) use(&$res) { $res[] = $val; });
 		$tpl->render('templates/test13.htm');
+		$res1=array_diff_assoc($res,$exp);
 		$test->expect(
-			empty(array_diff_assoc($res,$exp)),
+			empty($res1),
 			'<include> with extended hive'
 		);
 		$f3->clear('ex');
@@ -520,7 +521,7 @@ class Template extends Controller {
 		);
 		$f3->CACHE=FALSE;
 		foreach (glob($cachedir.'*') as $file) unlink($file);
-		rmdir($cachedir);
+		@rmdir($cachedir);
 		foreach (glob($f3->get('TEMP').
 			$f3->hash($f3->get('ROOT').$f3->get('BASE')).'.*.php') as $file)
 			unlink($file);
