@@ -68,8 +68,9 @@ class Mongo {
 			$cursor=$this->db->selectcollection('system.profile')->find();
 			foreach (iterator_to_array($cursor) as $frame)
 				if (!preg_match('/\.system\..+$/',$frame['ns']))
-					$this->log.=date('r',$frame['ts']->sec).' ('.
-						sprintf('%.1f',$frame['millis']).'ms) '.
+					$this->log.=date('r',$this->legacy() ?
+						$frame['ts']->sec : (round((string)$frame['ts'])/1000)).
+						' ('.sprintf('%.1f',$frame['millis']).'ms) '.
 						$frame['ns'].' ['.$frame['op'].'] '.
 						(empty($frame['query'])?
 							'':json_encode($frame['query'])).

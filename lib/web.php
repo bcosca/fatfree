@@ -52,7 +52,7 @@ class Web extends Prefab {
 				'hqx'=>'application/mac-binhex40',
 				'html?'=>'text/html',
 				'jar'=>'application/java-archive',
-				'jpe?g'=>'image/jpeg',
+				'jpe?g|jfif?'=>'image/jpeg',
 				'js'=>'application/x-javascript',
 				'midi'=>'audio/x-midi',
 				'mp3'=>'audio/mpeg',
@@ -281,6 +281,8 @@ class Web extends Prefab {
 			curl_setopt($curl,CURLOPT_HTTPHEADER,$options['header']);
 		if (isset($options['content']))
 			curl_setopt($curl,CURLOPT_POSTFIELDS,$options['content']);
+		if (isset($options['proxy']))
+			curl_setopt($curl,CURLOPT_PROXY,$options['proxy']);
 		curl_setopt($curl,CURLOPT_ENCODING,'gzip,deflate');
 		$timeout=isset($options['timeout'])?
 			$options['timeout']:
@@ -333,6 +335,12 @@ class Web extends Prefab {
 	**/
 	protected function _stream($url,$options) {
 		$eol="\r\n";
+		if (isset($options['proxy'])) {
+			$options['proxy']=preg_replace('/https?/i','tcp',$options['proxy']);
+			$options['request_fulluri']=true;
+			if (preg_match('/socks4?/i',$options['proxy']))
+				return $this->_socket($url,$options);
+		}
 		$options['header']=implode($eol,$options['header']);
 		$body=@file_get_contents($url,FALSE,
 			stream_context_create(['http'=>$options]));
@@ -378,25 +386,46 @@ class Web extends Prefab {
 		$headers=[];
 		$body='';
 		$parts=parse_url($url);
-		$empty=empty($parts['port']);
-		if ($parts['scheme']=='https') {
+		$hostname=$parts['host'];
+		$proxy=false;
+		if ($parts['scheme']=='https')
 			$parts['host']='ssl://'.$parts['host'];
-			if ($empty)
-				$parts['port']=443;
-		}
-		elseif ($empty)
-			$parts['port']=80;
+		if (empty($parts['port']))
+			$parts['port']=$parts['scheme']=='https'?443:80;
 		if (empty($parts['path']))
 			$parts['path']='/';
 		if (empty($parts['query']))
 			$parts['query']='';
-		if ($socket=@fsockopen($parts['host'],$parts['port'],$code,$err)) {
+		if (isset($options['proxy'])) {
+			$req=$url;
+			$pp=parse_url($options['proxy']);
+			$proxy=$pp['scheme'];
+			if ($pp['scheme']=='https')
+				$pp['host']='ssl://'.$pp['host'];
+			if (empty($pp['port']))
+				$pp['port']=$pp['scheme']=='https'?443:80;
+			$socket=@fsockopen($pp['host'],$pp['port'],$code,$err);
+		} else {
+			$req=$parts['path'].($parts['query']?('?'.$parts['query']):'');
+			$socket=@fsockopen($parts['host'],$parts['port'],$code,$err);
+		}
+		if ($socket) {
 			stream_set_blocking($socket,TRUE);
 			stream_set_timeout($socket,isset($options['timeout'])?
 				$options['timeout']:ini_get('default_socket_timeout'));
-			fputs($socket,$options['method'].' '.$parts['path'].
-				($parts['query']?('?'.$parts['query']):'').' HTTP/1.0'.$eol
-			);
+			if ($proxy=='socks4') {
+				// SOCKS4; http://en.wikipedia.org/wiki/SOCKS#Protocol
+				$packet="\x04\x01".pack("n", $parts['port']).
+					pack("H*",dechex(ip2long(gethostbyname($hostname))))."\0";
+				fputs($socket, $packet, strlen($packet));
+				$response=fread($socket, 9);
+				if (strlen($response)==8 && (ord($response[0])==0 || ord($response[0])==4)
+					&& ord($response[1])==90) {
+					$options['header'][]='Host: '.$hostname;
+				} else
+					$err='Socket Status '.ord($response[1]);
+			}
+			fputs($socket,$options['method'].' '.$req.' HTTP/1.0'.$eol);
 			fputs($socket,implode($eol,$options['header']).$eol.$eol);
 			if (isset($options['content']))
 				fputs($socket,$options['content'].$eol);
@@ -508,12 +537,6 @@ class Web extends Prefab {
 			$this->engine();
 		if ($this->wrapper!='stream') {
 			// PHP streams can't cope with redirects when Host header is set
-			foreach ($options['header'] as &$header)
-				if (preg_match('/^Host:/',$header)) {
-					$header='Host: '.$parts['host'];
-					unset($header);
-					break;
-				}
 			$this->subst($options['header'],'Host: '.$parts['host']);
 		}
 		$this->subst($options['header'],

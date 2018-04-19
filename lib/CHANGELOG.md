@@ -1,5 +1,30 @@
 CHANGELOG
 
+3.6.4 (19 April 2018)
+*	NEW: Added Dependency Injection support with CONTAINER variable [#221](https://github.com/bcosca/fatfree-core/issues/221)
+*	NEW: configurable LOGGABLE error codes [#1091](https://github.com/bcosca/fatfree/issues/1091#issuecomment-364674701)
+*	NEW: JAR.lifetime option, [#178](https://github.com/bcosca/fatfree-core/issues/178)
+*	Template: reduced Prefab calls
+*	Template: optimized reflection for better derivative support, [bcosca/fatfree#1088](https://github.com/bcosca/fatfree/issues/1088)
+*	Template: optimized parsing for template attributes and tokens
+*	DB\Mongo: fixed logging with mongodb extention
+*	DB\Jig: added lazy-loading [#7e1cd9b9b89](https://github.com/bcosca/fatfree-core/commit/7e1cd9b9b89c4175d0f6b86ced9d9bd49c04ac39)
+*	DB\Jig\Mapper: Added group feature, bcosca/fatfree#616
+*	DB\SQL\Mapper: fix PostgreSQL RETURNING ID when no pkey is available, [bcosca/fatfree#1069](https://github.com/bcosca/fatfree/issues/1069), [#230](https://github.com/bcosca/fatfree-core/issues/230)
+*	DB\SQL\Mapper: disable order clause auto-quoting when it's already been quoted
+*	Web->location: add failsafe for geoip_region_name_by_code() [#GB:Bxyn9xn9AgAJ](https://groups.google.com/d/msg/f3-framework/APau4wnwNzE/Bxyn9xn9AgAJ)
+*	Web->request: Added proxy support [#e936361b](https://github.com/bcosca/fatfree-core/commit/e936361bc03010c4c7c38a396562e5e96a8a100d)
+*	Web->mime: Added JFIF format
+*	Markdown: handle line breaks in paragraph blocks, [bcosca/fatfree#1100](https://github.com/bcosca/fatfree/issues/1100)
+*	config: reduced cast calls on parsing config sections
+*	Patch empty SERVER_NAME [bcosca/fatfree#1084](https://github.com/bcosca/fatfree/issues/1084)
+*	Bugfix: unreliable request headers in Web->request() response [bcosca/fatfree#1092](https://github.com/bcosca/fatfree/issues/1092)
+*	Fixed, View->render: utilizing multiple UI paths, [bcosca/fatfree#1083](https://github.com/bcosca/fatfree/issues/1083)
+*	Fixed URL parsing with PHP 5.4 [#247](https://github.com/bcosca/fatfree-core/issues/247)
+*	Fixed PHP 7.2 warnings when session is active prematurely, [#238](https://github.com/bcosca/fatfree-core/issues/238)
+*	Fixed setcookie $expire variable type [#240](https://github.com/bcosca/fatfree-core/issues/240)
+*	Fixed expiration time when updating an existing cookie
+
 3.6.3 (31 December 2017)
 *	PHP7 fix: remove deprecated (unset) cast
 *	Web->request: restricted follow_location to 3XX responses only

@@ -273,7 +273,7 @@ class Template extends Preview {
 		// Build tree structure
 		for ($ptr=0,$w=5,$len=strlen($text),$tree=[],$tmp='';$ptr<$len;)
 			if (preg_match('/^(.{0,'.$w.'}?)<(\/?)(?:F3:)?'.
-				'('.$this->tags.')\b((?:\s+[\w-]+'.
+				'('.$this->tags.')\b((?:\s+[\w-.:@!]+'.
 				'(?:\h*=\h*(?:"(?:.*?)"|\'(?:.*?)\'))?|'.
 				'\h*\{\{.+?\}\})*)\h*(\/?)>/is',
 				substr($text,$ptr),$match)) {
@@ -303,19 +303,18 @@ class Template extends Preview {
 					if ($match[4]) {
 						// Process attributes
 						preg_match_all(
-							'/(?:\b([\w-]+)\h*'.
-							'(?:=\h*(?:"(.*?)"|\'(.*?)\'))?|'.
-							'(\{\{.+?\}\}))/s',
+							'/(?:(\{\{.+?\}\})|([^\s\/"\'=]+))'.
+							'\h*(?:=\h*(?:"(.*?)"|\'(.*?)\'))?/s',
 							$match[4],$attr,PREG_SET_ORDER);
 						foreach ($attr as $kv)
-							if (isset($kv[4]))
-								$node['@attrib'][]=$kv[4];
+							if (!empty($kv[1]) && !isset($kv[3]) && !isset($kv[4]))
+								$node['@attrib'][]=$kv[1];
 							else
-								$node['@attrib'][$kv[1]]=
-									(isset($kv[2]) && $kv[2]!==''?
-										$kv[2]:
-										(isset($kv[3]) && $kv[3]!==''?
-											$kv[3]:NULL));
+								$node['@attrib'][$kv[1]?:$kv[2]]=
+									(isset($kv[3]) && $kv[3]!==''?
+										$kv[3]:
+										(isset($kv[4]) && $kv[4]!==''?
+											$kv[4]:NULL));
 					}
 				}
 				$tmp='';
@@ -342,12 +341,13 @@ class Template extends Preview {
 	*	return object
 	**/
 	function __construct() {
-		$ref=new ReflectionClass(__CLASS__);
+		$ref=new ReflectionClass(get_called_class());
 		$this->tags='';
 		foreach ($ref->getmethods() as $method)
 			if (preg_match('/^_(?=[[:alpha:]])/',$method->name))
 				$this->tags.=(strlen($this->tags)?'|':'').
 					substr($method->name,1);
+		parent::__construct();
 	}
 
 }

@@ -306,6 +306,7 @@ class Markdown extends Prefab {
 				},
 				$str
 			);
+			$str=preg_replace('/\s{2}\r?\n/','<br />',$str);
 			return '<p>'.$this->scan($str).'</p>'."\n\n";
 		}
 		return '';
