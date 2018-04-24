@@ -64,10 +64,13 @@ class OAuth2 extends \Magic {
 		$response=$web->request($uri,$options);
 		if ($response['error'])
 			user_error($response['error'],E_USER_ERROR);
-		return $response['body'] &&
-			preg_grep('/HTTP\/1\.\d 200/',$response['headers'])?
-			json_decode($response['body'],TRUE):
-			FALSE;
+		if (isset($response['body']) && preg_grep('/HTTP\/1\.\d 200/',$response['headers']))
+		{
+		    if ($token = json_decode($response['body'],TRUE))
+		        return $token;
+		    return $response['body'];
+		}
+			return FALSE;
 	}
 
 	/**
