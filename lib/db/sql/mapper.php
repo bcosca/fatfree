@@ -194,6 +194,43 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
+	*   Expands filter arguments to list if argument is an array
+	*   @param $filter
+	*   @param $args
+	*   @return array
+	**/
+	protected function expandargs($filter, $args) {
+		$newfilter = $filter;
+		$poscolon = 0;
+		$posspace = 0;
+		while (
+			$poscolon < strlen($filter)
+			&& FALSE!==($poscolon=strpos($filter,':',$poscolon))
+		){
+			$posspace=strpos($filter,' ',$poscolon);
+			if (!$posspace)
+				$posspace = strlen($filter)+1;
+			$key = substr($filter,$poscolon+1,$posspace-$poscolon-1);
+			if (isset($args[$key]) && !is_array($args[$key])) {
+				$poscolon = $posspace;
+				continue;
+			}
+			$value=$args[$key];
+			$valuecnt=count($value);
+			unset($args[$key]);
+			$filterparts = [];
+			foreach($value as $k=>$v) {
+				$args[$key.$k]=$v;
+				$filterparts[]=':'.$key.$k;
+			}
+			$filterpart='('.implode(',',$filterparts).')';
+			$newfilter=str_replace(':'.$key,$filterpart,$newfilter);
+			$poscolon=$posspace;
+		}
+		return [$newfilter,$args];
+	}
+
+	/**
 	*	Build query string and arguments
 	*	@return array
 	*	@param $fields string
@@ -219,8 +256,10 @@ class Mapper extends \DB\Cursor {
 			$args=is_array($args)?$args:[1=>$args];
 			list($filter)=$filter;
 		}
-		if ($filter)
-			$sql.=' WHERE '.$filter;
+		if ($filter) {
+			list($filter,$args)=$this->expandargs($filter,$args);
+			$sql .= ' WHERE ' . $filter;
+		}
 		if ($options['group']) {
 			$sql.=' GROUP BY '.implode(',',array_map(
 				function($str) use($db) {
@@ -668,5 +707,4 @@ class Mapper extends \DB\Cursor {
 		$this->fields=$db->schema($table,$fields,$ttl);
 		$this->reset();
 	}
-
 }
