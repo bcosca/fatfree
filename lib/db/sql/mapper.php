@@ -194,41 +194,47 @@ class Mapper extends \DB\Cursor {
 	}
 
 	/**
-	*   Expands filter arguments to list if argument is an array
-	*   @param $filter
-	*   @param $args
-	*   @return array
-	**/
-	protected function expandargs($filter, $args) {
-		$newfilter = $filter;
-		$poscolon = 0;
-		$posspace = 0;
-		while (
-			$poscolon < strlen($filter)
-			&& FALSE!==($poscolon=strpos($filter,':',$poscolon))
-		){
-			$posspace=strpos($filter,' ',$poscolon);
-			if (!$posspace)
-				$posspace = strlen($filter)+1;
-			$key = substr($filter,$poscolon+1,$posspace-$poscolon-1);
-			if (isset($args[$key]) && !is_array($args[$key])) {
-				$poscolon = $posspace;
-				continue;
-			}
-			$value=$args[$key];
-			$valuecnt=count($value);
-			unset($args[$key]);
-			$filterparts = [];
-			foreach($value as $k=>$v) {
-				$args[$key.$k]=$v;
-				$filterparts[]=':'.$key.$k;
-			}
-			$filterpart='('.implode(',',$filterparts).')';
-			$newfilter=str_replace(':'.$key,$filterpart,$newfilter);
-			$poscolon=$posspace;
-		}
-		return [$newfilter,$args];
-	}
+    *   Expands filter arguments to list if argument is an array
+    *   @param $filter
+    *   @param $args
+    *   @return array
+    **/
+    protected function expandargs($filter,$args) {
+        $qpos=0;
+        $newargs=$args;
+        $ispositional=stristr($filter,'?')!==FALSE;
+        if ($ispositional) {
+            $qindex=-1;
+            $qpos=strpos($filter,'?');
+            do{
+                $qindex++;
+                $filter=substr_replace($filter,'?'.$qindex,$qpos,($qindex==0)?1:strlen('?'.$qindex));
+            }while(FALSE!==($qpos=strpos($filter,'?',$qpos+1)));
+        }
+        foreach ($args as $key=>$value) {
+            if (!is_array($value)){
+                if($ispositional)
+                    $filter=str_replace('?'.$key,'?',$filter);
+                continue;
+            }
+            if($ispositional){
+                array_splice($newargs,$key,1,$value);
+                $filter=str_replace('?'.$key,'('.implode(',',array_fill(0,count($value),'?')).')',$filter);
+            }
+            else{
+                unset($newargs[$key]);
+                $filterparts=[];
+                foreach($value as $k=>$v){
+                    $newargs[$key.$k]=$v;
+                    $filterparts[]=':'.$key.$k;
+                }
+                $filterpart='('.implode(',',$filterparts).')';
+                $filter=str_replace(':'.$key,$filterpart,$filter);
+            }
+            $qpos++;
+        }
+        return [$filter,$newargs];
+    }
 
 	/**
 	*	Build query string and arguments
