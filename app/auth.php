@@ -18,6 +18,10 @@ class Auth extends Controller {
 		$user->set('user_id','admin');
 		$user->set('password','secret');
 		$user->save();
+		$user->reset();
+		$user->set('user_id','superadmin');
+		$user->set('password',password_hash('supersecret',PASSWORD_BCRYPT));
+		$user->save();
 		$auth=new \Auth($user,['id'=>'user_id','pw'=>'password']);
 		$test->expect(
 			$auth->basic(),
@@ -26,6 +30,13 @@ class Auth extends Controller {
 		$test->expect(
 			$auth->login('admin','secret') && !$auth->login('user','what'),
 			'Login auth mechanism (Jig storage)'
+		);
+		$auth=new \Auth($user,['id'=>'user_id','pw'=>'password'],function($pw,$hash){
+			return password_verify($pw,$hash);
+		});
+		$test->expect(
+			$auth->login('superadmin','supersecret') && !$auth->login('user','what'),
+			'Login auth mechanism with password_verify (Jig storage)'
 		);
 		$db->drop();
 		if (extension_loaded('mongo')) {
