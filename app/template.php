@@ -440,46 +440,51 @@ class Template extends Controller {
 		$test->expect(
 			$tpl->token($expr='@foo | pick')==
 			($eval='\App\Helper::instance()->pick($foo)'),
-			'Resolve custom filter: '.$expr.' - '.$eval
+			'Resolve custom filter: {{'.$expr.'}} > '.$eval
 		);
 		$test->expect(
 			$tpl->token($expr='@foo, \'bar\' | pick')==
 			($eval='\App\Helper::instance()->pick($foo, \'bar\')'),
-			'Resolve filter with arguments: '.$expr.' - '.$eval
+			'Resolve filter with arguments: {{'.$expr.'}} > '.$eval
 		);
 		$test->expect(
 			$tpl->token($expr='@foo, \'bar|baz\' | pick')==
 			($eval='\App\Helper::instance()->pick($foo, \'bar|baz\')'),
-			'Filter pipe test: '.$expr.' - '.$eval
+			'Filter pipe test: {{'.$expr.'}} > '.$eval
 		);
 		$test->expect(
 			$tpl->token($expr='@foo || @bar')==
 			($eval='$foo || $bar'),
-			'Double pipe OR condition: '.$expr.' - '.$eval
+			'Double pipe OR condition: {{'.$expr.'}} > '.$eval
 		);
 		$test->expect(
 			$tpl->token($expr='(@foo && @bar)? @baz: @qux | esc')==
 			($eval='$this->esc(($foo && $bar)? $baz: $qux)'),
-			'Ternary condition with filter: '.$expr.' - '.$eval
+			'Ternary condition with filter: {{'.$expr.'}} > '.$eval
 		);
 		$test->expect(
 			$tpl->token($expr='(@foo || @bar)? @baz: @qux | esc')==
 			($eval='$this->esc(($foo || $bar)? $baz: $qux)'),
-			'Double pipe OR condition with filter: '.$expr.' - '.$eval
+			'Double pipe OR condition with filter: {{'.$expr.'}} > '.$eval
 		);
 		$test->expect(
 			$tpl->token($expr='@foo | pick, esc')==
 			($eval='$this->esc(\App\Helper::instance()->pick($foo))'),
-			'Multiple filter: '.$expr.' - '.$eval
+			'Multiple filter: {{'.$expr.'}} > '.$eval
 		);
 		$test->expect(
 			$tpl->token($expr='@foo, @bar | pick, esc')==
 			($eval='$this->esc(\App\Helper::instance()->pick($foo, $bar))'),
-			'Multiple filter, multiple arguments: '.$expr.' - '.$eval
+			'Multiple filter, multiple arguments: {{'.$expr.'}} > '.$eval
 		);
 		$test->expect(
 			$tpl->render('templates/test15.html')=="apple"."\r\n"."cherry"."\r\n",
 			'Test custom filter'
+		);
+		$test->expect(
+			$tpl->token($expr='@foo | json_encode')==
+			($eval='json_encode($foo)'),
+			'Existing php function as filter: {{'.$expr.'}} > '.$eval
 		);
 		$f3->set('div',
 			array_fill(0,1000,array_combine(range('a','j'),range(0,9))));
