@@ -486,6 +486,11 @@ class Template extends Controller {
 			($eval='json_encode($foo)'),
 			'Existing php function as filter: {{'.$expr.'}} > '.$eval
 		);
+		$tpl->filter('json_encode','\App\Helper::instance()->json');
+		$test->expect(
+			$tpl->filter('json_encode')=='\App\Helper::instance()->json',
+			'Overwrite existing raw php filter'
+		);
 		$f3->set('div',
 			array_fill(0,1000,array_combine(range('a','j'),range(0,9))));
 		$now=microtime(TRUE);
