@@ -160,6 +160,18 @@ class Router extends Controller {
 		);
 		$f3->clear('ERROR');
 		$f3->clear('ROUTES');
+		$f3->route('OPTIONS /dummy',
+			function($f3,$args) {
+				header('Allow: GET, POST');
+			}
+		);
+		$f3->mock('OPTIONS /dummy');
+		$test->expect(
+			preg_grep('/^Allow: GET, POST$/',headers_list()),
+			'HTTP OPTIONS request returns user-specified methods'
+		);
+		$f3->clear('ERROR');
+		$f3->clear('ROUTES');
 		$f3->route('GET @grub:/food/@id',
 			function($f3,$args) {
 				$f3->set('id',$args['id']);
