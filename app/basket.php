@@ -53,6 +53,13 @@ class Basket extends Controller {
 		$basket->load('item','chicken wings');
 		$basket->set('quantity',2);
 		$basket->save();
+		$basket->reset();
+		$basket->set('item','lamb chops');
+		$basket->set('quantity',1);
+		$basket->set('price',99.95);
+		$basket->set('measure','pack of 8');
+		$basket->save();
+		$id=$basket->_id;
 		$basket->load('item','chicken wings');
 		$test->expect(
 			$basket->get('item')=='chicken wings' &&
@@ -88,9 +95,18 @@ class Basket extends Controller {
 			'Current item copied to hive variable'
 		);
 		$test->expect(
-			$basket->count()==2,
+			$basket->count()==3,
 			'Count items in basket'
 		);
+		$basket->load('_id',$id);
+		$test->expect(
+			$basket->get('item')=='lamb chops' &&
+			$basket->get('quantity')==1 &&
+			$basket->get('price')==99.95 &&
+			$basket->get('measure')=='pack of 8',
+			'Load item by _id'
+		);
+		$basket->erase('_id',$id);
 		$test->expect(
 			array_values($basket->checkout())==[
 				[
