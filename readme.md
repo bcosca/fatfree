@@ -1499,7 +1499,7 @@ $user=new DB\SQL\Mapper($db,'users');
 // or $user=new DB\Mongo\Mapper($db,'users');
 // or $user=new DB\Jig\Mapper($db,'users');
 $user->userID='jane';
-$user->password=md5('secret');
+$user->password=password_hash('secret', PASSWORD_BCRYPT, [ 'cost' => 12 ]);
 $user->visits=0;
 $user->save();
 ```
@@ -1511,7 +1511,7 @@ A mapper object will not be empty after a `save()`. If you wish to add a new rec
 ``` php
 $user->reset();
 $user->userID='cheetah';
-$user->password=md5('unknown');
+$user->password=password_hash('unknown', PASSWORD_BCRYPT, [ 'cost' => 12 ]);
 $user->save();
 ```
 
