@@ -650,6 +650,18 @@ class Mapper extends \DB\Cursor {
 	function getiterator() {
 		return new \ArrayIterator($this->cast());
 	}
+	
+	/**
+	*	Return values as array
+	*	@return array
+	**/
+        function toArray(){
+            foreach($this->fields as $k => $value){
+                $values[$k] = $value['value'];
+            }
+            
+            return $values;
+        }
 
 	/**
 	*	Instantiate class
