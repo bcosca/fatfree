@@ -38,8 +38,6 @@ The philosophy behind the framework and its approach to software architecture is
 
 [![Paypal](ui/images/paypal.png)](https://www.paypal.me/fatfree)
 
-![Bitcoin](ui/images/bitcoin.png)
-
 ## Table of Contents
 
 * [Getting Started](#getting-started)
@@ -2600,8 +2598,6 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
 [![Paypal](ui/images/paypal.png)](https://www.paypal.me/fatfree)
-
-![Bitcoin](ui/images/bitcoin.png)
 
 ### Legal notice
 
