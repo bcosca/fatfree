@@ -34,6 +34,8 @@ class Mapper extends \DB\Cursor {
 		$source,
 		//! SQL table (quoted)
 		$table,
+		//! Alias for SQL table
+		$as,
 		//! Last insert ID
 		$_id,
 		//! Defined fields
@@ -156,7 +158,7 @@ class Mapper extends \DB\Cursor {
 	*	@return static
 	*	@param $row array
 	**/
-	protected function factory($row) {
+	function factory($row) {
 		$mapper=clone($this);
 		$mapper->reset();
 		foreach ($row as $key=>$val) {
@@ -207,10 +209,13 @@ class Mapper extends \DB\Cursor {
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
-			'offset'=>0
+			'offset'=>0,
+			'comment'=>NULL
 		];
 		$db=$this->db;
 		$sql='SELECT '.$fields.' FROM '.$this->table;
+		if (isset($this->as))
+			$sql.=' AS '.$this->db->quotekey($this->as);
 		$args=[];
 		if (is_array($filter)) {
 			$args=isset($filter[1]) && is_array($filter[1])?
@@ -237,9 +242,10 @@ class Mapper extends \DB\Cursor {
 		}
 		if ($options['order']) {
 			$char=substr($db->quotekey(''),0,1);// quoting char
-			$order=' ORDER BY '.(FALSE===strpos($options['order'],$char)?
+			$order=' ORDER BY '.(is_bool(strpos($options['order'],$char))?
 				implode(',',array_map(function($str) use($db) {
-					return preg_match('/^\h*(\w+[._\-\w]*)(?:\h+((?:ASC|DESC)[\w\h]*))?\h*$/i',
+					return preg_match('/^\h*(\w+[._\-\w]*)'.
+						'(?:\h+((?:ASC|DESC)[\w\h]*))?\h*$/i',
 						$str,$parts)?
 						($db->quotekey($parts[1]).
 						(isset($parts[2])?(' '.$parts[2]):'')):$str;
@@ -281,6 +287,8 @@ class Mapper extends \DB\Cursor {
 			if ($options['offset'])
 				$sql.=' OFFSET '.(int)$options['offset'];
 		}
+		if ($options['comment'])
+			$sql.="\n".' /* '.$options['comment'].' */';
 		return [$sql,$args];
 	}
 
@@ -345,19 +353,30 @@ class Mapper extends \DB\Cursor {
 	*	@param $ttl int|array
 	**/
 	function count($filter=NULL,array $options=NULL,$ttl=0) {
-		$adhoc='';
+		if (!($subquery_mode=($options && !empty($options['group']))))
+			$this->adhoc['_rows']=['expr'=>'COUNT(*)','value'=>NULL];
+		$adhoc=[];
 		foreach ($this->adhoc as $key=>$field)
-			$adhoc.=','.$field['expr'].' AS '.$this->db->quotekey($key);
-		$fields='*'.$adhoc;
-		if (preg_match('/mssql|dblib|sqlsrv/',$this->engine))
-			$fields='TOP 100 PERCENT '.$fields;
+			// Add all adhoc fields
+			// (make them available for grouping, sorting, having)
+			$adhoc[]=$field['expr'].' AS '.$this->db->quotekey($key);
+		$fields=implode(',',$adhoc);
+		if ($subquery_mode) {
+			if (empty($fields))
+				// Select at least one field, ideally the grouping fields
+				// or sqlsrv fails
+				$fields=preg_replace('/HAVING.+$/i','',$options['group']);
+			if (preg_match('/mssql|dblib|sqlsrv/',$this->engine))
+				$fields='TOP 100 PERCENT '.$fields;
+		}
 		list($sql,$args)=$this->stringify($fields,$filter,$options);
-		$sql='SELECT COUNT(*) AS '.$this->db->quotekey('_rows').' '.
-			'FROM ('.$sql.') AS '.$this->db->quotekey('_temp');
+		if ($subquery_mode)
+			$sql='SELECT COUNT(*) AS '.$this->db->quotekey('_rows').' '.
+				'FROM ('.$sql.') AS '.$this->db->quotekey('_temp');
 		$result=$this->db->exec($sql,$args,$ttl);
+		unset($this->adhoc['_rows']);
 		return (int)$result[0]['_rows'];
 	}
-
 	/**
 	*	Return record at specified offset using same criteria as
 	*	previous load() call and make it active
@@ -649,6 +668,15 @@ class Mapper extends \DB\Cursor {
 	**/
 	function getiterator() {
 		return new \ArrayIterator($this->cast());
+	}
+
+	/**
+	*	Assign alias for table
+	*	@param $alias string
+	**/
+	function alias($alias) {
+		$this->as=$alias;
+		return $this;
 	}
 
 	/**

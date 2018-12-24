@@ -204,14 +204,19 @@ class SMTP extends Magic {
 			stream_set_blocking($socket,TRUE);
 		}
 		// Get server's initial response
-		$this->dialog(NULL,TRUE,$mock);
+		$this->dialog(NULL,$log,$mock);
 		// Announce presence
 		$reply=$this->dialog('EHLO '.$fw->HOST,$log,$mock);
 		if (strtolower($this->scheme)=='tls') {
 			$this->dialog('STARTTLS',$log,$mock);
-			if (!$mock)
-				stream_socket_enable_crypto(
-					$socket,TRUE,STREAM_CRYPTO_METHOD_TLS_CLIENT);
+			if (!$mock) {
+				$method=STREAM_CRYPTO_METHOD_TLS_CLIENT;
+				if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
+					$method|=STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+					$method|=STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
+				}
+				stream_socket_enable_crypto($socket,TRUE,$method);
+			}
 			$reply=$this->dialog('EHLO '.$fw->HOST,$log,$mock);
 		}
 		$message=wordwrap($message,998);

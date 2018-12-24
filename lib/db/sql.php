@@ -220,7 +220,7 @@ class SQL {
 						'/';
 				}
 				if ($log)
-					$this->log.=($stamp?(date('r').' '):'').' (-0ms) '.
+					$this->log.=($stamp?(date('r').' '):'').'(-0ms) '.
 						preg_replace($keys,$vals,
 							str_replace('?',chr(0).'?',$cmd),1).PHP_EOL;
 				$query->execute();
@@ -235,7 +235,7 @@ class SQL {
 					user_error('PDOStatement: '.$error[2],E_USER_ERROR);
 				}
 				if (preg_match('/(?:^[\s\(]*'.
-					'(?:EXPLAIN|SELECT|PRAGMA|SHOW)|RETURNING)\b/is',$cmd) ||
+					'(?:WITH|EXPLAIN|SELECT|PRAGMA|SHOW)|RETURNING)\b/is',$cmd) ||
 					(preg_match('/^\s*(?:CALL|EXEC)\b/is',$cmd) &&
 						$query->columnCount())) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);

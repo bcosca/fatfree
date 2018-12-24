@@ -1,5 +1,48 @@
 CHANGELOG
 
+3.6.5 (24 December 2018)
+*	NEW: Log, added timestamp to each line
+*	NEW: Auth, added support for custom compare method, [#116](https://github.com/bcosca/fatfree-core/issues/116)
+*	NEW: cache tag support for mongo & jig mapper, ref [#166](https://github.com/bcosca/fatfree-core/issues/116)
+*	NEW: Allow PHP functions as template token filters
+*	Web: Fix double redirect bug when running cURL with open_basedir disabled
+*	Web: Cope with responses from HTTP/2 servers
+*	Web->filler: remove very first space, when $std is false
+*	Web\OAuth2: Cope with HTTP/2 responses
+*	Web\OAuth2: take Content-Type header into account for json decoding, [#250](https://github.com/bcosca/fatfree-core/issues/250) [#251](https://github.com/bcosca/fatfree-core/issues/251)
+*	Web\OAuth2: fixed empty results on some endpoints [#250](https://github.com/bcosca/fatfree-core/issues/250)
+*	DB\SQL\Mapper: optimize mapper->count memory usage
+*	DB\SQL\Mapper: New table alias operator
+*	DB\SQL\Mapper: fix count() performance on non-grouped result sets, [bcosca/fatfree#1114](https://github.com/bcosca/fatfree/issues/1114)
+*	DB\SQL: Support for CTE in postgreSQL, [bcosca/fatfree#1107](https://github.com/bcosca/fatfree/issues/1107), [bcosca/fatfree#1116](https://github.com/bcosca/fatfree/issues/1116), [bcosca/fatfree#1021](https://github.com/bcosca/fatfree/issues/1021)
+*	DB\SQL->log: Remove extraneous whitespace
+*	DB\SQL: Added ability to add inline comments per SQL query
+*	CLI\WS, Refactoring: Streamline socket server
+*	CLI\WS: Add option for dropping query in OAuth2 URI 
+*	CLI\WS: Add URL-safe base64 encoding
+*	CLI\WS: Detect errors in returned JSON values
+*	CLI\WS: Added support for Sec-WebSocket-Protocol header
+*	Matrix->calendar: Allow unix timestamp as date argument
+*	Basket: Access basket item by _id [#260](https://github.com/bcosca/fatfree-core/issues/260)
+*	SMTP: Added TLS 1.2 support [bcosca/fatfree#1115](https://github.com/bcosca/fatfree/issues/1115)
+*	SMTP->send: Respect $log argument
+*	Base->cast: recognize binary and octal numbers in config
+*	Base->cast: add awareness of hexadecimal literals
+*	Base->abort: Remove unnecessary Content-Encoding header
+*	Base->abort: Ensure headers have not been flushed
+*	Base->format: Differentiate between long- and full-date (with localized weekday) formats
+*	Base->format: Conform with intl extension's number output
+*	Enable route handler to override Access-Control headers in response to OPTIONS request, [#257](https://github.com/bcosca/fatfree-core/issues/257)
+*	Augment filters with a var_export function
+*	Bug fix php7.3: Fix template parse regex to be compatible with strict PCRE2 rules for hyphen placement in a character class
+*	Bug fix, Cache->set: update creation time when updating existing cache entries 
+*	Bug fix: incorrect ICU date/time formatting
+*	Bug fix, Jig: lazy write on empty data
+*	Bug fix: Method uppercase to avoid route failure [#252](https://github.com/bcosca/fatfree-core/issues/252)
+*	Fixed error description when (PSR-11) `CONTAINER` fails to resolve a class [#253](https://github.com/bcosca/fatfree-core/issues/253)
+*	Mitigate CSRF predictability/vulnerability
+*	Expose Mapper->factory() method
+
 3.6.4 (19 April 2018)
 *	NEW: Added Dependency Injection support with CONTAINER variable [#221](https://github.com/bcosca/fatfree-core/issues/221)
 *	NEW: configurable LOGGABLE error codes [#1091](https://github.com/bcosca/fatfree/issues/1091#issuecomment-364674701)

@@ -93,7 +93,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $id string
 	*	@param $row array
 	**/
-	protected function factory($id,$row) {
+	function factory($id,$row) {
 		$mapper=clone($this);
 		$mapper->reset();
 		$mapper->id=$id;
@@ -153,7 +153,7 @@ class Mapper extends \DB\Cursor {
 	*	@return static[]|FALSE
 	*	@param $filter array
 	*	@param $options array
-	*	@param $ttl int
+	*	@param $ttl int|array
 	*	@param $log bool
 	**/
 	function find($filter=NULL,array $options=NULL,$ttl=0,$log=TRUE) {
@@ -170,9 +170,12 @@ class Mapper extends \DB\Cursor {
 		$db=$this->db;
 		$now=microtime(TRUE);
 		$data=[];
+		$tag='';
+		if (is_array($ttl))
+			list($ttl,$tag)=$ttl;
 		if (!$fw->CACHE || !$ttl || !($cached=$cache->exists(
 			$hash=$fw->hash($this->db->dir().
-				$fw->stringify([$filter,$options])).'.jig',$data)) ||
+				$fw->stringify([$filter,$options])).($tag?'.'.$tag:'').'.jig',$data)) ||
 			$cached[0]+$ttl<microtime(TRUE)) {
 			$data=$db->read($this->file);
 			if (is_null($data))
@@ -347,7 +350,7 @@ class Mapper extends \DB\Cursor {
 	*	@return int
 	*	@param $filter array
 	*	@param $options array
-	*	@param $ttl int
+	*	@param $ttl int|array
 	**/
 	function count($filter=NULL,array $options=NULL,$ttl=0) {
 		$now=microtime(TRUE);

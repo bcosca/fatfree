@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2018 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -35,7 +35,9 @@ class Auth {
 		//! Mapper object
 		$mapper,
 		//! Storage options
-		$args;
+		$args,
+		//! Custom compare function
+		$func;
 
 	/**
 	*	Jig storage handler
@@ -45,22 +47,26 @@ class Auth {
 	*	@param $realm string
 	**/
 	protected function _jig($id,$pw,$realm) {
-		return (bool)
+		$success = (bool)
 			call_user_func_array(
 				[$this->mapper,'load'],
 				[
 					array_merge(
 						[
-							'@'.$this->args['id'].'==? AND '.
-							'@'.$this->args['pw'].'==?'.
+							'@'.$this->args['id'].'==?'.
+							($this->func?'':' AND @'.$this->args['pw'].'==?').
 							(isset($this->args['realm'])?
 								(' AND @'.$this->args['realm'].'==?'):''),
-							$id,$pw
+							$id
 						],
+						($this->func?[]:[$pw]),
 						(isset($this->args['realm'])?[$realm]:[])
 					)
 				]
 			);
+		if ($success && $this->func)
+			$success = call_user_func($this->func,$pw,$this->mapper->get($this->args['pw']));
+		return $success;
 	}
 
 	/**
@@ -71,15 +77,16 @@ class Auth {
 	*	@param $realm string
 	**/
 	protected function _mongo($id,$pw,$realm) {
-		return (bool)
+		$success = (bool)
 			$this->mapper->load(
-				[
-					$this->args['id']=>$id,
-					$this->args['pw']=>$pw
-				]+
+				[$this->args['id']=>$id]+
+				($this->func?[]:[$this->args['pw']=>$pw])+
 				(isset($this->args['realm'])?
 					[$this->args['realm']=>$realm]:[])
 			);
+		if ($success && $this->func)
+			$success = call_user_func($this->func,$pw,$this->mapper->get($this->args['pw']));
+		return $success;
 	}
 
 	/**
@@ -90,22 +97,26 @@ class Auth {
 	*	@param $realm string
 	**/
 	protected function _sql($id,$pw,$realm) {
-		return (bool)
+		$success = (bool)
 			call_user_func_array(
 				[$this->mapper,'load'],
 				[
 					array_merge(
 						[
-							$this->args['id'].'=? AND '.
-							$this->args['pw'].'=?'.
+							$this->args['id'].'=?'.
+							($this->func?'':' AND '.$this->args['pw'].'=?').
 							(isset($this->args['realm'])?
 								(' AND '.$this->args['realm'].'=?'):''),
-							$id,$pw
+							$id
 						],
+						($this->func?[]:[$pw]),
 						(isset($this->args['realm'])?[$realm]:[])
 					)
 				]
 			);
+		if ($success && $this->func)
+			$success = call_user_func($this->func,$pw,$this->mapper->get($this->args['pw']));
+		return $success;
 	}
 
 	/**
@@ -234,8 +245,9 @@ class Auth {
 	*	@return object
 	*	@param $storage string|object
 	*	@param $args array
+	*	@param $func callback
 	**/
-	function __construct($storage,array $args=NULL) {
+	function __construct($storage,array $args=NULL,$func=NULL) {
 		if (is_object($storage) && is_a($storage,'DB\Cursor')) {
 			$this->storage=$storage->dbtype();
 			$this->mapper=$storage;
@@ -244,6 +256,7 @@ class Auth {
 		else
 			$this->storage=$storage;
 		$this->args=$args;
+		$this->func=$func;
 	}
 
 }

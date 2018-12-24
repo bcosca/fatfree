@@ -269,7 +269,7 @@ class Web extends Prefab {
 	**/
 	protected function _curl($url,$options) {
 		$curl=curl_init($url);
-		if (!ini_get('open_basedir'))
+		if (!$open_basedir=ini_get('open_basedir'))
 			curl_setopt($curl,CURLOPT_FOLLOWLOCATION,
 				$options['follow_location']);
 		curl_setopt($curl,CURLOPT_MAXREDIRS,
@@ -306,7 +306,7 @@ class Web extends Prefab {
 		curl_close($curl);
 		$body=ob_get_clean();
 		if (!$err &&
-			$options['follow_location'] &&
+			$options['follow_location'] && $open_basedir &&
 			preg_grep('/HTTP\/1\.\d 3\d{2}/',$headers) &&
 			preg_match('/^Location: (.+)$/m',implode(PHP_EOL,$headers),$loc)) {
 			$options['max_redirects']--;
@@ -350,7 +350,7 @@ class Web extends Prefab {
 		if (is_string($body)) {
 			$match=NULL;
 			foreach ($headers as $header)
-				if (preg_match('/Content-Encoding: (.+)/',$header,$match))
+				if (preg_match('/Content-Encoding: (.+)/i',$header,$match))
 					break;
 			if ($match)
 				switch ($match[1]) {
@@ -442,7 +442,7 @@ class Web extends Prefab {
 			$headers=array_merge($headers,$current=explode($eol,$html[0]));
 			$match=NULL;
 			foreach ($current as $header)
-				if (preg_match('/Content-Encoding: (.+)/',$header,$match))
+				if (preg_match('/Content-Encoding: (.+)/i',$header,$match))
 					break;
 			if ($match)
 				switch ($match[1]) {
@@ -550,7 +550,7 @@ class Web extends Prefab {
 		);
 		if (isset($options['content']) && is_string($options['content'])) {
 			if ($options['method']=='POST' &&
-				!preg_grep('/^Content-Type:/',$options['header']))
+				!preg_grep('/^Content-Type:/i',$options['header']))
 				$this->subst($options['header'],
 					'Content-Type: application/x-www-form-urlencoded');
 			$this->subst($options['header'],
@@ -588,7 +588,7 @@ class Web extends Prefab {
 				$result['cached']=TRUE;
 			}
 			elseif (preg_match('/Cache-Control:(?:.*)max-age=(\d+)(?:,?.*'.
-				preg_quote($eol).')/',implode($eol,$result['headers']),$exp))
+				preg_quote($eol).')/i',implode($eol,$result['headers']),$exp))
 				$cache->set($hash,$result,$exp[1]);
 		}
 		$req=[$options['method'].' '.$url];
@@ -903,7 +903,7 @@ class Web extends Prefab {
 		for ($i=0,$add=$count-(int)$std;$i<$add;$i++) {
 			shuffle($rnd);
 			$words=array_slice($rnd,0,mt_rand(3,$max));
-			$out.=' '.ucfirst(implode(' ',$words)).'.';
+			$out.=(!$std&&$i==0?'':' ').ucfirst(implode(' ',$words)).'.';
 		}
 		return $out;
 	}

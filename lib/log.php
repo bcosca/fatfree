@@ -35,14 +35,15 @@ class Log {
 	**/
 	function write($text,$format='r') {
 		$fw=Base::instance();
-		$fw->write(
-			$this->file,
-			date($format).
-				(isset($_SERVER['REMOTE_ADDR'])?
-					(' ['.$_SERVER['REMOTE_ADDR'].']'):'').' '.
-			trim($text).PHP_EOL,
-			TRUE
-		);
+		foreach (preg_split('/\r?\n|\r/',trim($text)) as $line)
+			$fw->write(
+				$this->file,
+				date($format).
+					(isset($_SERVER['REMOTE_ADDR'])?
+						(' ['.$_SERVER['REMOTE_ADDR'].']'):'').' '.
+				trim($line).PHP_EOL,
+				TRUE
+			);
 	}
 
 	/**

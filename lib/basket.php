@@ -90,7 +90,8 @@ class Basket extends Magic {
 		if (isset($_SESSION[$this->key])) {
 			foreach ($_SESSION[$this->key] as $id=>$item)
 				if (!isset($key) ||
-					array_key_exists($key,$item) && $item[$key]==$val) {
+					array_key_exists($key,$item) && $item[$key]==$val ||
+					$key=='_id' && $id==$val) {
 					$obj=clone($this);
 					$obj->id=$id;
 					$obj->item=$item;

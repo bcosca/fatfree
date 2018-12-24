@@ -64,8 +64,11 @@ class Geo extends \Prefab {
 			$out=@geoip_record_by_name($ip)) {
 			$out['request']=$ip;
 			$out['region_code']=$out['region'];
-			$out['region_name']=(!empty($out['country_code']) && !empty($out['region']))
-				? geoip_region_name_by_code($out['country_code'],$out['region']) : '';
+			$out['region_name']='';
+			if (!empty($out['country_code']) && !empty($out['region']))
+				$out['region_name']=geoip_region_name_by_code(
+					$out['country_code'],$out['region']
+				);
 			unset($out['country_code3'],$out['region'],$out['postal_code']);
 			return $out;
 		}

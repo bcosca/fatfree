@@ -273,7 +273,7 @@ class Template extends Preview {
 		// Build tree structure
 		for ($ptr=0,$w=5,$len=strlen($text),$tree=[],$tmp='';$ptr<$len;)
 			if (preg_match('/^(.{0,'.$w.'}?)<(\/?)(?:F3:)?'.
-				'('.$this->tags.')\b((?:\s+[\w-.:@!]+'.
+				'('.$this->tags.')\b((?:\s+[\w.:@!-]+'.
 				'(?:\h*=\h*(?:"(?:.*?)"|\'(?:.*?)\'))?|'.
 				'\h*\{\{.+?\}\})*)\h*(\/?)>/is',
 				substr($text,$ptr),$match)) {

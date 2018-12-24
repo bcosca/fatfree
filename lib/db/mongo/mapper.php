@@ -91,7 +91,7 @@ class Mapper extends \DB\Cursor {
 	*	@return static
 	*	@param $row array
 	**/
-	protected function factory($row) {
+	function factory($row) {
 		$mapper=clone($this);
 		$mapper->reset();
 		foreach ($row as $key=>$val)
@@ -119,7 +119,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $fields string
 	*	@param $filter array
 	*	@param $options array
-	*	@param $ttl int
+	*	@param $ttl int|array
 	**/
 	function select($fields=NULL,$filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
@@ -130,10 +130,13 @@ class Mapper extends \DB\Cursor {
 			'limit'=>0,
 			'offset'=>0
 		];
+		$tag='';
+		if (is_array($ttl))
+			list($ttl,$tag)=$ttl;
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
 		if (!($cached=$cache->exists($hash=$fw->hash($this->db->dsn().
-			$fw->stringify([$fields,$filter,$options])).'.mongo',
+			$fw->stringify([$fields,$filter,$options])).($tag?'.'.$tag:'').'.mongo',
 			$result)) || !$ttl || $cached[0]+$ttl<microtime(TRUE)) {
 			if ($options['group']) {
 				$grp=$this->collection->group(
@@ -194,7 +197,7 @@ class Mapper extends \DB\Cursor {
 	*	@return static[]
 	*	@param $filter array
 	*	@param $options array
-	*	@param $ttl int
+	*	@param $ttl int|array
 	**/
 	function find($filter=NULL,array $options=NULL,$ttl=0) {
 		if (!$options)
@@ -213,13 +216,16 @@ class Mapper extends \DB\Cursor {
 	*	@return int
 	*	@param $filter array
 	*	@param $options array
-	*	@param $ttl int
+	*	@param $ttl int|array
 	**/
 	function count($filter=NULL,array $options=NULL,$ttl=0) {
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
+		$tag='';
+		if (is_array($ttl))
+			list($ttl,$tag)=$ttl;
 		if (!($cached=$cache->exists($hash=$fw->hash($fw->stringify(
-			[$filter])).'.mongo',$result)) || !$ttl ||
+			[$filter])).($tag?'.'.$tag:'').'.mongo',$result)) || !$ttl ||
 			$cached[0]+$ttl<microtime(TRUE)) {
 			$result=$this->collection->count($filter?:[]);
 			if ($fw->CACHE && $ttl)

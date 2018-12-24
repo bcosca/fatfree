@@ -33,9 +33,10 @@ class OAuth2 extends \Magic {
 	*	Return OAuth2 authentication URI
 	*	@return string
 	*	@param $endpoint string
+	*	@param $query bool
 	**/
-	function uri($endpoint) {
-		return $endpoint.'?'.http_build_query($this->args);
+	function uri($endpoint,$query=TRUE) {
+		return $endpoint.($query?('?'.http_build_query($this->args)):'');
 	}
 
 	/**
@@ -54,7 +55,7 @@ class OAuth2 extends \Magic {
 		];
 		if ($token)
 			array_push($options['header'],'Authorization: Bearer '.$token);
-		elseif ($method=='POST')
+		elseif ($method=='POST' && isset($this->args['client_id']))
 			array_push($options['header'],'Authorization: Basic '.
 				base64_encode(
 					$this->args['client_id'].':'.
@@ -64,10 +65,20 @@ class OAuth2 extends \Magic {
 		$response=$web->request($uri,$options);
 		if ($response['error'])
 			user_error($response['error'],E_USER_ERROR);
-		return $response['body'] &&
-			preg_grep('/HTTP\/1\.\d 200/',$response['headers'])?
-			json_decode($response['body'],TRUE):
-			FALSE;
+		if (isset($response['body'])) {
+			if (preg_grep('/^Content-Type:.*application\/json/i',
+				$response['headers'])) {
+				$token=json_decode($response['body'],TRUE);
+				if (isset($token['error_description']))
+					user_error($token['error_description'],E_USER_ERROR);
+				if (isset($token['error']))
+					user_error($token['error'],E_USER_ERROR);
+				return $token;
+			}
+			else
+				return $response['body'];
+		}
+		return FALSE;
 	}
 
 	/**
@@ -78,14 +89,19 @@ class OAuth2 extends \Magic {
 	function jwt($token) {
 		return json_decode(
 			base64_decode(
-				str_replace(
-					['-','_'],
-					['+','/'],
-					explode('.',$token)[1]
-				)
+				str_replace(['-','_'],['+','/'],explode('.',$token)[1])
 			),
 			TRUE
 		);
+	}
+
+	/**
+	*	URL-safe base64 encoding
+	*	@return array
+	*	@param $data string
+	**/
+	function b64url($data) {
+		return trim(strtr(base64_encode($data),'+/','-_'),'=');
 	}
 
 	/**

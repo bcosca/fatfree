@@ -167,7 +167,7 @@ class Jig {
 	function __destruct() {
 		if ($this->lazy) {
 			$this->lazy = FALSE;
-			foreach ($this->data as $file => $data)
+			foreach ($this->data?:[] as $file => $data)
 				$this->write($file,$data);
 		}
 	}
