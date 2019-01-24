@@ -38,51 +38,37 @@ class Web extends Prefab {
 	*	@param $file string
 	**/
 	function mime($file) {
-		if (preg_match('/\w+$/',$file,$ext)) {
-			$map=[
-				'au'=>'audio/basic',
-				'avi'=>'video/avi',
-				'bmp'=>'image/bmp',
-				'bz2'=>'application/x-bzip2',
-				'css'=>'text/css',
-				'dtd'=>'application/xml-dtd',
-				'doc'=>'application/msword',
-				'gif'=>'image/gif',
-				'gz'=>'application/x-gzip',
-				'hqx'=>'application/mac-binhex40',
-				'html?'=>'text/html',
-				'jar'=>'application/java-archive',
-				'jpe?g|jfif?'=>'image/jpeg',
-				'js'=>'application/x-javascript',
-				'midi'=>'audio/x-midi',
-				'mp3'=>'audio/mpeg',
-				'mpe?g'=>'video/mpeg',
-				'ogg'=>'audio/vorbis',
-				'pdf'=>'application/pdf',
-				'png'=>'image/png',
-				'ppt'=>'application/vnd.ms-powerpoint',
-				'ps'=>'application/postscript',
-				'qt'=>'video/quicktime',
-				'ram?'=>'audio/x-pn-realaudio',
-				'rdf'=>'application/rdf',
-				'rtf'=>'application/rtf',
-				'sgml?'=>'text/sgml',
-				'sit'=>'application/x-stuffit',
-				'svg'=>'image/svg+xml',
-				'swf'=>'application/x-shockwave-flash',
-				'tgz'=>'application/x-tar',
-				'tiff'=>'image/tiff',
-				'txt'=>'text/plain',
-				'wav'=>'audio/wav',
-				'xls'=>'application/vnd.ms-excel',
-				'xml'=>'application/xml',
-				'zip'=>'application/x-zip-compressed'
-			];
-			foreach ($map as $key=>$val)
-				if (preg_match('/'.$key.'/',strtolower($ext[0])))
-					return $val;
+		/* Full FILEINFO Constants here:
+		   https://secure.php.net/manual/en/fileinfo.constants.php */
+
+		// Physical file
+		if (is_file($file) && is_readable($file)) {
+			if (function_exists('finfo_open')) {
+				$finfo = finfo_open(FILEINFO_MIME_TYPE);
+				$mime = finfo_file($finfo, $file);
+				finfo_close($finfo);
+			}
+			else {
+				$mime = mime_content_type($file);
+			}
 		}
-		return 'application/octet-stream';
+
+		// In memory or string based file
+		else {
+			if (function_exists('finfo_open')) {
+				$buffer = file_get_contents($file);
+				$finfo = finfo_open(FILEINFO_MIME_TYPE);
+				$mime = finfo_buffer($finfo, $buffer);
+			}
+			// Last chance to get a MIME Type
+			else {
+				$buffer = file_get_contents($file); // Might not be compatible with gd created images... The rest is okay.
+				$mime_id = getimagesizefromstring($buffer)[2];
+				$mime = image_type_to_mime_type($mime_id);
+			}
+		}
+
+		return (isset($mime) && !empty($mime) ? $mime : 'application/octet-stream');
 	}
 
 	/**
