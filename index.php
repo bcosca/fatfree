@@ -52,7 +52,6 @@ $f3->route('GET /',
 				array('ldap','pdo'),
 			'Bcrypt'=>
 				array(
-					'mcrypt',
 					'openssl'
 				),
 			'Image'=>
