@@ -41,6 +41,20 @@ $fw->ONERROR=function($fw) {
 // Instantiate the server
 $ws=new CLI\WS('tcp://0.0.0.0:9000');
 
+/* If you need a secure WebSocket server:
+$ws=new CLI\WS(
+  'ssl://0.0.0.0:9000',
+  stream_context_create([
+    'ssl'=>[
+      'local_cert'=>'/path/to/.pem',
+      'verify_peer'=>FALSE,
+      'verify_peer_name'=>FALSE,
+      'allow_self_signed'=>TRUE
+    ]
+  ])
+);
+*/
+
 $ws->
 	on('start',function($server) use($fw) {
 		trace('WebSocket server started');
@@ -56,6 +70,7 @@ $ws->
 	})->
 	on('stop',function($server) use($fw) {
 		trace('Shutting down');
+		$fw->write('tmp/ws.log','stop'.PHP_EOL,TRUE);
 	})->
 	on('connect',function($agent) use($fw) {
 		trace(

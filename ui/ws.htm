@@ -21,7 +21,7 @@ $(function() {
 		i++;
 	}
 	testCase('pass','No errors expected at this point');
-	var socket=new window.WebSocket('ws://{{ @HOST }}:9000');
+	var socket=new window.WebSocket('wss://{{ @HOST }}:9000');
 	if (socket) {
 		socket.onopen=function() {
 			testCase('pass','Connected to socket server');
@@ -29,7 +29,6 @@ $(function() {
 			testCase('pass','Message sent to server');
 		};
 		socket.onerror=function(e) {
-			console.log(e);
 			testCase('fail','Unexpected error');
 		};
 		socket.onmessage=function(e) {
