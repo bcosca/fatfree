@@ -1433,7 +1433,7 @@ final class Base extends Prefab implements ArrayAccess {
 			$url=$this->hive['REALM'];
 		if (is_array($url))
 			$url=call_user_func_array([$this,'alias'],$url);
-		elseif (preg_match('/^(?:@?([^\/()?]+)(?:(\(.+?)\))*(\?.+)*)/',
+		elseif (preg_match('/^(?:@?([^\/()?]+)(?:\((.+?)\))*(\?.+)*)/',
 			$url,$parts) &&
 			isset($this->hive['ALIASES'][$parts[1]]))
 			$url=$this->hive['ALIASES'][$parts[1]];
