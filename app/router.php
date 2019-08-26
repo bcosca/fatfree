@@ -70,6 +70,24 @@ class Router extends Controller {
 			$rr5=='/resize/20x20/foo/bar/sep/baz.gif',
 			'Rerouting to alias'
 		);
+		$f3->reroute('@hello#foo');
+		$rr1=$f3->get('reroute');
+		$f3->reroute('@hello?x=789#foo');
+		$rr2=$f3->get('reroute');
+		$f3->reroute('@complex(format=20x20,*=[foo/bar,baz.gif])#foo');
+		$rr3=$f3->get('reroute');
+		$f3->reroute('@complex(format=20x20,*=[foo/bar,baz.gif])?x=789#foo');
+		$rr4=$f3->get('reroute');
+		$f3->reroute(['complex','format=20x20,*=[foo/bar,baz.gif]',['x'=>789],'foo']);
+		$rr5=$f3->get('reroute');
+		$test->expect(
+			$rr1=='/#foo' &&
+			$rr2=='/?x=789#foo' &&
+			$rr3=='/resize/20x20/foo/bar/sep/baz.gif#foo' &&
+			$rr4=='/resize/20x20/foo/bar/sep/baz.gif?x=789#foo' &&
+			$rr5=='/resize/20x20/foo/bar/sep/baz.gif?x=789#foo',
+			'Rerouting to page fragment'
+		);
 		$f3->set('ONREROUTE',NULL);
 		$f3->mock('GET /');
 		$test->expect(
