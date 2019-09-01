@@ -424,7 +424,7 @@ If someone tries to access the URL `http://www.example.com/obsoletepage` using e
 
 Rerouting can be particularly useful when you need to do some maintenance work on your site. You can have a route handler that informs your visitors that your site is offline for a short period.
 
-HTTP redirects are indispensable but they can also be expensive. As much as possible, refrain from using `$f3->reroute()` to send a user to another page on the same Web site if you can direct the flow of your application by invoking the function or method that handles the target route. However, this approach will not change the URL on the address bar of the user's Web browser. If this is not the behavior you want and you really need to send a user to another page, in instances like successful submission of a form or after a user has been authenticated, Fat-Free sends an `HTTP 303 See Other` header. For all other attempts to reroute to another page or site, the framework sends an `HTTP 301 Moved Permanently` header.
+HTTP redirects are indispensable but they can also be expensive. As much as possible, refrain from using `$f3->reroute()` to send a user to another page on the same Web site if you can direct the flow of your application by invoking the function or method that handles the target route. However, this approach will not change the URL on the address bar of the user's Web browser. If this is not the behavior you want and you really need to send a user to another page, in instances like successful submission of a form or after a user has been authenticated, Fat-Free sends an `HTTP 302 Found` header. For all other attempts to reroute to another page or site, the framework sends an `HTTP 301 Moved Permanently` header.
 
 ### Triggering a 404
 
