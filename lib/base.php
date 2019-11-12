@@ -2583,10 +2583,12 @@ class Cache extends Prefab {
 		if ($dsn=trim($dsn)) {
 			if (preg_match('/^redis=(.+)/',$dsn,$parts) &&
 				extension_loaded('redis')) {
-				list($host,$port,$db)=explode(':',$parts[1])+[1=>6379,2=>NULL];
+				list($host,$port,$db,$password)=explode(':',$parts[1])+[1=>6379,2=>NULL,3=>NULL];
 				$this->ref=new Redis;
 				if(!$this->ref->connect($host,$port,2))
 					$this->ref=NULL;
+				if(!empty($password))
+					$this->ref->auth($password);
 				if(isset($db))
 					$this->ref->select($db);
 			}
