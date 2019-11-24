@@ -31,7 +31,7 @@ class Cache extends Controller {
 				$cache===\Cache::instance(),
 				'Same cache engine instance returned'
 			);
-			$cache->set($f3->hash('foo').'.var','bar',0.05);
+			$cache->set($f3->hash('foo').'.var','bar',1);
 			$test->expect(
 				$f3->get('foo')=='bar',
 				'Retrieve previously cached entry'
@@ -39,7 +39,7 @@ class Cache extends Controller {
 			$test->expect(
 				is_array($inf=$f3->exists('foo',$val)) &&
 				is_float($inf[0]) &&
-				$inf[1]===0.05 &&
+				$inf[1]===1 &&
 				$val=='bar'
 				,
 				'Retrieve cache entry details'
@@ -101,7 +101,6 @@ class Cache extends Controller {
 			);
 			$mark=microtime(TRUE);
 			$cache->reset();
-			sleep(1);
 			/*
 			$cache->clear('a');
 			$cache->clear('b');
@@ -121,7 +120,7 @@ class Cache extends Controller {
 					sprintf('%.1f',(microtime(TRUE)-$mark)/6*1e3).'ms/item'
 			);
 			$f3->clear('ROUTES');
-			$ttl=0.05;
+			$ttl=1;
 			$mark=microtime(TRUE);
 			$f3->route('GET /dummy',
 				function($f3) {

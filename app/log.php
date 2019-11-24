@@ -29,6 +29,12 @@ class Log extends Controller {
 			count($contents=file($file))==3 && strpos($contents[2],'baz'),
 			'More log entries'
 		);
+		$f3->set('HEADERS.X-Forwarded-For','123.123.123.123');
+		$log->write('narf');
+		$test->expect(
+			count($contents=file($file))==4 && strpos($contents[3],'123.123.123.123'),
+			'Forwarded-IP logged'
+		);
 		$log->erase();
 		$f3->set('results',$test->results());
 	}
