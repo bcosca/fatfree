@@ -53,13 +53,17 @@ The philosophy behind the framework and its approach to software architecture is
 
 [![Twitter](ui/images/twitter.png)](https://twitter.com/phpfatfree)
 
-### Version 3.6 Is Finally Released!
-
-The latest official release welcomes the new year with a bang and marks the final milestone in this version of the Fat-Free Framework. Packed with exciting new features and outstanding documentation that consumed significant time and effort to develop and refine, version 3.6 is now available for download. This edition is packed with a bunch of new usability and security features.
+### Get the latest release!
 
 F3 has a stable enterprise-class architecture. Unbeatable performance, user-friendly features and a lightweight footprint. What more can you ask for?
+To get this package, simply download this package or visit the [fatfree-core](https://github.com/bcosca/fatfree-core) repository to find the latest edge-version.
 
-It is highly recommended that experienced users develop new applications with this version to take advantage of the latest code base and its significant improvements.
+For all composer users out there:
+
+*  start a new project using `composer create-project bcosca/fatfree:dev-init`
+*  add fatfree to your existing project with `composer require bcosca/fatfree`
+
+It is highly recommended that experienced users develop new applications with the latest version to take advantage of an updated code base and ongoing improvements.
 
 ## Please visit FatFreeFramework.com
 
