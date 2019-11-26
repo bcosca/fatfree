@@ -1,5 +1,40 @@
 CHANGELOG
 
+3.7.0 (26. November 2019)
+*   NEW: Matrix, added select and walk methods for array processing and validation tools
+*   NEW: Added configurable file locking via LOCK var
+*   NEW: json support for dictionary files
+*   NEW: $die parameter on ONREROUTE hook
+*   NEW: Added SameSite cookie support for php7.3+ (JAR.samesite), [bcosca/fatfree#1165](https://github.com/bcosca/fatfree/issues/1165)
+*   NEW, DB\SQL\Mapper: added updateAll method to batch-update multiple records at once
+*   CHANGED, DB\SQL\Mapper: Throw error on update/erase if the table has no primary key, [#285](https://github.com/bcosca/fatfree-core/issues/285)
+*   Cache, Redis: Added ability to set a Redis password, [#287](https://github.com/bcosca/fatfree-core/issues/287)
+*   DB\SQL\Session: make datatype of data column configurable, [bcosca/fatfree#1130](https://github.com/bcosca/fatfree/issues/1130)
+*   DB\SQL\Mapper: only add adhoc fields in count queries that are used for grouping
+*   DB\SQL\Mapper: fixed inserting an already loaded record again (duplicating), [bcosca/fatfree#1093](https://github.com/bcosca/fatfree/issues/1093)
+*   Magic (Mappers): fix isset check on existing properties
+*   SMTP: added support for Bounce mail recipient ("Sender" header)
+*   OAuth2: make query string encode type configurable, [#268](https://github.com/bcosca/fatfree-core/issues/268) [#269](https://github.com/bcosca/fatfree-core/issues/269)
+*   Web: Added more cyrillic letters to diacritics, [bcosca/fatfree#1158](https://github.com/bcosca/fatfree/issues/1158)
+*   Web: Fixed url string falsely detected as comment section [9ac8e615](https://github.com/bcosca/fatfree-core/commit/9ac8e615ccaf750b49497a3c86161331b24e637f)
+*   Web: added file inspection for mime-type detection, [#270](https://github.com/bcosca/fatfree-core/issues/270), [bcosca/fatfree#1138](https://github.com/bcosca/fatfree/issues/1138)
+*   WS: Fixed processing all queued data frames inside the buffer, [#277](https://github.com/bcosca/fatfree-core/issues/277)
+*   WS: Allow packet size override
+*   Markdown: Support mixed `strong` and `italic` elements, [#276](https://github.com/bcosca/fatfree-core/issues/276)
+*   Markdown: Keep spaces around `=` sign in ini code blocks 
+*   Added route alias key name validation, [#243](https://github.com/bcosca/fatfree-core/issues/243)
+*   Added fragment argument to alias method, [#282](https://github.com/bcosca/fatfree-core/issues/282)
+*   Allow adding fragment to reroute, [#1156](https://github.com/bcosca/fatfree/issues/1156)
+*   Added additional HTTP status codes, [#283](https://github.com/bcosca/fatfree-core/issues/283)
+*   Added X-Forwarded-For IP to log entries, [bcosca/fatfree#1042](https://github.com/bcosca/fatfree/issues/1042)
+*   Bug fix: broken custom date/time formatting, [bcosca/fatfree#1147](https://github.com/bcosca/fatfree/issues/1147)
+*   Bug fix: duplicate UI path rendering edge-case in Views and minify, [bcosca/fatfree#1152](https://github.com/bcosca/fatfree/issues/1152)
+*   Bug fix: unicode chars in custom config section keys, [bcosca/fatfree#1149](https://github.com/bcosca/fatfree/issues/1149)
+*   Bug fix: ensure valid reroute path in location header, [bcosca/fatfree#1140](https://github.com/bcosca/fatfree/issues/1140)
+*   Bug fix: use dictionary path for lexicon caching-hash
+*   Bug fix, php7.3: number format ternary, [bcosca/fatfree#1142](https://github.com/bcosca/fatfree/issues/1142)
+*   fix PHPdoc and variable inspection, [bcosca/fatfree#865](https://github.com/bcosca/fatfree/issues/865), [bcosca/fatfree#1128](https://github.com/bcosca/fatfree/issues/1128)
+
 3.6.5 (24 December 2018)
 *	NEW: Log, added timestamp to each line
 *	NEW: Auth, added support for custom compare method, [#116](https://github.com/bcosca/fatfree-core/issues/116)

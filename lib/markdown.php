@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -141,7 +141,7 @@ class Markdown extends Prefab {
 						'/(?<=^|\n)(?:'.
 						'(;[^\n]*)|(?:<\?php.+?\?>?)|'.
 						'(?:\[(.+?)\])|'.
-						'(.+?)\h*=\h*'.
+						'(.+?)(\h*=\h*)'.
 						'((?:\\\\\h*\r?\n|.+?)*)'.
 						')((?:\r?\n)+|$)/',
 						$str,$matches,PREG_SET_ORDER
@@ -156,14 +156,14 @@ class Markdown extends Prefab {
 								'</span>';
 						elseif ($match[3])
 							$out.='<span class="ini_key">'.$match[3].
-								'</span>='.
-								($match[4]?
+								'</span>'.$match[4].
+								($match[5]?
 									('<span class="ini_value">'.
-										$match[4].'</span>'):'');
+										$match[5].'</span>'):'');
 						else
 							$out.=$match[0];
-						if (isset($match[5]))
-							$out.=$match[5];
+						if (isset($match[6]))
+							$out.=$match[6];
 					}
 					$str='<code>'.$out.'</code>';
 					break;
@@ -321,16 +321,13 @@ class Markdown extends Prefab {
 		$tmp='';
 		while ($str!=$tmp)
 			$str=preg_replace_callback(
-				'/(?<=\s|^)(?<!\\\\)([*_]{1,3})(.*?)(?!\\\\)\1(?=[\s[:punct:]]|$)/',
+				'/(?<=\s|^)(?<!\\\\)([*_])([*_]?)([*_]?)(.*?)(?!\\\\)\3\2\1(?=[\s[:punct:]]|$)/',
 				function($expr) {
-					switch (strlen($expr[1])) {
-						case 1:
-							return '<em>'.$expr[2].'</em>';
-						case 2:
-							return '<strong>'.$expr[2].'</strong>';
-						case 3:
-							return '<strong><em>'.$expr[2].'</em></strong>';
-					}
+					if ($expr[3])
+						return '<strong><em>'.$expr[4].'</em></strong>';
+					if ($expr[2])
+						return '<strong>'.$expr[4].'</strong>';
+					return '<em>'.$expr[4].'</em>';
 				},
 				preg_replace(
 					'/(?<!\\\\)~~(.*?)(?!\\\\)~~(?=[\s[:punct:]]|$)/',

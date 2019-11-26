@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -39,8 +39,11 @@ class Log {
 			$fw->write(
 				$this->file,
 				date($format).
-					(isset($_SERVER['REMOTE_ADDR'])?
-						(' ['.$_SERVER['REMOTE_ADDR'].']'):'').' '.
+				(isset($_SERVER['REMOTE_ADDR'])?
+					(' ['.$_SERVER['REMOTE_ADDR'].
+					(($fwd=filter_var($fw->get('HEADERS.X-Forwarded-For'),
+						FILTER_VALIDATE_IP))?(' ('.$fwd.')'):'')
+					.']'):'').' '.
 				trim($line).PHP_EOL,
 				TRUE
 			);

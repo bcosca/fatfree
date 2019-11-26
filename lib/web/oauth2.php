@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -27,7 +27,9 @@ class OAuth2 extends \Magic {
 
 	protected
 		//! Scopes and claims
-		$args=[];
+		$args=[],
+		//! Encoding
+		$enc_type = PHP_QUERY_RFC1738;
 
 	/**
 	*	Return OAuth2 authentication URI
@@ -36,7 +38,8 @@ class OAuth2 extends \Magic {
 	*	@param $query bool
 	**/
 	function uri($endpoint,$query=TRUE) {
-		return $endpoint.($query?('?'.http_build_query($this->args)):'');
+		return $endpoint.($query?('?'.
+				http_build_query($this->args,null,'&',$this->enc_type)):'');
 	}
 
 	/**
@@ -50,7 +53,7 @@ class OAuth2 extends \Magic {
 		$web=\Web::instance();
 		$options=[
 			'method'=>$method,
-			'content'=>http_build_query($this->args),
+			'content'=>http_build_query($this->args,null,'&',$this->enc_type),
 			'header'=>['Accept: application/json']
 		];
 		if ($token)
@@ -93,6 +96,14 @@ class OAuth2 extends \Magic {
 			),
 			TRUE
 		);
+	}
+
+	/**
+	 * change default url encoding type, i.E. PHP_QUERY_RFC3986
+	 * @param $type
+	 */
+	function setEncoding($type) {
+		$this->enc_type = $type;
 	}
 
 	/**

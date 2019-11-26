@@ -2,7 +2,7 @@
 
 /*
 
-	Copyright (c) 2009-2017 F3::Factory/Bong Cosca, All rights reserved.
+	Copyright (c) 2009-2019 F3::Factory/Bong Cosca, All rights reserved.
 
 	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
@@ -37,6 +37,32 @@ class Matrix extends Prefab {
 			},
 			$var
 		);
+	}
+
+	/**
+	 * select a subset of fields from an input array
+	 * @param string|array $fields splittable string or array
+	 * @param string|array $data hive key or array
+	 * @return array
+	 */
+	function select($fields, $data) {
+		return array_intersect_key(is_array($data) ? $data : \Base::instance()->get($data),
+			array_flip(is_array($fields) ? $fields : \Base::instance()->split($fields)));
+	}
+
+	/**
+	 * walk with a callback function through a subset of fields from an input array
+	 * the callback receives the value, index-key and the full input array as parameters
+	 * set value parameter as reference and you're able to modify the data as well
+	 * @param string|array $fields splittable string or array of fields
+	 * @param string|array $data hive key or input array
+	 * @param callable $callback (mixed &$value, string $key, array $data)
+	 * @return array modified subset data
+	 */
+	function walk($fields, $data, $callback) {
+		$subset=$this->select($fields, $data);
+		array_walk($subset, $callback, $data);
+		return $subset;
 	}
 
 	/**
