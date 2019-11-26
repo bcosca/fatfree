@@ -4,7 +4,7 @@
 $f3=require('lib/base.php');
 
 $f3->set('DEBUG',1);
-if ((float)PCRE_VERSION<7.9)
+if ((float)PCRE_VERSION<8.0)
 	trigger_error('PCRE version is out of date');
 
 // Load configuration
@@ -66,8 +66,12 @@ $f3->route('GET /',
 				array('geoip','json'),
 			'Web\OpenID'=>
 				array('json','simplexml'),
+			'Web\OAuth2'=>
+				array('json'),
 			'Web\Pingback'=>
-				array('dom','xmlrpc')
+				array('dom','xmlrpc'),
+			'CLI\WS'=>
+				array('pcntl')
 		);
 		$f3->set('classes',$classes);
 		$f3->set('content','welcome.htm');
