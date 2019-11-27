@@ -84,6 +84,14 @@ class Web extends Controller {
 				'(this.id="ui-id-"+ ++a);var a=5;var b="test"+ ++a;',
 			'Minify tricky JS ('.round(1e3*(microtime(TRUE)-$now),1).' msecs)'
 		);
+		$f3->UI = 'ui2/,ui/';
+		$min=$web->minify('css/theme.css,css/simple.css',null,false);
+		$test->expect(
+			strpos($min,'html{height:100vh;')!==FALSE &&
+			strpos($min,'html{height:100%;')===FALSE
+		,'Minify from multiple UI paths');
+		$f3->UI = 'ui/';
+
 		foreach ($f3->split('curl,stream,socket') as $wrapper) {
 			if (preg_match('/curl/i',$wrapper) &&
 				extension_loaded('curl') ||
