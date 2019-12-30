@@ -1,5 +1,11 @@
 CHANGELOG
 
+3.7.1 (30. Dezember 2019)
+*   Base->build: Add support for brace-enclosed route tokens
+*   Base->reroute, fix duplicate fragment issue on non-alias routes
+*   DB\SQL\Mapper: fix empty check for pkey when reloading after insert
+*   Web->minify: fix minification with multiple files, [bcosca/fatfree#1152](https://github.com/bcosca/fatfree/issues/1152), [#bcosca/fatfree#1169](https://github.com/bcosca/fatfree/issues/1169)
+
 3.7.0 (26. November 2019)
 *   NEW: Matrix, added select and walk methods for array processing and validation tools
 *   NEW: Added configurable file locking via LOCK var

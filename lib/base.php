@@ -45,7 +45,7 @@ final class Base extends Prefab implements ArrayAccess {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.7.0-Release';
+		VERSION='3.7.1-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -177,17 +177,17 @@ final class Base extends Prefab implements ArrayAccess {
 			}
 		else {
 			$i=0;
-			$url=preg_replace_callback('/@(\w+)|(\*)/',
+			$url=preg_replace_callback('/(\{)?@(\w+)(?(1)\})|(\*)/',
 				function($match) use(&$i,$args) {
-					if (isset($match[1]) &&
-						array_key_exists($match[1],$args))
-						return $args[$match[1]];
 					if (isset($match[2]) &&
-						array_key_exists($match[2],$args)) {
-						if (!is_array($args[$match[2]]))
-							return $args[$match[2]];
+						array_key_exists($match[2],$args))
+						return $args[$match[2]];
+					if (isset($match[3]) &&
+						array_key_exists($match[3],$args)) {
+						if (!is_array($args[$match[3]]))
+							return $args[$match[3]];
 						$i++;
-						return $args[$match[2]][$i-1];
+						return $args[$match[3]][$i-1];
 					}
 					return $match[0];
 				},$url);
@@ -1486,12 +1486,11 @@ final class Base extends Prefab implements ArrayAccess {
 			$url=$this->hive['REALM'];
 		if (is_array($url))
 			$url=call_user_func_array([$this,'alias'],$url);
-		elseif (preg_match('/^(?:@?([^\/()?#]+)(?:\((.+?)\))*(\?[^#]+)*(#.+)*)/',
-			$url,$parts) &&
-			isset($this->hive['ALIASES'][$parts[1]]))
-			$url=$this->hive['ALIASES'][$parts[1]];
-		$url=$this->build($url,isset($parts[2])?$this->parse($parts[2]):[]).
-			(isset($parts[3])?$parts[3]:'').(isset($parts[4])?$parts[4]:'');
+		elseif (preg_match('/^(?:@([^\/()?#]+)(?:\((.+?)\))*(\?[^#]+)*(#.+)*)/',
+			$url,$parts) && isset($this->hive['ALIASES'][$parts[1]]))
+			$url=$this->build($this->hive['ALIASES'][$parts[1]],
+					isset($parts[2])?$this->parse($parts[2]):[]).
+				(isset($parts[3])?$parts[3]:'').(isset($parts[4])?$parts[4]:'');
 		if (($handler=$this->hive['ONREROUTE']) &&
 			$this->call($handler,[$url,$permanent,$die])!==FALSE)
 			return;
@@ -2888,7 +2887,7 @@ class View extends Prefab {
 	function render($file,$mime='text/html',array $hive=NULL,$ttl=0) {
 		$fw=$this->fw;
 		$cache=Cache::instance();
-		foreach (array_unique($fw->split($fw->UI)) as $dir) {
+		foreach ($fw->split($fw->UI) as $dir) {
 			if ($cache->exists($hash=$fw->hash($dir.$file),$data))
 				return $data;
 			if (is_file($this->file=$fw->fixslashes($dir.$file))) {
@@ -3100,7 +3099,7 @@ class Preview extends View {
 		$cache=Cache::instance();
 		if (!is_dir($tmp=$fw->TEMP))
 			mkdir($tmp,Base::MODE,TRUE);
-		foreach (array_unique($fw->split($fw->UI)) as $dir) {
+		foreach ($fw->split($fw->UI) as $dir) {
 			if ($cache->exists($hash=$fw->hash($dir.$file),$data))
 				return $data;
 			if (is_file($view=$fw->fixslashes($dir.$file))) {
