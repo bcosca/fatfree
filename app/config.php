@@ -80,6 +80,15 @@ class Config extends Controller {
 			$f3->get('section3.great')=='EXACTLY',
 			'Custom section'
 		);
+		$test->expect(
+			$f3->get('section4.dummy')=='HORROR, POWER, AND PUNISHMENT.' &&
+			$f3->get('section5.dummy')=='"ETERNAL RELATIVITIES DEVELOPS MOST BLISSES."',
+			'Custom section parser'
+		);
+		$test->expect(
+			$f3->get('section6.Кольцо Урала.baz')==1234,
+			'Custom section UTF8 support'
+		);
 		$cache=\Cache::instance();
 		$test->expect(
 			$cache->exists($hash=$f3->hash('num').'.var',$val) &&
@@ -96,4 +105,22 @@ class Config extends Controller {
 		$f3->set('results',$test->results());
 	}
 
+}
+
+class ConfigParser extends \Prefab {
+
+	/** @var static \Base */
+	protected $f3;
+
+	function __construct() {
+		$this->f3 = \Base::instance();
+	}
+
+	public function parse1($key, $value, $scope) {
+		$this->f3->set($scope.'.'.$key, strtoupper($value));
+	}
+
+	static public function parse2($key, $value, $scope) {
+		\Base::instance()->set($scope.'.'.$key, strtoupper($value));
+	}
 }
