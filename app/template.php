@@ -17,6 +17,10 @@ class Template extends Controller {
 			'Auto-escaping enabled'
 		);
 		$test->expect(
+			$tpl->render('templates/test1.htm','text/plain')=='bar->baz',
+			'Auto-escaping disabled for non-html/xml documents'
+		);
+		$test->expect(
 			$tpl->token($expr='@foo.bar')==($eval='$foo[\'bar\']'),
 			$expr.': '.$eval
 		);
