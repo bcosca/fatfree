@@ -180,13 +180,10 @@ class Hive extends Controller {
 		);
 		$test->expect(
 			is_null($f3->get('l.m.n')) &&
-			is_null($f3['l']['m']['n']) && is_null($f3->l['m']['n']) &&
+			is_null($f3['l']) && is_null($f3->l) &&
 			!is_array($f3->get('l')) &&
 			!is_array($f3['l']) && !is_array($f3->l) &&
-			!is_array($f3->get('l.m')) &&
-			!is_array($f3['l']['m']) && !is_array($f3->l['m']) &&
-			is_null($f3->get('l.m.n')) &&
-			is_null($f3['l']['m']['n']) && is_null($f3->l['m']['n']),
+			!is_array($f3->get('l.m')),
 			'Non-existent array'
 		);
 		$f3->set('domains',
