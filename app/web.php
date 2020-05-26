@@ -81,7 +81,7 @@ class Web extends Controller {
 		$now=microtime(TRUE);
 		$test->expect(
 			$web->minify('js/operators.js',NULL,FALSE)==
-				'(this.id="ui-id-"+ ++a);var a=5;var b="test"+ ++a;',
+				'(this.id="ui-id-"+ ++a);var a=5;var b="test"+ ++a;var tmpl=`xxx ${firstName} ${lastName} xxx`;',
 			'Minify tricky JS ('.round(1e3*(microtime(TRUE)-$now),1).' msecs)'
 		);
 		$f3->UI = 'ui2/,ui/';
