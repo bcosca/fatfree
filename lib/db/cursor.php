@@ -148,7 +148,7 @@ abstract class Cursor extends \Magic implements \IteratorAggregate {
 	function paginate(
 		$pos=0,$size=10,$filter=NULL,array $options=NULL,$ttl=0,$bounce=TRUE) {
 		$total=$this->count($filter,$options,$ttl);
-		$count=ceil($total/$size);
+		$count=(int)ceil($total/$size);
 		if ($bounce)
 			$pos=max(0,min($pos,$count-1));
 		return [

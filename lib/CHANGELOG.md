@@ -1,6 +1,21 @@
 CHANGELOG
 
-3.7.1 (30. Dezember 2019)
+3.7.2 (28 May 2020)
+*   CHANGED, View->sandbox: disable escaping when rendering as text/plain, bcosca/fatfree#654
+*   update HTTP protocol checks, #bcosca/fatfree#1190
+*   Base->clear: close vulnerability on variable compilation, bcosca/fatfree#1191
+*   DB\SQL\Mapper: fix empty ID after insert, bcosca/fatfree#1175
+*   DB\SQL\Mapper: fix using correct key variable for grouped sql pagination sets
+*   Fix return type of 'count' in Cursor->paginate() (bcosca/fatfree#1187)
+*   Bug fix, Web->minify: fix minification of ES6 template literals, bcosca/fatfree#1178
+*   Bug fix, config: refactoring custom section parser regex, bcosca/fatfree#1149
+*   Bug fix: token resolve on non-alias reroute paths, ref. 221f0c930f8664565c9825faeb9ed9af0f7a01c8
+*   Websocket: Improved event handler usage
+*   optimized internal get calls
+*   only use cached lexicon when a $ttl was given
+*   only use money_format up until php7.4, fixes bcosca/fatfree#1174
+
+3.7.1 (30. December 2019)
 *   Base->build: Add support for brace-enclosed route tokens
 *   Base->reroute, fix duplicate fragment issue on non-alias routes
 *   DB\SQL\Mapper: fix empty check for pkey when reloading after insert

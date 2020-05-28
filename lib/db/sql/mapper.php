@@ -365,7 +365,7 @@ class Mapper extends \DB\Cursor {
 			$group_fields=array_flip(array_map('trim',explode(',',$group_string)));
 			foreach ($this->adhoc as $key=>$field)
 				// add adhoc fields that are used for grouping
-				if (isset($group_fields[$field]))
+				if (isset($group_fields[$key]))
 					$adhoc[]=$field['expr'].' AS '.$this->db->quotekey($key);
 			$fields=implode(',',$adhoc);
 			if (empty($fields))
@@ -447,7 +447,8 @@ class Mapper extends \DB\Cursor {
 			if ($field['pkey']) {
 				$field['previous']=$field['value'];
 				if (!$inc && $field['pdo_type']==\PDO::PARAM_INT &&
-					is_null($field['value']) && !$field['nullable'])
+					empty($field['value']) && !$field['nullable'] &&
+					is_null($field['default']))
 					$inc=$key;
 				$filter.=($filter?' AND ':'').$this->db->quotekey($key).'=?';
 				$nkeys[$nctr+1]=[$field['value'],$field['pdo_type']];

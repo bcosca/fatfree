@@ -45,7 +45,7 @@ final class Base extends Prefab implements ArrayAccess {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.7.1-Release';
+		VERSION='3.7.2-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -235,9 +235,31 @@ final class Base extends Prefab implements ArrayAccess {
 	*	Convert JS-style token to PHP expression
 	*	@return string
 	*	@param $str string
+	*	@param $evaluate bool compile expressions as well or only convert variable access
 	**/
-	function compile($str) {
-		return preg_replace_callback(
+	function compile($str, $evaluate=TRUE) {
+		return (!$evaluate)
+			? preg_replace_callback(
+				'/^@(\w+)((?:\..+|\[(?:(?:[^\[\]]*|(?R))*)\])*)/',
+				function($expr) {
+					$str='$'.$expr[1];
+					if (isset($expr[2]))
+						$str.=preg_replace_callback(
+							'/\.([^.\[\]]+)|\[((?:[^\[\]\'"]*|(?R))*)\]/',
+							function($sub) {
+								$val=isset($sub[2]) ? $sub[2] : $sub[1];
+								if (ctype_digit($val))
+									$val=(int)$val;
+								$out='['.$this->export($val).']';
+								return $out;
+							},
+							$expr[2]
+						);
+					return $str;
+				},
+				$str
+			)
+			: preg_replace_callback(
 			'/(?<!\w)@(\w+(?:(?:\->|::)\w+)?)'.
 			'((?:\.\w+|\[(?:(?:[^\[\]]*|(?R))*)\]|(?:\->|::)\w+|\()*)/',
 			function($expr) {
@@ -503,7 +525,9 @@ final class Base extends Prefab implements ArrayAccess {
 			// Reset global to default value
 			$this->hive[$parts[0]]=$this->init[$parts[0]];
 		else {
-			eval('unset('.$this->compile('@this->hive.'.$key).');');
+			$val=preg_replace('/^(\$hive)/','$this->hive',
+				$this->compile('@hive.'.$key, FALSE));
+			eval('unset('.$val.');');
 			if ($parts[0]=='SESSION') {
 				session_commit();
 				session_start();
@@ -970,7 +994,8 @@ final class Base extends Prefab implements ArrayAccess {
 											$cstm=!$int=($prop=='int'))
 											$currency_symbol=$prop;
 										if (!$cstm &&
-											function_exists('money_format'))
+											function_exists('money_format') &&
+											version_compare(PHP_VERSION,'7.4.0')<0)
 											return money_format(
 												'%'.($int?'i':'n'),$args[$pos]);
 										$fmt=[
@@ -1106,7 +1131,7 @@ final class Base extends Prefab implements ArrayAccess {
 	function lexicon($path,$ttl=0) {
 		$languages=$this->languages?:explode(',',$this->fallback);
 		$cache=Cache::instance();
-		if ($cache->exists(
+		if ($ttl && $cache->exists(
 			$hash=$this->hash(implode(',',$languages).$path).'.dic',$lex))
 			return $lex;
 		$lex=[];
@@ -1491,6 +1516,8 @@ final class Base extends Prefab implements ArrayAccess {
 			$url=$this->build($this->hive['ALIASES'][$parts[1]],
 					isset($parts[2])?$this->parse($parts[2]):[]).
 				(isset($parts[3])?$parts[3]:'').(isset($parts[4])?$parts[4]:'');
+		else
+			$url=$this->build($url);
 		if (($handler=$this->hive['ONREROUTE']) &&
 			$this->call($handler,[$url,$permanent,$die])!==FALSE)
 			return;
@@ -1856,7 +1883,8 @@ final class Base extends Prefab implements ArrayAccess {
 			if ($parts[2]=='->') {
 				if (is_subclass_of($parts[1],'Prefab'))
 					$parts[1]=call_user_func($parts[1].'::instance');
-				elseif ($container=$this->get('CONTAINER')) {
+				elseif (isset($this->hive['CONTAINER'])) {
+					$container=$this->hive['CONTAINER'];
 					if (is_object($container) && is_callable([$container,'has'])
 						&& $container->has($parts[1])) // PSR11
 						$parts[1]=call_user_func([$container,'get'],$parts[1]);
@@ -1991,11 +2019,11 @@ final class Base extends Prefab implements ArrayAccess {
 						$sec=$match['section'];
 						if (preg_match(
 							'/^(?!(?:global|config|route|map|redirect)s\b)'.
-							'((?:[^:])+)/i',$sec,$msec) &&
-							!$this->exists($msec[0]))
-							$this->set($msec[0],NULL);
+							'(.*?)(?:\s*[:>])/i',$sec,$msec) &&
+							!$this->exists($msec[1]))
+							$this->set($msec[1],NULL);
 						preg_match('/^(config|route|map|redirect)s\b|'.
-							'^((?:[^:])+)\s*\>\s*(.*)/i',$sec,$cmd);
+							'^(.+?)\s*\>\s*(.*)/i',$sec,$cmd);
 						continue;
 					}
 					if ($allow)
@@ -2075,7 +2103,7 @@ final class Base extends Prefab implements ArrayAccess {
 			mkdir($tmp,self::MODE,TRUE);
 		// Use filesystem lock
 		if (is_file($lock=$tmp.
-			$this->get('SEED').'.'.$this->hash($id).'.lock') &&
+			$this->hive['SEED'].'.'.$this->hash($id).'.lock') &&
 			filemtime($lock)+ini_get('max_execution_time')<microtime(TRUE))
 			// Stale lock
 			@unlink($lock);
@@ -2860,7 +2888,8 @@ class View extends Prefab {
 				!preg_grep ('/^Content-Type:/',headers_list()))
 				header('Content-Type: '.$mime.'; '.
 					'charset='.$fw->ENCODING);
-			if ($fw->ESCAPE)
+			if ($fw->ESCAPE && (!$mime ||
+					preg_match('/^(text\/html|(application|text)\/(.+\+)?xml)$/i',$mime)))
 				$hive=$this->esc($hive);
 			if (isset($hive['ALIASES']))
 				$hive['ALIASES']=$fw->build($hive['ALIASES']);
@@ -2963,13 +2992,11 @@ class Preview extends View {
 	*	@param $str string
 	**/
 	function token($str) {
-		$fw=$this->fw;
-		$str=trim(preg_replace('/\{\{(.+?)\}\}/s',trim('\1'),
-			$fw->compile($str)));
+		$str=trim(preg_replace('/\{\{(.+?)\}\}/s','\1',$this->fw->compile($str)));
 		if (preg_match('/^(.+)(?<!\|)\|((?:\h*\w+(?:\h*[,;]?))+)$/s',
 			$str,$parts)) {
 			$str=trim($parts[1]);
-			foreach ($fw->split(trim($parts[2],"\xC2\xA0")) as $func)
+			foreach ($this->fw->split(trim($parts[2],"\xC2\xA0")) as $func)
 				$str=((empty($this->filter[$cmd=$func]) &&
 					function_exists($cmd)) ||
 					is_string($cmd=$this->filter($func)))?

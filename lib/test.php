@@ -34,7 +34,9 @@ class Test {
 		//! Test results
 		$data=[],
 		//! Success indicator
-		$passed=TRUE;
+		$passed=TRUE,
+		//! Reporting level
+		$level;
 
 	/**
 	*	Return test results

@@ -62,7 +62,7 @@ class Web extends Prefab {
 					fclose($fhandle);
 				}
 				elseif (($response=$this->request($file,['method' => 'HEAD']))
-					&& preg_grep('/HTTP\/\d\.\d 200/',$response['headers'])
+					&& preg_grep('/HTTP\/[\d.]{1,3} 200/',$response['headers'])
 					&& ($type = preg_grep('/^Content-Type:/i',$response['headers']))) {
 					// get mime type directly from response header
 					return preg_replace('/^Content-Type:\s*/i','',array_pop($type));
@@ -383,7 +383,7 @@ class Web extends Prefab {
 		$body=ob_get_clean();
 		if (!$err &&
 			$options['follow_location'] && $open_basedir &&
-			preg_grep('/HTTP\/1\.\d 3\d{2}/',$headers) &&
+			preg_grep('/HTTP\/[\d.]{1,3} 3\d{2}/',$headers) &&
 			preg_match('/^Location: (.+)$/m',implode(PHP_EOL,$headers),$loc)) {
 			$options['max_redirects']--;
 			if($loc[1][0] == '/') {
@@ -530,7 +530,7 @@ class Web extends Prefab {
 						break;
 				}
 			if ($options['follow_location'] &&
-				preg_grep('/HTTP\/1\.\d 3\d{2}/',$headers) &&
+				preg_grep('/HTTP\/[\d.]{1,3} 3\d{2}/',$headers) &&
 				preg_match('/Location: (.+?)'.preg_quote($eol).'/',
 				$html[0],$loc)) {
 				$options['max_redirects']--;
@@ -658,7 +658,7 @@ class Web extends Prefab {
 		}
 		$result=$this->{'_'.$this->wrapper}($url,$options);
 		if ($result && isset($cache)) {
-			if (preg_match('/HTTP\/1\.\d 304/',
+			if (preg_match('/HTTP\/[\d.]{1,3} 304/',
 				implode($eol,$result['headers']))) {
 				$result=$cache->get($hash);
 				$result['cached']=TRUE;
@@ -778,7 +778,7 @@ class Web extends Prefab {
 								}
 								continue;
 							}
-							if (in_array($src[$ptr],['\'','"'])) {
+							if (in_array($src[$ptr],['\'','"','`'])) {
 								$match=$src[$ptr];
 								$data.=$match;
 								$ptr++;
