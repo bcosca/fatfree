@@ -9,7 +9,7 @@ namespace DB\Mongo;
  * @see https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline/
  * @see https://docs.mongodb.com/php-library/current/reference/method/MongoDBCollection-aggregate/
  */
-class aggregation
+class Aggregation
 {
 
 	/**
