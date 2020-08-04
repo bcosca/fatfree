@@ -217,7 +217,7 @@ class aggregation
 	 *
 	 * @return array
 	 */
-	public function getPipeline(): array
+	public function getPipeline()
 	{
 		return $this->pipeline;
 	}

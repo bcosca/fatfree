@@ -383,7 +383,7 @@ class Mapper extends \DB\Cursor
 	 * @param array $options  Command options
 	 * @return array
 	 */
-	public function aggregate(aggregation $aggregation, array $options = []): array
+	public function aggregate(aggregation $aggregation, array $options = [])
 	{
 		$result = $this->collection->aggregate($aggregation->getPipeline(), $options);
 
