@@ -56,7 +56,7 @@ class Bcrypt extends Prefab {
 			if (!$iv && extension_loaded('openssl'))
 				$iv=openssl_random_pseudo_bytes($raw);
 			if (!$iv)
-				for ($i=0;$i<$raw;$i++)
+				for ($i=0;$i<$raw;++$i)
 					$iv.=chr(mt_rand(0,255));
 			$salt=str_replace('+','.',base64_encode($iv));
 		}
@@ -88,7 +88,7 @@ class Bcrypt extends Prefab {
 		if ($len!=strlen($hash) || $len<14)
 			return FALSE;
 		$out=0;
-		for ($i=0;$i<$len;$i++)
+		for ($i=0;$i<$len;++$i)
 			$out|=(ord($val[$i])^ord($hash[$i]));
 		return $out===0;
 	}

@@ -273,7 +273,7 @@ class Template extends Preview {
 		// Build tree structure
 		for ($ptr=0,$w=5,$len=strlen($text),$tree=[],$tmp='';$ptr<$len;)
 			if (preg_match('/^(.{0,'.$w.'}?)<(\/?)(?:F3:)?'.
-				'('.$this->tags.')\b((?:\s+[\w.:@!-]+'.
+				'('.$this->tags.')\b((?:\s+[\w.:@!\-]+'.
 				'(?:\h*=\h*(?:"(?:.*?)"|\'(?:.*?)\'))?|'.
 				'\h*\{\{.+?\}\})*)\h*(\/?)>/is',
 				substr($text,$ptr),$match)) {
@@ -283,7 +283,7 @@ class Template extends Preview {
 				if ($match[2]) {
 					// Find matching start tag
 					$stack=[];
-					for($i=count($tree)-1;$i>=0;$i--) {
+					for($i=count($tree)-1;$i>=0;--$i) {
 						$item=$tree[$i];
 						if (is_array($item) &&
 							array_key_exists($match[3],$item) &&
@@ -326,7 +326,7 @@ class Template extends Preview {
 				$tmp.=substr($text,$ptr,$w);
 				$ptr+=$w;
 				if ($w<50)
-					$w++;
+					++$w;
 			}
 		if (strlen($tmp))
 			// Append trailing text

@@ -1,19 +1,34 @@
 CHANGELOG
 
+3.7.3
+*   NEW: added auto_increment detection, [bcosca/fatfree#1192](https://github.com/bcosca/fatfree/issues/1192), [bcosca/fatfree#1093](https://github.com/bcosca/fatfree/issues/1093), [bcosca/fatfree#1175](https://github.com/bcosca/fatfree/issues/1175), [#290](https://github.com/bcosca/fatfree-core/issues/290)
+*   added SMTP dialog error handling, [#317](https://github.com/bcosca/fatfree-core/issues/317)
+*   Fix: Check active transaction before rollback/commit (PHP8 issue)
+*   refactored increment/decrement operator to preceed variables
+*   added error output in CLI mode, [bcosca/fatfree#1185](https://github.com/bcosca/fatfree/issues/1185)
+*   Set PORT to 80 when SERVER_PORT is an empty string
+*   Fix: unescape dbname when extracting from dsn, [#316](https://github.com/bcosca/fatfree-core/issues/316)
+*   Fix: handling of PDO prepare() errors
+*   Fix: edge case in DB\SQL->schema(): PK not detected in PgSQL when the column is also a FK [bcosca/fatfree#1207](https://github.com/bcosca/fatfree/issues/1207)
+*   Fix: Escape literal hyphens in regex character classes, [bcosca/fatfree#1206](https://github.com/bcosca/fatfree/issues/1206)
+*   Fix: error highlighting
+*   Fix: pagination with order by on virtual fields
+*   Fixed a couple PHPDOC issues
+ 
 3.7.2 (28 May 2020)
-*   CHANGED, View->sandbox: disable escaping when rendering as text/plain, bcosca/fatfree#654
-*   update HTTP protocol checks, #bcosca/fatfree#1190
-*   Base->clear: close vulnerability on variable compilation, bcosca/fatfree#1191
-*   DB\SQL\Mapper: fix empty ID after insert, bcosca/fatfree#1175
+*   CHANGED, View->sandbox: disable escaping when rendering as text/plain, [bcosca/fatfree#654](https://github.com/bcosca/fatfree/issues/654)
+*   update HTTP protocol checks, [bcosca/fatfree#1190](https://github.com/bcosca/fatfree/issues/1190)
+*   Base->clear: close vulnerability on variable compilation, [bcosca/fatfree#1191](https://github.com/bcosca/fatfree/issues/1191)
+*   DB\SQL\Mapper: fix empty ID after insert, [bcosca/fatfree#1175](https://github.com/bcosca/fatfree/issues/1175)
 *   DB\SQL\Mapper: fix using correct key variable for grouped sql pagination sets
-*   Fix return type of 'count' in Cursor->paginate() (bcosca/fatfree#1187)
-*   Bug fix, Web->minify: fix minification of ES6 template literals, bcosca/fatfree#1178
-*   Bug fix, config: refactoring custom section parser regex, bcosca/fatfree#1149
-*   Bug fix: token resolve on non-alias reroute paths, ref. 221f0c930f8664565c9825faeb9ed9af0f7a01c8
+*   Fix return type of 'count' in Cursor->paginate(), [bcosca/fatfree#1187](https://github.com/bcosca/fatfree/issues/1187)
+*   Bug fix, Web->minify: fix minification of ES6 template literals, [bcosca/fatfree#1178](https://github.com/bcosca/fatfree/issues/1178)
+*   Bug fix, config: refactoring custom section parser regex, [bcosca/fatfree#1149](https://github.com/bcosca/fatfree/issues/1149)
+*   Bug fix: token resolve on non-alias reroute paths, [ref. 221f0c9](https://github.com/bcosca/fatfree-core/commit/221f0c930f8664565c9825faeb9ed9af0f7a01c8)
 *   Websocket: Improved event handler usage
 *   optimized internal get calls
 *   only use cached lexicon when a $ttl was given
-*   only use money_format up until php7.4, fixes bcosca/fatfree#1174
+*   only use money_format up until php7.4, [bcosca/fatfree#1174](https://github.com/bcosca/fatfree/issues/1174)
 
 3.7.1 (30. December 2019)
 *   Base->build: Add support for brace-enclosed route tokens

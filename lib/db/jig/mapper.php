@@ -206,7 +206,7 @@ class Mapper extends \DB\Cursor {
 							if (is_string($token))
 								if ($token=='?') {
 									// Positional
-									$ctr++;
+									++$ctr;
 									$key=$ctr;
 								}
 								else {

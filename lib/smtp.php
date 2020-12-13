@@ -27,7 +27,8 @@ class SMTP extends Magic {
 	const
 		E_Header='%s: header is required',
 		E_Blank='Message must not be blank',
-		E_Attach='Attachment %s not found';
+		E_Attach='Attachment %s not found',
+		E_DIALOG='SMTP dialog error: %s';
 	//@}
 
 	protected
@@ -59,7 +60,7 @@ class SMTP extends Magic {
 	**/
 	protected function fixheader($key) {
 		return str_replace(' ','-',
-			ucwords(preg_replace('/[_-]/',' ',strtolower($key))));
+			ucwords(preg_replace('/[_\-]/',' ',strtolower($key))));
 	}
 
 	/**
@@ -157,6 +158,8 @@ class SMTP extends Magic {
 				$this->log.=$cmd."\n";
 			$this->log.=str_replace("\r",'',$reply);
 		}
+		if (preg_match('/^(4|5)\d{2}\s.*$/', $reply))
+			user_error(sprintf(self::E_DIALOG,$reply),E_USER_ERROR);
 		return $reply;
 	}
 

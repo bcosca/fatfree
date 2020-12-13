@@ -367,15 +367,15 @@ class Image {
 		imagefill($this->data,0,0,IMG_COLOR_TRANSPARENT);
 		$ctr=count($sprites);
 		$dim=$blocks*floor($size/$blocks)*2/$blocks;
-		for ($j=0,$y=ceil($blocks/2);$j<$y;$j++)
-			for ($i=$j,$x=$blocks-1-$j;$i<$x;$i++) {
+		for ($j=0,$y=ceil($blocks/2);$j<$y;++$j)
+			for ($i=$j,$x=$blocks-1-$j;$i<$x;++$i) {
 				$sprite=imagecreatetruecolor($dim,$dim);
 				imagefill($sprite,0,0,IMG_COLOR_TRANSPARENT);
 				$block=$sprites[hexdec($hash[($j*$blocks+$i)*2])%$ctr];
-				for ($k=0,$pts=count($block);$k<$pts;$k++)
+				for ($k=0,$pts=count($block);$k<$pts;++$k)
 					$block[$k]*=$dim;
 				imagefilledpolygon($sprite,$block,$pts/2,$fg);
-				for ($k=0;$k<4;$k++) {
+				for ($k=0;$k<4;++$k) {
 					imagecopyresampled($this->data,$sprite,
 						$i*$dim/2,$j*$dim/2,0,0,$dim/2,$dim/2,$dim,$dim);
 					$this->data=imagerotate($this->data,90,
@@ -416,7 +416,7 @@ class Image {
 					-$len));
 				$block=$size*3;
 				$tmp=[];
-				for ($i=0,$width=0,$height=0;$i<$len;$i++) {
+				for ($i=0,$width=0,$height=0;$i<$len;++$i) {
 					// Process at 2x magnification
 					$box=imagettfbbox($size*2,0,$path,$seed[$i]);
 					$w=$box[2]-$box[0];
@@ -440,7 +440,7 @@ class Image {
 				}
 				$this->data=imagecreatetruecolor($width,$height);
 				imagefill($this->data,0,0,IMG_COLOR_TRANSPARENT);
-				for ($i=0;$i<$len;$i++) {
+				for ($i=0;$i<$len;++$i) {
 					imagecopy($this->data,$tmp[$i],
 						$i*$block/2,($height-imagesy($tmp[$i]))/2,0,0,
 						imagesx($tmp[$i]),imagesy($tmp[$i]));
@@ -520,7 +520,7 @@ class Image {
 		if ($this->flag) {
 			if (!is_dir($dir=$fw->TEMP))
 				mkdir($dir,Base::MODE,TRUE);
-			$this->count++;
+			++$this->count;
 			$fw->write($dir.'/'.$fw->SEED.'.'.
 				$fw->hash($this->file).'-'.$this->count.'.png',
 				$this->dump());

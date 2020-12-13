@@ -224,7 +224,7 @@ class Markdown extends Prefab {
 		$type='ul';
 		// Main loop
 		while ($ptr<$len) {
-			if (preg_match('/^\h*[*-](?:\h?[*-]){2,}(?:\n+|$)/',
+			if (preg_match('/^\h*[*\-](?:\h?[*\-]){2,}(?:\n+|$)/',
 				substr($str,$ptr),$match)) {
 				$ptr+=strlen($match[0]);
 				// Embedded horizontal rule
@@ -232,7 +232,7 @@ class Markdown extends Prefab {
 					('<'.$type.'>'."\n".$dst.'</'.$type.'>'."\n\n"):'').
 					'<hr />'."\n\n".$this->build(substr($str,$ptr));
 			}
-			elseif (preg_match('/(?<=^|\n)([*+-]|\d+\.)\h'.
+			elseif (preg_match('/(?<=^|\n)([*+\-]|\d+\.)\h'.
 				'(.+?(?:\n+|$))((?:(?: {4}|\t)+.+?(?:\n+|$))*)/s',
 				substr($str,$ptr),$match)) {
 				$match[3]=preg_replace('/(?<=^|\n)(?: {4}|\t)/','',$match[3]);
@@ -466,10 +466,10 @@ class Markdown extends Prefab {
 				'pre'=>'/^(?:(?: {4}|\t).+?(?:\n+|$))+/',
 				'fence'=>'/^`{3}\h*(\w+)?.*?[^\n]*\n+(.+?)`{3}[^\n]*'.
 					'(?:\n+|$)/s',
-				'hr'=>'/^\h*[*_-](?:\h?[\*_-]){2,}\h*(?:\n+|$)/',
+				'hr'=>'/^\h*[*_\-](?:\h?[\*_\-]){2,}\h*(?:\n+|$)/',
 				'atx'=>'/^\h*(#{1,6})\h?(.+?)\h*(?:#.*)?(?:\n+|$)/',
-				'setext'=>'/^\h*(.+?)\h*\n([=-])+\h*(?:\n+|$)/',
-				'li'=>'/^(?:(?:[*+-]|\d+\.)\h.+?(?:\n+|$)'.
+				'setext'=>'/^\h*(.+?)\h*\n([=\-])+\h*(?:\n+|$)/',
+				'li'=>'/^(?:(?:[*+\-]|\d+\.)\h.+?(?:\n+|$)'.
 					'(?:(?: {4}|\t)+.+?(?:\n+|$))*)+/s',
 				'raw'=>'/^((?:<!--.+?-->|'.
 					'<(address|article|aside|audio|blockquote|canvas|dd|'.

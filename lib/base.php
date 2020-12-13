@@ -45,7 +45,7 @@ final class Base extends Prefab implements ArrayAccess {
 	//@{ Framework details
 	const
 		PACKAGE='Fat-Free Framework',
-		VERSION='3.7.2-Release';
+		VERSION='3.7.3-Release';
 	//@}
 
 	//@{ HTTP status codes (RFC 2616)
@@ -186,7 +186,7 @@ final class Base extends Prefab implements ArrayAccess {
 						array_key_exists($match[3],$args)) {
 						if (!is_array($args[$match[3]]))
 							return $args[$match[3]];
-						$i++;
+						++$i;
 						return $args[$match[3]][$i-1];
 					}
 					return $match[0];
@@ -1293,10 +1293,10 @@ final class Base extends Prefab implements ArrayAccess {
 			function($frame) use($debug) {
 				return isset($frame['file']) &&
 					($debug>1 ||
-					($frame['file']!=__FILE__ || $debug) &&
+					(($frame['file']!=__FILE__ || $debug) &&
 					(empty($frame['function']) ||
 					!preg_match('/^(?:(?:trigger|user)_error|'.
-						'__call|call_user_func)/',$frame['function'])));
+						'__call|call_user_func)/',$frame['function']))));
 			}
 		);
 		if (!$format)
@@ -1349,8 +1349,8 @@ final class Base extends Prefab implements ArrayAccess {
 						error_log($nexus);
 				break;
 			}
-		if ($highlight=!$this->hive['CLI'] && !$this->hive['AJAX'] &&
-			$this->hive['HIGHLIGHT'] && is_file($css=__DIR__.'/'.self::CSS))
+		if ($highlight=(!$this->hive['CLI'] && !$this->hive['AJAX'] &&
+			$this->hive['HIGHLIGHT'] && is_file($css=__DIR__.'/'.self::CSS)))
 			$trace=$this->highlight($trace);
 		$this->hive['ERROR']=[
 			'status'=>$header,
@@ -1366,29 +1366,34 @@ final class Base extends Prefab implements ArrayAccess {
 		if ((!$handler ||
 			$this->call($handler,[$this,$this->hive['PARAMS']],
 				'beforeroute,afterroute')===FALSE) &&
-			!$prior && !$this->hive['CLI'] && !$this->hive['QUIET'])
-			echo $this->hive['AJAX']?
-				json_encode(
-					array_diff_key(
-						$this->hive['ERROR'],
-						$this->hive['DEBUG']?
-							[]:
-							['trace'=>1]
-					)
-				):
-				('<!DOCTYPE html>'.$eol.
-				'<html>'.$eol.
-				'<head>'.
-					'<title>'.$code.' '.$header.'</title>'.
-					($highlight?
-						('<style>'.$this->read($css).'</style>'):'').
-				'</head>'.$eol.
-				'<body>'.$eol.
-					'<h1>'.$header.'</h1>'.$eol.
-					'<p>'.$this->encode($text?:$req).'</p>'.$eol.
-					($this->hive['DEBUG']?('<pre>'.$trace.'</pre>'.$eol):'').
-				'</body>'.$eol.
-				'</html>');
+			!$prior && !$this->hive['QUIET']) {
+			$error=array_diff_key(
+				$this->hive['ERROR'],
+				$this->hive['DEBUG']?
+					[]:
+					['trace'=>1]
+			);
+			if ($this->hive['CLI'])
+				echo PHP_EOL.'==================================='.PHP_EOL.
+					'ERROR '.$error['code'].' - '.$error['status'].PHP_EOL.
+					$error['text'].PHP_EOL.PHP_EOL.$error['trace'];
+			else
+				echo $this->hive['AJAX']?
+					json_encode($error):
+					('<!DOCTYPE html>'.$eol.
+					'<html>'.$eol.
+					'<head>'.
+						'<title>'.$code.' '.$header.'</title>'.
+						($highlight?
+							('<style>'.$this->read($css).'</style>'):'').
+					'</head>'.$eol.
+					'<body>'.$eol.
+						'<h1>'.$header.'</h1>'.$eol.
+						'<p>'.$this->encode($text?:$req).'</p>'.$eol.
+						($this->hive['DEBUG']?('<pre>'.$trace.'</pre>'.$eol):'').
+					'</body>'.$eol.
+					'</html>');
+		}
 		if ($this->hive['HALT'])
 			die(1);
 	}
@@ -1615,7 +1620,7 @@ final class Base extends Prefab implements ArrayAccess {
 		$i=0;
 		while (is_int($pos=strpos($wild,'\*'))) {
 			$wild=substr_replace($wild,'(?P<_'.$i.'>[^\?]*)',$pos,2);
-			$i++;
+			++$i;
 		}
 		preg_match('/^'.
 			preg_replace(
@@ -1767,7 +1772,7 @@ final class Base extends Prefab implements ArrayAccess {
 						$ctr=0;
 						foreach (str_split($body,1024) as $part) {
 							// Throttle output
-							$ctr++;
+							++$ctr;
 							if ($ctr/$kbps>($elapsed=microtime(TRUE)-$now) &&
 								!connection_aborted())
 								usleep(1e6*($ctr/$kbps-$elapsed));
@@ -2197,7 +2202,7 @@ final class Base extends Prefab implements ArrayAccess {
 			isset($path[1]) && is_callable($path[1]))
 			list($path,$func)=$path;
 		foreach ($this->split($this->hive['PLUGINS'].';'.$path) as $auto)
-			if ($func && is_file($file=$func($auto.$class).'.php') ||
+			if (($func && is_file($file=$func($auto.$class).'.php')) ||
 				is_file($file=$auto.$class.'.php') ||
 				is_file($file=$auto.strtolower($class).'.php') ||
 				is_file($file=strtolower($auto.$class).'.php'))
@@ -2345,11 +2350,11 @@ final class Base extends Prefab implements ArrayAccess {
 		if (!isset($_SERVER['SERVER_NAME']) || $_SERVER['SERVER_NAME']==='')
 			$_SERVER['SERVER_NAME']=gethostname();
 		$headers=[];
-		if ($cli=PHP_SAPI=='cli') {
+		if ($cli=(PHP_SAPI=='cli')) {
 			// Emulate HTTP request
 			$_SERVER['REQUEST_METHOD']='GET';
 			if (!isset($_SERVER['argv'][1])) {
-				$_SERVER['argc']++;
+				++$_SERVER['argc'];
 				$_SERVER['argv'][1]='/';
 			}
 			$req=$query='';
@@ -2433,9 +2438,9 @@ final class Base extends Prefab implements ArrayAccess {
 			'samesite'=>'Lax',
 		];
 		$port=80;
-		if (isset($headers['X-Forwarded-Port']))
+		if (!empty($headers['X-Forwarded-Port']))
 			$port=$headers['X-Forwarded-Port'];
-		elseif (isset($_SERVER['SERVER_PORT']))
+		elseif (!empty($_SERVER['SERVER_PORT']))
 			$port=$_SERVER['SERVER_PORT'];
 		// Default configuration
 		$this->hive+=[
@@ -2496,7 +2501,7 @@ final class Base extends Prefab implements ArrayAccess {
 			'QUIET'=>FALSE,
 			'RAW'=>FALSE,
 			'REALM'=>$scheme.'://'.$_SERVER['SERVER_NAME'].
-				($port && !in_array($port,[80,443])?(':'.$port):'').
+				(!in_array($port,[80,443])?(':'.$port):'').
 				$_SERVER['REQUEST_URI'],
 			'RESPONSE'=>'',
 			'ROOT'=>$_SERVER['DOCUMENT_ROOT'],
@@ -2740,7 +2745,7 @@ class Cache extends Prefab {
 			case 'xcache':
 				if ($suffix && !ini_get('xcache.admin.enable_auth')) {
 					$cnt=xcache_count(XC_TYPE_VAR);
-					for ($i=0;$i<$cnt;$i++) {
+					for ($i=0;$i<$cnt;++$i) {
 						$list=xcache_list(XC_TYPE_VAR,$i);
 						foreach ($list['cache_list'] as $item)
 							if (preg_match($regex,$item['name']))
@@ -2898,10 +2903,10 @@ class View extends Prefab {
 		unset($fw,$hive,$implicit,$mime);
 		extract($this->temp);
 		$this->temp=NULL;
-		$this->level++;
+		++$this->level;
 		ob_start();
 		require($this->file);
-		$this->level--;
+		--$this->level;
 		return ob_get_clean();
 	}
 

@@ -424,16 +424,16 @@ class Agent {
 			}
 			else
 			if ($len==0x7f) {
-				for ($i=0,$len=0;$i<8;$i++)
+				for ($i=0,$len=0;$i<8;++$i)
 					$len=$len*256+ord($buf[$i+2]);
 				$pos+=8;
 			}
-			for ($i=0,$mask=[];$i<4;$i++)
+			for ($i=0,$mask=[];$i<4;++$i)
 				$mask[$i]=ord($buf[$pos+$i]);
 			$pos+=4;
 			if (strlen($buf)<$len+$pos)
 				return FALSE;
-			for ($i=0,$data='';$i<$len;$i++)
+			for ($i=0,$data='';$i<$len;++$i)
 				$data.=chr(ord($buf[$pos+$i])^$mask[$i%4]);
 			// Dispatch
 			switch ($op & WS::OpCode) {

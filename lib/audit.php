@@ -145,7 +145,7 @@ class Audit extends Prefab {
 			return FALSE;
 		$id=strrev($id);
 		$sum=0;
-		for ($i=0,$l=strlen($id);$i<$l;$i++)
+		for ($i=0,$l=strlen($id);$i<$l;++$i)
 			$sum+=$id[$i]+$i%2*(($id[$i]>4)*-4+$id[$i]%5);
 		return !($sum%10);
 	}

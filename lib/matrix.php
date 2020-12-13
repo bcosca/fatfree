@@ -130,7 +130,7 @@ class Matrix extends Prefab {
 			$days=cal_days_in_month(CAL_GREGORIAN,$parts['mon'],$parts['year']);
 			$ref=date('w',strtotime(date('Y-m',$parts[0]).'-01'))+(7-$first)%7;
 			$out=[];
-			for ($i=0;$i<$days;$i++)
+			for ($i=0;$i<$days;++$i)
 				$out[floor(($ref+$i)/7)][($ref+$i)%7]=$i+1;
 		}
 		return $out;

@@ -44,10 +44,10 @@ class OAuth2 extends \Magic {
 
 	/**
 	*	Send request to API/token endpoint
-	*	@return string|FALSE
+	*	@return string|array|FALSE
 	*	@param $uri string
 	*	@param $method string
-	*	@param $token array
+	*	@param $token string
 	**/
 	function request($uri,$method,$token=NULL) {
 		$web=\Web::instance();

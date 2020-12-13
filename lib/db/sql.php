@@ -66,7 +66,9 @@ class SQL {
 	*	@return bool
 	**/
 	function rollback() {
-		$out=$this->pdo->rollback();
+		$out=FALSE;
+		if ($this->pdo->inTransaction())
+			$out=$this->pdo->rollback();
 		$this->trans=FALSE;
 		return $out;
 	}
@@ -76,7 +78,9 @@ class SQL {
 	*	@return bool
 	**/
 	function commit() {
-		$out=$this->pdo->commit();
+		$out=FALSE;
+		if ($this->pdo->inTransaction())
+			$out=$this->pdo->commit();
 		$this->trans=FALSE;
 		return $out;
 	}
@@ -173,7 +177,7 @@ class SQL {
 		$fw=\Base::instance();
 		$cache=\Cache::instance();
 		$result=FALSE;
-		for ($i=0;$i<$count;$i++) {
+		for ($i=0;$i<$count;++$i) {
 			$cmd=$cmds[$i];
 			$arg=$args[$i];
 			// ensure 1-based arguments
@@ -257,7 +261,7 @@ class SQL {
 				$query->closecursor();
 				unset($query);
 			}
-			elseif (($error=$this->errorinfo()) && $error[0]!=\PDO::ERR_NONE) {
+			elseif (($error=$this->pdo->errorInfo()) && $error[0]!=\PDO::ERR_NONE) {
 				// PDO-level error occurred
 				if ($this->trans)
 					$this->rollback();
@@ -321,19 +325,37 @@ class SQL {
 		if (strpos($table,'.'))
 			list($schema,$table)=explode('.',$table);
 		// Supported engines
+		// format: engine_name => array of:
+		//	0: query
+		//	1: field name of column name
+		//	2: field name of column type
+		//	3: field name of default value
+		//	4: field name of nullable value
+		//	5: expected field value to be nullable
+		//	6: field name of primary key flag
+		//	7: expected field value to be a primary key
+		//	8: field name of auto increment check (optional)
+		//	9: expected field value to be an auto-incremented identifier
 		$cmd=[
 			'sqlite2?'=>[
-				'PRAGMA table_info(`'.$table.'`)',
-				'name','type','dflt_value','notnull',0,'pk',TRUE],
+				'SELECT * FROM pragma_table_info('.$this->quote($table).') JOIN ('.
+					'SELECT sql FROM sqlite_master WHERE type=\'table\' AND '.
+					'name='.$this->quote($table).')',
+				'name','type','dflt_value','notnull',0,'pk',TRUE,'sql',
+					'/\W(%s)\W+[^,]+?AUTOINCREMENT\W/i'],
 			'mysql'=>[
 				'SHOW columns FROM `'.$this->dbname.'`.`'.$table.'`',
-				'Field','Type','Default','Null','YES','Key','PRI'],
+				'Field','Type','Default','Null','YES','Key','PRI','Extra','auto_increment'],
 			'mssql|sqlsrv|sybase|dblib|pgsql|odbc'=>[
 				'SELECT '.
 					'C.COLUMN_NAME AS field,'.
 					'C.DATA_TYPE AS type,'.
 					'C.COLUMN_DEFAULT AS defval,'.
 					'C.IS_NULLABLE AS nullable,'.
+				($this->engine=='pgsql'
+					?'COALESCE(POSITION(\'nextval\' IN C.COLUMN_DEFAULT),0) AS autoinc,'
+					:'columnproperty(object_id(C.TABLE_NAME),C.COLUMN_NAME,\'IsIdentity\')'
+						.' AS autoinc,').
 					'T.CONSTRAINT_TYPE AS pkey '.
 				'FROM INFORMATION_SCHEMA.COLUMNS AS C '.
 				'LEFT OUTER JOIN '.
@@ -356,7 +378,7 @@ class SQL {
 					($this->dbname?
 						(' AND C.TABLE_CATALOG='.
 							$this->quote($this->dbname)):''),
-				'field','type','defval','nullable','YES','pkey','PRIMARY KEY'],
+				'field','type','defval','nullable','YES','pkey','PRIMARY KEY','autoinc',1],
 			'oci'=>[
 				'SELECT c.column_name AS field, '.
 					'c.data_type AS type, '.
@@ -390,15 +412,22 @@ class SQL {
 						foreach ($conv as $regex=>$type)
 							if (preg_match('/'.$regex.'/i',$row[$val[2]]))
 								break;
-						$rows[$row[$val[1]]]=[
-							'type'=>$row[$val[2]],
-							'pdo_type'=>$type,
-							'default'=>is_string($row[$val[3]])?
-								preg_replace('/^\s*([\'"])(.*)\1\s*/','\2',
-								$row[$val[3]]):$row[$val[3]],
-							'nullable'=>$row[$val[4]]==$val[5],
-							'pkey'=>$row[$val[6]]==$val[7]
-						];
+						if (!isset($rows[$row[$val[1]]])) // handle duplicate rows in PgSQL
+							$rows[$row[$val[1]]]=[
+								'type'=>$row[$val[2]],
+								'pdo_type'=>$type,
+								'default'=>is_string($row[$val[3]])?
+									preg_replace('/^\s*([\'"])(.*)\1\s*/','\2',
+									$row[$val[3]]):$row[$val[3]],
+								'nullable'=>$row[$val[4]]==$val[5],
+								'pkey'=>$row[$val[6]]==$val[7],
+								'auto_inc'=>isset($val[8]) && isset($row[$val[8]])
+									? ($this->engine=='sqlite'?
+										(bool) preg_match(sprintf($val[9],$row[$val[1]]),
+											$row[$val[8]]):
+										($row[$val[8]]==$val[9])
+									) : NULL,
+							];
 					}
 				if ($fw->CACHE && $ttl)
 					// Save to cache backend
@@ -510,7 +539,7 @@ class SQL {
 		$fw=\Base::instance();
 		$this->uuid=$fw->hash($this->dsn=$dsn);
 		if (preg_match('/^.+?(?:dbname|database)=(.+?)(?=;|$)/is',$dsn,$parts))
-			$this->dbname=$parts[1];
+			$this->dbname=str_replace('\\ ',' ',$parts[1]);
 		if (!$options)
 			$options=[];
 		if (isset($parts[0]) && strstr($parts[0],':',TRUE)=='mysql')

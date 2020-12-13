@@ -103,7 +103,7 @@ class OpenID extends \Magic {
 					$ptr+=strlen($parts[0]);
 				}
 				else
-					$ptr++;
+					++$ptr;
 		}
 		// Get OpenID provider's endpoint URL
 		if (isset($this->args['provider'])) {
