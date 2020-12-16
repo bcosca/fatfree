@@ -1427,7 +1427,7 @@ final class Base extends Prefab implements ArrayAccess {
 		parse_str(@$url['query'],$GLOBALS['_GET']);
 		if (preg_match('/GET|HEAD/',$verb))
 			$GLOBALS['_GET']=array_merge($GLOBALS['_GET'],$args);
-		$GLOBALS['_POST']=$verb=='POST'?$args:[];
+		$GLOBALS['_POST']=($verb=='POST'||$verb=='PUT'||$verb=='PATCH')?$args:[];
 		$GLOBALS['_REQUEST']=array_merge($GLOBALS['_GET'],$GLOBALS['_POST']);
 		foreach ($headers?:[] as $key=>$val)
 			$_SERVER['HTTP_'.strtr(strtoupper($key),'-','_')]=$val;
