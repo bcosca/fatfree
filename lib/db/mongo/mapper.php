@@ -128,7 +128,8 @@ class Mapper extends \DB\Cursor {
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
-			'offset'=>0
+			'offset'=>0,
+			'collation'=>NULL,
 		];
 		$tag='';
 		if (is_array($ttl))
@@ -168,6 +169,8 @@ class Mapper extends \DB\Cursor {
 					$this->cursor=$this->cursor->limit($options['limit']);
 				if ($options['offset'])
 					$this->cursor=$this->cursor->skip($options['offset']);
+				if ($options['collation'])
+					$this->cursor=$this->cursor->collation($options['collation']);
 				$result=[];
 				while ($this->cursor->hasnext())
 					$result[]=$this->cursor->getnext();
@@ -176,7 +179,8 @@ class Mapper extends \DB\Cursor {
 				$this->cursor=$collection->find($filter,[
 					'sort'=>$options['order'],
 					'limit'=>$options['limit'],
-					'skip'=>$options['offset']
+					'skip'=>$options['offset'],
+					'collation'=>$options['collation'],
 				]);
 				$result=$this->cursor->toarray();
 			}
@@ -206,7 +210,8 @@ class Mapper extends \DB\Cursor {
 			'group'=>NULL,
 			'order'=>NULL,
 			'limit'=>0,
-			'offset'=>0
+			'offset'=>0,
+			'collation'=>NULL,
 		];
 		return $this->select($this->fields,$filter,$options,$ttl);
 	}
@@ -227,7 +232,7 @@ class Mapper extends \DB\Cursor {
 		if (!($cached=$cache->exists($hash=$fw->hash($fw->stringify(
 			[$filter])).($tag?'.'.$tag:'').'.mongo',$result)) || !$ttl ||
 			$cached[0]+$ttl<microtime(TRUE)) {
-			$result=$this->collection->count($filter?:[]);
+			$result=$this->collection->count($filter?:[],$options);
 			if ($fw->CACHE && $ttl)
 				// Save to cache backend
 				$cache->set($hash,$result,$ttl);
@@ -298,8 +303,8 @@ class Mapper extends \DB\Cursor {
 	/**
 	*	Delete current record
 	*	@return bool
-	*	@param $quick bool
 	*	@param $filter array
+	*	@param $quick bool
 	**/
 	function erase($filter=NULL,$quick=TRUE) {
 		if ($filter) {
@@ -326,6 +331,71 @@ class Mapper extends \DB\Cursor {
 			\Base::instance()->call($this->trigger['aftererase'],
 				[$this,$pkey]);
 		return $result;
+	}
+
+	/**
+	* Run an aggregation pipeline on the collection
+	*
+	* @see Aggregate::__construct() for supported options
+	* @see https://docs.mongodb.com/php-library/current/reference/method/MongoDBCollection-aggregate/
+	*
+	* @param array $aggregation The aggregation pipeline
+	* @param array $options  Command options
+	* @return array
+	*/
+	public function aggregate(aggregation $aggregation, array $options=[]) {
+		$result=$this->collection->aggregate($aggregation->getPipeline(), $options);
+
+		return $result->toarray();
+	}
+
+	/**
+	* Update multiple documents in one shot
+	*
+	* @see UpdateMany::__construct() for supported options
+	* @see https://docs.mongodb.com/manual/reference/method/db.collection.updateMany/index.html
+	* @see https://docs.mongodb.com/php-library/v1.7/reference/write-result-classes/#phpclass.MongoDB\UpdateResult
+	*
+	* @param array $filter  Query by which to filter documents
+	* @param array $update  Update to apply to the matched documents
+	* @param array $options Command options
+	*
+	* @return UpdateResult
+	*/
+	public function updateMany(array $filter, array $update, array $options=[]) {
+		return $this->collection->updateMany($filter, $update, $options);
+	}
+
+	/**
+	* Inserts multiple documents.
+	*
+	* @see InsertMany::__construct() for supported options
+	* @see https://docs.mongodb.com/php-library/v1.7/reference/method/MongoDBCollection-insertMany/
+	* @see https://docs.mongodb.com/php-library/v1.7/reference/write-result-classes/#phpclass.MongoDB\InsertManyResult
+	*
+	* @param array[]|object[] $documents The documents to insert
+	* @param array            $options   Command options
+	* @return InsertManyResult
+	* @throws InvalidArgumentException for parameter/option parsing errors
+	* @throws DriverRuntimeException for other driver errors (e.g. connection errors)
+	*/
+	public function insertMany(array $documents, array $options=[]) {
+		return $this->collection->insertMany($documents, $options);
+	}
+
+	/**
+	* Finds documents and can modify at the same time
+	*
+	* @see findOneAndUpdate::__construct() for supported options
+	* @see https://docs.mongodb.com/php-library/v1.7/reference/method/MongoDBCollection-findOneAndUpdate/
+	*
+	* @param array $filter
+	* @param array $update
+	* @param array $options
+	* @return array or null
+	*/
+	public function findOneAndUpdate(array $filter, array $update=[], array $options=[]) {
+		return $this->collection->findOneAndUpdate($filter, $update, $options);
 	}
 
 	/**
