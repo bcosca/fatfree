@@ -339,7 +339,7 @@ class SQL {
 		$cmd=[
 			'sqlite2?'=>[
 				'SELECT * FROM pragma_table_info('.$this->quote($table).') JOIN ('.
-					'SELECT sql FROM sqlite_master WHERE type=\'table\' AND '.
+					'SELECT sql FROM sqlite_master WHERE (type=\'table\' OR type=\'view\')  AND '.
 					'name='.$this->quote($table).')',
 				'name','type','dflt_value','notnull',0,'pk',TRUE,'sql',
 					'/\W(%s)\W+[^,]+?AUTOINCREMENT\W/i'],
