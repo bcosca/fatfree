@@ -96,10 +96,10 @@ Make sure you're running the right version of PHP. F3 does not support versions 
 PHP will let you know which particular version you're running and you should get something that looks similar to this:-
 
 ```
-PHP 5.4.30 (cli) (built: Jul 22 2014 21:34:41)
-Copyright (c) 1997-2014 The PHP Group
-Zend Engine v2.4.0, Copyright (c) 1998-2014 Zend Technologies
-    with Xdebug v2.2.5, Copyright (c) 2002-2014, by Derick Rethans
+PHP 7.4.12 (cli) (built: Nov 30 2020 13:28:43) ( NTS )
+Copyright (c) The PHP Group
+Zend Engine v3.4.0, Copyright (c) Zend Technologies
+    with Xdebug v2.9.8, Copyright (c) 2002-2020, by Derick Rethans
 ```
 
 Upgrade if necessary and come back here if you've made the jump to PHP 5.4 or a later release. If you need a PHP 5.4+ hosting service provider, try one of these services:
@@ -282,7 +282,7 @@ $f3->reroute('@beer_list(@country=Germany,@village=Rhine)');
 
 Remember to `urlencode()` your arguments if you have characters that do not comply with RFC 1738 guidelines for well-formed URLs.
 
-### PHP 5.4's Built-In Web Server
+### PHP's Built-In Web Server
 
 PHP's latest stable version has its own built-in Web server. Start it up using the following configuration:-
 
@@ -2477,6 +2477,7 @@ If you feel that this software is one great weapon to have in your programming a
 The Fat-Free Framework is community-driven software. It can't be what it is today without the help and support from the following people and organizations:
 
 * GitHub
+* JetBrains
 * Stehlik & Company
 * bodalgo.com
 * Square Lines, LLC
@@ -2608,7 +2609,7 @@ Special thanks to the selfless others who expressed their desire to remain anony
 
 By making a donation to this project you signify that you acknowledged, understood, accepted, and agreed to the terms and conditions contained in this notice. Your donation to the Fat-Free Framework project is voluntary and is not a fee for any services, goods, or advantages, and making a donation to the project does not entitle you to any services, goods, or advantages. We have the right to use the money you donate to the Fat-Free Framework project in any lawful way and for any lawful purpose we see fit and we are not obligated to disclose the way and purpose to any party unless required by applicable law. Although Fat-Free Framework is free software, to our best knowledge this project does not have any tax-exempt status. The Fat-Free Framework project is neither a registered non-profit corporation nor a registered charity in any country. Your donation may or may not be tax-deductible; please consult this with your tax advisor. We will not publish/disclose your name and e-mail address without your consent, unless required by applicable law. Your donation is non-refundable.
 
-**Copyright (c) 2009-2019 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
+**Copyright (c) 2009-2022 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
 
 ## Support on Beerpay
 Hey dude! Help me out for a couple of :beers:!
