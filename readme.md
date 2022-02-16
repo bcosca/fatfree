@@ -60,7 +60,7 @@ To get this package, simply download this package or visit the [fatfree-core](ht
 
 For all composer users out there:
 
-*  start a new project using `composer create-project bcosca/fatfree:dev-init`
+*  start a new project using `composer create-project bcosca/fatfree`
 *  add fatfree to your existing project with `composer require bcosca/fatfree-core`
 
 It is highly recommended that experienced users develop new applications with the latest version to take advantage of an updated code base and ongoing improvements.
