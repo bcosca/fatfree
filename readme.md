@@ -87,7 +87,7 @@ Unzip the contents of the distribution package anywhere in your hard drive. By d
 
 **Important:** If your application uses APC, Memcached, WinCache, XCache, or a filesystem cache, clear all cache entries first before overwriting an older version of the framework with a new one.
 
-Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 5.6. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by outdated PHP versions. To find out, open your console (`bash` shell on GNU/Linux, or `cmd.exe` on Windows):-
+Make sure you're running the right version of PHP. F3 does not support versions earlier than PHP 7.2. You'll be getting syntax errors (false positives) all over the place because new language constructs and closures/anonymous functions are not supported by outdated PHP versions. To find out, open your console (`bash` shell on GNU/Linux, or `cmd.exe` on Windows):-
 
 ```
 /path/to/php -v
@@ -96,13 +96,13 @@ Make sure you're running the right version of PHP. F3 does not support versions 
 PHP will let you know which particular version you're running and you should get something that looks similar to this:-
 
 ```
-PHP 7.4.12 (cli) (built: Nov 30 2020 13:28:43) ( NTS )
+PHP 7.4.21 (cli) (built: Jul 27 2021 15:56:07) ( NTS )
 Copyright (c) The PHP Group
 Zend Engine v3.4.0, Copyright (c) Zend Technologies
     with Xdebug v2.9.8, Copyright (c) 2002-2020, by Derick Rethans
 ```
 
-Upgrade if necessary and come back here if you've made the jump to PHP 7.4 or a later release. Fatfree needs at least PHP 5.6 to function. If you need a hosting service provider, try one of these services:
+Upgrade if necessary and come back here if you've made the jump to PHP 7.4 or a later release. Fatfree needs at least PHP 7.2 to function. If you need a hosting service provider, try one of these services:
 
 * [DreamHost](http://www.dreamhost.com/r.cgi?665472)
 * [Hostek](http://hostek.com/aff.php?aff=364&plat=L)
