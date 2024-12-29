@@ -1,10 +1,8 @@
-[![Fat-Free Framework](ui/images/logo.png)](http://fatfree.sf.net/)
+[![Fat-Free Framework](ui/images/logo.png)](https://github.com/bcosca/fatfree)
 
 **A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!**
 
-[![Flattr this project](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=phpfatfree&url=https://github.com/bcosca/fatfree)
-
-Condensed in a single ~65KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
+Condensed in a single file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way.
 
 Whether you're a novice or an expert PHP programmer, F3 will get you up and running in no time. No unnecessary and painstaking installation procedures. No complex configuration required. No convoluted directory structures. There's no better time to start developing Web applications the easy way than right now!
 
@@ -32,11 +30,7 @@ That's not all. F3 is packaged with other optional plug-ins that extend its capa
 
 Unlike other frameworks, F3 aims to be usable - not usual.
 
-[![Flattr this project](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=phpfatfree&url=https://github.com/bcosca/fatfree)
-
 The philosophy behind the framework and its approach to software architecture is towards minimalism in structural components, avoiding application complexity and striking a balance between code elegance, application performance and programmer productivity.
-
-[![Paypal](ui/images/paypal.png)](https://www.paypal.me/fatfree)
 
 ## Table of Contents
 
@@ -50,8 +44,6 @@ The philosophy behind the framework and its approach to software architecture is
 * [Unit Testing](#unit-testing)
 * [Quick Reference](#quick-reference)
 * [Support and Licensing](#support-and-licensing)
-
-[![Twitter](ui/images/twitter.png)](https://twitter.com/phpfatfree)
 
 ### Get the latest release!
 
@@ -96,17 +88,14 @@ Make sure you're running the right version of PHP. F3 does not support versions 
 PHP will let you know which particular version you're running and you should get something that looks similar to this:-
 
 ```
-PHP 7.4.21 (cli) (built: Jul 27 2021 15:56:07) ( NTS )
+PHP 8.3.11 (cli) (built: Aug 30 2024 20:21:32) (NTS)
 Copyright (c) The PHP Group
-Zend Engine v3.4.0, Copyright (c) Zend Technologies
-    with Xdebug v2.9.8, Copyright (c) 2002-2020, by Derick Rethans
+Zend Engine v4.3.11, Copyright (c) Zend Technologies
+    with Xdebug v3.3.2, Copyright (c) 2002-2024, by Derick Rethans
 ```
 
-Upgrade if necessary and come back here if you've made the jump to PHP 7.4 or a later release. Fatfree needs at least PHP 7.2 to function. If you need a hosting service provider, try one of these services:
+Upgrade if necessary and come back here if you've made the jump to PHP 8.0 or a later release. Fat-Free needs at least PHP 7.2 as minimum version to function.
 
-* [DreamHost](http://www.dreamhost.com/r.cgi?665472)
-* [Hostek](http://hostek.com/aff.php?aff=364&plat=L)
-* [SiteGround](http://www.siteground.com/index.htm?referrerid=155694)
 
 ### Hello, World: The Less-Than-A-Minute Fat-Free Recipe
 
@@ -2450,7 +2439,7 @@ The most up-to-date documentation is located at [http://fatfreeframework.com/](h
 
 ## Support and Licensing
 
-Technical support is available at the official discussion forum: [`https://groups.google.com/forum/#!forum/f3-framework`](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via [Slack](https://fatfreeframework-slack.herokuapp.com/) or IRC. We're on the FreeNode `#fatfree` channel (`chat.freenode.net`). Visit [`http://webchat.freenode.net/`](http://webchat.freenode.net/) to join the conversation. You can also download the [Firefox Chatzilla](https://addons.mozilla.org/en-US/firefox/addon/chatzilla/) add-on or [Pidgin](http://www.pidgin.im/) if you don't have an IRC client so you can participate in the live chat.
+Technical support is available at the official discussion forum: [`https://groups.google.com/forum/#!forum/f3-framework`](https://groups.google.com/forum/#!forum/f3-framework). If you need live support, you can talk to the development team and other members of the F3 community via [Matrix](https://matrix.to/#/#fat-free-framework:matrix.org).
 You can also find help at [Stack Overflow](http://stackoverflow.com/questions/tagged/fat-free-framework)
 
 ### Nightly Builds
@@ -2458,12 +2447,12 @@ You can also find help at [Stack Overflow](http://stackoverflow.com/questions/ta
 F3 uses Git for version control. To clone the latest code repository on GitHub:
 
 ``` bash
-git clone git://github.com/bcosca/fatfree-core.git
+git clone https://github.com/f3-factory/fatfree-core.git
 ```
 
-If all you want is a zipball of our test bench with all unit tests, grab it [**here**](https://github.com/bcosca/fatfree/archive/dev.zip).
+If all you want is a test bench with all unit tests, grab it [**here**](https://github.com/f3-factory/fatfree-dev).
 
-To file a bug report, visit [`https://github.com/bcosca/fatfree-core/issues`](https://github.com/bcosca/fatfree-core/issues).
+To file a bug report, visit [`https://github.com/f3-factory/fatfree-core/issues`](https://github.com/f3-factory/fatfree-core/issues).
 
 ### Fair Licensing
 
@@ -2602,15 +2591,8 @@ The Fat-Free Framework is community-driven software. It can't be what it is toda
 
 Special thanks to the selfless others who expressed their desire to remain anonymous, yet share their time, contribute code, send donations, promote the framework to a wider audience, as well as provide encouragement and regular financial assistance. Their generosity is F3's prime motivation.
 
-[![Paypal](ui/images/paypal.png)](https://www.paypal.me/fatfree)
-
 ### Legal notice
 
 By making a donation to this project you signify that you acknowledged, understood, accepted, and agreed to the terms and conditions contained in this notice. Your donation to the Fat-Free Framework project is voluntary and is not a fee for any services, goods, or advantages, and making a donation to the project does not entitle you to any services, goods, or advantages. We have the right to use the money you donate to the Fat-Free Framework project in any lawful way and for any lawful purpose we see fit and we are not obligated to disclose the way and purpose to any party unless required by applicable law. Although Fat-Free Framework is free software, to our best knowledge this project does not have any tax-exempt status. The Fat-Free Framework project is neither a registered non-profit corporation nor a registered charity in any country. Your donation may or may not be tax-deductible; please consult this with your tax advisor. We will not publish/disclose your name and e-mail address without your consent, unless required by applicable law. Your donation is non-refundable.
 
-**Copyright (c) 2009-2022 F3::Factory/Bong Cosca &lt;bong&#46;cosca&#64;yahoo&#46;com&gt;**
-
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
-
-[![Beerpay](https://beerpay.io/bcosca/fatfree/badge.svg?style=beer-square)](https://beerpay.io/bcosca/fatfree)  [![Beerpay](https://beerpay.io/bcosca/fatfree/make-wish.svg?style=flat-square)](https://beerpay.io/bcosca/fatfree?focus=wish)
+**Copyright (c) 2009-2025 F3::Factory**
