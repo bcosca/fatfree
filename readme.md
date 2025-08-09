@@ -113,7 +113,7 @@ $f3->run();
 
 Prepend `base.php` on the first line with the appropriate path. Save the above code fragment as `index.php` in your Web root folder. We've written our first Web page.
 
-Using composer? Then just run `composer require bcosca/fatfree` and use the following:
+Using composer? Then just run `composer require bcosca/fatfree-core` and use the following:
 
 ``` php
 require 'vendor/autoload.php';
